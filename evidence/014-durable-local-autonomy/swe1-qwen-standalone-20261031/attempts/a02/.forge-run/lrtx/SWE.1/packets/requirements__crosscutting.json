@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-31T15:35:53.387992Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7182,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7054,
+          "sha256": "2a21b7dd2c05539e148751a010b40d90deb4daa3e19e4b5f1d5662364ab02c92"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2014,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5363
+      },
+      "errors": [
+        "[write_only_idr_field] effect WRITE_IDR: value 'supplied_32bit_value' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[write_only_idr_field] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [write_only_idr_field] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "945013faf8213af88d4875da38613953fdb9576759c1f3ed012b19a778aa05e3",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 3532,
+        "prompt_tokens": 1334,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 4866
+      },
+      "wall_ms": 53078.3
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9495,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 9367,
+          "sha256": "8c470a4772529d33029b075a71bd403a9108c7a69c69e239b5fe75e4684b2b83"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2808,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7546
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "6561629117fd6bb6e1ef4da44e6c4641089b9b19675db33b292c1d33b308879d",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 396,
+        "prompt_tokens": 1932,
+        "prompt_tokens_details": {
+          "cached_tokens": 818
+        },
+        "total_tokens": 2328
+      },
+      "wall_ms": 6204.8
+    }
+  ],
+  "base_hash": "945013faf8213af88d4875da38613953fdb9576759c1f3ed012b19a778aa05e3",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "reset_no_auto_write",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "Reset the CRC peripheral without invoking any LL function, then read all CRC registers; passes when every register retains its reset value and no write is attributed to the LL driver.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "no_status_flag_wait",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Write_IDR or LL_CRC_Read_IDR with a valid CRC peripheral instance, the CRC LL driver shall not poll any status flag before returning.",
+        "verification": "Invoke LL_CRC_Write_IDR and LL_CRC_Read_IDR with a valid instance while monitoring all register accesses; passes when no status register is read during either call and both return immediately after the single IDR access.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "forge-c/014-st3-publication-recheck/1",
+  "status": "PASS_TERMINAL_RESULTS_REVALIDATED",
+  "backlog_revision": "8af47cf6539fccb98753d42612c0f29e01b42e21",
+  "tooling_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "run_revision": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+  "ready": 0,
+  "blocked": 3,
+  "first_failing_phase": "SWE.1",
+  "new_model_requests": 0,
+  "job_terminal": true,
+  "live_status_scorecard_capture": "NOT_RUN_JOB_ALREADY_TERMINAL",
+  "DA_T018": "NOT_RUN_UNTICKED",
+  "privacy_scan": {
+    "scope": "PUBLISHED_METADATA_PATTERN_SCAN_NOT_LIVE_TELEMETRY_OR_EXHAUSTIVE_DISCLOSURE_PROOF",
+    "status": "PASS_PATTERN_SCAN",
+    "redactor_sha256": "f97b8746ab3e84c450a369e25623287692cd45b0fa64300ddd29afc782df0d2f",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 2741,
+        "sha256": "463478ad0b42774591b0bad3e236eaa0bf235ebfdb5af345947a8e2f4e8ffe5c",
+        "secret_pattern_findings": 0
+      },
+      {
+        "path": "summary.json",
+        "bytes": 11487,
+        "sha256": "7244bc2beb5f0cb69051fd9163ca81d2fd9f5e6873e8ade70b88461da0339c70",
+        "secret_pattern_findings": 0
+      },
+      {
+        "path": "author-diagnostics.json",
+        "bytes": 1492,
+        "sha256": "7410a88370a27ebbe71b11a3c96a8cd39b97bc9273c24a2485a2c115232135a0",
+        "secret_pattern_findings": 0
+      }
+    ]
+  },
+  "native_terminal_ref": {
+    "path": "terminal-recheck-20261027.json",
+    "sha256": "4c8fba83d3dba24163a4605c4662d9de14a5d6c4453831e6b625e2db9d8b8cb9"
+  },
+  "product_benchmark": "NOT_RUN",
+  "operational_campaign": "NOT_RUN",
+  "learning_benefit": "NOT_DEMONSTRATED",
+  "source_hashes_match": true,
+  "expenditure_preserved": {
+    "requests": 76,
+    "input_tokens": 324810,
+    "output_tokens": 51810
+  }
+}

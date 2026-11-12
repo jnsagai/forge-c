@@ -1,0 +1,17 @@
+
+--- stderr ---
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-011/factory/python/forge_factory/lrtx/drill.py", line 177, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-011/factory/python/forge_factory/lrtx/drill.py", line 170, in main
+    rec = drill(a.profile, a.protect, a.work)
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-011/factory/python/forge_factory/lrtx/drill.py", line 145, in drill
+    stack.start(s)
+    ~~~~~~~~~~~^^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-011/factory/python/forge_factory/lrtx/stack.py", line 251, in start
+    "netns": os.readlink(f"/proc/{holder}/ns/net"), "holder_pid": holder, "ports": p,
+             ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/proc/3991523/ns/net'

@@ -44,7 +44,9 @@ def test_v2_refuses_cloud_acp_and_unlisted_models_before_launch(kw, issue):
 def test_v2_builds_the_same_graph_as_v1_and_names_semantic_swe1():
     s1 = workorder.local_profile_structured({"id": "local-rtx-v1"}, {"layer": "LL"}, "qwen3-coder:30b")
     s2 = workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "qwen3-coder:30b")
-    assert s1 == s2  # the runner, not the graph, selects the semantic SWE.1 author
+    # the runner, not the graph, selects the semantic SWE.1 author; the one graph difference is the owner-decided
+    # advisory continuation of v2 (2026-10-26, "Advisory + calibrate"), which v1 keeps off (and its record unchanged)
+    assert "advisory" not in s1 and s2["advisory"] is True and {**s1, "advisory": True} == s2
     assert V2["structured"]["semantic_phases"] == ["SWE.1"] and "semantic_phases" not in V1["structured"]
 
 
@@ -88,3 +90,73 @@ def test_the_omniverse2_profile_differs_from_v2_only_in_host_paths_and_the_engin
     assert e2["source_commit_sha"].split()[0] == eo["source_commit_sha"].split()[0] and \
         e2["semantic_profile"] == eo["semantic_profile"]
     assert {k: v for k, v in v2["safec"].items() if k != "engine"} == {k: v for k, v in om["safec"].items() if k != "engine"}
+
+
+@pytest.mark.parametrize("example", ["0008a-rcc-ll-delivered", "0008c-st-cube-rcc"])
+def test_a_delivered_code_work_order_keeps_only_swe1_and_swe2_structured_on_v2(example):
+    """F011-T036 (owner 2026-10-24): the structured SWE.3-SWE.6 tasks need code tasks of a local code author, which a
+    delivered-code work order has none of (the build refused with STRUCTURED_NODE_MISSING:swe3_ll_author). On v2 those
+    phases run as the existing agent nodes; SWE.1/SWE.2 stay structured; v1 and greenfield work orders are unchanged."""
+    import json
+
+    from forge_factory import acp
+    from forge_factory.workflow.builder import build
+
+    spec = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())
+    bf = {"layer": spec["layer"], "delivery": spec["delivery"]}
+    s2 = workorder.local_profile_structured({"id": "local-rtx-v2-omniverse2"}, bf, "qwen3.6:35b-a3b")
+    assert s2["phases"] == s2["inspect_phases"] == ["SWE.1", "SWE.2"]
+    assert workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "m")["phases"][2:] == [
+        "SWE.3", "SWE.4", "SWE.5", "SWE.6"]  # greenfield: unchanged
+    assert workorder.local_profile_structured({"id": "local-rtx-v1"}, bf, "m")["phases"][2:3] == ["SWE.3"]  # v1 too
+    g, _nodes = build("WO-X", layer=spec["layer"], trace=True, brownfield=spec["delivery"]["code_mode"],
+                      peripheral=spec.get("peripheral"), delivery_style=spec["delivery"]["build"]["style"],
+                      structured=s2)
+    agents = acp.native_agent_nodes(g)
+    assert "swe1_author" not in agents and "swe2_author" not in agents and "swe2_inspector" not in agents
+    assert {"swe3_author", "swe3_inspector", "swe4_author", "swe6_inspector"} <= set(agents)
+
+
+def test_fabro_command_nodes_carry_the_local_profile_only_inside_a_local_stack(monkeypatch):
+    """F011-T036: the first Fabro run on local-rtx-v2-omniverse2 failed every SWE.1 call (connection refused): command
+    nodes get only the builder's explicit environment, and without FORGE_LRTX_PROFILE the runner used the v1 gateway
+    port. Inside a stack the profile is passed; elsewhere the node environment is unchanged."""
+    from forge_factory.workflow import builder
+
+    monkeypatch.delenv("FORGE_LRTX_PROFILE", raising=False)
+    plain = builder._env()
+    assert "FORGE_LRTX_PROFILE" not in plain
+    monkeypatch.setenv("FORGE_LRTX_PROFILE", "local-rtx-v2-omniverse2")
+    assert builder._env() == plain + " FORGE_LRTX_PROFILE=local-rtx-v2-omniverse2"
+
+
+def test_reasoning_off_variant_differs_from_omniverse2_only_in_the_qwen36_reasoning_factor():
+    """Feature 014 (owner 2026-10-25): one controlled configuration factor for the diagnosis comparison."""
+    from forge_factory.llm_gateway import sanitize_request
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q36-noreason")
+    ignored = {"id", "status", "description", "_path", "_sha256", "gateway", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    assert {k: v for k, v in base["deployment"].items() if k != "default_root"} == \
+        {k: v for k, v in variant["deployment"].items() if k != "default_root"}
+    reasoning = dict(base["gateway"]["reasoning"])
+    assert reasoning.pop("qwen3.6:35b-a3b") == {"effort": "high", "extra_output_tokens": 16384}
+    assert variant["gateway"] == {**base["gateway"], "reasoning": reasoning}
+    body = {"model": "qwen3.6:35b-a3b", "max_tokens": 2048, "messages": []}
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["reasoning_effort"] == "none"
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["max_tokens"] == 2048
+
+
+def test_qwen38_variant_only_adds_the_verified_model_without_reasoning():
+    """Feature 014 (owner 2026-10-25): diagnosis model comparison against the reasoning-off qwen3.6 batch."""
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q38")
+    ignored = {"id", "status", "description", "_path", "_sha256", "models", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    allowed = dict(variant["models"]["allowed"])
+    added = allowed.pop("qwen3.8:27b-q8_0")
+    assert added["digest"] == "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039" and added["quantization"] == "Q8_0"
+    assert allowed == base["models"]["allowed"] and variant["models"]["default"] == base["models"]["default"]
+    assert "qwen3.8:27b-q8_0" not in variant["gateway"]["reasoning"]

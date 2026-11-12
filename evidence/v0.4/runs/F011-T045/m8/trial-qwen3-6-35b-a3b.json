@@ -1,0 +1,1030 @@
+{
+  "baselines": 7,
+  "catalogue": "lrtx-seeded-2",
+  "catalogue_sha256": "ea012b21ed2d4794956c9ed39076d3e96b512b23730f2df46dff4406626c7e6a",
+  "deterministic_detection": 8,
+  "false_rejections": 1,
+  "generated_at": "2026-10-24T08:35:16.106130Z",
+  "inspection_fail_off_target": 3,
+  "inspection_lessons": {
+    "dir": "config/factory/inspection-lessons",
+    "lessons": [
+      {
+        "id": "IL-001",
+        "sha256": "9a4d88990b8243e80db2ff17624bae742931cd5298844772f949e6650355916a",
+        "state": "PROPOSED",
+        "version": 1
+      },
+      {
+        "id": "IL-002",
+        "sha256": "1ad49b0df47c5952360a8d39d93826a82fc60eccd6b247e38a7165dfee6f781c",
+        "state": "PROPOSED",
+        "version": 1
+      },
+      {
+        "id": "IL-003",
+        "sha256": "9088b6bc5ec54d900f00563883956cb4121559370608a49d63004fa405a5705e",
+        "state": "PROPOSED",
+        "version": 1
+      },
+      {
+        "id": "IL-004",
+        "sha256": "9cac00290ce54e14df97a6df7ebed344d73b6a2ae28e236f116acc88baac93a7",
+        "state": "PROPOSED",
+        "version": 1
+      }
+    ],
+    "trial": true
+  },
+  "inspector": "semantic",
+  "missed": 23,
+  "model": "qwen3.6:35b-a3b",
+  "no_inspection": 0,
+  "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
+  "rows": [
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "IWDG_KR.KEY"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 12,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: reset_startup_missing [document]: The frozen baseline (software_requirements.md) omits the documented startup inactivity constraint SWR-013 from its requirements list. Failure handling is explicitly s"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-013",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009A-STM32N6-IWDG-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-04: budget_missing [document]: The baseline defines measurable Flash (SWR-014) and static RAM (SWR-015) bounds but omits explicit SWRs for the upstream-specified 128-byte stack limit, processor time/CPU c"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-016",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-017 (with SWR-002)]: SWR-017 references SWR-001 in its preservation scope list, but the formal definition for this requirement is completely missing from workproducts/SW"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: reset_startup_missing [document]: The baseline omits SWR-018 and contains no provisions specifying deterministic initialization, power-on reset values, or external reset handling for the RCC driver. R"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-018",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002A-STM32N6-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-021",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "CONTRACT_UNKNOWN_SWR:workproducts/SWE.1/register_effects.json:HSI_RESET_STARTUP:SWR-010"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-010",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-01: safety_allocation_missing [Safety allocation]: Source safety/software_safety_requirements.md explicitly states 'software safety allocation PENDING owner allocation review - no software safety requirem",
+          "SWE1-03: safe_state_missing [Safety allocation]: The baseline explicitly states that no system safe-state allocation is approved and the oscillator-off timeout fallback is a driver behavior, not an allocated A"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0002B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-014",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [
+          "SWE1-03: reset_startup_missing [Safety allocation]: The baseline contains only peripheral register reset assertions (SWR-015/SWR-016) but lacks system-level reset and startup behavior specifications. The softw"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-019",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008A-STM32N6-RCC-LL-rc1b",
+      "inspection": {
+        "findings": [
+          "SWE1-04: other [document]: Manifest shows placeholders for max_wait_polling_iterations and api_cycle_limits. No explicit CPU utilization limits or timing constraints appear in the baseline requirements to sati"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-022",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-04: other [Safety allocation]: Timing and CPU cycle limits are not explicit or measurable; upstream_gaps.md states that allocated safety reaction-time bounds remain pending owner review and no per-API cyc"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-04: other [Safety allocation]: CPU load and processing time constraints are not explicit or measurable. Upstream gaps state 'no approved per-API cycle limit is allocated' and software safety allocation re"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-010",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-03: safe_state_missing [Safety allocation]: The baseline does not specify or allocate system safe states; upstream placeholders for safe_state remain absent and open gaps explicitly confirm no system safe"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "inspection (on target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008B-STM32N6-RCC-HAL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-04: budget_missing [document]: Stack size limit (128 bytes) from the budget targets is not defined as an explicit software requirement in workproducts/SWE.1/software_requirements.md; only SWR-012 and SWR-"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-014",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "RCC_CR.HSION"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "inspection (off target)",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [
+          "SWE1-02: requirements_inconsistent [SWR-017]: SWR-017 references bit preservation for operations defined in SWR-001 through SWR-016, but those requirements only specify set/clear/query actions. The baseline la"
+        ],
+        "reply": "REWORK",
+        "verdict": "FAIL"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-018",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0008C-ST-RCC-LL-rc1",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-021",
+      "target_field": "budget_missing"
+    },
+    {
+      "case": "BASELINE",
+      "class": "none",
+      "detected_by": "none",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": null,
+      "target_field": null
+    },
+    {
+      "case": "S1-OMIT",
+      "class": "omitted requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": "IWDG_KR.KEY"
+    },
+    {
+      "case": "S1-QM",
+      "class": "safety-scope contradiction",
+      "detected_by": "deterministic gate",
+      "gate": {
+        "issues": [
+          "SAFETY_SCOPE:QM_CLAIM_IN_ASIL_SCOPE:QM development!=ASIL B:safety/software_safety_requirements.md"
+        ],
+        "rc": 13,
+        "result": "REJECTED"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "safety/software_safety_requirements.md",
+      "target_field": null
+    },
+    {
+      "case": "S1-EFFECT",
+      "class": "effects contract contradicts a requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-001",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOSTART",
+      "class": "missing reset/startup requirement",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-009",
+      "target_field": "reset_startup_missing"
+    },
+    {
+      "case": "S1-GAPROW",
+      "class": "upstream gap not recorded",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "Safety allocation",
+      "target_field": null
+    },
+    {
+      "case": "S1-NOBUDGET",
+      "class": "missing resource budget",
+      "detected_by": "MISSED",
+      "gate": {
+        "issues": [],
+        "rc": 0,
+        "result": "FROZEN"
+      },
+      "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc4",
+      "inspection": {
+        "findings": [],
+        "reply": "PASS",
+        "verdict": "PASS"
+      },
+      "inspector": "semantic",
+      "phase": "SWE.1",
+      "target": "SWR-012",
+      "target_field": "budget_missing"
+    }
+  ],
+  "schema": "forge-c/lrtx-seeded/1",
+  "seeded": 42,
+  "semantic_detection_on_target": 8
+}

@@ -267,19 +267,24 @@ class CapaRegistry:
     def lesson_source(self) -> CapaLessonSource:
         return CapaLessonSource(self)
 
-    def propose_lesson(self, capa_id: str, lessons, symptom: str, remedy: str) -> dict:
+    def propose_lesson(self, capa_id: str, lessons, symptom: str, remedy: str, *, phase: str | None = None,
+                       applicability: dict | None = None, tool_versions: dict | None = None) -> dict:
         rec = self.must(capa_id)
         if rec["state"] not in LESSON_STATES or rec["root_cause_status"] != "VERIFIED":
             raise CapaError(f"LESSON_REQUIRES_VERIFIED_CAPA:{rec['state']}/{rec['root_cause_status']}")
         runs = [r.split(":", 1)[1] for r in rec["root_cause_evidence_refs"]]
-        les = lessons.propose({"source_incident_id": capa_id, "source_attempt_id": runs[-1],
+        candidate = {"source_incident_id": capa_id, "source_attempt_id": runs[-1],
                                "symptoms": symptom, "root_cause": rec["root_cause_summary"] or "", "remedy": remedy,
                                "constraints": "Reference data from a verified CAPA; never overrides requirements, "
                                               "hardware manuals or factory policy.",
                                "evidence_refs": rec["root_cause_evidence_refs"] + [f"cre-capa:{capa_id}"],
                                "tool_versions": {"forge-factory": self.links(capa_id, "FIX_REVISION")[-1][:12]},
                                "validation_tests": [{"id": f"{rec['reproducer_id']}:{r}", "status": "PASS",
-                                                     "evidence_ref": f"reproducer-run:{r}"} for r in runs]})
+                                                     "evidence_ref": f"reproducer-run:{r}"} for r in runs]}
+        if applicability is not None:
+            candidate.update(contract_version="2.0", source_kind="REPAIR_PROMOTED", version=1,
+                             applicability=applicability, tool_versions=tool_versions or {})
+        les = lessons.propose(candidate, phase=phase)
         les = lessons.validate(les["lesson_id"])
         self.link(capa_id, "LESSON", les["lesson_id"])
         if les["state"] == "VALIDATED":

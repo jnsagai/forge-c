@@ -1,0 +1,29 @@
+id: RPR-170
+script: rpr170_line_product_lifecycle.py
+sha256: b5248a4f81e8cc82c45a6aa957adbbc59de673c537b273948f5af8c4e273ab30
+symptom_signature: line-local product launch cannot prepare its owned provider without
+  global shutdown
+observed_in: '2026-11-04 owner-signed finite local trial L90: normal product job on
+  clean826/profile32ef reached M2 then STACK_STOP_INCOMPLETE / MANAGED_PROFILE_SCOPE_MISMATCH
+  before native dispatch. Original attempt, conservative 1Mi token charge, source/mission/expiry
+  and no-native evidence retained. Admission fenced OBSERVE, no bypass/reset.'
+baseline_revision: 405ea04291aea7250861f4d4a7f63749c017ab8d
+error_codes:
+- MANAGED_PROFILE_SCOPE_MISMATCH
+- STACK_STOP_INCOMPLETE
+- PRODUCT_LAUNCH_NOT_STARTED
+operations:
+- line_recovery_product.execution_context
+- line_launcher.launch
+- lrtx.stack.stop
+- lrtx.stack.start
+- lrtx.stack.serve
+root_cause: Normal line-local product carries durable policy/intent but M2 generic
+  managed lifecycle lacks a line-bound profile and uses the global Conductor shutdown/store
+  and unconditional managed serving refusal. That path cannot prepare its own already-held
+  line execution lease while preserving RUNNING intent and canonical line queue.
+remedy: Use an explicitly payload/job/nonce/mission/intent/profile/root/lease-bound
+  line-local lifecycle adapter under existing M0 locks, no-native/request quiescence
+  and precise provider-process ownership. Preserve generic managed/legacy behavior,
+  current authority per effect, finite deadlines and source-role pins; no flag bypass,
+  parallel store, global shutdown or budget reset.

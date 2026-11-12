@@ -35,7 +35,9 @@ def run(store, phase: str, check: str, state, fail_code) -> int:
         v = verify(ws, "swe3_entry")
         s = seed(ws) if v["status"] != "MISMATCH" else {"rows": 0}
         claimed = []
-        if code_mode(manifest_of(ws)) == "FIX_ALLOWED":
+        from ..inspection.provided_changes import enabled as change_control
+
+        if code_mode(manifest_of(ws)) == "FIX_ALLOWED" or change_control(ws):
             from ..inspection.defects import claim_delivered_fixes
 
             claimed = claim_delivered_fixes(ws)

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/runs/F011-T032/f011_t032.py",
+    "evidence/v0.4/runs/F011-T032/report.json",
+    "/mnt/data/forge-c/lrtx-v2/state/t032-scratch",
+    "/mnt/data/forge-c/lrtx-v2/state/llm-gateway/usage.jsonl",
+    "qwen3-coder:30b",
+    "gpt-oss:120b"
+  ],
+  "duration_s": 231.649,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "b2a1f925ea658fb647969ea318f1cd323de0b005",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T032/20261023T181611.log",
+  "log_sha256": "1ec16437e1c4cf303aa1219fcd5eea41735ecd81b2ea4b4d5903b44f6b8253d5",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T032",
+  "ts_utc": "2026-10-23T18:16:11.651211Z"
+}

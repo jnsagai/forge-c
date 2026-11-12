@@ -30,7 +30,6 @@ OBLIGATIONS_FILE = "workproducts/SWE.1/register_obligations.json"
 def verified(ws: Path) -> tuple[dict | None, list[str]]:
     """The recorded obligations, re-verified against the oracle record's operations and the rebuilt domain."""
     from ..safec_bridge import contract as K
-    from ..safec_bridge import domain as D
     from ..safec_bridge import obligations as OB
     from . import safec_oracle as SO
 
@@ -42,14 +41,17 @@ def verified(ws: Path) -> tuple[dict | None, list[str]]:
         return None, issues
     try:
         ob = json.loads(p.read_text())
-        _domain, raw = D.build(ws)
+        domain, raw = SO.rebuild_domain(ws, rec.get("engine"))
     except (OSError, ValueError, KeyError) as exc:
         return None, [f"WP_OBLIGATIONS_UNREADABLE:{type(exc).__name__}"]
     if ob.get("schema") != "forge-c/lrtx-register-obligations/1" or ob.get("contract_semantic_digest") != \
             rec["contract_semantic_digest"]:
         return None, ["WP_OBLIGATIONS_NOT_OF_THIS_CONTRACT"]
+    if domain["profile"] == "register-io-0.2" and (
+            ob.get("engine") != rec.get("engine") or ob.get("domain_sha256") != rec["domain_sha256"]):
+        return None, ["WP_OBLIGATIONS_BINDING_CHANGED"]
     vc = K.ValidatedContract(rec["contract_semantic_digest"], rec["domain_sha256"], tuple(rec["operations"]),
-                             (), (), (), (), {})
+                             (), (), (), (), {"profile": domain["profile"]})
     issues = OB.verify(ob["obligations"], vc, raw)
     return (None, issues) if issues else ({**rec, "obligations": ob["obligations"]}, [])
 
@@ -70,6 +72,11 @@ def prove(ws: Path, include_dirs: list[Path], api_header: str) -> dict:
     ws = Path(ws)
     if layer_of(ws) != "LL" or not (ws / OBLIGATIONS_FILE).is_file():
         return {"status": "NOT_APPLICABLE", "reason": "only LL work orders with frozen SafeC formal obligations"}
+    from ..layer import ll_instance
+
+    if ll_instance(ws) is not None:
+        return {"status": "NOT_APPLICABLE", "reason": "INSTANCE_MODE: the WP harness models the register-block array, "
+                                                      "not the caller's typed instance"}
     fc = tool("frama-c")
     if fc is None:
         return {"status": "UNSUPPORTED", "reason": "Frama-C is not installed on this host"}

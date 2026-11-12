@@ -1,0 +1,32 @@
+{
+  "files": {
+    "wal-session-followup-a7804054-v1/result.json": {
+      "bytes": 332,
+      "sha256": "3eb92a07e16d69d018f648af6cc20fb9ad56b8a591a7265def7e1690111940d8"
+    },
+    "wal-session-followup-a7804054-v1/window.log": {
+      "bytes": 238,
+      "sha256": "f2a66540f36d225a0ded9b2a5a3faf5ee3290b7997374f4280d364ee8a1ba6d8"
+    },
+    "wal-session-qualification-window-epoch94-v1/result.json": {
+      "bytes": 222,
+      "sha256": "a048ea67637fdd695afdb1d141f542b052b0465512cd9c011dd0f3a02c10a2da"
+    },
+    "wal-session-qualification-window-epoch94-v1/qualification.log": {
+      "bytes": 3170,
+      "sha256": "e592f0341a07e7eea1c8f240a78b946f92bdc476c779815e16604529c6b928ba"
+    },
+    "qualification-wal-session-a7804054-epoch95-v1/provenance.json": {
+      "bytes": 3067,
+      "sha256": "fdc138e6167bd233206328f7064e3843bd5f6dc6f7fbc680ebf5d1c5ed5b8418"
+    },
+    "qualification-wal-session-a7804054-epoch95-v1/pytest.log": {
+      "bytes": 46508,
+      "sha256": "0f16a576ea8209bd943ab2c3b645dea23da15edaaf31500cdd4e369e09da1789"
+    },
+    "qualification-wal-session-a7804054-epoch95-v1/receipts/pytest.xml": {
+      "bytes": 53814,
+      "sha256": "3803233653b4a01d4f7f996de085911229db76247f12e656f2d54a07b82f55ac"
+    }
+  }
+}

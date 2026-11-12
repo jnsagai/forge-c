@@ -1,0 +1,13 @@
+{
+  "revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_delivery_first_package_order.py factory/python/tests/test_release_test_history.py factory/python/tests/test_m7_governance_release.py factory/python/tests/test_pipeline_demonstration.py factory/python/tests/test_delivery_first.py factory/python/tests/test_da014_product_outcomes.py factory/release-manager/tests/test_packager.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/package-order-exact.xml",
+  "results": {
+    "tests": 68,
+    "passed": 68,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scope": "DETERMINISTIC_FRAMEWORK_NOT_RUNTIME_QUALIFICATION",
+  "known_inherited_failure": "Feature009 RCC graph golden; unchanged strict graph hashes; retained and not rerun in this 68-test cohort"
+}

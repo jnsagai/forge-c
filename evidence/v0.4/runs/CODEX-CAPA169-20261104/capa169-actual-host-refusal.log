@@ -1,0 +1,22 @@
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/afo/line_watchdog.py", line 100, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/afo/line_watchdog.py", line 94, in main
+    status["recovery"] = recover(args.intent)
+                         ~~~~~~~^^^^^^^^^^^^^
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/afo/line_watchdog.py", line 70, in recover
+    return intent.start(record["epoch"], probe=probe or unit_state, runner=runner, now=now,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        authorize=authorize, unit=UNIT)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/afo/operations.py", line 144, in start
+    if not (authorize or operational_authorized)():
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/afo/operations.py", line 174, in operational_authorized
+    from ..reliability.policy import load
+  File "/home/omniverse2/.local/share/forge-c-line-watchdog/local-capa162-826a8724/forge-watchdog.zip/forge_factory/reliability/policy.py", line 22, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+forge-line-watchdog-local.service: Main process exited, code=exited, status=1/FAILURE
+forge-line-watchdog-local.service: Failed with result 'exit-code'.
+Failed to start Forge-C local line external heartbeat and fenced recovery check.

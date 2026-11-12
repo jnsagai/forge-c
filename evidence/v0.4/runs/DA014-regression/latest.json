@@ -1,0 +1,44 @@
+{
+  "acceptance": "DA-AT-029: required regressions pass, skips keep their reasons, the independent CRE ran on the exact candidate and its REJECTED decision is retained (promotion is the owner's decision); live checks stay NOT_RUN.",
+  "command": "run_full_inherited.py (215 files, private state per file) + run_provider_regression.py (core, release) + run_auxiliary_current.py (stage dry-runs, history replay, systemd semantics, independent CRE) on a clean dedicated worktree repos/forge-c-014-regress-20650af",
+  "cwd": "repos/forge-c-014-regress-20650af",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "20650af67953220737166062e857e06b1a48081f",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "known_issues": [
+    "KI-014-010"
+  ],
+  "log": "evidence/v0.4/runs/DA014-regression/20261027T080120.log",
+  "log_sha256": "1b215599602bddc38a0acee27ac4ea0ec4beda2f52bee063967616c14b706bb7",
+  "results": {
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "tests": 645
+    },
+    "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE (retained, KI-014-010)",
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 13
+    },
+    "whole_suite": "215 files, 1840 tests, 0 failures, 0 errors, 49 skipped"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_REGRESSION_AND_COMPATIBILITY_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "summary": {
+    "path": "evidence/014-durable-local-autonomy/regression-20650af/summary.json",
+    "sha256": "20b0a242305ea36885eb846e6dba02256c9f9fcf4de568c7ea2d348dea20fae4"
+  },
+  "task": "DA014-regression",
+  "ts_utc": "2026-10-27T08:01:20.743254+00:00"
+}

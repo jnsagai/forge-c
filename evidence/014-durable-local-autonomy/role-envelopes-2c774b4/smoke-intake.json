@@ -1,0 +1,31 @@
+{
+  "status": "ONE_Q38_PROTOCOL_TRIAL_ENROLLED",
+  "authorization_ref": "AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1",
+  "source_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "trial_scope": [
+    "obligation-counterexample:0"
+  ],
+  "campaign_denominator": 100,
+  "unrun_trials": 99,
+  "enrollment": {
+    "status": "ENROLLMENT_IN_PROGRESS",
+    "submitted_this_call": 1,
+    "submitted": [
+      "obligation-counterexample:0"
+    ],
+    "inference_requests": 0
+  },
+  "provisioning": {
+    "status": "WAITING_AFO_ADMISSION",
+    "provisioned_this_call": 0,
+    "waiting_trials": [
+      "obligation-counterexample:0"
+    ],
+    "refused_trials": [],
+    "inference_requests": 0
+  },
+  "historical_mission_snapshots_unchanged": true,
+  "factory_controller_owns_dispatch": true,
+  "production_authority_restore_required_after_quiescence": true,
+  "no_benchmark_or_role_qualification_claim": true
+}

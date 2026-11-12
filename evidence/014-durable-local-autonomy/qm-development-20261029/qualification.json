@@ -1,0 +1,56 @@
+{
+  "schema": "forge-c/qm-implementation-qualification/1",
+  "source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
+  "tests": {
+    "local": {
+      "passed": 137,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 369.527
+    },
+    "omniverse2": {
+      "passed": 137,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 450.112
+    }
+  },
+  "command": "python -m pytest -q factory/python/tests/test_qm_development.py factory/python/tests/test_mission_deadline.py factory/python/tests/test_da014_overnight.py factory/python/tests/test_development_diagnostics.py factory/python/tests/test_incremental_delivery.py factory/python/tests/test_lrtx_tool_accounting.py factory/python/tests/test_lrtx_inspection_accounting.py factory/python/tests/test_incremental_incident_resume.py factory/python/tests/test_lrtx_compat.py factory/python/tests/test_da014_high_allowance.py factory/python/tests/test_aspice_development.py factory/python/tests/test_t009_workflow_gates.py --junitxml=<private-output>/pytest.xml",
+  "profile": "local-rtx-v2-omniverse2-q38-qm-mtp",
+  "purpose": "QM",
+  "generic_driver_support": "Existing RCC and frozen IDR fixtures",
+  "native_graph_validation": "PASS",
+  "captured_native_nodes": 18,
+  "captured_native_bodies": 72,
+  "max_captured_conservative_reservation": 77030,
+  "context_tokens": 131072,
+  "measure": "Complete serialized request byte upper bound plus effective output/reasoning reservation; not native tokenizer measurement",
+  "model_generation_requests": 0,
+  "production_deployment_changed": false,
+  "authority_created_or_renewed": false,
+  "real_qwen_qm_capability": "NOT_RUN",
+  "real_m1_acceptance": "NOT_ESTABLISHED",
+  "learning_benefit": "NOT_ESTABLISHED",
+  "operational_campaigns": "NOT_RUN",
+  "formal_task_completion": "30/58 unchanged",
+  "incremental_complete": [
+    "IE-T001",
+    "IE-T002",
+    "IE-T003",
+    "IE-T004",
+    "IE-T005",
+    "IE-T006",
+    "IE-T007"
+  ],
+  "incremental_unaccepted": [
+    "IE-T008"
+  ],
+  "incremental_unrun": [
+    "IE-T009"
+  ],
+  "retained_limits": "One admitted inference, bounded verification and same mission cumulative expenditure/deadline",
+  "superseded_candidate": "7f35955 prompt audit found native old criteria and structured safety header; never deployed/signed",
+  "earlier_yaml_failure": "89f535b duplicate examples key displaced legacy naming scope; fixed in 7f35955 before deployment"
+}

@@ -1,0 +1,3 @@
+REPRODUCER_ERROR:CalledProcessError:Command '['git', 'show', '6644dad0fc0a22c3b73502fd0ee2901f4d01d146:requirements/forge-factory.lock']' returned non-zero exit status 128.
+
+--- stderr ---

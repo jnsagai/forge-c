@@ -1,0 +1,14 @@
+{
+  "scope": "DOCUMENTATION_AND_CONTRACTS_ONLY_NOT_RUNTIME",
+  "runtime_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "commands": [
+    {"command": "python3 specs/014-durable-local-autonomy/validate_spec.py", "exit_code": 0, "requirements": 58, "tasks": 58},
+    {"command": "python3 specs/014-durable-local-autonomy/contracts/validate_contracts.py", "exit_code": 0, "schemas": 6, "fixtures": 38},
+    {"command": "python3 tests/spec/validate_design.py", "exit_code": 0, "tests": 14},
+    {"command": "python3 evidence/014-durable-local-autonomy/verify_handoff.py", "exit_code": 0, "checked_tasks": 30, "rows": 58},
+    {"command": "ruff check changed Python modules and new role-envelope tests", "exit_code": 0},
+    {"command": "git diff --check", "exit_code": 0}
+  ],
+  "privacy_scan": "No development bearer, API-key pattern or private-key header found in new public evidence/checkpoint files.",
+  "new_completed_task_ids": []
+}

@@ -1,0 +1,112 @@
+{
+  "source_revision": "3f1ef1b734f72e868a75488d980a2b4ac7c63998",
+  "host": "omniverse2",
+  "source_clean_before": true,
+  "model_generation_requests": 0,
+  "production_changed": false,
+  "authority_changed": false,
+  "operator_mode": "RUNNING_QUIESCENT_MODEL_RESIDENT",
+  "model_network_isolated": true,
+  "volume_sentinel_sha256": "d20199c45eb95c146f64503a3d673ad529560bf0ad2c465f4e89cc1420b17cb6",
+  "volume_preflight": {
+    "ok": true,
+    "issues": [],
+    "root": "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/data",
+    "filesystem": {
+      "target": "/mnt/data",
+      "source": "/dev/sda1",
+      "fstype": "ext4",
+      "uuid": "9bc4621a-9543-4562-b24a-5da4faf6a7f1"
+    },
+    "checked_at": "2026-10-29T18:37:59.958769Z"
+  },
+  "private_input_copies": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "path": "examples/0017-rng-st/inputs/RM0486-rev4-ch47-rng.md",
+      "sha256": "8f3b8dc46b814ed61ce9ad4adc12876c55a07aecf4352353cab6abe5fb484d67"
+    },
+    {
+      "path": "examples/0017-rng-st/inputs/RM0486-rev4-memory-map-excerpt-rng.md",
+      "sha256": "17348cd077a18bf8f69e5e3b05edc8810056c3468672f24949c564d6782a0573"
+    }
+  ],
+  "started_epoch": 1793299079.9587953,
+  "operator_epoch": 34,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "nice": 10,
+  "environment": {
+    "FORGE_DATA_ROOT": "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/data",
+    "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/state",
+    "PYTHONPATH": "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/repo/factory/python",
+    "PATH": "/mnt/data/forge-c/production-local-014/venv/bin:/mnt/data/forge-c/production-local-014/toolchains/LLVM-19.1.7-Linux-X64/bin:/usr/local/bin:/usr/bin:/bin:/mnt/data/forge-c/production-local-014/toolchains/formal/bin:/mnt/data/forge-c/production-local-014/toolchains/sysroot/usr/bin",
+    "TMPDIR": "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/tmp"
+  },
+  "command": [
+    "/usr/bin/unshare",
+    "--user",
+    "--map-root-user",
+    "--pid",
+    "--net",
+    "--fork",
+    "--mount-proc",
+    "--kill-child=SIGKILL",
+    "--",
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_integration.py",
+    "factory/python/tests/test_da014_maintenance.py",
+    "factory/python/tests/test_da014_role_envelopes.py",
+    "factory/python/tests/test_da014_product_role_trial.py",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/pytest.xml"
+  ],
+  "pytest_exit_code": 0,
+  "pytest_case_counts": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "92",
+    "time": "313.230",
+    "timestamp": "2026-10-29T18:38:00.031271+00:00",
+    "hostname": "omniverse2"
+  },
+  "child_peak_rss_kib": 110452,
+  "halt": [],
+  "source_clean_after": true,
+  "completed_epoch": 1793299393.5359182
+}

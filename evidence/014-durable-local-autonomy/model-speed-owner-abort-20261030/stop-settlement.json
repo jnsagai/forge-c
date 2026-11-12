@@ -1,0 +1,24 @@
+{
+  "settlement": {
+    "settled": true,
+    "unresolved_native_jobs": [],
+    "serving_settlement": {
+      "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+      "instance_sha256": "44b65de4fbddaf19a8a30ab7ff1f6247571d6b4897ec4a2092d402dd7cda23da",
+      "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "observed_at": "2026-10-30T09:07:53.558944Z"
+    }
+  },
+  "native_status": "FAILED",
+  "provider_quiet": {
+    "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+    "instance_sha256": "44b65de4fbddaf19a8a30ab7ff1f6247571d6b4897ec4a2092d402dd7cda23da",
+    "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+    "observed_at": "2026-10-30T09:07:53.589411Z"
+  },
+  "intent": {
+    "mode": "STOPPED",
+    "epoch": 73,
+    "effective_stop": true
+  }
+}

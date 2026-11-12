@@ -1,0 +1,14 @@
+{
+  "at_remote": "2026-10-31T07:55:39.804545Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "effective_stop": false,
+  "epoch": 7,
+  "grant_renewal": false,
+  "mode": "STOPPED",
+  "model_calls": 0,
+  "owner_clock_utc": "2026-10-31T07:56:35Z",
+  "previous_epoch": 6,
+  "production_instance_changed": false,
+  "settlement": "PENDING_EXISTING_GUARD_OR_RECONCILIATION; NO_QUIESCENCE_CLAIM",
+  "source_deployment": false
+}

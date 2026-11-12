@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-05T05:51:44.195566+00:00",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen35-controller",
+  "all8_copied_before_any_tests": [
+    "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+    "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+    "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+    "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+    "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+    "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+    "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+    "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md"
+  ],
+  "all10_verified_before_any_tests": true
+}

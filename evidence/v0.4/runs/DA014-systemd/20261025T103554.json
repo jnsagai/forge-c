@@ -1,0 +1,22 @@
+{
+  "command": "python -m forge_factory.afo.systemd_qualification --out <loop10-isolated-test-directory>",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "c5a88d328329cf41dad7a5102a2b8b8ee62f4981",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-systemd/20261025T103554.log",
+  "log_sha256": "1e73f3807d30a621245851cac0989185d94f897410f5f4cf70edeb38be703fc5",
+  "report": "evidence/014-durable-local-autonomy/systemd/report.json",
+  "report_sha256": "a6a41d100cc21840a803aeed7334f5c1403a67a9ee4d9adbd533dec80bd6f77c",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "ISOLATED_LOCAL_SYSTEMD_SEMANTICS_NO_QWEN_OR_DEPLOYMENT",
+  "status": "PASS",
+  "task": "DA014-systemd",
+  "ts_utc": "2026-10-25T10:35:54.051594+00:00"
+}

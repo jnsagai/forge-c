@@ -1,0 +1,104 @@
+{
+  "schema": "forge-c/capa169-component-index/1",
+  "at": "2026-11-04T22:56:20.286199+00:00",
+  "source_candidate": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "source_baseline168": "27eef6a010f239b302d96c55609da02fe345982d",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa169-watchdog-package",
+  "ordered_169_only_commits": [
+    "821f73b8b56ff6865e44a6619cef6408df9bb98a",
+    "c1787e4277237849ce218d851284cb6d9cd981c9"
+  ],
+  "includes168_commit": "405ea04291aea7250861f4d4a7f63749c017ab8d cherry of27eef6a",
+  "focused": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "26",
+    "time": "18.230",
+    "timestamp": "2026-11-04T22:54:04.392247+00:00",
+    "hostname": "master"
+  },
+  "combined_168_169": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "4",
+    "tests": "53",
+    "time": "18.615",
+    "timestamp": "2026-11-04T22:55:03.066800+00:00",
+    "hostname": "master"
+  },
+  "design_tests": 14,
+  "ruff": "PASS",
+  "source_clean": true,
+  "public_interface": {
+    "build_returns": [
+      "archive",
+      "sha256",
+      "source_revision",
+      "dependency_path",
+      "dependencies_manifest_sha256",
+      "dependency_interpreter",
+      "pythonpath"
+    ],
+    "recovery_hook": "line_watchdog.recover after existing intent+volume fences and before Intent.start/default policy authorization",
+    "template_new_token": "@WATCHDOG_DEPENDENCIES@",
+    "dependency_closure": "7 locked distributions, installed RECORD hashes validated; native/resource/license/dist metadata included; exact per-file manifest SHA sealed in source archive",
+    "runtime_integrity": "manifest hash, complete inventory, file hashes, symlinks, ABI, configuredsys.path and import origins checked; missingvolume/intent still refuse withoutdeps",
+    "new_host_venv_or_policy_copy": false
+  },
+  "formal_qualification": "ROOT_OWNED_NOT_YET_CLAIMED",
+  "initial_failure_preserved": "R1 privateACTIVEfixture used approved_at; schema requiresapproved_on. Source implementation unchanged byc178; report preserved. Baselinev1 no_runner_effect substring error corrected by actualcallback measurementv2, original preserved.",
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-baseline-private/measurement.json",
+      "sha256": "d7a5b138272b3166a4910e1f945ad99cdeaf1c91f16aae2acfe83d3fcee660ab"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-baseline-private/measurement-v2.json",
+      "sha256": "47ea33e25734d439455ee1f0077a29867f11bc82a14da1c815063b84b2edbb61"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-baseline-private/probe-v2.py",
+      "sha256": "e3c0f323614685f9c598e1c55234931969b26247d143d9b52c4c1922b9021a76"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-focused-r1.log",
+      "sha256": "a9699567d7e547ddfd47b53e555fcfddd86d6b3f0170e3345b3f635588d98a7e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-focused-r1.xml",
+      "sha256": "ba64314230bb46abad018b2171242b514e8d33533e4f706cea09f627542cecf7"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-focused-r2.log",
+      "sha256": "64576d99c4cef913eb9b9bd4e5a096807fe2289f77eb08a67c7de2e43fc6349d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-focused-r2.xml",
+      "sha256": "13e0f994cea0febbcba62054c3d6ca552fc78d5f7df18797baa12ec9d4329e25"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-combined-focused.log",
+      "sha256": "2c5fa3e3736d16bef2b88a4a50d9ed3c8a0bd19aa79d7ad846237a12807b9dcd"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-combined-focused.xml",
+      "sha256": "414f4acf9e46f3d8237b19a77cedf1aefa8c4837a0e0565a13f1cffa2398b611"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-combined-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-candidate-artifact-measurement.json",
+      "sha256": "6f7b0f4e9b574cc006054ea607eaf53c78861c06e2b597b64373454726cee3b3"
+    }
+  ],
+  "remote_actions": false
+}

@@ -1,0 +1,457 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:014:semantic-proposal:1.0",
+  "title": "Proposed semantic recovery decision; NOT IMPLEMENTED",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision",
+    "evidence_refs"
+  ],
+  "properties": {
+    "decision": {
+      "enum": [
+        "PROPOSE_REPAIR",
+        "NEEDS_EVIDENCE",
+        "CLOSE_BLOCKED"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "strategy": {
+      "enum": [
+        "REWORK_LOCAL",
+        "RESTART_FROM_LAST_VALID_CHECKPOINT",
+        "RETURN_TO_OWNING_UPSTREAM_PHASE",
+        "SWITCH_PREAPPROVED_MODEL_PROFILE"
+      ]
+    },
+    "target_obligations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "affected_phase": {
+      "enum": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ]
+    },
+    "causal_hypothesis": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "technique_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "material_difference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "proposed_change": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "artifact_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "validation_expectations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "test_ref",
+          "expected_result"
+        ],
+        "properties": {
+          "test_ref": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 256
+          },
+          "expected_result": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "model_profile": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "owner_phase": {
+      "enum": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3",
+        "SWE.4",
+        "SWE.5",
+        "SWE.6"
+      ]
+    },
+    "missing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "obligation_ref",
+          "evidence_kind",
+          "reason"
+        ],
+        "properties": {
+          "obligation_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+          },
+          "evidence_kind": {
+            "enum": [
+              "REQUIREMENT",
+              "DESIGN",
+              "IMPLEMENTATION",
+              "TEST_DIAGNOSTIC",
+              "INSPECTION",
+              "PRIOR_STRATEGY",
+              "AUTHORITATIVE_INPUT"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "blocking_reason": {
+      "enum": [
+        "MISSING_AUTHORITATIVE_INPUT",
+        "NO_ALLOWED_MATERIAL_STRATEGY",
+        "OUT_OF_SCOPE",
+        "UNRESOLVED_EVIDENCE",
+        "UNSUPPORTED_HYPOTHESIS"
+      ]
+    },
+    "explanation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "decision": {
+          "const": "PROPOSE_REPAIR"
+        }
+      },
+      "required": [
+        "decision",
+        "evidence_refs",
+        "strategy",
+        "target_obligations",
+        "affected_phase",
+        "causal_hypothesis",
+        "technique_id",
+        "material_difference",
+        "proposed_change",
+        "artifact_scope",
+        "validation_expectations"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "missing_evidence"
+            ]
+          },
+          {
+            "required": [
+              "blocking_reason"
+            ]
+          },
+          {
+            "required": [
+              "explanation"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "decision": {
+          "const": "NEEDS_EVIDENCE"
+        }
+      },
+      "required": [
+        "decision",
+        "evidence_refs",
+        "missing_evidence"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "material_difference"
+            ]
+          },
+          {
+            "required": [
+              "explanation"
+            ]
+          },
+          {
+            "required": [
+              "target_obligations"
+            ]
+          },
+          {
+            "required": [
+              "causal_hypothesis"
+            ]
+          },
+          {
+            "required": [
+              "technique_id"
+            ]
+          },
+          {
+            "required": [
+              "proposed_change"
+            ]
+          },
+          {
+            "required": [
+              "validation_expectations"
+            ]
+          },
+          {
+            "required": [
+              "affected_phase"
+            ]
+          },
+          {
+            "required": [
+              "model_profile"
+            ]
+          },
+          {
+            "required": [
+              "owner_phase"
+            ]
+          },
+          {
+            "required": [
+              "strategy"
+            ]
+          },
+          {
+            "required": [
+              "artifact_scope"
+            ]
+          },
+          {
+            "required": [
+              "blocking_reason"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "decision": {
+          "const": "CLOSE_BLOCKED"
+        }
+      },
+      "required": [
+        "decision",
+        "evidence_refs",
+        "blocking_reason",
+        "explanation"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "material_difference"
+            ]
+          },
+          {
+            "required": [
+              "target_obligations"
+            ]
+          },
+          {
+            "required": [
+              "causal_hypothesis"
+            ]
+          },
+          {
+            "required": [
+              "model_profile"
+            ]
+          },
+          {
+            "required": [
+              "owner_phase"
+            ]
+          },
+          {
+            "required": [
+              "strategy"
+            ]
+          },
+          {
+            "required": [
+              "technique_id"
+            ]
+          },
+          {
+            "required": [
+              "proposed_change"
+            ]
+          },
+          {
+            "required": [
+              "artifact_scope"
+            ]
+          },
+          {
+            "required": [
+              "validation_expectations"
+            ]
+          },
+          {
+            "required": [
+              "affected_phase"
+            ]
+          },
+          {
+            "required": [
+              "missing_evidence"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "strategy": {
+            "const": "SWITCH_PREAPPROVED_MODEL_PROFILE"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "then": {
+        "required": [
+          "model_profile"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "strategy": {
+            "not": {
+              "const": "SWITCH_PREAPPROVED_MODEL_PROFILE"
+            }
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "model_profile"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "strategy": {
+            "const": "RETURN_TO_OWNING_UPSTREAM_PHASE"
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "then": {
+        "required": [
+          "owner_phase"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "strategy": {
+            "not": {
+              "const": "RETURN_TO_OWNING_UPSTREAM_PHASE"
+            }
+          }
+        },
+        "required": [
+          "strategy"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "owner_phase"
+          ]
+        }
+      }
+    }
+  ]
+}

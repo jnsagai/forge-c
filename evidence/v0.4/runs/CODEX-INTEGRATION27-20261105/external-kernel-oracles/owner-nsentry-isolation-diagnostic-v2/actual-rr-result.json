@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-965dd65798474af569df",
+  "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+  "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "role": "BASELINE",
+  "exit_code": 2,
+  "verdict": "ERROR",
+  "signature": "CHILD_DIAGNOSTIC:{\"returncode\": 1, \"stderr\": \"fatal: not a git repository: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation/.git/worktrees/887820300340\\nT",
+  "log_sha256": "cf135b2069ca9f7f9733ff574b4e07c29bb066569180da631d05912f597d21f3",
+  "at": "2026-11-05T21:17:15.244062Z"
+}

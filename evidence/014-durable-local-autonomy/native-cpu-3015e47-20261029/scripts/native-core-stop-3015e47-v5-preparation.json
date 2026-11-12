@@ -1,0 +1,22 @@
+{
+  "schema": "forge-c/zero-model-cpu-verification/1",
+  "source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "scope": "Inherited recovery/admission/role/trial fixture regression; no real model",
+  "expected_operator_mode": "STOPPED",
+  "expected_operator_epoch": 33,
+  "model_generation_requests": 0,
+  "model_network_isolated": true,
+  "deploy_or_resume": false,
+  "cpu_affinity_max": 8,
+  "nice": 10,
+  "files": {
+    "source.bundle": {
+      "sha256": "fcd35d8fc7649494032519888c1ecbf8703ee9b57f74a95e29ba43eb8b13c1e9",
+      "bytes": 203243
+    },
+    "bootstrap-v5.py": {
+      "sha256": "9b6023090b93c1a085e75ebc4d67080d89d8720a0894feccb6884c4dccc181d6",
+      "bytes": 6855
+    }
+  }
+}

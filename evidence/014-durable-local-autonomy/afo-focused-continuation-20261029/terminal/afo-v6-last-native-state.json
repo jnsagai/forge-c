@@ -1,0 +1,139 @@
+{
+  "at": "2026-10-29T23:03:17.893644Z",
+  "trial_id": "F014-AFO-MCP-ROOT-REPAIR-20261029",
+  "source_revision": "c1f1378733af388b50ba1d6e5de37c16f3c0a9ee",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 46,
+    "effective_stop": false
+  },
+  "deadline_utc": "2026-10-30T02:40:24Z",
+  "order": {
+    "order_id": "afo-48c5fa011f42b339",
+    "state": "WAITING_EXTERNAL_CHANGE",
+    "terminal_reason": "HISTORICAL_FACTORY_CODE_DEFECT_REPLAY"
+  },
+  "original_order": {
+    "order_id": "afo-f516373e837db572",
+    "state": "BLOCKED",
+    "terminal_reason": "ORDER_WALL_BUDGET_EXHAUSTED"
+  },
+  "jobs": [
+    {
+      "job_id": "afo-agent-d36861d7eff8a7369497c014",
+      "state": "SUCCEEDED",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-afo-max-mtp",
+      "factory_revision": {
+        "commit": "c1f1378733af388b50ba1d6e5de37c16f3c0a9ee",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M64XB91FXAQSK9KWNKGSSTN0",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": 237020,
+      "deadline_epoch": 1793328218.6701999,
+      "review_state": "BLOCKED",
+      "error": null,
+      "request_states": {
+        "QUIESCENT": 9
+      },
+      "candidate_uncommitted_diff_stat": "",
+      "candidate_submission_present": true,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-15ae949c2857024be0f329b7",
+        "execution_liveness": "QUIESCENT",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-d36861d7eff8a7369497c014",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-29T23:02:54.441693Z",
+        "launch_nonce": "8538d2e45b9111a1540b96317c67a908",
+        "lease_epoch": 39,
+        "mission_id": "F014-IDR-M1-HIGH-20261028",
+        "native_run_ids": [
+          "01M64XB91FXAQSK9KWNKGSSTN0"
+        ],
+        "outcome_evidence_ref": "maintainer-receipt:75e9e1acc1e26f103db2a40f7fce31513f434e85607f7c84f0ede497fce93885",
+        "quiescence_evidence_ref": "native-terminals:8c4c0d324d88f7da796435e600adaa8e91a860cf1074ef83ddaeabc994f2ecf4",
+        "resource_lease": "RELEASED",
+        "revision": 122,
+        "schema_version": "1.0",
+        "task_outcome": "BLOCKED",
+        "terminal_reason": "CANDIDATE_REQUIRES_INDEPENDENT_REVIEW"
+      },
+      "verification_state": "COMPLETE",
+      "native_status_now": "SUCCEEDED"
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V2",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793328024,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      },
+      {
+        "old_deadline": 1793297139.0,
+        "deadline_epoch": 1793312758,
+        "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+        "accepted_at": "2026-10-29T18:28:19.647876Z"
+      },
+      {
+        "old_deadline": 1793312758,
+        "deadline_epoch": 1793328024,
+        "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V2",
+        "accepted_at": "2026-10-29T22:41:22.526481Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 6,
+    "requests": 416,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 405131072,
+    "usage_unknown": true,
+    "unique_executions": 10,
+    "unbounded_historical_usage": false
+  },
+  "proposals": [
+    {
+      "status": "REJECTED",
+      "record_sha256": "95e5709cf6a946d1c84971c1b06b20f1736fd42b9098028d52338c419559c3e8"
+    }
+  ],
+  "read_only": true,
+  "model_requests_by_observer": 0,
+  "independent_frozen_candidate_verification": "NOT_RUN"
+}

@@ -1,0 +1,115 @@
+{
+  "actual_runtime_argument_hash_reproduction": [
+    {
+      "expanded_sha256": "a9b6f1dac38b77164f0dcb980cf098b2257d639d3b0857d5b951d92b18eb42ba",
+      "hashes_equal": false,
+      "hook_arguments": {
+        "profile": "host-clang"
+      },
+      "hook_sha256": "613772cfeb74f2ad108d4282fe231c64f75a532a1069e7901b9aeab3b5ad7425",
+      "mcp_expanded_arguments": {
+        "defines": [],
+        "profile": "host-clang"
+      }
+    },
+    {
+      "expanded_sha256": "50e91de1a2d72987cc0533e38bd2092037b4e22149e0f697f592d5a629300261",
+      "hashes_equal": false,
+      "hook_arguments": {
+        "profile": "target-cm55-gcc"
+      },
+      "hook_sha256": "cc0777c13afbffd16c9095c22e3ee813438814c98dd935f3db08b84acd89f3fa",
+      "mcp_expanded_arguments": {
+        "defines": [],
+        "profile": "target-cm55-gcc"
+      }
+    }
+  ],
+  "at": "2026-10-31T05:32:52.037665Z",
+  "candidate_after": "70d5558762d299a8ce664dc0aa589b42c77425e969ec365e5430badbbaced689",
+  "candidate_before": "70d5558762d299a8ce664dc0aa589b42c77425e969ec365e5430badbbaced689",
+  "candidate_executed": false,
+  "limits": "Read-only SDK hash reproduction and captured native calls; no new compile/model call, no ticket issued or consumed. Inactive fix qualified separately.",
+  "model_calls": 0,
+  "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+  "observed_compile_calls": [
+    {
+      "at": "2026-10-31T05:00:38.774803874Z",
+      "node": "df_author_0",
+      "result": {
+        "issues": [
+          "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+        ],
+        "status": "BLOCKED",
+        "summary": "denied: NO_AUTHORIZATION_TICKET"
+      },
+      "start": {
+        "arguments": {
+          "profile": "target-cm55-gcc"
+        },
+        "at": "2026-10-31T05:00:38.371386584Z",
+        "node": "df_author_0"
+      }
+    },
+    {
+      "at": "2026-10-31T05:00:39.088952164Z",
+      "node": "df_author_0",
+      "result": {
+        "issues": [
+          "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+        ],
+        "status": "BLOCKED",
+        "summary": "denied: NO_AUTHORIZATION_TICKET"
+      },
+      "start": {
+        "arguments": {
+          "profile": "host-clang"
+        },
+        "at": "2026-10-31T05:00:38.369994249Z",
+        "node": "df_author_0"
+      }
+    }
+  ],
+  "policy_events": [
+    {
+      "agent_id": "swe3-author",
+      "channel": "audit",
+      "correlation_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "message": "ALLOW mcp__forge_build_mcp__compile role=swe3-author ALLOW_MCP",
+      "run_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "tool_id": "forge-build-mcp.compile",
+      "ts_utc": "2026-10-31T05:00:38.662417Z"
+    },
+    {
+      "agent_id": "swe3-author",
+      "channel": "audit",
+      "correlation_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "message": "ALLOW mcp__forge_build_mcp__compile role=swe3-author ALLOW_MCP",
+      "run_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "tool_id": "forge-build-mcp.compile",
+      "ts_utc": "2026-10-31T05:00:38.954129Z"
+    },
+    {
+      "agent_id": "swe3-author",
+      "channel": "audit",
+      "correlation_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "message": "ALLOW mcp__forge_build_mcp__compile role=swe3-author ALLOW_MCP",
+      "run_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "tool_id": "forge-build-mcp.compile",
+      "ts_utc": "2026-10-31T05:30:43.398900Z"
+    },
+    {
+      "agent_id": "swe3-author",
+      "channel": "audit",
+      "correlation_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "message": "ALLOW mcp__forge_build_mcp__compile role=swe3-author ALLOW_MCP",
+      "run_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "tool_id": "forge-build-mcp.compile",
+      "ts_utc": "2026-10-31T05:30:59.421616Z"
+    }
+  ],
+  "runtime_mutated": false,
+  "schema": "forge-c/mcp-default-ticket-diagnosis/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "status": "REPRODUCED_ARGUMENT_CANONICALIZATION_MISMATCH"
+}

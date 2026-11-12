@@ -435,3 +435,21 @@ def serialize(snap: dict) -> bytes:
 
 
 __all__ = ["snapshot", "serialize", "formula_version", "schema_errors", "Engine"]
+
+
+def learning_metrics(path=None):
+    """Separate learning facts, usage and benefit; missing records are UNKNOWN, never zero benefit."""
+    import sqlite3
+    from ..common import state_dir
+    path = path or state_dir() / 'knowledge/lessons.sqlite3'
+    if not path.is_file():
+        return {'status':'UNKNOWN','benefit_status':'UNKNOWN'}
+    with sqlite3.connect(f'file:{path}?mode=ro', uri=True) as c:
+        if not c.execute("SELECT 1 FROM sqlite_master WHERE name='job_experience'").fetchone():
+            return {'status':'UNKNOWN','benefit_status':'UNKNOWN'}
+        total=c.execute('SELECT COUNT(*) FROM job_experience').fetchone()[0]
+        dispositions=dict(c.execute('SELECT state,COUNT(*) FROM learning_dispositions GROUP BY state'))
+        transfers=dict(c.execute('SELECT kind,COUNT(*) FROM lesson_transfers GROUP BY kind'))
+    return {'status':'RECORDED','experience_count':total,'dispositions':dispositions,'transfers':transfers,
+            'benefit_status':'UNKNOWN' if not transfers.get('BENEFIT') else 'MEASURED_COMPARISONS_REQUIRE_REVIEW',
+            'scope':'all recorded experience; separate from product quality'}

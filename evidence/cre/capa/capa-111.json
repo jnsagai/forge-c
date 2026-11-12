@@ -1,0 +1,101 @@
+{
+ "CAPA-111": {
+  "history": [
+   {
+    "at": "2026-11-02T13:34:28.129352Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[\"cmp-swe2-obl-instance-inspector-told-register-array\"]",
+    "from_state": null,
+    "reason": "Run CMP-SWE2-OBL-06 BLOCKED STUCK: inspector told the register array is mandatory in instance mode",
+    "seq": 833,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T13:34:28.171188Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 834,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T13:34:28.296750Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-111 assigned",
+    "seq": 835,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T13:34:33.727425Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[\"reproducer-run:rr-6c62936e7658f6025993\", \"reproducer-run:rr-a3e71aeabcefa49c932d\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 836,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T13:34:33.751616Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[\"git:b846dc8157cb..8f33019469a8\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 8f33019469a8 (patch 5445 bytes)",
+    "seq": 837,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T13:38:10.841112Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[\"reproducer-run:rr-f09daf3d7948537e4104\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-111 absent at 8f33019469a8",
+    "seq": 838,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T13:38:10.866382Z",
+    "capa_id": "CAPA-111",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 839,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-22c4a4304be847fba5d7f297eeb321f58f580e14",
+   "b846dc8157cb3602c14dd82c081568965e307d41",
+   "8f33019469a868901b063a74a3b314bb5f999034",
+   "pd-fd18916b2589ac52a64b"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<8f33019469a8"
+   ],
+   "candidate_patch_sha256": "882b14c826c6be17442022f62f9359357660540a6f59c8f6655ccff89d93989f",
+   "capa_id": "CAPA-111",
+   "created_at": "2026-11-02T13:34:28.129352Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe2-obl-instance-inspector-told-register-array"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-111",
+   "reproducer_id": "RPR-111",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-6c62936e7658f6025993",
+    "reproducer-run:rr-a3e71aeabcefa49c932d"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T13:38:10.866382Z"
+  }
+ }
+}

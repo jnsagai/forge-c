@@ -1,0 +1,6 @@
+af4d01b0a315516b61facc7ff9df13c65e3409162cf7bed3d5a48bb7fef83a0e  /mnt/data/forge-c/ollama-0.34.0/lib/ollama/libllama.so
+65c626b436e5aadd1ba9dea9599c22ef97dfc784905ba739138d0eda6cc5458e  /mnt/data/forge-c/ollama-0.34.0/lib/ollama/libggml-base.so
+e3797d7ca38b5260ce9de01a9839c688a2507ddac45ed44f205494648ea4e098  /mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13/libggml-cuda.so
+8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039  /mnt/data/forge-c/ollama-models/manifests/registry.ollama.ai/library/qwen3.8/27b-q8_0
+version: 0.3.0-dev (build 1, commit 0f3a71be1)
+built with GNU 13.3.1 for Linux x86_64

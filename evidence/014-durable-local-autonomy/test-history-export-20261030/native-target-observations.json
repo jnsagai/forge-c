@@ -1,0 +1,54 @@
+{
+  "runtime_source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "observer_calls": 0,
+  "observations": [
+    {
+      "at": "2026-10-30T23:57:53.680516660Z",
+      "tool": "mcp__forge_sim_mcp__run_renode",
+      "node": "swe5_target_author",
+      "tool_call_id": "HwbuO9brrRhdDH2qrN5h98bhV5gWuBjC",
+      "status": "PASS",
+      "summary": "renode cortex-m55: 34 checks passed, 0 failed (2 images; behavioural CRC model)",
+      "issues": [],
+      "metrics": {
+        "passed": 34,
+        "failed": 0,
+        "cpu": "cortex-m55",
+        "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+        "target_evidence": "simulated",
+        "silicon_verified": false,
+        "simulation_performance_report": "artifact:sha256:a837f9b7455ad348562db5e1efb094875dffdbee7ed5f005d327a0af8f3cb40e"
+      },
+      "artifact_refs": [
+        "artifact:sha256:8c63ef9bf72804d0aaf23c8dece5263d51774a3295396f8cc850e8a9a0253910",
+        "artifact:sha256:aec2763d478baea4ad8e0054bf2bfb33394a7b4e81b65ade757af12300c03d56",
+        "artifact:sha256:a837f9b7455ad348562db5e1efb094875dffdbee7ed5f005d327a0af8f3cb40e"
+      ]
+    },
+    {
+      "at": "2026-10-31T00:04:51.543211843Z",
+      "tool": "mcp__forge_sim_mcp__run_renode",
+      "node": "swe5_author",
+      "tool_call_id": "SLLp4stx3qaRWzlhgkjos8Mz9K5Q6gZd",
+      "status": "PASS",
+      "summary": "renode cortex-m55: 46 checks passed, 0 failed (3 images; behavioural CRC model)",
+      "issues": [],
+      "metrics": {
+        "passed": 46,
+        "failed": 0,
+        "cpu": "cortex-m55",
+        "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+        "target_evidence": "simulated",
+        "silicon_verified": false,
+        "simulation_performance_report": "artifact:sha256:b7f16e67a0a556d6847189bbb877a0d541897784a9782e462c48036b6f6ea408"
+      },
+      "artifact_refs": [
+        "artifact:sha256:181b1f4ebe958e79bd7ccad77cbd5bc6909895065d63504965945686dc648abf",
+        "artifact:sha256:aec2763d478baea4ad8e0054bf2bfb33394a7b4e81b65ade757af12300c03d56",
+        "artifact:sha256:b7f16e67a0a556d6847189bbb877a0d541897784a9782e462c48036b6f6ea408"
+      ]
+    }
+  ],
+  "scope": "REAL_SWE5_QWEN_AUTHORED_SIMULATED_TARGET_TESTS_NOT_SILICON; SUCCESSIVE_COUNTS_NOT_ADDITIVE"
+}

@@ -1,0 +1,104 @@
+{
+  "at_epoch": 1793422544.2585938,
+  "last_events": [
+    {
+      "occurred_utc": "2026-10-31T04:25:13.762320Z",
+      "order_id": "afo-48b5f7eb60495e69",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-f84d060d70d1f8d99c66932f\", \"occurred_utc\": \"2026-10-31T04:25:13.762320Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-48b5f7eb60495e69\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-48b5f7eb60495e69\", \"payload_sha256\": \"336a0d587cdd3228a19b473050d19ac6584ffdca9aea8671e115d396a3975226\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 3600}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T04:24:57.814230Z",
+      "order_id": "afo-f83452175591716f",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-7598642878607362a7b7788d\", \"occurred_utc\": \"2026-10-31T04:24:57.814230Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-f83452175591716f\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-f83452175591716f\", \"payload_sha256\": \"336a0d587cdd3228a19b473050d19ac6584ffdca9aea8671e115d396a3975226\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 3600}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:53:03.670199Z",
+      "order_id": "afo-48b5f7eb60495e69",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-dc6a9f914891b2d23f5fcdf7\", \"occurred_utc\": \"2026-10-31T03:53:03.670199Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-48b5f7eb60495e69\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-48b5f7eb60495e69\", \"payload_sha256\": \"3a7bccfd99419dc20aa451922d0b7b8a5546fc0a7e805ea72743c23ea89fccc1\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 1920}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:52:46.936879Z",
+      "order_id": "afo-f83452175591716f",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-210a581236d00994156cde6e\", \"occurred_utc\": \"2026-10-31T03:52:46.936879Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-f83452175591716f\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-f83452175591716f\", \"payload_sha256\": \"3a7bccfd99419dc20aa451922d0b7b8a5546fc0a7e805ea72743c23ea89fccc1\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 1920}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:36:55.275953Z",
+      "order_id": "afo-48b5f7eb60495e69",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-4ddcd8b11c7383363a2c2c72\", \"occurred_utc\": \"2026-10-31T03:36:55.275953Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-48b5f7eb60495e69\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-48b5f7eb60495e69\", \"payload_sha256\": \"eafd94f0b74b37046708a472aae9bed171892c4f3c397ada47ee6ed95094830d\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 960}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:36:39.400043Z",
+      "order_id": "afo-f83452175591716f",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-1229613ee6ff96c145e95a71\", \"occurred_utc\": \"2026-10-31T03:36:39.400043Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-f83452175591716f\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-f83452175591716f\", \"payload_sha256\": \"eafd94f0b74b37046708a472aae9bed171892c4f3c397ada47ee6ed95094830d\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 960}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:28:50.666660Z",
+      "order_id": "afo-48b5f7eb60495e69",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-6118d7da4b3471d877431653\", \"occurred_utc\": \"2026-10-31T03:28:50.666660Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-48b5f7eb60495e69\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-48b5f7eb60495e69\", \"payload_sha256\": \"128eef253ab2fe33e9cd97af1f9088ffdf8fecec102abbdbcf784ff8e3784858\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 480}}",
+      "type": "afo.deferred"
+    },
+    {
+      "occurred_utc": "2026-10-31T03:28:33.265719Z",
+      "order_id": "afo-f83452175591716f",
+      "record": "{\"schema_version\": \"1.0\", \"event_id\": \"afo-ev-5dd3dc469a6bb1d291546e9c\", \"occurred_utc\": \"2026-10-31T03:28:33.265719Z\", \"type\": \"afo.deferred\", \"order_id\": \"afo-f83452175591716f\", \"attempt_id\": null, \"producer_id\": \"afo-conductor\", \"correlation_id\": \"afo-f83452175591716f\", \"payload_sha256\": \"128eef253ab2fe33e9cd97af1f9088ffdf8fecec102abbdbcf784ff8e3784858\", \"severity\": \"WARN\", \"privacy\": \"INTERNAL\", \"evidence_refs\": [], \"payload\": {\"reason\": \"NATIVE_INFERENCE_CAPACITY_HELD\", \"wait_s\": 480}}",
+      "type": "afo.deferred"
+    }
+  ],
+  "orders": [
+    {
+      "defer_count": 0,
+      "not_before_epoch": 0,
+      "not_before_utc": "1970-01-01T00:00:00+00:00",
+      "order_id": "afo-22d0705cdd38628b",
+      "state": "BLOCKED"
+    },
+    {
+      "defer_count": 0,
+      "not_before_epoch": 0,
+      "not_before_utc": "1970-01-01T00:00:00+00:00",
+      "order_id": "afo-5faf7b5e42e6d55f",
+      "state": "BLOCKED"
+    },
+    {
+      "defer_count": 0,
+      "not_before_epoch": 0,
+      "not_before_utc": "1970-01-01T00:00:00+00:00",
+      "order_id": "afo-002d8ed0e31b5cc1",
+      "state": "BLOCKED"
+    },
+    {
+      "defer_count": 0,
+      "not_before_epoch": 0,
+      "not_before_utc": "1970-01-01T00:00:00+00:00",
+      "order_id": "afo-ee4282b25001a15d",
+      "state": "BLOCKED"
+    },
+    {
+      "defer_count": 0,
+      "not_before_epoch": 0,
+      "not_before_utc": "1970-01-01T00:00:00+00:00",
+      "order_id": "afo-7f71565db57f0a76",
+      "state": "BLOCKED"
+    },
+    {
+      "defer_count": 7,
+      "not_before_epoch": 1793424297.8140273,
+      "not_before_utc": "2026-10-31T05:24:57.814027+00:00",
+      "order_id": "afo-f83452175591716f",
+      "state": "QUEUED"
+    },
+    {
+      "defer_count": 7,
+      "not_before_epoch": 1793424313.7621148,
+      "not_before_utc": "2026-10-31T05:25:13.762115+00:00",
+      "order_id": "afo-48b5f7eb60495e69",
+      "state": "QUEUED"
+    }
+  ]
+}

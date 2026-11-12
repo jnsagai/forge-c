@@ -1,0 +1,2199 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+........................................................................ [ 48%]
+........................................................................ [ 56%]
+........................................................................ [ 64%]
+........................................................................ [ 72%]
+..........................ss...............ssssss....................... [ 80%]
+........................................................................ [ 88%]
+....................................s...................EEEEEEEEEEEEEEEE [ 96%]
+EEEEEEEEEEE..EEEEEEEEEEEEEE.E..ss..                                      [100%]
+==================================== ERRORS ====================================
+__ ERROR at setup of test_resume_reuses_passed_swe1_and_injects_own_delivery ___
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_resume_reuses_passed_swe10')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78adb0231f60>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_resume_reuses_passed_swe10/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+__ ERROR at setup of test_resume_carries_two_phases_and_earliest_invalid_wins __
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_resume_carries_two_phases0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8067d90>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_resume_carries_two_phases0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+____ ERROR at setup of test_stale_phase_and_all_downstream_are_not_accepted ____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_stale_phase_and_all_downs0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada80669e0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_stale_phase_and_all_downs0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_explicit_return_to_swe1_does_not_expose_code ______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_explicit_return_to_swe1_d0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8067c40>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_explicit_return_to_swe1_d0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-FACTORY_REVISION0] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066a50>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-FACTORY_REVISION1] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8067460>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re1/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-LOCAL_PROFILE_CHANGED] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8067af0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re2/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME0] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada80644b0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re3/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME1] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8064c20>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re4/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME2] _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066970>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_incompatible_source_is_re5/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_________________ ERROR at setup of test_input_tamper_refused __________________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_input_tamper_refused0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada80656a0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_input_tamper_refused0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+________ ERROR at setup of test_original_delivery_store_tamper_refused _________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_original_delivery_store_t0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8065d30>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_original_delivery_store_t0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_________ ERROR at setup of test_frozen_workspace_code_tamper_refused __________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_frozen_workspace_code_tam0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada80663c0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_frozen_workspace_code_tam0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+__________ ERROR at setup of test_injection_binding_cannot_be_forged ___________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_injection_binding_cannot_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066c10>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_injection_binding_cannot_0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_live_or_unknown_source_never_resumes[running] _____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066580>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_live_or_unknown_source_never_resumes[unknown] _____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8067af0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne1/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_live_or_unknown_source_never_resumes[queued] ______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066970>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_live_or_unknown_source_ne2/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+___________ ERROR at setup of test_unreachable_source_never_resumes ____________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_unreachable_source_never_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada80669e0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_unreachable_source_never_0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_______________ ERROR at setup of test_symlink_evidence_refused ________________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_symlink_evidence_refused0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada878b310>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_symlink_evidence_refused0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_inspector_identity_tamper_invalidates_prefix ______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_inspector_identity_tamper0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78adb3183f50>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_inspector_identity_tamper0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_legacy_source_refused_and_no_overwrite_of_it ______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_legacy_source_refused_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e99940>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_legacy_source_refused_and0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+________ ERROR at setup of test_sibling_resumes_share_one_finite_budget ________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_sibling_resumes_share_one0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e992b0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_sibling_resumes_share_one0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+__________ ERROR at setup of test_deadline_survives_multiple_resumes ___________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_deadline_survives_multipl0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e98f30>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_deadline_survives_multipl0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+___________ ERROR at setup of test_budget_expiry_blocks_next_launch ____________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_budget_expiry_blocks_next0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e98ec0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_budget_expiry_blocks_next0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+______________ ERROR at setup of test_deadline_tamper_is_refused _______________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_deadline_tamper_is_refuse0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e9a740>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_deadline_tamper_is_refuse0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+________ ERROR at setup of test_missing_lineage_ledger_is_not_recreated ________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_missing_lineage_ledger_is0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e9a7b0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_missing_lineage_ledger_is0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+______ ERROR at setup of test_only_accepted_phase_tool_records_are_reused ______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_only_accepted_phase_tool_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e983d0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_only_accepted_phase_tool_0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+__ ERROR at setup of test_parallel_sibling_reservations_cannot_exceed_budget ___
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_parallel_sibling_reservat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8788520>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_parallel_sibling_reservat0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+____ ERROR at setup of test_native_hook_blocks_expired_resume_without_tools ____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_native_hook_blocks_expire0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8065160>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_native_hook_blocks_expire0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_package_carries_resume_validation_and_lineage _____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_package_carries_resume_va0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78adaa0eb5b0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_package_carries_resume_va0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_accepted_fix_allowed_corrections_keep_defect_provenance _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_accepted_fix_allowed_corr0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78adaa0ead60>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_accepted_fix_allowed_corr0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+____ ERROR at setup of test_provided_readonly_and_vendor_dependency_survive ____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_provided_readonly_and_ven0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e9b150>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_provided_readonly_and_ven0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+___ ERROR at setup of test_workorder_api_launches_at_first_unaccepted_phase ____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_workorder_api_launches_at0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e98f30>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_workorder_api_launches_at0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+______ ERROR at setup of test_destination_symlink_cannot_redirect_writes _______
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_destination_symlink_canno0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada3e9a7b0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_destination_symlink_canno0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+____ ERROR at setup of test_unknown_or_malformed_snapshot_cannot_be_forced _____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_unknown_or_malformed_snap0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada8066b30>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_unknown_or_malformed_snap0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_open_upstream_defects_survive_even_with_no_reusable_phase _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_open_upstream_defects_sur0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872fc40>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_open_upstream_defects_sur0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+________ ERROR at setup of test_workspace_configuration_tamper_refused _________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_workspace_configuration_t0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872e510>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_workspace_configuration_t0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+___ ERROR at setup of test_fix_allowed_does_not_authorize_dependency_changes ___
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_fix_allowed_does_not_auth0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872def0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_fix_allowed_does_not_auth0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_________ ERROR at setup of test_derived_input_section_tamper_refused __________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_derived_input_section_tam0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872e740>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_derived_input_section_tam0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+__ ERROR at setup of test_model_switch_cannot_upgrade_inherited_independence ___
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_model_switch_cannot_upgra0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872fbd0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_model_switch_cannot_upgra0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_____ ERROR at setup of test_lost_ledger_cannot_reset_original_root_budget _____
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_lost_ledger_cannot_reset_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78ada872dfd0>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_lost_ledger_cannot_reset_0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+_ ERROR at setup of test_only_current_inherited_assurance_records_are_preserved _
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_only_current_inherited_as0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78adaa0eaa50>
+
+    @pytest.fixture()
+    def pair(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
+        monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        # Compatibility drift is tested separately; avoid hashing the full host toolchain in every fixture.
+        monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
+        monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
+                            lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
+        ex = example_copy(tmp_path)
+    
+        def prepare(wo):
+            ws, man = WO.prepare(ex, wo)
+            # A minimal native checklist fixture; no mocked gate/PASS predicate.
+            man["trace_profile"] = None
+            man["register_contract"] = None
+            R.initialize(ws, man)
+            save(ws, man)
+            return ws, man
+    
+>       src, old = prepare("WO-SRC")
+                   ^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_brownfield_resume.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_brownfield_resume.py:40: in prepare
+    ws, man = WO.prepare(ex, wo)
+              ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+example = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-7e1abb2-core/test_only_current_inherited_as0/ex')
+wo = 'WO-SRC', provided_from = None, resume_limits = None
+
+    def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None) -> tuple[Path, dict]:
+        spec = json.loads((example / "workorder.json").read_text())
+        layer = spec.get("layer", "LL+HAL")
+        ws = state_dir() / "workorders" / wo / "workspace"
+        inputs: dict[str, bytes] = {}
+        listed = []
+        for item in spec["inputs"]:
+            src = (example / item["path"]).resolve()
+            if not src.is_file() or (REPO_ROOT not in src.parents):
+>               raise FileNotFoundError(item["path"])
+E               FileNotFoundError: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/codex-resume-20261027/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md
+
+factory/python/forge_factory/workorder.py:189: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_brownfield_resume.py::test_resume_reuses_passed_swe1_and_injects_own_delivery
+ERROR factory/python/tests/test_brownfield_resume.py::test_resume_carries_two_phases_and_earliest_invalid_wins
+ERROR factory/python/tests/test_brownfield_resume.py::test_stale_phase_and_all_downstream_are_not_accepted
+ERROR factory/python/tests/test_brownfield_resume.py::test_explicit_return_to_swe1_does_not_expose_code
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-FACTORY_REVISION0]
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-FACTORY_REVISION1]
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-LOCAL_PROFILE_CHANGED]
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME0]
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME1]
+ERROR factory/python/tests/test_brownfield_resume.py::test_incompatible_source_is_refused_before_copy[<lambda>-CONTRACT_OR_RUNTIME2]
+ERROR factory/python/tests/test_brownfield_resume.py::test_input_tamper_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_original_delivery_store_tamper_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_frozen_workspace_code_tamper_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_injection_binding_cannot_be_forged
+ERROR factory/python/tests/test_brownfield_resume.py::test_live_or_unknown_source_never_resumes[running]
+ERROR factory/python/tests/test_brownfield_resume.py::test_live_or_unknown_source_never_resumes[unknown]
+ERROR factory/python/tests/test_brownfield_resume.py::test_live_or_unknown_source_never_resumes[queued]
+ERROR factory/python/tests/test_brownfield_resume.py::test_unreachable_source_never_resumes
+ERROR factory/python/tests/test_brownfield_resume.py::test_symlink_evidence_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_inspector_identity_tamper_invalidates_prefix
+ERROR factory/python/tests/test_brownfield_resume.py::test_legacy_source_refused_and_no_overwrite_of_it
+ERROR factory/python/tests/test_brownfield_resume.py::test_sibling_resumes_share_one_finite_budget
+ERROR factory/python/tests/test_brownfield_resume.py::test_deadline_survives_multiple_resumes
+ERROR factory/python/tests/test_brownfield_resume.py::test_budget_expiry_blocks_next_launch
+ERROR factory/python/tests/test_brownfield_resume.py::test_deadline_tamper_is_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_missing_lineage_ledger_is_not_recreated
+ERROR factory/python/tests/test_brownfield_resume.py::test_only_accepted_phase_tool_records_are_reused
+ERROR factory/python/tests/test_brownfield_resume.py::test_parallel_sibling_reservations_cannot_exceed_budget
+ERROR factory/python/tests/test_brownfield_resume.py::test_native_hook_blocks_expired_resume_without_tools
+ERROR factory/python/tests/test_brownfield_resume.py::test_package_carries_resume_validation_and_lineage
+ERROR factory/python/tests/test_brownfield_resume.py::test_accepted_fix_allowed_corrections_keep_defect_provenance
+ERROR factory/python/tests/test_brownfield_resume.py::test_provided_readonly_and_vendor_dependency_survive
+ERROR factory/python/tests/test_brownfield_resume.py::test_workorder_api_launches_at_first_unaccepted_phase
+ERROR factory/python/tests/test_brownfield_resume.py::test_destination_symlink_cannot_redirect_writes
+ERROR factory/python/tests/test_brownfield_resume.py::test_unknown_or_malformed_snapshot_cannot_be_forced
+ERROR factory/python/tests/test_brownfield_resume.py::test_open_upstream_defects_survive_even_with_no_reusable_phase
+ERROR factory/python/tests/test_brownfield_resume.py::test_workspace_configuration_tamper_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_fix_allowed_does_not_authorize_dependency_changes
+ERROR factory/python/tests/test_brownfield_resume.py::test_derived_input_section_tamper_refused
+ERROR factory/python/tests/test_brownfield_resume.py::test_model_switch_cannot_upgrade_inherited_independence
+ERROR factory/python/tests/test_brownfield_resume.py::test_lost_ledger_cannot_reset_original_root_budget
+ERROR factory/python/tests/test_brownfield_resume.py::test_only_current_inherited_assurance_records_are_preserved

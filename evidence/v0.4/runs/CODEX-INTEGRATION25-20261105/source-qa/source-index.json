@@ -1,0 +1,146 @@
+{
+  "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "boundaries": {
+    "Omniverse_boot_mount_dependency_faults": "NOT_RUN",
+    "endurance_24_72_168h": "NOT_RUN",
+    "installed_timer_and_CRE_restart_recipe": "NOT_RUN",
+    "new_dependency": false,
+    "production_signatures_policy_budgets_profiles": "UNCHANGED",
+    "runtime_effects": "Only two unique locally created disposable systemd units, both stopped/reset-failed; all commands in report. No production/Omniverse actions.",
+    "task_checkbox_closure": false
+  },
+  "candidate": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "inputs_before_any_tests": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/inputs-v3-before-any-tests.json",
+    "sha256": "e5ed8012d16a0c3bcfd279ce6293373791ecfda56e2e7d12427258eb9d01bf6b"
+  },
+  "ordered_commits": [
+    "613ddc3cbb27d04145728d3fccc8627a37d0b36a",
+    "8d333661faaa9d6574631f416e4e4918ca5ed1cc",
+    "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69"
+  ],
+  "prior_immutable_versions": [
+    {
+      "candidate": "8d333661faaa9d6574631f416e4e4918ca5ed1cc",
+      "input_receipt": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/inputs-v2-before-any-tests.json",
+        "sha256": "672c496e492a53f61dad580e25825ad92b7409bacb6e28446483988ce72ce5a2"
+      },
+      "ruff": "FAILED_TEST_IMPORTS_AND_LOOP_BINDING; retained v2-ruff.log; fixed only in fresh V3",
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v2-affected.xml",
+        "sha256": "e5a89d5cadfda941b2645edae0250a347b6003a1fd6645fad03354899ffe2c13",
+        "skipped": 4,
+        "tests": 106
+      }
+    }
+  ],
+  "remaining": [
+    "Independent source review and normal full-catalog CRE qualification owned by root.",
+    "This does not qualify installed recovery, real host reboot/volume/dependency behavior, native reconciliation or endurance. Existing authored DA-T046/050 acceptance remains open."
+  ],
+  "retained_prototype_evidence": {
+    "files": [
+      {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/red.log",
+        "sha256": "6be1d4c56531b38ba9b3d9e0220fd304138687a7c4607b8a31eb490df3e76d44"
+      },
+      {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/red.xml",
+        "sha256": "dba44966599364bfac0f15f6baa9df035c1bfef5bca930be3a2206924c225f4a"
+      },
+      {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/green-initial.log",
+        "sha256": "7040371af15613c02e821ec0eecc1d1330f691ace4cef93a41bfa358822c4103"
+      },
+      {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/green-initial.xml",
+        "sha256": "2703ece43e11d8cdb8eaa41358417dd2eb1ee77293f26ee8ebfb0088f204a06c"
+      }
+    ],
+    "status": "PROTOTYPE_NONIMMUTABLE_MILESTONE_NOT_QUALIFICATION"
+  },
+  "schema": "forge-c/line-service-boot-fencing-component/1",
+  "scope": [
+    "DA-T046 explicit local LINE rendering",
+    "DA-T050 configured local startup Intent fence"
+  ],
+  "skips": [
+    {
+      "reason": "FORGE_M1_REPLAY_LIVE_DIR (read-only copy of the live line + supervisor state) not given",
+      "test": "test_replay_live_state_with_its_persisted_feed"
+    },
+    {
+      "reason": "FORGE_M1_REPLAY_TODAY_DIR (read-only copy of today's line state) not given",
+      "test": "test_replay_today_the_first_live_feeds_stale_noise_is_not_open"
+    },
+    {
+      "reason": "FORGE_M1_REPLAY_DIR (read-only copy of the Omniverse2 line state) not given",
+      "test": "test_classification_replay_over_a_copy_of_the_omniverse2_line_state"
+    },
+    {
+      "reason": "FORGE_M3_REPLAY_DIR (read-only copy of the Omniverse2 line state) not given",
+      "test": "test_act_dry_run_replay_over_todays_line_state"
+    }
+  ],
+  "source_bundle": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/source.bundle",
+    "sha256": "9aef8a40eb26845b2f1271eed6301799129f9291c94d8d46515b08f3408c902a"
+  },
+  "source_files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3/docs/adr/ADR-DA-013-line-service-boot-fencing.md",
+      "sha256": "cf3c33a37c77fed771e6de9021898ce98ea36e884347611823c4e607ffe297f3"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3/factory/python/forge_factory/afo/line_conductor.py",
+      "sha256": "4cca2c939552fb2474a20bd2eabfd7ab88d72ae78913bbcf7c2ddb4a07b65dc9"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3/factory/python/forge_factory/afo/services.py",
+      "sha256": "7b33c0cda7f491bddf4effd331158eda1cb03b08d5849e93e2a09a5aee973d75"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3/factory/python/tests/test_line_service_boot.py",
+      "sha256": "67dff872360aee73b02f9421e05a9fd928d7868e5138fc9698c01784d925d5fc"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3/factory/python/tests/test_line_service_boot_systemd.py",
+      "sha256": "eb211e93861c4b386bd6f30fce8198fd74b6423606f51085d4a61987819dd7c5"
+    }
+  ],
+  "status": "SOURCE_READY_FOR_INDEPENDENT_REVIEW_NOT_CRE_QUALIFIED",
+  "tests": {
+    "affected": {
+      "errors": 0,
+      "failures": 0,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-affected.xml",
+      "sha256": "0623d5fa5f2f355e02c4449465b1edcba56ace5cb847fea422841de1c7d4e308",
+      "skipped": 4,
+      "tests": 106
+    },
+    "design_14": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-design.log",
+      "sha256": "55a0c52eead938da6eba4220bef5eb7833f0e241e23cd136103429a3279c8079"
+    },
+    "local_disposable_systemd": {
+      "errors": 0,
+      "failures": 0,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-systemd.xml",
+      "sha256": "508d795950f5ea427da61ceef4666ec659426b2fd5194b213a48371d752c5595",
+      "skipped": 0,
+      "tests": 1
+    },
+    "ruff": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "systemd_raw_invocations_results": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-systemd-private/report.json",
+      "sha256": "236a008e216f1e89d916665bd4e2178319dbd8f2cdd20a4ac3a91c2c7805b158"
+    }
+  },
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-service-boot-fencing-v3"
+}

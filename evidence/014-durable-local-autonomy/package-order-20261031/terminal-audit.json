@@ -1,0 +1,1838 @@
+{
+  "schema": "forge-c/delivery-first-external-audit/1",
+  "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "verdict": "NOT_PROVEN",
+  "blocking_condition": "TERMINAL_ARCHIVE_SEALED_BEFORE_FINAL_RECHECK_RECEIPT",
+  "archive_sha256": "2cbfa28aa6925a5d1c206e0c887004e4fa543f096bfbda78195b2f001632ed58",
+  "final_receipt_outside_archive": "9e514f0c4e9be427073b37bafd5a9ec4dcecffe8698010f742577fde545c2f42",
+  "scope": "NATIVE_FUNCTIONAL_PASS_AND_SIX_PHASE_TRAVERSAL; NOT_DF_M1",
+  "gaps": 30,
+  "observed_post_launch_engineering_interventions": 0,
+  "observer_activities": [
+    "READ_ONLY_STATUS_AND_ARCHIVE_AUDIT",
+    "DASHBOARD_AND_LOCAL_OUTCOME_COLLECTION",
+    "SEPARATE_UNUSED_SOURCE_STAGING"
+  ],
+  "native_steering_events": 0,
+  "archive_integrity": {
+    "archive": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-5faf7b5e42e6d55f-a1/forge-c-WO-AFO-5faf7b5e42e6d55f-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "final_functional_status": "PASS",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "fresh_trials_started": 0,
+  "native_terminal_status": "SUCCEEDED",
+  "final_native_usage": {
+    "timing": {
+      "wall_time_ms": 8611582,
+      "inference_time_ms": 8271848,
+      "tool_time_ms": 274370,
+      "active_time_ms": 8546218
+    },
+    "usage": {
+      "tokens": {
+        "input": 983349,
+        "output": 384053,
+        "reasoning": 0,
+        "cache_read": 13881772,
+        "cache_write": 0
+      }
+    }
+  },
+  "phase_files": {
+    "SWE.1": 3,
+    "SWE.2": 8,
+    "SWE.3": 12,
+    "SWE.4": 3,
+    "SWE.5": 3,
+    "SWE.6": 3
+  },
+  "phase_gates": {
+    "SWE.1": "REWORK",
+    "SWE.2": "REWORK",
+    "SWE.3": "REWORK",
+    "SWE.4": "REWORK",
+    "SWE.5": "PASS",
+    "SWE.6": "REWORK"
+  },
+  "phase_attempts": {
+    "SWE.1": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.2": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.3": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.4": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.5": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.6": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    }
+  },
+  "requests": [
+    {
+      "state": "QUIESCENT",
+      "n": 332
+    }
+  ],
+  "execution": [
+    {
+      "job_id": "afo-product-221ded78874865909a532471",
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "native_run_ids": [
+        "01M67ETTPXS1Q73QPMQ98DNJX0"
+      ],
+      "quiescence_evidence_ref": "native-terminals:ca8106a640548f6db61de2abb448a6008b50e9c688ac8fd9f65e6dd353192f48"
+    }
+  ],
+  "final_receipt": {
+    "path": ".forge-run/delivery-first/attempt-final/result.json",
+    "sha256": "9e514f0c4e9be427073b37bafd5a9ec4dcecffe8698010f742577fde545c2f42",
+    "result": {
+      "at": "2026-10-31T00:51:38.464777Z",
+      "attempt": "final",
+      "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+      "calls": [
+        {
+          "argv": [
+            "clang",
+            "-std=c11",
+            "-O2",
+            "-g",
+            "-DFORGE_HOST_BUILD=1",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs/idr_oracle.c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-final/oracle"
+          ],
+          "check": "host_compile",
+          "duration_ms": 37.1,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "arm-none-eabi-gcc",
+            "-std=c11",
+            "-mcpu=cortex-m55",
+            "-mthumb",
+            "-mfloat-abi=hard",
+            "-Os",
+            "-ffunction-sections",
+            "-fdata-sections",
+            "-ffreestanding",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs/idr_target_probe.c",
+            "-c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-final/probe.o"
+          ],
+          "check": "target_compile",
+          "duration_ms": 16.5,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-final/oracle"
+          ],
+          "check": "independent_behavior",
+          "duration_ms": 1.7,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "88a4b58146e9dbf667d2dd92980ca3c610c73835057144efe812b3e2b1817477",
+          "timed_out": false
+        }
+      ],
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173"
+      },
+      "candidate_unchanged_during_checks": true,
+      "correction_count": 0,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+        "dirty": false
+      },
+      "independent_target": {
+        "independent_oracle_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+        "outputs": {
+          "compile": {
+            "artifact_refs": [
+              "artifact:sha256:9af0be7fcb14c2c6873af664d1f2b025acb125f25ef00c9ce484e31723235fcb"
+            ],
+            "issues": [],
+            "metrics": {
+              "failed_units": 0,
+              "relocatable_elf": true,
+              "units": 2
+            },
+            "provenance": {
+              "duration_ms": 28.6,
+              "exit_code": 0,
+              "input_sha256": "81b2fd8c0a276f979ce8d480cb7d2d13a065c9d8c56e429b4f9ba0489482cb0a",
+              "invocation_id": "inv-a26c0bcb0c0e4fe6",
+              "output_sha256": "9af0be7fcb14c2c6873af664d1f2b025acb125f25ef00c9ce484e31723235fcb",
+              "tool": "arm-none-eabi-gcc",
+              "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+            },
+            "status": "PASS",
+            "summary": "2/2 units compiled (target-cm55-gcc)"
+          },
+          "cost": {
+            "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+            "hardware_wcet": "NOT_MEASURED",
+            "issues": [],
+            "measurement_plan": {
+              "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+              "disassembly_sha256": "e7014725073d8849a7f2fb1d6d04b5f633231d50266901bedd9e9d34ff3c89b2",
+              "elf_sha256": "3c57dcea6426bc11629e501aaf088522d1c130fefc622fb7f9e040a5c2f7f99c",
+              "hooks": [
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "BEGIN",
+                  872415768
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "BEGIN",
+                  872415772
+                ],
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "END",
+                  872415384
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "END",
+                  872415440
+                ]
+              ],
+              "model_sha256": "dc60996b97d2e17eb0b917e6cf59c2a090bf4de4c76f515bb9050297ac464ae2",
+              "observer_sha256": "3f8a843a8a73e778d780e387faa2e0a1833cf2d917916c3003c60f0abd39e216",
+              "platform_sha256": "5110ebd679386f1a70e51e7773a0deed020c35c556eda37c1066b80a61434428",
+              "source_files": {
+                "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+                "inputs/IDR-CONTRACT.md": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3",
+                "inputs/RM0486-rev4-ch26-crc.md": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+                "inputs/RM0486-rev4-memory-map-excerpt-crc.md": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+                "inputs/RM0486-rev4-register-conventions-manifest.json": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+                "inputs/RM0486-rev4-register-conventions.md": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+                "inputs/forge_crc_device.h": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961",
+                "inputs/hal_driver_guideline.md": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+                "inputs/idr_oracle.c": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10",
+                "inputs/idr_target_oracle.c": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+                "inputs/idr_target_probe.c": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625",
+                "inputs/idr_unit_harness.c": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb",
+                "inputs/inputs-manifest.json": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+                "inputs/provided-requirements.json": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14",
+                "software/ll/stm32n6xx_ll_crc.h": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173"
+              },
+              "symbols": [
+                "forge_measure_LL_CRC_Write_IDR",
+                "forge_measure_LL_CRC_Read_IDR"
+              ],
+              "test_source_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+              "wrapper_sha256": "6ac7a84b283ddb4bc7f30f35086e6d118ee00baaa136070290614ed8ff704f3c"
+            },
+            "performance_mips": 100,
+            "samples": {
+              "forge_measure_LL_CRC_Read_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ],
+              "forge_measure_LL_CRC_Write_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ]
+            },
+            "schema": "forge-c/simulation-call-performance/1",
+            "scope": "observed complete calls in the pinned Renode instruction/time model; not silicon timing",
+            "status": "PASS"
+          },
+          "simulation": {
+            "artifact_refs": [
+              "artifact:sha256:bd36de3f63897350c001b89aae73a9259d4861a46aca5a3d07b20938635e1de3",
+              "artifact:sha256:3a81948bd6a037bec1d77e04f7d603ab11eee5f7c55855a1bb3526d156821263",
+              "artifact:sha256:ce31fa4afda20bd224277e5ed3374b44dede2e42d7a9cae6923d3553cca59fc7"
+            ],
+            "issues": [],
+            "metrics": {
+              "cpu": "cortex-m55",
+              "failed": 0,
+              "passed": 351,
+              "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+              "silicon_verified": false,
+              "simulation_performance_report": "artifact:sha256:ce31fa4afda20bd224277e5ed3374b44dede2e42d7a9cae6923d3553cca59fc7",
+              "target_evidence": "simulated"
+            },
+            "provenance": {
+              "exit_code": 0,
+              "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+              "invocation_id": "inv-76e410ef62644e88",
+              "output_sha256": "bd36de3f63897350c001b89aae73a9259d4861a46aca5a3d07b20938635e1de3",
+              "tool": "renode",
+              "version": "Renode v1.17.0"
+            },
+            "status": "PASS",
+            "summary": "renode cortex-m55: 351 checks passed, 0 failed (1 images; behavioural CRC model)"
+          },
+          "size": {
+            "artifact_refs": [
+              "artifact:sha256:b408c599adc1203272d99c91d03f9f4c6f392f34d47366f2362767714aa93f05"
+            ],
+            "issues": [],
+            "metrics": {
+              "bss": 0,
+              "data": 0,
+              "flash_bytes": 16,
+              "objects": 2,
+              "ram_bytes": 0,
+              "scope": "object-level, not linked image",
+              "text": 16
+            },
+            "provenance": {
+              "duration_ms": 1.6,
+              "exit_code": 0,
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-a26c0bcb0c0e4fe6",
+              "output_sha256": "b408c599adc1203272d99c91d03f9f4c6f392f34d47366f2362767714aa93f05",
+              "tool": "arm-none-eabi-size",
+              "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+            },
+            "status": "PASS",
+            "summary": "text=16 data=0 bss=0 (target-cm55-gcc)"
+          },
+          "stack": {
+            "artifact_refs": [
+              "artifact:sha256:e09c2813d8b482e9319cb0126f1a71cf27e5fcec491c53b276667391bda90952"
+            ],
+            "issues": [],
+            "metrics": {
+              "functions": 4,
+              "max_frame_bytes": 0,
+              "scope": "per-function frames; call-graph worst case not computed"
+            },
+            "provenance": {
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-a26c0bcb0c0e4fe6",
+              "tool": "gcc/clang -fstack-usage",
+              "version": "profile:target-cm55-gcc"
+            },
+            "status": "PASS",
+            "summary": "max frame 0 B in forge_measure_LL_CRC_Write_IDR (target-cm55-gcc)"
+          }
+        },
+        "physical_hardware": "NOT_RUN",
+        "resource_scope": "OBJECT_LEVEL_AND_MAXIMUM_FRAME; NOT_LINKED_FIRMWARE_OR_CALL_GRAPH",
+        "resources_within_declared_limits": true,
+        "source_rewritten": false,
+        "status": "PASS",
+        "workspace": ".forge-run/delivery-first/attempt-final/independent-target/workspace"
+      },
+      "missing": [],
+      "mode": "QM_DELIVERY_FIRST_DEMO",
+      "physical_hardware": "NOT_RUN",
+      "release_eligibility": "BLOCKED",
+      "simulation": "PASS",
+      "status": "PASS",
+      "verification_round": "FINAL_RECHECK_NO_NEW_AUTHOR",
+      "verification_scope": "DECLARED_HOST_TARGET_SIMULATION_COST_AND_OBJECT_FRAME_RESOURCES",
+      "work_order": "WO-AFO-5faf7b5e42e6d55f-a1"
+    }
+  },
+  "initial_receipt": {
+    "path": ".forge-run/delivery-first/attempt-0/result.json",
+    "sha256": "c282e88e3c70f744230b5a03fbbcb1885b9a63a055f5a67a5486a08020ba7140",
+    "result": {
+      "at": "2026-10-30T22:31:19.174075Z",
+      "attempt": 0,
+      "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+      "calls": [
+        {
+          "argv": [
+            "clang",
+            "-std=c11",
+            "-O2",
+            "-g",
+            "-DFORGE_HOST_BUILD=1",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs/idr_oracle.c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-0/oracle"
+          ],
+          "check": "host_compile",
+          "duration_ms": 37.6,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "arm-none-eabi-gcc",
+            "-std=c11",
+            "-mcpu=cortex-m55",
+            "-mthumb",
+            "-mfloat-abi=hard",
+            "-Os",
+            "-ffunction-sections",
+            "-fdata-sections",
+            "-ffreestanding",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/inputs/idr_target_probe.c",
+            "-c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-0/probe.o"
+          ],
+          "check": "target_compile",
+          "duration_ms": 18.7,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/.forge-run/delivery-first/attempt-0/oracle"
+          ],
+          "check": "independent_behavior",
+          "duration_ms": 1.6,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "88a4b58146e9dbf667d2dd92980ca3c610c73835057144efe812b3e2b1817477",
+          "timed_out": false
+        }
+      ],
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173"
+      },
+      "candidate_unchanged_during_checks": true,
+      "correction_count": 0,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+        "dirty": false
+      },
+      "independent_target": {
+        "independent_oracle_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+        "outputs": {
+          "compile": {
+            "artifact_refs": [
+              "artifact:sha256:f32b9be530a5d39dfe7644375c4bac3f60a2ce1c1d78d1f5a963154f06cd3008"
+            ],
+            "issues": [],
+            "metrics": {
+              "failed_units": 0,
+              "relocatable_elf": true,
+              "units": 2
+            },
+            "provenance": {
+              "duration_ms": 33.5,
+              "exit_code": 0,
+              "input_sha256": "81b2fd8c0a276f979ce8d480cb7d2d13a065c9d8c56e429b4f9ba0489482cb0a",
+              "invocation_id": "inv-29a2a04adb3f43fa",
+              "output_sha256": "f32b9be530a5d39dfe7644375c4bac3f60a2ce1c1d78d1f5a963154f06cd3008",
+              "tool": "arm-none-eabi-gcc",
+              "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+            },
+            "status": "PASS",
+            "summary": "2/2 units compiled (target-cm55-gcc)"
+          },
+          "cost": {
+            "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+            "hardware_wcet": "NOT_MEASURED",
+            "issues": [],
+            "measurement_plan": {
+              "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+              "disassembly_sha256": "4fba3fdc33a9b291676f45c76ea7336c0827735469daf4b1720db1f489d8a845",
+              "elf_sha256": "3c57dcea6426bc11629e501aaf088522d1c130fefc622fb7f9e040a5c2f7f99c",
+              "hooks": [
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "BEGIN",
+                  872415768
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "BEGIN",
+                  872415772
+                ],
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "END",
+                  872415384
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "END",
+                  872415440
+                ]
+              ],
+              "model_sha256": "dc60996b97d2e17eb0b917e6cf59c2a090bf4de4c76f515bb9050297ac464ae2",
+              "observer_sha256": "3f8a843a8a73e778d780e387faa2e0a1833cf2d917916c3003c60f0abd39e216",
+              "platform_sha256": "4c5ce9dda4f3c4fbf0267441f82b4dac0cac71287ffa6955907a3790aa8c0f65",
+              "source_files": {
+                "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+                "inputs/IDR-CONTRACT.md": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3",
+                "inputs/RM0486-rev4-ch26-crc.md": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+                "inputs/RM0486-rev4-memory-map-excerpt-crc.md": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+                "inputs/RM0486-rev4-register-conventions-manifest.json": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+                "inputs/RM0486-rev4-register-conventions.md": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+                "inputs/forge_crc_device.h": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961",
+                "inputs/hal_driver_guideline.md": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+                "inputs/idr_oracle.c": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10",
+                "inputs/idr_target_oracle.c": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+                "inputs/idr_target_probe.c": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625",
+                "inputs/idr_unit_harness.c": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb",
+                "inputs/inputs-manifest.json": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+                "inputs/provided-requirements.json": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14",
+                "software/ll/stm32n6xx_ll_crc.h": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173"
+              },
+              "symbols": [
+                "forge_measure_LL_CRC_Write_IDR",
+                "forge_measure_LL_CRC_Read_IDR"
+              ],
+              "test_source_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+              "wrapper_sha256": "6ac7a84b283ddb4bc7f30f35086e6d118ee00baaa136070290614ed8ff704f3c"
+            },
+            "performance_mips": 100,
+            "samples": {
+              "forge_measure_LL_CRC_Read_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ],
+              "forge_measure_LL_CRC_Write_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ]
+            },
+            "schema": "forge-c/simulation-call-performance/1",
+            "scope": "observed complete calls in the pinned Renode instruction/time model; not silicon timing",
+            "status": "PASS"
+          },
+          "simulation": {
+            "artifact_refs": [
+              "artifact:sha256:bb31143300977d3e53673838f46ea5e6da4a9f8d60df2e7d3609aa599f55de0d",
+              "artifact:sha256:3a81948bd6a037bec1d77e04f7d603ab11eee5f7c55855a1bb3526d156821263",
+              "artifact:sha256:3db9ccd2598371e6a8db783b3d2cd1ac245ab61efef06e1b153545a0abe1c93e"
+            ],
+            "issues": [],
+            "metrics": {
+              "cpu": "cortex-m55",
+              "failed": 0,
+              "passed": 351,
+              "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+              "silicon_verified": false,
+              "simulation_performance_report": "artifact:sha256:3db9ccd2598371e6a8db783b3d2cd1ac245ab61efef06e1b153545a0abe1c93e",
+              "target_evidence": "simulated"
+            },
+            "provenance": {
+              "exit_code": 0,
+              "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+              "invocation_id": "inv-ff2d307f5c6c43ed",
+              "output_sha256": "bb31143300977d3e53673838f46ea5e6da4a9f8d60df2e7d3609aa599f55de0d",
+              "tool": "renode",
+              "version": "Renode v1.17.0"
+            },
+            "status": "PASS",
+            "summary": "renode cortex-m55: 351 checks passed, 0 failed (1 images; behavioural CRC model)"
+          },
+          "size": {
+            "artifact_refs": [
+              "artifact:sha256:b7ef589013891f99dd110fc8af06a2eb6273b33ac36158fa36c89f988b893b59"
+            ],
+            "issues": [],
+            "metrics": {
+              "bss": 0,
+              "data": 0,
+              "flash_bytes": 16,
+              "objects": 2,
+              "ram_bytes": 0,
+              "scope": "object-level, not linked image",
+              "text": 16
+            },
+            "provenance": {
+              "duration_ms": 1.6,
+              "exit_code": 0,
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-29a2a04adb3f43fa",
+              "output_sha256": "b7ef589013891f99dd110fc8af06a2eb6273b33ac36158fa36c89f988b893b59",
+              "tool": "arm-none-eabi-size",
+              "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+            },
+            "status": "PASS",
+            "summary": "text=16 data=0 bss=0 (target-cm55-gcc)"
+          },
+          "stack": {
+            "artifact_refs": [
+              "artifact:sha256:92f9348fb3af8470e5aaba9969ec29fde57d60a05753faec135167384e51aa3b"
+            ],
+            "issues": [],
+            "metrics": {
+              "functions": 4,
+              "max_frame_bytes": 0,
+              "scope": "per-function frames; call-graph worst case not computed"
+            },
+            "provenance": {
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-29a2a04adb3f43fa",
+              "tool": "gcc/clang -fstack-usage",
+              "version": "profile:target-cm55-gcc"
+            },
+            "status": "PASS",
+            "summary": "max frame 0 B in forge_measure_LL_CRC_Write_IDR (target-cm55-gcc)"
+          }
+        },
+        "physical_hardware": "NOT_RUN",
+        "resource_scope": "OBJECT_LEVEL_AND_MAXIMUM_FRAME; NOT_LINKED_FIRMWARE_OR_CALL_GRAPH",
+        "resources_within_declared_limits": true,
+        "source_rewritten": false,
+        "status": "PASS",
+        "workspace": ".forge-run/delivery-first/attempt-0/independent-target/workspace"
+      },
+      "missing": [],
+      "mode": "QM_DELIVERY_FIRST_DEMO",
+      "physical_hardware": "NOT_RUN",
+      "release_eligibility": "BLOCKED",
+      "simulation": "PASS",
+      "status": "PASS",
+      "verification_round": "BOUNDED_AUTHOR_ATTEMPT",
+      "verification_scope": "DECLARED_HOST_TARGET_SIMULATION_COST_AND_OBJECT_FRAME_RESOURCES",
+      "work_order": "WO-AFO-5faf7b5e42e6d55f-a1"
+    }
+  },
+  "packaged_report_sha256": "ffccc05d024f103d5f487155c88ab35f394d61ad7bb2338562591e7b63b053de",
+  "archive_includes_final_receipt": false,
+  "archive_gaps": [
+    "failed_or_missing_quality_check:resource_budgets",
+    "failed_or_missing_quality_check:software_verification",
+    "failed_or_missing_quality_check:static_analysis",
+    "failed_or_missing_quality_check:swe1_inspection",
+    "failed_or_missing_quality_check:swe2_inspection",
+    "failed_or_missing_quality_check:swe3_inspection",
+    "failed_or_missing_quality_check:swe4_inspection",
+    "failed_or_missing_quality_check:swe6_inspection",
+    "missing_or_empty_section:software/build",
+    "missing_or_empty_section:software/src",
+    "missing_required_pattern:software/build/*.elf",
+    "missing_required_pattern:software/build/*.map",
+    "missing_required_pattern:software/src/*.c",
+    "run_not_completed:INCOMPLETE",
+    "unresolved_finding:QM_PIPELINE_DEMONSTRATION_ONLY",
+    "unresolved_finding:SWE.1:GATE_REWORK",
+    "unresolved_finding:SWE.1:SWE1-01",
+    "unresolved_finding:SWE.2:GATE_REWORK",
+    "unresolved_finding:SWE.2:SWE2-08",
+    "unresolved_finding:SWE.3:GATE_REWORK",
+    "unresolved_finding:SWE.3:SWE3-06",
+    "unresolved_finding:SWE.3:SWE3-07",
+    "unresolved_finding:SWE.3:SWE3-08",
+    "unresolved_finding:SWE.3:SWE3-09",
+    "unresolved_finding:SWE.3:SWE3-10",
+    "unresolved_finding:SWE.4:GATE_REWORK",
+    "unresolved_finding:SWE.4:SWE4-07",
+    "unresolved_finding:SWE.6:GATE_REWORK",
+    "unresolved_finding:SWE.6:SWE6-07",
+    "unresolved_finding:SWE3-07:HAL_GUIDELINE"
+  ],
+  "terminal_metrics_basis": "NATIVE_API_AFTER_TERMINAL; PACKAGED_USAGE_IS_EARLIER",
+  "reasoning_token_breakdown": "UNKNOWN; provider zero is not a measurement of hidden reasoning"
+}

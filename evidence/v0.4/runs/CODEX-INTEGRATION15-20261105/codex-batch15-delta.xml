@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="104" time="24.670" timestamp="2026-11-04T23:55:29.950549+00:00" hostname="master"><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_claimed_line_stop_preserves_intent_mission_and_lease_and_ends_only_owned_process[True]" time="0.640" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_claimed_start_reaches_managed_backend_with_own_held_lease_and_no_shutdown[True]" time="0.514" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[intent-AUTHORITY_OR_EXECUTION_FENCED-True]" time="0.453" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[nonce-REGISTERED_BINDING_CHANGED-True]" time="0.477" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[profile-AUTHORITY_OR_EXECUTION_FENCED-True]" time="0.443" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[foreign-owner-RESOURCE_OR_REQUEST_NOT_QUIESCENT-True]" time="0.461" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[missing-lock-CLAIM_OR_LOCKS_UNPROVEN-True]" time="0.481" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_line_preparation_refuses_changed_authority_before_any_process_effect[unknown-native-NATIVE_NOT_QUIESCENT-True]" time="0.495" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease[True]" time="0.539"><failure message="subprocess.CalledProcessError: Command '['nsenter', '-t', '114753', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', &quot;\nimport copy,json,os,sys\nfrom pathlib import Path\nfrom forge_factory.lrtx import provider_process as P\nfrom forge_factory.afo.durable import Refused\nv=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)\nbad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1\ntry:P.require_live_instance(bad)\nexcept Refused:pass\nelse:raise AssertionError('changed UID mapping accepted')\nprint(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))\n&quot;, '/tmp/pytest-of-jefferson/pytest-31/test_prelaunch_serve_swaps_rea0/lrtx/run/provider-instances/a7ad44470d06470de923c5c0c3d075759939816cebefc57cac1f2188b8f410d5.json']' returned non-zero exit status 1.">claimed = namespace(store=&lt;forge_factory.afo.queue.Store object at 0x7e8e1a95cf30&gt;, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='58b3a70e50cad90b402239d0c2ab073929903cbe8b33ff76e4bd39d82118ed47', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-31/test_prelaunch_serve_swaps_rea0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e8e1a34d400&gt;
+
+    def test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease(claimed, tmp_path, monkeypatch):
+        """Transport substitute is an actual HTTP server; no model or GPU is emulated as qualification."""
+        import copy
+        import socket
+    
+        from forge_factory.afo.durable import digest, immutable_json
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            port = listener.getsockname()[1]
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            gateway_port = listener.getsockname()[1]
+        script = tmp_path / "llama-server-control.py"
+        script.write_text("""
+    import argparse,json
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+    ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);ap.add_argument('--bad',action='store_true');a=ap.parse_args()
+    class Handler(BaseHTTPRequestHandler):
+     def do_GET(self):
+      body=json.dumps({'data':[{'id':'wrong-alias' if a.bad else a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
+      self.send_response(200);self.end_headers();self.wfile.write(body)
+     def log_message(self,*args):pass
+    HTTPServer.allow_reuse_address=True
+    HTTPServer(('127.0.0.1',a.port),Handler).serve_forever()
+    """)
+        profile = copy.deepcopy(p.s["profile"])
+        first, second = "qwen3.6:35b-a3b", "gpt-oss:20b"
+        # CPU backend declarations only; real model pins/capabilities are not exercised by this test.
+        profile["runtime"]["llama_server"] = {"model": first, "vram_required_mib": 0}
+        profile["runtime"]["llama_server_alternates"] = {second: {"vram_required_mib": 0}}
+        p.s["profile"] = profile
+        p.s["ports"] = p.s["ports"] | {"llama": port, "gateway": gateway_port}
+        (p.s["root"] / "logs").mkdir()
+        monkeypatch.setattr(ST, "envmap", lambda s: dict(os.environ) | {"FORGE_VENV": str(Path(sys.executable).parent.parent)})
+        monkeypatch.setattr(ST, "_vram_free_mib", lambda: 100000)
+        bad_models = set()
+        monkeypatch.setattr(ST, "llama_server_spec", lambda r, prof, ports, env, model=None:
+                            ([sys.executable, str(script), "--alias", model or first, "--port", str(port)]
+                             + (["--bad"] if model in bad_models else []), dict(os.environ),
+                             f"http://127.0.0.1:{port}/health", [model or first]))
+        processes = []
+        original_spawn = ST._in_ns
+        expire_new_worker = [False]
+    
+        def actual_spawn(*args, **kwargs):
+            assert kwargs.get("serving"), "managed worker must enter private provider PID namespace"
+            child = original_spawn(*args, **kwargs)
+            processes.append(child)
+            if expire_new_worker[0]:
+                deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+                monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
+            return child
+    
+        monkeypatch.setattr(ST, "_in_ns", actual_spawn)
+        before = p.intent.path.read_bytes()
+        try:
+            with private_namespace(tmp_path, "managed-cpu-transport", network=True) as base:
+                instance = provider.capture(p.s["root"], profile=profile["id"], profile_sha256=profile["_sha256"],
+                                            parent_pid=base["parent_pid"])
+                subprocess.run(ST._nsenter(instance["init_pid"]) + ["ip", "link", "set", "lo", "up"], check=True,
+                               capture_output=True)
+                immutable_json(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"), instance)
+                ST._save_services(p.s["root"], {"processes": {}, "serving_instance": instance})
+                inner_code = """
+    import copy,json,os,sys
+    from pathlib import Path
+    from forge_factory.lrtx import provider_process as P
+    from forge_factory.afo.durable import Refused
+    v=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)
+    bad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1
+    try:P.require_live_instance(bad)
+    except Refused:pass
+    else:raise AssertionError('changed UID mapping accepted')
+    print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))
+    """
+&gt;               inner = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", inner_code,
+                                       str(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"))],
+                                       env=dict(os.environ), capture_output=True, text=True, check=True)
+
+factory/python/tests/test_line_stack_lifecycle.py:215: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['nsenter', '-t', '114753', '-U', '-n', '--preserve-credentials', ...],)
+kwargs = {'env': {'AMENT_PREFIX_PATH': '/opt/ros/iron', 'CARLA_DIR': '/home/jefferson/autoverse/temp/carla-src', 'CLANG_PATH': '/usr/bin/clang-12', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', ...}, 'stderr': -1, 'stdout': -1, 'text': True}
+process = &lt;Popen: returncode: 1 args: ['nsenter', '-t', '114753', '-U', '-n', '--prese...&gt;
+stdout = ''
+stderr = 'Traceback (most recent call last):\n  File "&lt;string&gt;", line 4, in &lt;module&gt;\n    from forge_factory.lrtx import provid...ovider_process\' from \'forge_factory.lrtx\' (/home/jefferson/forge-c/factory/python/forge_factory/lrtx/__init__.py)\n'
+retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output &amp; stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+&gt;               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['nsenter', '-t', '114753', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', "\nimport copy,json,os,sys\nfrom pathlib import Path\nfrom forge_factory.lrtx import provider_process as P\nfrom forge_factory.afo.durable import Refused\nv=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)\nbad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1\ntry:P.require_live_instance(bad)\nexcept Refused:pass\nelse:raise AssertionError('changed UID mapping accepted')\nprint(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))\n", '/tmp/pytest-of-jefferson/pytest-31/test_prelaunch_serve_swaps_rea0/lrtx/run/provider-instances/a7ad44470d06470de923c5c0c3d075759939816cebefc57cac1f2188b8f410d5.json']' returned non-zero exit status 1.
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:577: CalledProcessError</failure></testcase><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_effect_guard_refuses_expired_job_and_resets_after_exception[True]" time="0.499" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_first_graph_serve_uses_existing_authoritative_nonce_adoption_before_detach_receipt[False-True]" time="0.842" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_first_graph_serve_uses_existing_authoritative_nonce_adoption_before_detach_receipt[True-True]" time="0.551" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_inside_observer_uses_only_pinned_namespace_fabro_port[True]" time="0.524"><failure message="subprocess.CalledProcessError: Command '['nsenter', '-t', '114774', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', &quot;\nimport json,sys\nfrom pathlib import Path\nfrom forge_factory.afo.line_launcher import LineConfig\nfrom forge_factory.afo.line_stack_lifecycle import _observation_host\nfrom forge_factory.lrtx.profile import load\nroot=Path(sys.argv[1]);profile=load(sys.argv[2]);s={'root':root,'profile':profile,'ports':profile['deployment']['ports']}\ncfg=LineConfig(stack_root=root,fabro_host_port=43210)\nassert _observation_host(cfg,s).cfg.fabro_host_port==s['ports']['fabro']\nprint(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'host_port':cfg.fabro_host_port}))\n&quot;, '/tmp/pytest-of-jefferson/pytest-31/test_inside_observer_uses_only0/lrtx', 'local-rtx-v2-omniverse2']' returned non-zero exit status 1.">claimed = namespace(store=&lt;forge_factory.afo.queue.Store object at 0x7e8e1a51e740&gt;, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='d7e569a5deb4f975b7f8c7cfb62b645f5ea63a85c9fa56880f09964f9f4c32fc', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-31/test_inside_observer_uses_only0')
+
+    def test_inside_observer_uses_only_pinned_namespace_fabro_port(claimed, tmp_path):
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with private_namespace(tmp_path, "observer-net", network=True) as instance:
+            record = {"root": str(p.s["root"]), "profile": p.s["profile"]["id"],
+                      "profile_sha256": p.s["profile"]["_sha256"], "processes": {},
+                      "holder_pid": instance["init_pid"], "holder_identity": ST.process_identity(instance["init_pid"]),
+                      "netns": os.readlink(f"/proc/{instance['init_pid']}/ns/net")}
+            ST._save_services(p.s["root"], record)
+            assert A._observation_host(p.cfg, p.s).cfg.fabro_host_port == p.cfg.fabro_host_port
+            code = """
+    import json,sys
+    from pathlib import Path
+    from forge_factory.afo.line_launcher import LineConfig
+    from forge_factory.afo.line_stack_lifecycle import _observation_host
+    from forge_factory.lrtx.profile import load
+    root=Path(sys.argv[1]);profile=load(sys.argv[2]);s={'root':root,'profile':profile,'ports':profile['deployment']['ports']}
+    cfg=LineConfig(stack_root=root,fabro_host_port=43210)
+    assert _observation_host(cfg,s).cfg.fabro_host_port==s['ports']['fabro']
+    print(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'host_port':cfg.fabro_host_port}))
+    """
+&gt;           report = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", code,
+                                    str(p.s["root"]), p.s["profile"]["id"]], env=dict(os.environ), capture_output=True,
+                                    text=True, check=True)
+
+factory/python/tests/test_line_stack_lifecycle.py:411: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['nsenter', '-t', '114774', '-U', '-n', '--preserve-credentials', ...],)
+kwargs = {'env': {'AMENT_PREFIX_PATH': '/opt/ros/iron', 'CARLA_DIR': '/home/jefferson/autoverse/temp/carla-src', 'CLANG_PATH': '/usr/bin/clang-12', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', ...}, 'stderr': -1, 'stdout': -1, 'text': True}
+process = &lt;Popen: returncode: 1 args: ['nsenter', '-t', '114774', '-U', '-n', '--prese...&gt;
+stdout = ''
+stderr = 'Traceback (most recent call last):\n  File "&lt;string&gt;", line 4, in &lt;module&gt;\n    from forge_factory.afo.line_launcher import LineConfig\nModuleNotFoundError: No module named \'forge_factory.afo.line_launcher\'\n'
+retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output &amp; stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+&gt;               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['nsenter', '-t', '114774', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', "\nimport json,sys\nfrom pathlib import Path\nfrom forge_factory.afo.line_launcher import LineConfig\nfrom forge_factory.afo.line_stack_lifecycle import _observation_host\nfrom forge_factory.lrtx.profile import load\nroot=Path(sys.argv[1]);profile=load(sys.argv[2]);s={'root':root,'profile':profile,'ports':profile['deployment']['ports']}\ncfg=LineConfig(stack_root=root,fabro_host_port=43210)\nassert _observation_host(cfg,s).cfg.fabro_host_port==s['ports']['fabro']\nprint(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'host_port':cfg.fabro_host_port}))\n", '/tmp/pytest-of-jefferson/pytest-31/test_inside_observer_uses_only0/lrtx', 'local-rtx-v2-omniverse2']' returned non-zero exit status 1.
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:577: CalledProcessError</failure></testcase><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_initial_start_expiry_tears_down_only_its_receipted_new_process_and_keeps_lease[True]" time="0.536" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_native_terminal_retains_unknown_startup_capacity_until_exact_provider_quiet[True]" time="0.836" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_malformed_or_foreign_startup_hold_never_releases_on_native_terminal[binding0-True]" time="0.584" /><testcase classname="factory.python.tests.test_line_stack_lifecycle" name="test_malformed_or_foreign_startup_hold_never_releases_on_native_terminal[binding1-True]" time="0.584" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_product_uses_original_outbox_mission_and_hash_bound_m2_payload" time="0.466" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[unreachable]" time="0.424" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[empty]" time="0.379" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[one]" time="0.414" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[two]" time="0.446" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules[SMOKE_FAIL-False-item_blocked]" time="0.580" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules[WORKORDER_LAUNCH_FAILED-True-launch_outcome_unknown]" time="0.405" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules[STACK_STARTUP_CLEANUP_UNKNOWN-False-launch_outcome_unknown]" time="0.386" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_initial_mission_cannot_retroactively_import_a_native_execution" time="0.211" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_exhausted_finite_mission_refuses_before_external_model_or_m2_launch" time="0.323" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_fresh_phase_names_cannot_reset_strategy_variants_for_the_same_finite_driver" time="0.344" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_repeated_mission_registration_never_resets_spent_capacity" time="0.236" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_held_product_is_supervised_after_grant_expiry_without_new_placement" time="0.483" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_quiesce_keeps_unknown_provider_lease_even_when_native_is_terminal" time="0.799" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_worker_lock_refusal_cannot_quarantine_another_running_worker" time="0.163" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_unchanged_hard_refusal_does_not_allocate_a_fresh_order_identity" time="0.232" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_external_worker_execs_exact_run_checkout_with_the_actual_fixed_line_configuration" time="0.169" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_bootstrap_never_prepares_a_new_worktree_for_revoked_or_changed_source" time="0.169" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_accepted_semantic_receipt_creates_fresh_attempt_then_requires_independent_product_gates" time="0.890" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_retiring_exact_provider_kills_descendants_and_preserves_other_provider" time="0.101" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_stale_operator_fence_prevents_signal" time="0.027" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_non_init_or_global_init_identity_is_never_signaled" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_pid_reuse_observation_never_signals_the_newer_process" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_unreadable_provider_identity_is_not_quiescence" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[None]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[bad1]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[bad2]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[bad3]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[bad4]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_malformed_instance_is_typed_refusal[bad5]" time="0.001" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_regular_legacy_process_is_not_adopted_as_private_provider" time="0.004" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[start_ticks-3]" time="0.025" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[start_ticks-bad]" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[boot_id-None]" time="0.027" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[pid_namespace-unknown]" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[uid-False]" time="0.026" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_corrupt_kernel_identity_does_not_become_a_quiescence_proof[namespace_pid-1]" time="0.027" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_process_exiting_between_kernel_reads_is_absence_not_an_observation_error" time="0.003" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_raw_pidfd_fallback_signals_the_exact_process" time="0.003" /><testcase classname="factory.python.tests.test_da014_provider_process" name="test_exact_provider_retirement_works_without_pidfd_bindings" time="0.076" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_concurrent_launch_refused_gpu_lock_held_by_the_m0_flock_cli" time="0.119" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_concurrent_launch_refused_in_process_and_cli_exit_75" time="0.048" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_run_live_refused_before_any_worktree_or_stack_action" time="0.046" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_run_live_ignores_other_roots_and_ended_runs_but_fails_closed_on_a_silent_live_fabro" time="0.082" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_run_a_worktree_unchanged_after_run_b_launches_on_another_revision" time="0.186" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_inputs_are_hash_verified_and_a_dirty_or_foreign_worktree_is_refused" time="0.110" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_orphan_sweep_kills_only_our_uid_and_root_and_clears_the_old_netns_storage_lock_holder" time="0.038" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_orphan_sweep_real_processes_only_ours_killed_and_the_storage_lock_released" time="0.483" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_launch_clears_exactly_the_2026_11_03_incident_then_starts" time="0.099" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_an_orphan_that_survives_the_sweep_stops_the_launch_before_start" time="0.084" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_stack_lock_is_inherited_only_by_the_holders_own_start" time="0.232" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_launch_refused_when_another_party_holds_the_stack_lock" time="0.130" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_smoke_failure_is_a_typed_infra_error_and_nothing_is_launched" time="0.165" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_stack_not_healthy_and_start_failure_are_typed" time="0.169" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_each_attempt_writes_its_transcript_with_every_step_and_typed_outcome" time="0.156" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_verdict_reader_pass_no_and_infra_unavailable" time="0.006" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_order_verdict_reads_the_stack_state_and_wait_for_end_polls_through_outages" time="0.037" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_dry_run_prints_the_plan_and_acts_on_nothing" time="0.068" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_cli_lines_are_read_by_the_loop10_waiter_and_the_m1_conductor" time="0.186" /><testcase classname="factory.python.tests.test_afo_line_launcher" name="test_extra_string_is_parsed_strictly" time="0.001" /><testcase classname="factory.python.tests.test_line_durable_liveness" name="test_held_unknown_execution_blocks_ordinary_m2_even_with_empty_fabro" time="0.265" /><testcase classname="factory.python.tests.test_line_durable_liveness" name="test_only_original_nonce_fresh_local_launch_claim_excludes_its_own_unsubmitted_slot" time="0.269" /><testcase classname="factory.python.tests.test_line_durable_liveness" name="test_unknown_provider_is_busy_even_for_own_nonce_and_native_has_ended" time="0.345" /><testcase classname="factory.python.tests.test_line_durable_liveness" name="test_old_native_id_never_gets_fresh_launch_exclusion" time="0.315" /><testcase classname="factory.python.tests.test_line_durable_liveness" name="test_model_free_guard_does_not_create_missing_store" time="0.002" /><testcase classname="factory.python.tests.test_lrtx_stack_cli" name="test_exec_parses_stack_options_and_preserves_worker_arguments[header0]" time="0.002" /><testcase classname="factory.python.tests.test_lrtx_stack_cli" name="test_exec_parses_stack_options_and_preserves_worker_arguments[header1]" time="0.001" /><testcase classname="factory.python.tests.test_lrtx_stack_cli" name="test_expose_api_honors_host_port_after_command" time="0.001" /><testcase classname="factory.python.tests.test_lrtx_stack_cli" name="test_non_exec_does_not_ignore_unknown_arguments" time="0.001" /><testcase classname="factory.python.tests.test_lrtx_stack_lock" name="test_stack_lock_refuses_a_raced_start_and_stop" time="0.002" /><testcase classname="factory.python.tests.test_lrtx_stack_lock" name="test_the_holder_hands_its_descriptor_to_its_own_start_only" time="0.305" /><testcase classname="factory.python.tests.test_local_stack_toolchain_path" name="test_optional_installed_tools_are_on_the_stack_path" time="0.008" /><testcase classname="factory.python.tests.test_local_stack_toolchain_path" name="test_uninstalled_optional_tools_preserve_the_existing_environment" time="0.005" /><testcase classname="factory.python.tests.test_stack_cloud_bridge" name="test_the_comparison_profile_is_the_ornith_think_profile_with_only_the_models_changed" time="0.014" /><testcase classname="factory.python.tests.test_stack_cloud_bridge" name="test_serve_is_a_recorded_no_op_routed_to_a_healthy_bridge" time="0.509" /><testcase classname="factory.python.tests.test_stack_cloud_bridge" name="test_a_cloud_model_identity_matches_only_when_the_bridge_serves_it" time="0.510" /><testcase classname="factory.python.tests.test_builder_structured_refactor_golden" name="test_record_or_compare_golden" time="0.473" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_default_graph_is_unchanged" time="0.073" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_stop_after_swe1_graph_holds_only_swe1[None]" time="0.038" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_stop_after_swe1_graph_holds_only_swe1[structured1]" time="0.091" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_stop_after_later_phase_keeps_the_phases_up_to_it" time="0.020" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_stop_after_refuses_delivery_first" time="0.000" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_stop_after_must_be_a_phase_not_before_the_entry_phase" time="0.001" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_cli_passes_stop_after" time="0.040" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_real_profile_structured_settings_build_a_swe1_only_graph[local-rtx-v2-omniverse2-q38-aspice-stepwise-medium]" time="0.020" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_real_profile_structured_settings_build_a_swe1_only_graph[local-rtx-v2-omniverse2-q38-qm-demo-mtp]" time="0.013" /><testcase classname="factory.python.tests.test_builder_stop_after" name="test_real_profile_structured_settings_build_a_swe1_only_graph[local-rtx-v2-omniverse2]" time="0.016" /></testsuite></testsuites>

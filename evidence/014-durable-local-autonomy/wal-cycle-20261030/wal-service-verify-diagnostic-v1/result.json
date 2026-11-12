@@ -1,0 +1,11 @@
+{
+  "status": "ISOLATED_DIAGNOSTIC_ONLY",
+  "source_revision": "a7804054744ce3d471d6e15c60a205610755503a",
+  "exit_code": 1,
+  "verification": {
+    "error": "bwrap: Can't find source path /mnt/data/forge-c/production-local-014/bin/fabro: No such file or directory\n"
+  },
+  "model_requests": 0,
+  "systemd_units_installed_or_started": false,
+  "live_database_mutated": false
+}

@@ -1,0 +1,135 @@
+# ADR DA-023 — Native inventory completeness before lifecycle effects
+
+Status: implementation candidate; runtime and product acceptance remain separate.
+
+L90C on source c1dcea9a failed before native submission: the SDK returned a
+100-row first page of a 149-row terminal history, and the lifecycle guard
+correctly refused to infer quiescence from the truncated catalog. The actual
+first page contained 93 succeeded and 7 failed runs; the full authenticated
+inventory contained 129 succeeded and 20 failed runs, with no removing runs.
+C remains charged and blocked; this repair does not replay it or renew capacity.
+
+Keep the existing `FabroClient.list_runs` API unchanged. Add explicit bounded
+`RunInventory` observations, and have the lifecycle adapter require their
+completeness and freshness before quiescence or own-native handoff. An empty
+complete inventory differs from unknown, malformed, partial, stale or failed
+observation. Only kernel-proven initial ECONNREFUSED retains the existing
+no-current-Fabro-process allowance; it never applies to a partial response.
+
+The pinned 0.362 OpenAPI describes offset pagination with mandatory `has_more`
+and optional `total`. Validate page metadata, identity uniqueness, count and
+progress, then require two agreeing complete observations of run identities,
+status, source directory and labels. Ignore harmless ordering differences;
+disappearing, duplicated, rebound or newly appearing identities refuse. This is
+not a server transaction or a promise about work submitted afterward: existing
+Intent, authority, lease, one-placer and effect fences remain necessary.
+
+The installed binary's actual API was independently exercised with all eleven
+lifecycle states, archived copies of each, and retained terminal history. Default
+unfiltered queries hide removing records; include_archived alone is insufficient.
+A six-column unsafe query also hides archived active records. The verified
+all-nine BoardColumn query covers the full universe. The verified seven-column
+safety query is pending/runnable/initializing/running/blocked/archived/removing:
+it retains every unsafe lifecycle and excludes unarchived terminal history.
+Source proof references the pinned OpenAPI SHA
+b375681cbc2bf857beb7e4a9b74e66027d49995c06eadd6bc8cc313e6cafb666
+and actual mapping report SHA
+708798e3423a2c69a64394c2ecdd76a27ec046a3b58fcc8cd0b44e50f2068171.
+
+Use all-nine for generic complete inventory, and seven-column for lifecycle,
+M2 live checks and M3 live-run observation. Bind the exact filter, archive scope,
+observer subject and freshness at each consumer; a complete running-only page
+cannot stand in for a complete safety inventory. Strict lifecycle classification
+still treats paused/blocked/removing as unsafe and unknown as UNKNOWN.
+
+Bounds are 100 rows/page, 64 pages and 6,400 rows per pass, a shared five-second
+MONOTONIC/BOOTTIME deadline, four MiB/page, and sixteen MiB wire bytes across both
+passes. Async raw streaming stops before retaining an oversized body; stdlib asyncio cancellation bounds the whole network operation, including slow headers and slow body trickles. Byte-bounded JSON work is followed by clock checks. This is not a hard realtime scheduling or interpreter-CPU preemption guarantee. Completed observations
+bind boot and network namespace and both clocks; suspend, observer or boot change
+invalidates freshness. Hitting a bound produces UNKNOWN rather than truncation.
+The safety query avoids ever-growing ordinary unarchived terminal history;
+archived summaries retain their original lifecycle and must still be scanned.
+The archived-history ceiling is an honest remaining scale limitation, not closure
+of full continuous-operation/native-retention acceptance.
+
+No policies, grants, original mission charges, native histories or release
+criteria are changed, and no new inference is authorized by inventory evidence.
+
+Validation uses HTTP transport, bounded streamed bodies, metadata/race/error
+controls, actual normal private order/claim/lease/Intent fixtures and own-native
+adoption. Harmless transport fixtures do not establish model or product competence.
+
+The new synchronous inventory API refuses an already-running event loop rather
+than starting an unbounded helper thread or silently changing transports. Its
+internal async client preserves the same endpoint/authentication/observer and
+accepts an injected transport only when it supports the async protocol; it never
+falls through from an unsupported test transport to real networking. Existing
+synchronous admission/lifecycle/stack CLI consumers remain synchronous.
+
+Admission and M2 live checks conservatively treat every unsafe run on the
+canonical server as occupied, including foreign or missing source directories.
+Exact own-run labels/source/nonce are still mandatory at model handoff. Private
+normal-Placer/TEST-signature controls verify no attempt/outbox/order/mission
+counter changes when a foreign unsafe run prevents admission.
+
+An independently retained V3 counterexample exposed a later-request refusal
+being mislabeled as initial absence. The final collector tracks both request
+attempts and receipt of headers. ECONNREFUSED is an initial-absence fact only for
+request one before any response starts. A later page, second pass, or body error
+after headers is partial/unknown observation even if no body bytes were retained.
+Normal private prelaunch controls exercise all four cases with the actual SDK.
+
+M2 compatibility has an explicit context split. Ordinary non-durable callers
+retain the existing per-stack-root live-run rule. A validated durable exclusion
+or the stricter-only whole-server keyword from a durable Order makes every unsafe
+canonical-server run occupied, including foreign or missing source directories.
+Both launch and read-only plan paths derive this scope from the Order, never from
+an environment flag alone. M3 admission and lifecycle guards remain globally
+conservative. The prior V4 broad regression caught an unintended unconditional
+change to the legacy M2 scope; it is preserved rather than waived. Normal private
+durable-launch controls verify the exact claim and block before worktree/stack
+operations, while the inherited legacy other-root test retains its old result.
+
+## Wire encoding (source after 6274e536)
+
+Every offline control for 6274e536 passed and its first real host read still
+refused: `RUN_INVENTORY_PAGE_UNAVAILABLE:UnicodeDecodeError`. The collector reads
+`aiter_raw()` and parses it as JSON, httpx advertises `gzip, deflate` by default,
+and the pinned server honours that. No fixture ever compressed a response, so the
+gap was invisible. Measured on the canonical server: the default request returned
+`Content-Encoding: gzip`, an explicit `identity` request returned an unencoded
+236,005-byte page of 100 rows with the same meta total of 149.
+
+The inventory now requests `Accept-Encoding: identity` per request, and any
+`Content-Encoding` other than absent or a single `identity` token is refused as
+`RUN_INVENTORY_CONTENT_ENCODING_UNEXPECTED` before the body is read. The refusal is
+a partial observation, so it never reaches the initial-absence path. Legacy
+`_get`/`list_runs` keep httpx's transparent decoding.
+
+Decompression was rejected rather than deferred: the byte bounds exist to bound
+memory and JSON work, and `aiter_bytes` or an eager inflate would apply them to the
+wire size while an attacker-sized or merely corrupt stream expands. A bounded
+incremental decoder is unnecessary while the pinned server honours identity; adding
+one needs its own decoded-byte, CPU and evidence controls.
+
+Consequence: the sixteen MiB shared bound is now spent on uncompressed JSON. At the
+measured 2.3 KiB/row (2.36 KB), the two passes of an all-columns inventory reach it
+near 3,500 rows, below the nominal 6,400-row bound. That refuses as UNKNOWN rather than
+truncating, and it is part of the archive-growth limit above, not a fix for it.
+
+Real HTTP/1.1 controls now cover the measured negotiation, a server ignoring identity
+on the first page, a later page and both second-pass pages, every other coding
+including repeated headers, a compression bomb, chunked framing, a truncated body
+and identity-wire byte bounds.
+
+## Environment proxies
+
+Independent review of 7127a94d found a false absent path that predates the wire
+change. The inventory client honoured `HTTP_PROXY`, so ECONNREFUSED from a dead
+proxy classified as `FabroConnectionUnavailable` and the target was never
+contacted. The lifecycle check could then read that as an absent server and an
+empty catalog. Omniverse2 units carry no proxy variables today; the guarantee that
+only a first-request kernel refusal proves absence must not depend on that. The
+inventory client now sets `trust_env=False`, so it always connects to the configured
+server. Legacy `_http` calls are unchanged. Real-socket controls cover a dead proxy,
+a listening proxy offering an empty catalog, and a genuinely closed target.

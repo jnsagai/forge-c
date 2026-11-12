@@ -1,0 +1,55 @@
+{
+ "schema": "forge-c/feature014-learning-set-2/1",
+ "registered": "2026-10-26, after calibration-s1..s3 ended and before any development on these baselines",
+ "rule": "F011: a set once looked at can never be test data again; the spent calibration subset becomes learning data. Fixes developed on it are measured only on a refreshed held-out set (owner ruling 'Both: subset now, refresh later'), never on these baselines.",
+ "source": {
+  "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-subset.json",
+  "sha256": "dcc8209f6f2630b96e8993e49a0a0793f626bd0a5803b9537f48d16553ac1a8a"
+ },
+ "learning_set_1": "the 7 Feature 011 learning holdouts (must stay 49/49)",
+ "learning_set_2": [
+  {
+   "workorder": "WO-0008A-STM32N6-RCC-LL-rc1",
+   "tree_sha256": "9f4117bad01aeafa2c86c3fc018687b7684cc18467c0967ca5ee9f82ac07d459"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b007",
+   "tree_sha256": "3a2550ac07201aad8108eabc99f2da693cd58500594ea58ec461a2e663fa0412"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b008",
+   "tree_sha256": "ae6352ef91c5484681989ed809d6650f0c27859915f9defccff9cb5032eed16d"
+  },
+  {
+   "workorder": "WO-0008C-ST-RCC-LL-b009",
+   "tree_sha256": "bd0bb971c721c6ec030d32f912760dc61226438c00dacaaf72f55cb69a33e17a"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h003",
+   "tree_sha256": "f1cc3575f018a6e257a0d1a8aeece1208c01a530685c8e0281f45377faefe2f9"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h004",
+   "tree_sha256": "ab1a5ebac50dfc7a883ae44e7c238be65bf1f51f22e6b00a8638308728ca9a64"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-h005",
+   "tree_sha256": "697006b1523af0919defc70a64c42e35bd1071262be5bf2d94d219cee365ebf2"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+   "tree_sha256": "c4f4997c8bbf15af943066d760b0642e784fb8827ef87d707b338d90f6baacda"
+  },
+  {
+   "workorder": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+   "tree_sha256": "f0b5e44fac6c03e71a89095c220e54696a74f49c656420e5c963a151dbf97951"
+  }
+ ],
+ "known_error_classes_from_calibration": [
+  "parameterised write read as a contradiction (h003, rc1, rc3)",
+  "key write reported uncovered (h005, rc1)",
+  "recorded upstream gap reported again (b009)",
+  "verifiability judgement (h005)",
+  "missed budget row (b007 S1-NOBUDGET)"
+ ]
+}

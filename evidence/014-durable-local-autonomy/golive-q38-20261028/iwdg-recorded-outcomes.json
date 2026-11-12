@@ -1,0 +1,60 @@
+{
+  "runtime_revision": "97936d7deab55795248539b6f0577460fba75902",
+  "model": "qwen3.6:35b-a3b",
+  "order_id": "afo-dfdd59e695d5333f",
+  "requests": 31,
+  "reported_tokens": 83631,
+  "charged_tokens": 116000,
+  "outcome": "BLOCKED",
+  "records": [
+    {
+      "scope": "IWDG_RECORDED_EXPERIENCE_ONLY_NOT_LEARNING_BENEFIT",
+      "experiences": [
+        {
+          "experience_id": "experience-a3e60a84cb772e3bfee3e2c8",
+          "execution_id": "01M60VMEGPV5HPNVN7JEHWQEMS",
+          "phase": "JOB",
+          "outcome": "SUCCEEDED",
+          "disposition": "NO_NEW_LESSON"
+        },
+        {
+          "experience_id": "experience-0bdc676c97494d6d77de3409",
+          "execution_id": "01M60VMEGPV5HPNVN7JEHWQEMS",
+          "phase": "JOB",
+          "outcome": "BLOCKED",
+          "disposition": "DEFERRED_BUDGET"
+        },
+        {
+          "experience_id": "experience-081894984685895a7de12ec6",
+          "execution_id": "01M60VSA3SQ56WDQZ9KT24FMM3",
+          "phase": "JOB",
+          "outcome": "SUCCEEDED",
+          "disposition": "NO_NEW_LESSON"
+        },
+        {
+          "experience_id": "experience-8d44e7561c503d72835c9ae1",
+          "execution_id": "01M60VSA3SQ56WDQZ9KT24FMM3",
+          "phase": "JOB",
+          "outcome": "BLOCKED",
+          "disposition": "DEFERRED_BUDGET"
+        }
+      ],
+      "missing_dispositions": 0
+    },
+    {
+      "attempt": 1,
+      "package_status": "BLOCKED",
+      "quality_run_status": "INCOMPLETE",
+      "gap_count": 49,
+      "archive_sha256": "ae980f1e18a1c17fb8bc7f0da983a7fda546ee454cf37823b7a931e47b6235d9"
+    },
+    {
+      "attempt": 2,
+      "package_status": "BLOCKED",
+      "quality_run_status": "INCOMPLETE",
+      "gap_count": 56,
+      "archive_sha256": "5f1abad4b5eb40d8bca8d8133374b0fc85860e6eb189b2c4d6b88748e9e6c9bb"
+    }
+  ],
+  "role_or_product_qualification": false
+}

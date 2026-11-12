@@ -1,0 +1,36 @@
+{
+  "members": [
+    {
+      "path": "source-5222996d-input-copy.json",
+      "bytes": 2105,
+      "sha256": "950f4c584d3488d5f0602cf18bf1bdd5bd526dced336ef9aca17a23012e6f71b"
+    },
+    {
+      "path": "hal-check-5222996d.json",
+      "bytes": 125,
+      "sha256": "cfd103c3e6002f7e3639df33a8ebf9426a94e9506fd6c3518497513918b493ef"
+    },
+    {
+      "path": "native-full-feedback-v1/recovered-findings.json",
+      "bytes": 1023,
+      "sha256": "aca43967fc6defe9c00635c4404cc38ab580b68b1773f643fc3190f2439b8e32"
+    },
+    {
+      "path": "native-full-feedback-v1/delivery-intent.json",
+      "bytes": 216,
+      "sha256": "0195b61bf531bb99cef9d1b7d5c98a3706dbfb085e28de28abc552154a645357"
+    },
+    {
+      "path": "native-full-feedback-v1/delivery-receipt.json",
+      "bytes": 360,
+      "sha256": "51a88e797ef1f7394114665338bf7396c5d961ff3233f100cbcca254d3a114d6"
+    },
+    {
+      "path": "native-full-feedback-v1/message.txt",
+      "bytes": 1319,
+      "sha256": "2b4fc0227a139b95c2b249d47a7eab4b80b24ba7dd2f033609dfbae10a6fbdfc"
+    }
+  ],
+  "source_revision": "5222996d7f76318438086bbd158866fe26f4ab16",
+  "original_inspection_rewritten": false
+}

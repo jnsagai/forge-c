@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="1.536" timestamp="2026-10-30T05:03:52.072271+00:00" hostname="master"><testcase classname="factory.python.tests.test_lrtx_complete_inspection_feedback" name="test_rework_reads_each_complete_published_finding" time="0.007"><failure message="AssertionError: assert ['SWE1-02: SW...ation; first'] == ['SWE1-02: SW... obligation.']&#10;  &#10;  At index 0 diff: 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first' != 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independe...&#10;  &#10;  ...Full output truncated (3 lines hidden), use '-vv' to show">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-108/test_rework_reads_each_complet0')
+
+    def test_rework_reads_each_complete_published_finding(tmp_path):
+        first = 'SWR-001: ' + 'first independent observation; ' * 20 + 'FIRST_END'
+        second = 'SWR-002: distinct second issue requiring a different author obligation.'
+        _publish(tmp_path, {'SWE1-02': {'verdict': 'FAIL', 'findings': [first, second]}},
+                 [{'id': 'SWE1-02', 'detail': first[:200]}])
+&gt;       assert visit.rework_findings(tmp_path, 'SWE.1', '') == ['SWE1-02: ' + first, 'SWE1-02: ' + second]
+E       AssertionError: assert ['SWE1-02: SW...ation; first'] == ['SWE1-02: SW... obligation.']
+E         
+E         At index 0 diff: 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first' != 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independe...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+factory/python/tests/test_lrtx_complete_inspection_feedback.py:24: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_lrtx_complete_inspection_feedback" name="test_legacy_summary_and_additional_non_item_finding_remain_compatible" time="0.001" /><testcase classname="factory.python.tests.test_lrtx_complete_inspection_feedback" name="test_full_item_findings_do_not_bypass_pass_or_time_boundaries" time="0.001" /><testcase classname="factory.python.tests.test_lrtx_complete_inspection_feedback" name="test_structured_inspector_publishes_complete_findings_through_existing_operation" time="1.330"><failure message="AssertionError: assert ['SWR-001 con.... SECOND_END'] == ['SWR-001 con.... SECOND_END']&#10;  &#10;  At index 0 diff: 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the s' != 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operat...&#10;  &#10;  ...Full output truncated (2 lines hidden), use '-vv' to show">ws1 = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-108/test_structured_inspector_publ0/state/workorders/WO-T-IWDG-LL/workspace')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x70421764c7c0&gt;
+
+    def test_structured_inspector_publishes_complete_findings_through_existing_operation(ws1, monkeypatch):  # noqa: F811
+        first = 'SWR-001 contains inconsistent named-field effects. ' + 'Inspect the stated bit operation. ' * 12 + 'FIRST_END'
+        second = 'SWR-002 names an unsupported field in its requirement statement. SECOND_END'
+    
+        def answer(packet):
+            item = packet['task'].rsplit(':', 1)[1]
+            return {'verdict': 'FAIL' if item == 'SWE1-02' else 'PASS',
+                    'findings': [first, second] if item == 'SWE1-02' else [],
+                    'evidence_checked': ['workproducts/SWE.1/software_requirements.md']}
+    
+        monkeypatch.setattr(S, 'call', _scripted(Answers({}, answer), []))
+        assert review.visit(ws1, 'SWE.1', 'synthetic')['status'] == 'REWORK'
+        report = json.loads(sorted((ws1 / 'inspection/SWE.1').glob('INS-*.json'))[-1].read_text())
+        assert report['verdict'] == 'FAIL'
+&gt;       assert report['items']['SWE1-02']['findings'] == [first, second]
+E       AssertionError: assert ['SWR-001 con.... SECOND_END'] == ['SWR-001 con.... SECOND_END']
+E         
+E         At index 0 diff: 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the s' != 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operat...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+factory/python/tests/test_lrtx_complete_inspection_feedback.py:56: AssertionError</failure></testcase></testsuite></testsuites>

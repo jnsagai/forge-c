@@ -1,0 +1,27 @@
+{
+  "schema": "forge-c/backend-smoke-scope/1",
+  "scope_id": "f014-mtp-xhigh-backend-20261028-v2",
+  "owner_directive": "no, go with MTP",
+  "source_revision": "d3f0b28a12ce789658ddccaa714d3b785fa42f87",
+  "profile": "local-rtx-v2-omniverse2-q38-aspice-mtp",
+  "profile_sha256": "65ef1b9b008fb3ef0b53c623f1e4827b13db8010ddbd260974c8ea188c4dd88f",
+  "model": "qwen3.8:27b-q8_0",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "script_sha256": "8343b08b1536d1032ad96643817c2ed521e44e73a555d228812bab923fb6d438",
+  "deadline_epoch": 1793214897.287105,
+  "max_requests": 2,
+  "max_conservative_tokens": 98304,
+  "max_wall_seconds": 581,
+  "inference_slots": 1,
+  "operator_epoch_before": 20,
+  "scope": "Isolated MTP/xhigh gateway + seeded MCP stdio/ticket smoke only; no product acceptance, source promotion, CRC retry, mission reset or review signature",
+  "parent_scope_sha256": "6f4578eb877ad81747d32741b9a4afc3d87911dc8464bf3acb91d7f4f07b8bf1",
+  "cumulative_previous": {
+    "attempts": 1,
+    "requests": 0,
+    "conservative_reservations": 0,
+    "backend_terminated": true,
+    "operator_restored_epoch": 20
+  },
+  "hypothesis": "Installed MCP Tool uses input_schema (wire alias inputSchema); corrected no-model MCP schema preflight passes. Runtime/source/model/profile unchanged."
+}

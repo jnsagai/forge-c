@@ -1,0 +1,151 @@
+{
+  "schema": "forge-c/capa170-component-index/1",
+  "at": "2026-11-04T23:43:32.146853+00:00",
+  "candidate": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "qualified_baseline169": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "ordered_170_code_commits": [
+    "7d3e328760e73a43b34e9b83d256ee342fd9544b",
+    "edff27525b8331af7ce943de0490172c9fc180c5"
+  ],
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa170-line-lifecycle",
+  "source_clean": true,
+  "source_files": [
+    {
+      "path": "factory/python/forge_factory/afo/execution_lifecycle.py",
+      "sha256": "f806fa4907ac284e12e7d42bcf51be33457f96160f1b06759a093a4f3b3217bc"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_launcher.py",
+      "sha256": "53a2928651c62ce93ce5bdaa7dcd51435d8ac6b0bd623a8029a75b103615e164"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_recovery_product.py",
+      "sha256": "0c6e7d6e35927845db5df8dc0e31a7fc0683690c0d7e64672face0248fc1ccf3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_stack_lifecycle.py",
+      "sha256": "55b2844341a390d4b4bce6f5d5a81f06c58e3904649c3540345d43e60ec7bde6"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "326f78fff7d7a90f2ea60e9642adaa4ce1c29cb65e411cbdfbdbd8be1a477cac"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "000103a00c0c75cf051318999a008a915a5855d19f01ab840cac9e6a6f6813fb"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/builder.py",
+      "sha256": "44d9dd7c2d0e1f58e182c815b7dd02710761c7ae9498dbf5da8b62d9b9fb056c"
+    },
+    {
+      "path": "factory/python/tests/test_line_recovery_product_bridge.py",
+      "sha256": "482e5b53e9d8f04506ccbeba31c2e9f15b3540b45c3cdd350d033f2ca760b564"
+    },
+    {
+      "path": "factory/python/tests/test_line_stack_lifecycle.py",
+      "sha256": "8b0599bbe5edb0302ad8c6ffd46dc952fb34c0bb4e0591a4d2c369291d8c8c8c"
+    }
+  ],
+  "focused": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "96",
+    "time": "32.104",
+    "timestamp": "2026-11-04T23:40:53.887247+00:00",
+    "hostname": "master"
+  },
+  "frozen_RPR170": {
+    "script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rpr170_line_product_lifecycle.py",
+    "sha256": "b5248a4f81e8cc82c45a6aa957adbbc59de673c537b273948f5af8c4e273ab30",
+    "result": "SYMPTOM_ABSENT",
+    "exit": 0
+  },
+  "design": {
+    "passed": 14
+  },
+  "ruff": "PASS",
+  "controls": [
+    "Real registered normal managed admission/job/claim/mission/intent/resource lease; stop uses pidfd for actual owned process and preserves foreign process/no global shutdown/store.",
+    "Real private user/network/PID namespace HTTP gateway+two model transports; managed swaps signal actual worker instead of nsenter waiter. No actual model/GPU/competence claimed.",
+    "Host UID vs inner mapped UID accepted only with captured exact namespace/one-ID UID-map proof; changed mapping refused.",
+    "Fresh signed launch/service permission and deadline guard at physical signals/spawns/waits; ContextVar reset preserves ordinary legacy behavior.",
+    "Model health timeout and expiry AFTER actual worker spawn perform monotonic original-nonce teardown; failed initial startup own process teardown; no new spawn after expiry.",
+    "Unknown cleanup keeps held lease even if native is terminal; only fresh exact-provider kernel quiet appends a bound receipt then permits existing release. Foreign provider remains alive; malformed/foreign hold refuses release.",
+    "First graph serve before detach receipt uses existing authoritative native nonce adoption; wrong nonce refuses without mission/lease changes.",
+    "Pinned inner namespace chooses profile Fabro port; host observations retain host relay port."
+  ],
+  "old_failures_preserved": [
+    "Earlier component fixture lacked normal admitted intent epoch; corrected by optional normal managed fixture setup before admission.",
+    "Initial actual CPU transport reused host network namespace; explicit private network+loopback setup fixed fixture, not source gates.",
+    "Related gateway namespace control failed with relative PYTHONPATH after cwd changed, importing old installed package; exact rerun with absolute candidate PYTHONPATH passed (log retained).",
+    "Original7d source review found managed failed-health cleanup killing waiter; corrected inedff with explicit actual CPU timeout/expiry controls."
+  ],
+  "pending": "Parent owns final read-only review, formal CAPA/RPR registry/gate and all remote M0/qualification/deployment authority. Not yet claimed eligible.",
+  "no_remote_actions_or_launches": true,
+  "protected_paths_modified": false,
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-final-focused.log",
+      "sha256": "b701e7dd8d0f0fd498c8169c56e853fee0a80dbdcc9c7fda669fb3106e46d96b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-final-focused.xml",
+      "sha256": "31184add176297508e5fb5d6423c1229c986c5d902b5c323111d8ebb560baeb6"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-controls-r1.log",
+      "sha256": "cb27fd7f42b6d224dfa05db3fc71777af0a383bcb32d6cfe1be44ebfcab22739"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-controls-r2.log",
+      "sha256": "1e6b4fbe33d23cc880df779e2dd0330dd0359555faab7d7943e31674e2319fe8"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-focused-final.log",
+      "sha256": "21c8fa184bff044fc8254fe1f0da9a12b46ddd70f36e794db205143112c4ab1f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-focused-final.xml",
+      "sha256": "ad5359bda6495861bf97e254da7e321757554fbdd7afcd75476c12d2845d8eea"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-focused-final-r2.log",
+      "sha256": "650187a4ae2a868d13be275796a0d28ad4257a5afeea46b9e46fc9082e9ae4f9"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-cleanup-focused-final-r2.xml",
+      "sha256": "4ab8da24e2761ed5de2b6bc33f6165e33f3e21f40c90b131b35bef3c6aaba6a8"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-final-v2-frozen-rpr.log",
+      "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-final-v2-design.log",
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-final-v2-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-readonly-provisional-review.json",
+      "sha256": "d566ff61c1e0335ee4bfb620c45489e27bf7e0bf68431d43d7ec2ffeaeea24f3"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-readonly-final-review.json",
+      "sha256": "c67fc12bb058e52802aa081867963cf0adc05212df57d8fcd03e60ed7af278c4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-nsenter-waiter-control.json",
+      "sha256": "ee7200aada0fcf33c77fd66abd04cbda9fc9eb9d0adace944dc9af18a034bff4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa170-user-namespace-identity-control.json",
+      "sha256": "eab36f636c662f89659fedf26c9bd9542e55f9e996321e90042fecd1a93634e7"
+    }
+  ]
+}

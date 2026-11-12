@@ -1,0 +1,82 @@
+{
+  "source_revision": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "scope": "BOUNDED_MODEL_FREE_INDEPENDENT_COLLECTOR_NOT_OPERATIONAL_CAMPAIGN",
+  "local": {
+    "tests": 522,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 1,
+    "passed": 521,
+    "seconds": 41.437
+  },
+  "release": {
+    "tests": 13,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 13,
+    "seconds": 9.319
+  },
+  "omniverse2": {
+    "tests": 194,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 194,
+    "seconds": 386.299
+  },
+  "prior_development_attempts": [
+    {
+      "tests": 277,
+      "failures": 1,
+      "reason": "source-hash mismatch refusal code changed; inherited code restored",
+      "qualification": "UNCOMMITTED_WIP_NOT_EXACT_REVISION"
+    },
+    {
+      "tests": 391,
+      "failures": 0,
+      "qualification": "UNCOMMITTED_WIP_NOT_EXACT_REVISION"
+    }
+  ],
+  "features": [
+    "existing soak cadence and writer lock",
+    "immutable attempt/capture/receipt crash replay",
+    "cumulative finite sample allowance",
+    "retained failed host captures and prior successful cursor",
+    "independent original-source replay",
+    "disk reserve and partial-tail refusal"
+  ],
+  "global_interventions": null,
+  "host_preflight": {
+    "status": "BLOCKED",
+    "exit_code": 2,
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ]
+  },
+  "A2": "IN_PROGRESS: all-channel correlation/continuous replay and real three-driver product bindings still required",
+  "operational_campaign": "NOT_RUN",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "new_task_checkboxes": [],
+  "artifacts": {
+    "affected.log": "bc3f2d62711d67566897afd0cae1ab80ea10d5a70b7852af684c167c23ed3c56",
+    "affected.xml": "7c1eb8507331e4a4e9123878595f73c2ef77c2c6ccbfe520acd455229c4fb917",
+    "development-attempts/corrected.log": "f578cfe560c088665a5ea8b2a50e1cd7813b0abf8f86df69138f2c237d53ca33",
+    "development-attempts/corrected.xml": "676980cfd55e599a2c21ca944aecbd61cbf9e9f26e0a84c8963e12b39864fd05",
+    "development-attempts/initial.log": "d456303516dcd3e6dccd1f9f8e2dcbb3415059450c17e4f651567ab1f4fdd82c",
+    "development-attempts/initial.xml": "aef5b0a7ca29a41cd6767136ea19dd9dd734998c40e90dc4685a049d6ddfd51c",
+    "invocation.json": "f262ea899d69f3f52f6b330574476ab118a502f4e38879cc879bece70abb5222",
+    "native/host-preflight.json": "0df548055c6e0c7dfa83259372fafa72e123b5bf0047298ac4e2002b167f1843",
+    "native/host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native/invocation.json": "53b2f0d256fbcd7f262d4cd313005e345438a901cba373c194d418330b356de6",
+    "native/tests.log": "ba22e042ad8033e371395da8879777ee19f3d57c586f73f2617e847bdaabf278",
+    "native/tests.xml": "08363b18f4fc1aee8ee1e178c720c04c19c6d08f31fc352ba925872280f3b642",
+    "operation-bindings-blocker.json": "8abd119106bceb528c5e6588104a1de95b33856f6cc9d49f7394a9d79520ca47",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "f94bb8a2ae599fe2a1804aef213a7496345d97b2f88514a7afcd15eced3613f6"
+  }
+}

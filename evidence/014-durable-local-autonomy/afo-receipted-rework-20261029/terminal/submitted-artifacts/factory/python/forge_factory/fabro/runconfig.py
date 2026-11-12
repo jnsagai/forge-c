@@ -1,0 +1,130 @@
+"""Deterministic builder for Fabro run workspaces + run configs (T007/T009/T018).
+
+A product run gets its own git workspace (Fabro discovers skills at the git root, ADR-0002) containing
+only the role SKILLs and approved inputs. The run config wires: local model via gateway, the Forge
+MCP servers for the roles used, and the blocking policy hook bound to the run binding.
+"""
+from __future__ import annotations
+
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+from ..common import REPO_ROOT, data_root, state_dir
+from ..policy.authz import Binding
+
+GIT_ENV = {"GIT_AUTHOR_NAME": "forge-factory", "GIT_AUTHOR_EMAIL": "factory@forge-c.local",
+           "GIT_COMMITTER_NAME": "forge-factory", "GIT_COMMITTER_EMAIL": "factory@forge-c.local"}
+
+
+def _git(ws: Path, *args: str) -> str:
+    return subprocess.run(["git", *args], cwd=ws, check=True, capture_output=True, text=True,
+                          env={**os.environ, **GIT_ENV}).stdout.strip()
+
+
+def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None, *,
+                     include_default_skills: bool = True) -> str:
+    """Create a fresh product workspace git repo; returns the initial commit SHA."""
+    if ws.exists():
+        shutil.rmtree(ws)
+    ws.mkdir(parents=True)
+    if include_default_skills:
+        shutil.copytree(REPO_ROOT / ".fabro" / "skills", ws / ".fabro" / "skills")
+    for rel, data in (inputs or {}).items():
+        p = ws / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data.encode() if isinstance(data, str) else data)
+    (ws / ".gitignore").write_text(".forge-run/\n")
+    _git(ws, "init", "-q", "-b", "main")
+    _git(ws, "add", "-A")
+    _git(ws, "commit", "-q", "-m", "forge: approved input baseline")
+    return _git(ws, "rev-parse", "HEAD")
+
+
+def toml_str(s: str) -> str:
+    return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers: dict[str, dict] | None = None,
+                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama",
+                    hook_env: dict[str, str] | None = None) -> str:
+    py = sys.executable
+    pp = str(REPO_ROOT / "factory" / "python")
+    lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
+             "[run.model]", f"name = {toml_str(model)}", f"provider = {toml_str(provider)}"]
+    for name, spec in sorted((mcp_servers or {}).items()):
+        key = name.replace("-", "_")
+        lines += [f"[run.agent.mcps.{key}]", 'type = "stdio"',
+                  "command = [" + ", ".join(toml_str(c) for c in [py, "-m", spec["module"]]) + "]",
+                  f'startup_timeout = "{spec.get("startup_timeout", "20s")}"',
+                  f'tool_timeout = "{spec.get("tool_timeout", "200s")}"',
+                  f"[run.agent.mcps.{key}.env]"]
+        # The isolated MCP child gets exactly this env table (it does not inherit the host process
+        # environment), so the tool context must be pinned here: FORGE_DATA_ROOT defaults to the
+        # host's declared root, and a value declared in the server spec overrides that default.
+        # Each key is emitted exactly once so strict tomllib never sees a duplicate key
+        # ('Cannot overwrite a value').
+        env = {"PYTHONPATH": pp,
+               "FORGE_STATE_DIR": str(state_dir()),
+               "FORGE_DATA_ROOT": str(data_root()),
+               "FORGE_BINDING_ID": binding_id,
+               "PATH": os.environ.get('PATH', '/usr/bin:/bin')}
+        for k in sorted(spec.get("env", {})):
+            env[k] = str(spec["env"][k])
+        for k, v in env.items():
+            lines.append(f"{k} = {toml_str(v)}")
+    # The generated hook defaults pin the same tool context as the isolated MCP env table:
+    # FORGE_DATA_ROOT defaults to the host's declared root, and a value declared via hook_env
+    # overrides that default. A shell applies prefix assignments in order, so the last
+    # assignment for a repeated variable wins; emit each default only when not declared and
+    # the declared overrides after, so the default can never shadow the declared override.
+    declared = {k: str(v) for k, v in (hook_env or {}).items()}
+    defaults = [("PYTHONPATH", pp),
+                ("FORGE_STATE_DIR", shlex.quote(str(state_dir()))),
+                ("FORGE_DATA_ROOT", shlex.quote(str(data_root())))]
+    hook_prefix = [f"{k}={v}" for k, v in defaults if k not in declared]
+    hook_prefix += [f"{k}={shlex.quote(declared[k])}" for k in sorted(declared)]
+    hook = " ".join(hook_prefix) + f" {py} -m forge_factory.policy.fabro_hook --binding {shlex.quote(str(binding_path))}"
+    lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
+              "blocking = true", "sandbox = false", 'timeout = "20s"',
+              "[[run.hooks]]", 'id = "forge-governor-stage-reset"', 'event = "stage_start"', f"script = {toml_str(hook)}",
+              "blocking = true", "sandbox = false", 'timeout = "20s"']
+    return "\n".join(lines) + "\n"
+
+
+def write_run(ws: Path, graph_text: str, goal: str, binding: Binding,
+              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama",
+              hook_env: dict[str, str] | None = None) -> Path:
+    run_dir = ws / ".forge-run"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "workflow.fabro").write_text(graph_text, encoding="utf-8")
+    bpath = run_dir / "binding.json"
+    binding.dump(bpath)
+    (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers, model=model,
+                                                           binding_id=binding.binding_id, provider=provider, hook_env=hook_env))
+    return run_dir / "workflow.toml"
+
+
+def fabro_env() -> dict[str, str]:
+    return {**os.environ, "HOME": os.environ.get("FORGE_FABRO_HOME", str(Path.home())),
+            "FABRO_NO_UPGRADE_CHECK": "1"}
+
+
+def fabro_run(ws: Path, toml_path: Path, label: str, timeout: int = 1800) -> str:
+    fab = os.environ.get("FORGE_FABRO_BIN", str(Path.home() / ".fabro/bin/fabro"))
+    out = subprocess.run([fab, "run", str(toml_path), "--detach", "--auto-approve", "--environment", "local",
+                          "--label", f"forge={label}"], cwd=ws, env=fabro_env(), capture_output=True, text=True,
+                         timeout=120)
+    run_id = (out.stdout.strip().splitlines() or [""])[-1]
+    if not run_id or " " in run_id:
+        raise RuntimeError(f"fabro run failed: {out.stderr.strip()[-300:]}")
+    subprocess.run([fab, "wait", run_id], env=fabro_env(), capture_output=True, timeout=timeout)
+    return run_id
+
+
+def default_state_workspace(name: str) -> Path:
+    return state_dir() / "workspaces" / name

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Process lab owner disposition (design rev 4 \u00a79)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "disposition_id",
+    "experiment_id",
+    "driver",
+    "obligation_id",
+    "oracle_sha256",
+    "verdict",
+    "covering",
+    "rationale",
+    "approver",
+    "decided_utc",
+    "signature_ref"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/process-lab-disposition/1"
+    },
+    "disposition_id": {
+      "type": "string",
+      "pattern": "^PLD-[A-Za-z0-9_.-]{4,80}$"
+    },
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "driver": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "obligation_id": {
+      "type": "string",
+      "pattern": "^OBL-[A-Za-z0-9_.-]{1,60}$"
+    },
+    "oracle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verdict": {
+      "enum": [
+        "COVERED",
+        "NOT_COVERED",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "covering": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement_sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SWR-[0-9]{3}$"
+          },
+          "statement_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 2000
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "decided_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+\\.sig$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "COVERED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "covering": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

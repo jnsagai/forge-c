@@ -1,0 +1,21 @@
+{
+  "scope": "STANDALONE_DIAGNOSTIC_FIXTURE_EVENT_PROVENANCE",
+  "events": [
+    {
+      "event_id": "fx-33782a5451904fcb931d7f1c35e48781",
+      "ts_utc": "2026-10-25T13:17:00.011708Z",
+      "channel": "knowledge",
+      "message": "lesson lesson-db8a103e917d proposed"
+    },
+    {
+      "event_id": "fx-2d44a08dbf0c4da1a90232c39bcfcfab",
+      "ts_utc": "2026-10-25T13:17:00.052556Z",
+      "channel": "knowledge",
+      "message": "lesson lesson-db8a103e917d VALIDATED"
+    }
+  ],
+  "event_stream": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/events/factory-events.jsonl",
+  "benchmark_jobs_services_and_outcome_records_changed": false,
+  "private_fixture_store": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/holdout-delivery-before-x2s8rqev/lessons.sqlite3",
+  "required_handling": "Exclude these diagnostic fixture event IDs from operational/learning outcome metrics; retain append-only history. Subsequent standalone probes must explicitly set private FORGE_STATE_DIR and FORGE_EVENTS_DIR."
+}

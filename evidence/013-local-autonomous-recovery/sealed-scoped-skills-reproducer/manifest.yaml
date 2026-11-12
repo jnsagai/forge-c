@@ -1,0 +1,7 @@
+reproducers:
+- baseline_revision: 335a2e0b326f40fd819d11753d7217566c6e702f
+  id: AFO-operator-scoped-skills
+  observed_in: 01M5QVW4QYPRC1JAX1Q413HEA8
+  script: reproducer.py
+  sha256: 110a1aea8f5cfd1c1153993e7b5294a98d34cdcbe9d871f73815646c94525f29
+  symptom_signature: single-role recovery workspace advertises unrelated product skills

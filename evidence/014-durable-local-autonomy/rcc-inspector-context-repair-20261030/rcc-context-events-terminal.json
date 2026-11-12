@@ -1,0 +1,505 @@
+{
+  "at": "2026-10-30T01:25:53.648595Z",
+  "run_id": "01M655FBXJ3WW9R29ZT9YK9SKA",
+  "job_id": "afo-agent-ebfdb7f98a3999fbaf747d8a",
+  "state": "FAILED",
+  "event_counts": {
+    "run.created": 1,
+    "run.submitted": 1,
+    "run.start_requested": 1,
+    "run.runnable": 1,
+    "run.starting": 1,
+    "sandbox.initializing": 1,
+    "sandbox.create.started": 1,
+    "sandbox.create.progress": 1,
+    "sandbox.create.completed": 1,
+    "sandbox.ready": 1,
+    "sandbox.initialized": 1,
+    "git.identity.resolved": 1,
+    "run.started": 1,
+    "run.running": 1,
+    "stage.started": 4,
+    "stage.completed": 2,
+    "edge.selected": 3,
+    "checkpoint.completed": 3,
+    "stage.prompt": 1,
+    "agent.session.started": 1,
+    "agent.memory.loaded": 1,
+    "agent.skills.discovered": 1,
+    "agent.session.activated": 1,
+    "agent.tools.available": 1,
+    "agent.mcp.server.ready": 1,
+    "agent.input": 1,
+    "agent.llm.started": 17,
+    "agent.llm.first_output": 16,
+    "agent.message": 16,
+    "agent.tool.started": 23,
+    "agent.skill.activated": 1,
+    "agent.tool.completed": 23,
+    "agent.warning": 11,
+    "todo.created": 5,
+    "agent.error": 1,
+    "agent.processing.end": 1,
+    "agent.session.deactivated": 1,
+    "agent.session.ended": 1,
+    "stage.failed": 2,
+    "run.completed": 1,
+    "sandbox.stop.started": 1,
+    "sandbox.stop.completed": 1
+  },
+  "tool_facts": [
+    {
+      "seq": 31,
+      "at": "2026-10-30T01:06:12.962036117Z",
+      "tool": "use_skill",
+      "args": {
+        "skill_name": "afo-factory-maintainer"
+      }
+    },
+    {
+      "seq": 32,
+      "at": "2026-10-30T01:06:12.962885914Z",
+      "tool": "mcp__forge_maintainer_mcp__read_case",
+      "args": {}
+    },
+    {
+      "seq": 34,
+      "at": "2026-10-30T01:06:13.093700862Z",
+      "tool": "use_skill",
+      "is_error": false
+    },
+    {
+      "seq": 35,
+      "at": "2026-10-30T01:06:13.184231853Z",
+      "tool": "mcp__forge_maintainer_mcp__read_case",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 4082,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 39,
+      "at": "2026-10-30T01:06:25.023969946Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/lrtx/runner.py"
+      }
+    },
+    {
+      "seq": 40,
+      "at": "2026-10-30T01:06:25.232033390Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 6715,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 44,
+      "at": "2026-10-30T01:06:28.459904290Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/lrtx/structured.py"
+      }
+    },
+    {
+      "seq": 45,
+      "at": "2026-10-30T01:06:28.631900153Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 24637,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 49,
+      "at": "2026-10-30T01:07:05.877510289Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/lrtx/profile.py"
+      }
+    },
+    {
+      "seq": 50,
+      "at": "2026-10-30T01:07:06.044528674Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 13417,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 54,
+      "at": "2026-10-30T01:07:41.880759712Z",
+      "tool": "shell",
+      "args": {}
+    },
+    {
+      "seq": 55,
+      "at": "2026-10-30T01:07:42.053575766Z",
+      "tool": "shell",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 60,
+      "at": "2026-10-30T01:07:50.707845377Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "config/factory/profiles/local-rtx-v2.yaml"
+      }
+    },
+    {
+      "seq": 61,
+      "at": "2026-10-30T01:07:52.297512580Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 7815,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 66,
+      "at": "2026-10-30T01:08:16.785964299Z",
+      "tool": "grep",
+      "args": {
+        "path": "factory/python"
+      }
+    },
+    {
+      "seq": 67,
+      "at": "2026-10-30T01:08:16.786518631Z",
+      "tool": "grep",
+      "args": {
+        "path": "factory/python"
+      }
+    },
+    {
+      "seq": 68,
+      "at": "2026-10-30T01:08:16.951066934Z",
+      "tool": "grep",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 69,
+      "at": "2026-10-30T01:08:17.019120983Z",
+      "tool": "grep",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 74,
+      "at": "2026-10-30T01:10:43.365029569Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/afo/diagnosis_packet.py"
+      }
+    },
+    {
+      "seq": 75,
+      "at": "2026-10-30T01:10:43.365899516Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/workorder.py",
+        "offset": 540
+      }
+    },
+    {
+      "seq": 76,
+      "at": "2026-10-30T01:10:43.551152006Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 540,
+        "total_chars": 51897,
+        "next_offset": 33308
+      }
+    },
+    {
+      "seq": 77,
+      "at": "2026-10-30T01:10:43.575540517Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 15156,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 82,
+      "at": "2026-10-30T01:14:25.288854672Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/afo/recovery_context.py"
+      }
+    },
+    {
+      "seq": 83,
+      "at": "2026-10-30T01:14:25.289390185Z",
+      "tool": "glob",
+      "args": {}
+    },
+    {
+      "seq": 84,
+      "at": "2026-10-30T01:14:25.453346796Z",
+      "tool": "glob",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 85,
+      "at": "2026-10-30T01:14:25.476404309Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 3722,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 90,
+      "at": "2026-10-30T01:15:13.102959027Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/workorder.py",
+        "offset": 33308
+      }
+    },
+    {
+      "seq": 91,
+      "at": "2026-10-30T01:15:13.284702081Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 33308,
+        "total_chars": 51897,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 96,
+      "at": "2026-10-30T01:15:38.274186472Z",
+      "tool": "read_file",
+      "args": {}
+    },
+    {
+      "seq": 97,
+      "at": "2026-10-30T01:15:38.275474224Z",
+      "tool": "grep",
+      "args": {
+        "path": "specs"
+      }
+    },
+    {
+      "seq": 98,
+      "at": "2026-10-30T01:15:38.440559184Z",
+      "tool": "read_file",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 99,
+      "at": "2026-10-30T01:15:38.465834297Z",
+      "tool": "grep",
+      "is_error": true,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 104,
+      "at": "2026-10-30T01:15:42.050836452Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "specs/002-self-healing-factory/contracts/agent-output.schema.json"
+      }
+    },
+    {
+      "seq": 105,
+      "at": "2026-10-30T01:15:42.223427060Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "BLOCKED",
+      "issues": [
+        "PROTECTED_PATH:specs/002-self-healing-factory/contracts/agent-output.schema.json"
+      ],
+      "page": {
+        "offset": null,
+        "total_chars": null,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 110,
+      "at": "2026-10-30T01:16:33.177555326Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "config/factory/profiles/local-rtx-v1.yaml"
+      }
+    },
+    {
+      "seq": 111,
+      "at": "2026-10-30T01:16:33.181903066Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/afo/durable.py",
+        "offset": 0
+      }
+    },
+    {
+      "seq": 112,
+      "at": "2026-10-30T01:16:33.378419792Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 5652,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 113,
+      "at": "2026-10-30T01:16:33.403493979Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 3930,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 118,
+      "at": "2026-10-30T01:17:01.671712557Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/afo/__init__.py"
+      }
+    },
+    {
+      "seq": 119,
+      "at": "2026-10-30T01:17:01.672314268Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "args": {
+        "path": "factory/python/forge_factory/common.py"
+      }
+    },
+    {
+      "seq": 120,
+      "at": "2026-10-30T01:17:01.847452712Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 533,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 121,
+      "at": "2026-10-30T01:17:01.869779695Z",
+      "tool": "mcp__forge_maintainer_mcp__read_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": 0,
+        "total_chars": 2707,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 126,
+      "at": "2026-10-30T01:17:36.572609720Z",
+      "tool": "update_plan",
+      "args": {}
+    },
+    {
+      "seq": 132,
+      "at": "2026-10-30T01:17:37.557650924Z",
+      "tool": "update_plan",
+      "is_error": false,
+      "output_format": "NON_JSON"
+    },
+    {
+      "seq": 137,
+      "at": "2026-10-30T01:19:19.143770400Z",
+      "tool": "mcp__forge_maintainer_mcp__write_source",
+      "args": {
+        "path": "factory/python/forge_factory/lrtx/structured.py"
+      },
+      "content_sha256": "f543f709245eb9d8458a1ecc9f291afece97816bca6c136a4dbf5e258825b3c9",
+      "content_bytes": 25807
+    },
+    {
+      "seq": 138,
+      "at": "2026-10-30T01:19:19.327420484Z",
+      "tool": "mcp__forge_maintainer_mcp__write_source",
+      "is_error": false,
+      "status": "PASS",
+      "issues": [],
+      "page": {
+        "offset": null,
+        "total_chars": null,
+        "next_offset": null
+      }
+    },
+    {
+      "seq": 140,
+      "event": "agent.error",
+      "error": {
+        "error": {
+          "kind": "llm",
+          "message": "calling the model: provider ollama returned HTTP status 429",
+          "llm_kind": "rate_limit",
+          "retry": {
+            "type": "safe"
+          },
+          "provider": "ollama",
+          "status": 429,
+          "provider_code": "CAPABILITY_LIMIT",
+          "source_chain": [
+            "provider ollama returned HTTP status 429"
+          ]
+        }
+      }
+    }
+  ],
+  "hidden_reasoning_saved": false,
+  "observer_model_requests": 0
+}

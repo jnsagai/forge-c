@@ -1,0 +1,171 @@
+{
+  "runtime_source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "scope": "NATIVE_JOB_LOCAL_TEST_IDENTIFIER_CORRECTION_NOT_FACTORY_SELF_HEALING",
+  "tool_observations": [
+    {
+      "at": "2026-10-30T23:40:08.441803945Z",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "node": "swe4_test_author",
+      "tool_call_id": "6361xAXjcZtu0etaVVAEVJgWAX2oadqk",
+      "status": "FAIL",
+      "summary": "unit: 1 passed, 1 failed (HOST)",
+      "issues": [
+        "DUPLICATE_TEST_ID:UT-001:used by 7 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-002:used by 6 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-003:used by 5 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-004:used by 2 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-005:used by 10 checks - give each check its own id"
+      ],
+      "metrics": {
+        "passed": 1,
+        "failed": 1,
+        "executables": 1,
+        "environment": "host",
+        "target_evidence": false
+      },
+      "artifact_refs": [
+        "artifact:sha256:91b81cb3806afd6e2bb2589e2226d5192c945d033e27b90916f4693a85ab7ad4"
+      ],
+      "provenance": {
+        "tool": "clang+self-checking tests",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+        "invocation_id": "inv-0f98bab64af54fbf",
+        "output_sha256": "91b81cb3806afd6e2bb2589e2226d5192c945d033e27b90916f4693a85ab7ad4",
+        "exit_code": 1,
+        "duration_ms": 2.6
+      }
+    },
+    {
+      "at": "2026-10-30T23:42:27.850280452Z",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "node": "swe4_test_author",
+      "tool_call_id": "F2KjF8S9ifAt1W42UA2ewWxo3zA30HLf",
+      "status": "PASS",
+      "summary": "unit: 1 passed, 0 failed (HOST)",
+      "issues": [],
+      "metrics": {
+        "passed": 1,
+        "failed": 0,
+        "executables": 1,
+        "environment": "host",
+        "target_evidence": false
+      },
+      "artifact_refs": [
+        "artifact:sha256:ee84793d751997e44be779b5fc0d8485dd3b7783cfa51a2830736b5bb29e3c69"
+      ],
+      "provenance": {
+        "tool": "clang+self-checking tests",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+        "invocation_id": "inv-1a36cf3d7c15476e",
+        "output_sha256": "ee84793d751997e44be779b5fc0d8485dd3b7783cfa51a2830736b5bb29e3c69",
+        "exit_code": 0,
+        "duration_ms": 3.2
+      }
+    },
+    {
+      "at": "2026-10-30T23:42:33.114848199Z",
+      "tool": "mcp__forge_tests_mcp__llvm_coverage",
+      "node": "swe4_test_author",
+      "tool_call_id": "ngSqx5dYAC0986Z0O28y8aRxWCrVYX41",
+      "status": "PASS",
+      "summary": "line 100.0% branch None% MC/DC None% (host)",
+      "issues": [],
+      "metrics": {
+        "line_pct": 100,
+        "branch_pct": null,
+        "function_pct": 100,
+        "region_pct": 100,
+        "mcdc_pct": null,
+        "environment": "host",
+        "target_evidence": false
+      },
+      "artifact_refs": [
+        "artifact:sha256:3057378b0de03ce77c8d32ba8b08d76dbff6a618dac7574ef08d63a583eb92ec",
+        "artifact:sha256:25411c3f4ea4e103f24134e949f934560e609bedc3a17858df9750330d72dc4e",
+        "artifact:sha256:e0df3f18df5b87f60c09b5de738d4c89a3617c670a91b7167b5e992674284590"
+      ],
+      "provenance": {
+        "tool": "llvm-cov",
+        "version": "LLVM (http://llvm.org/):",
+        "invocation_id": "inv-a29f589cfd744f7f",
+        "input_sha256": "1900c8b35970d67e11f2e442c743fb21c0938a5032d36e1581feea6576e803b7",
+        "output_sha256": "3057378b0de03ce77c8d32ba8b08d76dbff6a618dac7574ef08d63a583eb92ec",
+        "exit_code": 0,
+        "duration_ms": 8.5
+      }
+    }
+  ],
+  "snapshot_audit": {
+    "at": "2026-10-30T23:48:07.808176Z",
+    "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+    "read_only": true,
+    "new_model_calls": 0,
+    "first_failure_at": "2026-10-30T23:40:08.336320Z",
+    "first_pass_at": "2026-10-30T23:42:27.543997Z",
+    "product_code_hash_unchanged": true,
+    "failed_runtime_assertion_files": [],
+    "passed_runtime_assertion_files": [],
+    "snapshot_comparisons": [
+      {
+        "path": "software/tests/unit/test_crc.c",
+        "failed_snapshot_sha256": "d29746c98a1f312f3bc1945acc2f54b926044e70c2cf0fe8fd150ebf4aa1287c",
+        "passed_snapshot_sha256": "3f432114dd64f31d3a5800db0a3a088d355a5bd0e123a7b2497bb253fec05036",
+        "before": {
+          "literal_check_calls": 30,
+          "unique_identifiers": 5,
+          "invalid_identifiers": []
+        },
+        "after": {
+          "literal_check_calls": 30,
+          "unique_identifiers": 30,
+          "invalid_identifiers": []
+        },
+        "same_after_ignoring_comments_whitespace_and_ut_identifier_literals": true,
+        "preprocessor_lines_unchanged": true
+      }
+    ],
+    "recorded_unit_runs": [
+      {
+        "ts_utc": "2026-10-30T23:40:08.336320Z",
+        "status": "FAIL",
+        "code_sha": "831eab2f2ff268bc2a15f199db10db7ea81cd83f041fa65c88e91eb78eb41a90",
+        "files": {
+          "software/tests/unit/test_crc.c": "d29746c98a1f312f3bc1945acc2f54b926044e70c2cf0fe8fd150ebf4aa1287c"
+        },
+        "assert_failed": []
+      },
+      {
+        "ts_utc": "2026-10-30T23:42:27.543997Z",
+        "status": "PASS",
+        "code_sha": "831eab2f2ff268bc2a15f199db10db7ea81cd83f041fa65c88e91eb78eb41a90",
+        "files": {
+          "software/tests/unit/test_crc.c": "3f432114dd64f31d3a5800db0a3a088d355a5bd0e123a7b2497bb253fec05036"
+        },
+        "assert_failed": []
+      },
+      {
+        "ts_utc": "2026-10-30T23:45:21.376577Z",
+        "status": "PASS",
+        "code_sha": "831eab2f2ff268bc2a15f199db10db7ea81cd83f041fa65c88e91eb78eb41a90",
+        "files": {
+          "software/tests/unit/test_crc.c": "3f432114dd64f31d3a5800db0a3a088d355a5bd0e123a7b2497bb253fec05036"
+        },
+        "assert_failed": []
+      },
+      {
+        "ts_utc": "2026-10-30T23:46:34.669916Z",
+        "status": "PASS",
+        "code_sha": "831eab2f2ff268bc2a15f199db10db7ea81cd83f041fa65c88e91eb78eb41a90",
+        "files": {
+          "software/tests/unit/test_crc.c": "cf0739e4344037bcaac8f9314908de7abe2e50eb8e6293cfbb6c72514952e704"
+        },
+        "assert_failed": []
+      }
+    ],
+    "driver_sha256": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173",
+    "implementation_corrections": 0,
+    "factory_self_healing": "NOT_ESTABLISHED"
+  },
+  "new_observer_model_calls": 0
+}

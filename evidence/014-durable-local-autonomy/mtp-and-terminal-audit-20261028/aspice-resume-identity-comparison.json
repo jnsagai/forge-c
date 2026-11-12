@@ -1,0 +1,27 @@
+{
+  "source_work_order": "WO-AFO-533cd9ba25e792a5-a1",
+  "destination_work_order": "WO-AFO-533cd9ba25e792a5-a2",
+  "source_identity_present": true,
+  "destination_identity_present": true,
+  "source_saved_contract_hash": "964d80d393a0708757be9a21b1ae96cd92dc2c2abbd0a58736694518b968fbd5",
+  "source_recomputed_contract_hash": "964d80d393a0708757be9a21b1ae96cd92dc2c2abbd0a58736694518b968fbd5",
+  "destination_saved_contract_hash": "553cf4550036124c20731e64c49ca70425b84167538247cb31b1d2bd30e97d80",
+  "destination_recomputed_contract_hash": "553cf4550036124c20731e64c49ca70425b84167538247cb31b1d2bd30e97d80",
+  "identity_equal": false,
+  "identity_difference_paths": [
+    "/contract_sha256"
+  ],
+  "contract_difference_paths": [
+    "/historical_safety_scope/scope/work_order_id"
+  ],
+  "purpose": {
+    "source": "ASPICE_ONLY",
+    "destination": "ASPICE_ONLY"
+  },
+  "history_scope_work_order": {
+    "source": "WO-AFO-533cd9ba25e792a5-a1",
+    "destination": "WO-AFO-533cd9ba25e792a5-a2"
+  },
+  "factory_revision_equal": true,
+  "local_profile_equal": true
+}

@@ -1,0 +1,46 @@
+{
+  "audit": {
+    "path": "evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json",
+    "sha256": "8afb9ebcc79980f98ca5f58cee8048b4c22e38c6fbeb1cd0d31fdc1bc5ccb8eb"
+  },
+  "command": "afo.qualification step/report on the frozen 20x5 manifest (Omniverse2) + independent audit",
+  "cwd": "/mnt/data/forge-c/qualification-014-5dc2df3",
+  "duration_s": null,
+  "execution_host": "omniverse2",
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "5dc2df352adcbec5e2dfc5921cab32dda9ae1dcb",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "known_issues": [
+    "KI-014-001",
+    "KI-014-002"
+  ],
+  "log": "evidence/v0.4/runs/DA014-protocol-95/20261026T171814.log",
+  "log_sha256": "d3318a4aba330f0f809305e31d95a6733243c779cb08f3457ad98e585537b877",
+  "official_status": "INCOMPLETE",
+  "owner_decision": "2026-10-26: '95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human.'",
+  "results": {
+    "correct_outcomes": 95,
+    "expected_denominator": 100,
+    "failures": [],
+    "missing": [
+      "qualified-local-alternative:0",
+      "qualified-local-alternative:1",
+      "qualified-local-alternative:2",
+      "qualified-local-alternative:3",
+      "qualified-local-alternative:4"
+    ],
+    "observed_denominator": 95,
+    "usage_unknown": 23,
+    "useful_plan_count": 25
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "LIVE_NATIVE_QWEN_PROTOCOL_95_OF_100_OWNER_ACCEPTED",
+  "status": "PASS",
+  "task": "DA014-protocol-95",
+  "ts_utc": "2026-10-26T17:18:14.747078+00:00"
+}

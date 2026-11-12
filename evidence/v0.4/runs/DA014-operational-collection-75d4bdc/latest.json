@@ -1,0 +1,67 @@
+{
+  "git_head": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "status": "PASS_DETERMINISTIC",
+  "exit_code": 0,
+  "scope": "BOUNDED_MODEL_FREE_INDEPENDENT_COLLECTOR_NOT_OPERATIONAL_CAMPAIGN",
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_operational_collection.py",
+      "factory/python/tests/test_afo_m7_readiness.py",
+      "factory/python/tests/test_da014_control_context.py",
+      "factory/python/tests/test_da014_control_observation.py",
+      "factory/python/tests/test_da014_bus_audit.py",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_audit_segments.py",
+      "factory/python/tests/test_da014_audit_event_replay.py",
+      "factory/python/tests/test_da014_operational_work.py",
+      "factory/python/tests/test_da014_operational_report.py",
+      "factory/python/tests/test_da014_read_snapshot.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "factory/python/tests/test_da014_operational_facts.py",
+      "factory/python/tests/test_da014_qualification.py",
+      "factory/python/tests/test_da014_qualification_audit.py",
+      "factory/python/tests/test_da014_qualification_state.py",
+      "factory/python/tests/test_da014_integration.py",
+      "factory/python/tests/test_afo_m2_queue.py",
+      "factory/python/tests/test_afo_m3_reconcile.py",
+      "factory/python/tests/test_afo_m6_operations.py",
+      "factory/python/tests/test_afo_m8_acceptance.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-75d4bdc-affected",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-75d4bdc-affected.xml"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_m7_governance_release.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-75d4bdc-release",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-75d4bdc-release.xml"
+    ]
+  ],
+  "results": {
+    "local": {
+      "tests": 522,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 521,
+      "seconds": 41.437
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.319
+    }
+  },
+  "evidence": "evidence/014-durable-local-autonomy/operational-collection-75d4bdc/summary.json",
+  "evidence_sha256": "606b58e42ab47c93f4af68068ae0215a2af1cb365effd108117290a4f2a249a8",
+  "new_task_checkboxes": []
+}

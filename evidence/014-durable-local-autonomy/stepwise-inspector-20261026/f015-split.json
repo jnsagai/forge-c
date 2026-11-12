@@ -1,0 +1,41 @@
+{
+ "schema": "forge-c/feature014-f015-split/1",
+ "registered": "2026-10-26, before any measurement and before any development on these baselines",
+ "owner": "2026-10-26: refresh the held-out set from current-factory baselines incl. Feature 015 drivers; decide the learning/test split with a recorded seed before measuring ('Known issues only' answer: spend the time on the Feature 015 held-out set and the inspector)",
+ "source": {
+  "record": "evidence/v0.4/benchmark/st-drivers/record.json at feat/015-st-driver-benchmark b7233a7",
+  "pool": "the READY_FOR_OFFLINE_REVIEW ST LL drivers the owner approved (OD-2026-10-26-02 CRC/SPI, OD-2026-10-26-03 USART/GPIO); TIM excluded (owner review pending)"
+ },
+ "selection_rule": "gate-only, as the calibration subset: the current deterministic SWE.1 gate freezes the baseline under the truthful preflight (zero model calls); all four qualify",
+ "seed": 20261026,
+ "method": "random.Random(seed).shuffle(sorted work orders); first two = learning set 3, last two = held-out test set 2",
+ "learning_set_3": [
+  {
+   "workorder": "WO-AFO-125b96c419d7bc90-a1",
+   "peripheral": "SPI1",
+   "tree_sha256": "79c4ab5d58620f9e58046cc0939d8af23719a8b2648edf41f3dfb6b1d2febc3b"
+  },
+  {
+   "workorder": "WO-AFO-1fab3fc8b2e35f24-a2",
+   "peripheral": "USART1",
+   "tree_sha256": "e86651fe9b25cf2b5b0d80cc1a5a8b3740c24790ac99617906be53e2fb66019a"
+  }
+ ],
+ "test_set_2": [
+  {
+   "workorder": "WO-AFO-03122bd1dd4fb5ff-a1",
+   "peripheral": "GPIOA",
+   "tree_sha256": "ee288671b853867167d7c4eff4507e507a0a3dbf53a1bffa6c1fe9a42fa0f7c4"
+  },
+  {
+   "workorder": "WO-AFO-efc1871950537b1a-a1",
+   "peripheral": "CRC",
+   "tree_sha256": "fc64484af18fe6a30119161e460e212b09ba8b5b56ac8cac1744ab2668816978"
+  }
+ ],
+ "truthful_preflight_at_registration": {
+  "revision": "8d4208e (inspector code)",
+  "all_four": "FALSE_REJECTION_BY_INSPECTION (scope behaviours with no stating requirement, SWE1-05)",
+  "rule": "recorded as a result; only learning set 3 may be studied or used to change the inspector"
+ }
+}

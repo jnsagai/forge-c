@@ -1,0 +1,101 @@
+{
+ "CAPA-141": {
+  "history": [
+   {
+    "at": "2026-11-04T01:10:08.521753Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[\"crchal-l31d-swe3-checks-provided-ll\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L31D SWE.3: guideline findings in the provided ST LL and REGMAP:NO_REGISTER_DEFINES charged to a HAL that must use the LL",
+    "seq": 1034,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T01:10:08.584374Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1035,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T01:10:08.729326Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-141 assigned",
+    "seq": 1036,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T01:10:13.052614Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[\"reproducer-run:rr-bb2da4a6ed31e1979898\", \"reproducer-run:rr-ff59163f055c3ed504f5\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1037,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T01:10:13.078590Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[\"git:1bfe4ada923c..ad1dc4b2940a\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix ad1dc4b2940a (patch 12649 bytes)",
+    "seq": 1038,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T01:13:56.679851Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[\"reproducer-run:rr-f5896e037af6f585a53f\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-141 absent at ad1dc4b2940a",
+    "seq": 1039,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T01:13:56.701246Z",
+    "capa_id": "CAPA-141",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1040,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-fabf7f2d57d5b6658ea02196ec0e3a1c0db23b5e",
+   "1bfe4ada923c82d7111ef55e72d5c2c94c789caa",
+   "ad1dc4b2940a161ac1562677f884489afc7088e2",
+   "pd-5c203bd95184f2aa4aa5"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<ad1dc4b2940a"
+   ],
+   "candidate_patch_sha256": "425cceba1455841aced922a2ba6c1800f583b8657d3942419fc4bd632f98964e",
+   "capa_id": "CAPA-141",
+   "created_at": "2026-11-04T01:10:08.521753Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l31d-swe3-checks-provided-ll"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-141",
+   "reproducer_id": "RPR-141",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-bb2da4a6ed31e1979898",
+    "reproducer-run:rr-ff59163f055c3ed504f5"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T01:13:56.701246Z"
+  }
+ }
+}

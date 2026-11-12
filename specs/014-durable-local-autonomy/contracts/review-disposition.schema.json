@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:contract:review-disposition:1",
+  "title": "Owner end-of-run review disposition (DA-FR-057)",
+  "description": "One owner decision on one registered gap or inspection finding of an exported run, signed with ssh-keygen -Y in namespace forge-review-disposition. The rationale is owner data, never an instruction to a model. A disposition feeds the learning set only and never rewrites a package or export.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "disposition_id",
+    "export_sha256",
+    "run_key",
+    "workorder",
+    "subject",
+    "verdict",
+    "rationale",
+    "approver",
+    "decided_utc",
+    "use",
+    "signature_ref"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/review-disposition/1"
+    },
+    "disposition_id": {
+      "type": "string",
+      "pattern": "^DSP-[A-Za-z0-9._-]{4,80}$"
+    },
+    "export_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+-[0-9a-f]{12}$"
+    },
+    "workorder": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "phase",
+        "ref"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "GAP",
+            "FINDING"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "SWE.1",
+            "SWE.2",
+            "SWE.3",
+            "SWE.4",
+            "SWE.5",
+            "SWE.6"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "verdict": {
+      "enum": [
+        "CONFIRMED_DEFECT",
+        "FALSE_FINDING",
+        "MISSING_INPUT",
+        "OUT_OF_SCOPE"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decided_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "use": {
+      "const": "LEARNING_SET_ONLY"
+    },
+    "signature_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+\\.sig$"
+    }
+  }
+}

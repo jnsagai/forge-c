@@ -7,13 +7,14 @@ MCP servers for the roles used, and the blocking policy hook bound to the run bi
 from __future__ import annotations
 
 import os
+import shlex
 import shutil
 import subprocess
 import sys
 from collections.abc import Mapping
 from pathlib import Path
 
-from ..common import REPO_ROOT, state_dir
+from ..common import REPO_ROOT, data_root, state_dir
 from ..policy.authz import Binding
 
 GIT_ENV = {"GIT_AUTHOR_NAME": "forge-factory", "GIT_AUTHOR_EMAIL": "factory@forge-c.local",
@@ -25,12 +26,14 @@ def _git(ws: Path, *args: str) -> str:
                           env={**os.environ, **GIT_ENV}).stdout.strip()
 
 
-def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None) -> str:
+def create_workspace(ws: Path, inputs: Mapping[str, bytes | str] | None = None, *,
+                     include_default_skills: bool = True) -> str:
     """Create a fresh product workspace git repo; returns the initial commit SHA."""
     if ws.exists():
         shutil.rmtree(ws)
     ws.mkdir(parents=True)
-    shutil.copytree(REPO_ROOT / ".fabro" / "skills", ws / ".fabro" / "skills")
+    if include_default_skills:
+        shutil.copytree(REPO_ROOT / ".fabro" / "skills", ws / ".fabro" / "skills")
     for rel, data in (inputs or {}).items():
         p = ws / rel
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -47,9 +50,17 @@ def toml_str(s: str) -> str:
 
 
 def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers: dict[str, dict] | None = None,
-                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama") -> str:
+                    model: str = "qwen3:8b", binding_id: str = "", provider: str = "ollama",
+                    hook_env: dict[str, str] | None = None) -> str:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
+    context_env = {"PYTHONPATH": pp, "FORGE_DATA_ROOT": str(data_root()), "FORGE_STATE_DIR": str(state_dir())}
+    # Tool accounting opens the queue by scope, and contained tools recheck the guardian through the
+    # Intent. Without either, every tool that runs a program fails before it starts.
+    for key in ("FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256", "FORGE_AFO_QUEUE_SCOPE",
+                "FORGE_OPERATIONS_INTENT"):
+        if os.environ.get(key):
+            context_env[key] = os.environ[key]
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
              "[run.model]", f"name = {toml_str(model)}", f"provider = {toml_str(provider)}"]
     for name, spec in sorted((mcp_servers or {}).items()):
@@ -58,14 +69,14 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
                   "command = [" + ", ".join(toml_str(c) for c in [py, "-m", spec["module"]]) + "]",
                   f'startup_timeout = "{spec.get("startup_timeout", "20s")}"',
                   f'tool_timeout = "{spec.get("tool_timeout", "200s")}"',
-                  f"[run.agent.mcps.{key}.env]", f"PYTHONPATH = {toml_str(pp)}",
-                  f"FORGE_STATE_DIR = {toml_str(str(state_dir()))}",
-                  f"FORGE_BINDING_ID = {toml_str(binding_id)}",
-                  f"PATH = {toml_str(os.environ.get('PATH', '/usr/bin:/bin'))}"]
-        for k, v in sorted(spec.get("env", {}).items()):
+                  f"[run.agent.mcps.{key}.env]"]
+        env = {**context_env, "FORGE_BINDING_ID": binding_id,
+               "PATH": os.environ.get("PATH", "/usr/bin:/bin"), **spec.get("env", {})}
+        for k, v in sorted(env.items()):
             lines.append(f"{k} = {toml_str(str(v))}")
-    hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
-           f"--binding {binding_path}"
+    hook_context = {**context_env, **(hook_env or {})}
+    hook = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(hook_context.items()))
+    hook += f" {shlex.quote(py)} -m forge_factory.policy.fabro_hook --binding {shlex.quote(str(binding_path))}"
     lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
               "blocking = true", "sandbox = false", 'timeout = "20s"',
               "[[run.hooks]]", 'id = "forge-governor-stage-reset"', 'event = "stage_start"', f"script = {toml_str(hook)}",
@@ -74,14 +85,15 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
 
 
 def write_run(ws: Path, graph_text: str, goal: str, binding: Binding,
-              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama") -> Path:
+              mcp_servers: dict[str, dict] | None = None, model: str = "qwen3:8b", provider: str = "ollama",
+              hook_env: dict[str, str] | None = None) -> Path:
     run_dir = ws / ".forge-run"
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "workflow.fabro").write_text(graph_text, encoding="utf-8")
     bpath = run_dir / "binding.json"
     binding.dump(bpath)
     (run_dir / "workflow.toml").write_text(render_run_toml("workflow.fabro", goal, bpath, mcp_servers, model=model,
-                                                           binding_id=binding.binding_id, provider=provider))
+                                                           binding_id=binding.binding_id, provider=provider, hook_env=hook_env))
     return run_dir / "workflow.toml"
 
 

@@ -48,10 +48,10 @@ MATRIX_DIRS = {1: "workproducts/SWE.2/traceability", 2: "workproducts/SWE.3/trac
                5: "workproducts/SWE.5/traceability", 6: "workproducts/SWE.6/traceability"}
 DOXY_OUT = "build/doxygen"
 SWR_RX = re.compile(r"\bSWR-\d{3}\b")
-USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2}-\d{2}\b")
-SWU_RX = re.compile(r"\bSWU-(?:LL|HAL)-\d{2}\b")
+USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2,}-\d{2,}\b")
+SWU_RX = re.compile(r"\bSWU-(?:LL|HAL)-\d{2,}\b")
 IF_RX = re.compile(r"\bIF-\d{2}\b")
-MATRICES = {1: ("swr_to_architecture", ["swr", "swc", "status"]),
+MATRICES = {1: ("swr_to_architecture", ["swr", "swc", "interfaces", "status"]),  # CAPA-229: + interfaces
             2: ("unitspec_to_swr", ["uspec", "unit", "swc", "swr", "status"]),
             3: ("code_to_unitspec", ["function", "file", "unit", "uspec", "status"]),
             4: ("unittest_to_unitspec", ["test", "file", "uspec", "result", "status"]),
@@ -83,7 +83,19 @@ def component_constraints(ws: Path) -> set[str]:
     (SWE.3 tools, SWE.6 'Should Be At Most'), not refined into a software unit.
     CAPA-034 (r116): initial-state invariants ('While no ... has been called ..., shall not write ...') constrain the
     whole SWC too (no start-up code); they are verified by the SWE.4/SWE.6 reset-state tests."""
-    return {sid for sid, text in swr_texts(ws).items() if BUDGET_RX.search(text) or INITIAL_STATE_RX.search(text)}
+    texts = swr_texts(ws)
+    constraints = {sid for sid, text in texts.items() if BUDGET_RX.search(text) or INITIAL_STATE_RX.search(text)}
+    from ..simulation_performance import selected
+
+    if selected(ws):
+        from ..lrtx.swe1 import budget_requirements, system_name
+
+        # Only the exact generated, owner-bound simulation allocations are component
+        # constraints. An arbitrary functional requirement mentioning time is not exempted.
+        expected = {r["statement"] for r in budget_requirements(ws, system_name(ws))
+                    if r["upstream"] == "WO-SIMULATION-PERFORMANCE"}
+        constraints.update(sid for sid, text in texts.items() if text in expected)
+    return constraints
 
 
 def requirement_ids(ws: Path) -> list[str]:
@@ -119,7 +131,10 @@ def check_architecture_model(ws: Path) -> dict:
         return {"verdict": "FAIL", "major_findings": ["ARCH:STATIC_VIEW_MISSING"], "model": {}}
     model = parse_architecture(text)
     f = []
-    expected = ["SWC_LL", "SWC_HAL"] if layer_of(ws) in ("HAL", "LL+HAL") else ["SWC_LL"]
+    from ..layer import hal_standalone
+
+    expected = ["SWC_HAL"] if hal_standalone(ws) else ["SWC_LL", "SWC_HAL"] if layer_of(ws) in ("HAL", "LL+HAL") \
+        else ["SWC_LL"]  # F015: ST's classic HAL is one component on the registers (no provided LL)
     for swc in expected:
         n = len(model["swcs"].get(swc, []))
         if n != 1:
@@ -142,6 +157,15 @@ def check_architecture_model(ws: Path) -> dict:
     f += [f"ARCH:DUPLICATE_INTERFACE_ID:{i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
     if not ids:
         f.append("ARCH:NO_INTERFACES")
+    if layer_of(ws) != "LL" and not hal_standalone(ws) and "SWC_LL" in model["swcs"]:
+        # CAPA-229 (WWDG HAL L35: 'SWC_HAL --> WWDG : IF-02 register access'): a HAL on the provided LL connects only
+        # to the LL (and its caller), never to the register block
+        decl = {m.group(2): m.group(1) for m in re.finditer(r'^\s*\w+\s+"([^"]+)"[^\n]*?\s+as\s+(\w+)', text, re.M)}
+        for c in model["interfaces"]:
+            other = c["to"] if c["from"] == "SWC_HAL" else c["from"] if c["to"] == "SWC_HAL" else None
+            if other and other not in ("SWC_HAL", "SWC_LL") and not re.search(r"caller|application|user", other + " " +
+                                                                             decl.get(other, ""), re.I):
+                f.append(f"ARCH:HAL_BYPASSES_LL:SWC_HAL->{other}")
     return {"verdict": "FAIL" if f else "PASS", "major_findings": f, "model": model}
 
 
@@ -149,7 +173,7 @@ def check_architecture_model(ws: Path) -> dict:
 def parse_units(text: str) -> list[dict]:
     units, cur = [], None
     for line in text.splitlines():
-        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2})\s*[:\-–]?\s*(.*)$", line)
+        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2,})\s*[:\-–]?\s*(.*)$", line)
         if h:
             cur = {"id": h.group(1), "name": h.group(2).strip(), "swc": None, "functions": [], "design": None,
                    "specs": []}
@@ -172,7 +196,7 @@ def parse_units(text: str) -> list[dict]:
             else:
                 cur["design"] = v.strip("`")
             continue
-        s = re.match(r"^\s*[-*]\s*\*\*(USPEC-[A-Z]+-\d{2}-\d{2})\*\*\s*(.*)$", line)
+        s = re.match(r"^\s*[-*]\s*\*\*(USPEC-[A-Z]+-\d{2,}-\d{2,})\*\*\s*(.*)$", line)
         if s:
             body = s.group(2)
             tr = re.search(r"Traces?\s*:\s*(.*)$", body, re.I)
@@ -199,9 +223,40 @@ def render_ok(puml: Path) -> tuple[bool, str]:
     syn = subprocess.run(["java", "-Djava.awt.headless=true", "-jar", str(jar), "-syntax"], input=puml.read_text(
         errors="replace"), capture_output=True, text=True, timeout=120)
     detail = " ".join(syn.stdout.split())[:120]
-    first = puml.read_text(errors="replace").lstrip()[:12]
+    text = puml.read_text(errors="replace")
+    first = text.lstrip()[:12]
     hint = "" if first.startswith("@startuml") else " (the file must start with @startuml and end with @enduml)"
+    located = _syntax_location(syn.stdout, text)
+    if located:  # CAPA-139: the actionable part first - the file line, its text and the likely cause
+        return False, f"{located}{hint}; syntax: {detail}"
     return False, f"{' '.join((r.stderr or r.stdout).split())[:80]}; syntax: {detail}{hint}"
+
+
+_ACTIVITY_KEYWORD_AS_ACTION = re.compile(
+    r"^\s*:\s*(if|elseif|else|endif|while|endwhile|repeat|switch|case|endswitch|fork|end fork)\b", re.I)
+
+
+def _syntax_location(syntax_out: str, text: str) -> str:
+    """CAPA-139: PlantUML `-syntax` answers 'ERROR', the 0-based line index, then the message. Name the 1-based FILE line
+    and its text, and - for an activity diagram - the first activity keyword written as an action (`:if ... then`),
+    which swallows the following lines into one multi-line action, so PlantUML often reports a LATER line. Empty when
+    the output has no line index (the caller keeps the plain stderr text)."""
+    m = re.match(r"\s*ERROR\s+(\d+)\s+(.*)", syntax_out or "", re.S)
+    if not m:
+        return ""
+    idx, lines = int(m.group(1)), text.splitlines()
+    msg = re.sub(r"\s*\(Assumed diagram type: [^)]*\)", "", " ".join(m.group(2).split()))[:50]
+    src = lines[idx].strip()[:50] if 0 <= idx < len(lines) else ""
+    out = f"PlantUML: {msg} at line {idx + 1}: `{src}`"
+    kw = next(((n, ln.strip()) for n, ln in enumerate(lines, 1) if _ACTIVITY_KEYWORD_AS_ACTION.match(ln)), None)
+    fix = "an activity keyword written as an action: drop the leading ':' (`if (c) then (yes)`, `else (no)`, `endif`)"
+    if kw and kw[0] == idx + 1:
+        out += f" - {fix}"
+    elif kw:
+        out += f" - line {kw[0]}: `{kw[1][:50]}` is {fix}"
+    elif src.startswith(":") and not src.endswith(";"):
+        out += " - an action is `:text;`: end it with ';'"
+    return out
 
 
 def unit_reqif(unit: dict, swr_text: dict[str, str]) -> str:
@@ -270,6 +325,35 @@ def swr_texts(ws: Path) -> dict[str, str]:
     return out
 
 
+# CAPA-129 (WO-F014-SWE3-CRCHAL-20261103-L27): ids that look like unit/spec ids but are not of the required form
+# (`SWU-CRC_HAL`, `USPEC-HAL-CRC-001`) are named with the required form; the parser itself stays strict
+_UNIT_LIKE = re.compile(r"\bSWU-[A-Za-z0-9_-]*[A-Za-z0-9_]")
+_SPEC_LIKE = re.compile(r"\bUSPEC-[A-Za-z0-9_-]*[A-Za-z0-9_]")
+_UNIT_ID, _SPEC_ID = re.compile(r"SWU-(?:LL|HAL)-\d{2,}"), re.compile(r"USPEC-(?:LL|HAL)-\d{2,}-\d{2,}")  # SWU_RX/USPEC_RX
+
+
+def malformed_ids(ws: Path, text: str | None = None) -> list[str]:
+    """UNIT:MALFORMED_* findings for the unit-spec headings/items and the code's @unit/@spec tags whose id is not
+    SWU-<L>-nn / USPEC-<L>-<unit nn>-nn (L = LL or HAL), each with the required form; [] when every id is well formed."""
+    md = _read(ws, UNITS_MD) if text is None else text
+    units = [m.group(1) for m in re.finditer(r"^##\s+(SWU-\S+?)\s*[:\-\u2013]?(?:\s|$)", md, re.M)]
+    specs = [m.group(1) for m in re.finditer(r"^\s*[-*]\s*\*\*(USPEC-[^*]+)\*\*", md, re.M)]
+    for p in code_files(ws):
+        code = p.read_text(errors="replace")
+        for tag, rx, out in (("unit", _UNIT_LIKE, units), ("spec", _SPEC_LIKE, specs)):
+            for line in re.findall(rf"[@\\]{tag}\b([^\n]*)", code):
+                out += rx.findall(line)
+    xs = {"LL": ["LL"], "HAL": ["HAL"]}.get(layer_of(ws), ["LL", "HAL"])
+    unit_form = " or ".join(f"SWU-{x}-nn (e.g. SWU-{x}-01)" for x in xs)
+    spec_form = " or ".join(f"USPEC-{x}-<unit nn>-nn (e.g. USPEC-{x}-01-01, the first item of SWU-{x}-01)" for x in xs)
+    f = [f"UNIT:MALFORMED_UNIT_ID:{i} (a unit id must be {unit_form}, numbered in the order of the SWE.2 allocation "
+         f"table; rename it in the code @unit tags and in {UNITS_MD})"
+         for i in dict.fromkeys(units) if not _UNIT_ID.fullmatch(i)]
+    f += [f"UNIT:MALFORMED_SPEC_ID:{i} (a spec item id must be {spec_form}; rename it in the code @spec tags and in "
+          f"{UNITS_MD})" for i in dict.fromkeys(specs) if not _SPEC_ID.fullmatch(i)]
+    return f
+
+
 def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, export: bool = True) -> dict:
     text = _read(ws, UNITS_MD)
     if not text:
@@ -278,7 +362,7 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
     model = arch_model if arch_model is not None else parse_architecture(_read(ws, ARCH))
     reqs = set(requirement_ids(ws))
     dev = developed_swcs(ws)
-    f = []
+    f = malformed_ids(ws, text)  # CAPA-129: first, so a bounded issue list always carries them
     if not units:
         f.append("UNIT:NO_UNITS")
     ids = [u["id"] for u in units]
@@ -325,7 +409,7 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
             if render:
                 ok, why = render_ok(design)
                 if not ok:
-                    f.append(f"UNIT:DESIGN_RENDER_FAILED:{u['id']}:{why[:80]}")
+                    f.append(f"UNIT:DESIGN_RENDER_FAILED:{u['id']}:{why[:200]}")  # CAPA-139: was [:80]
     refined = {r for u in units for s in u["specs"] for r in s["swrs"]}
     allocated_dev = {r for s in dev for r in model.get("allocation", {}).get(s, [])}
     comp = component_constraints(ws)
@@ -613,9 +697,16 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
     arch = check_architecture_model(ws)
     rep["findings"]["SWE.2"] = arch["major_findings"]
     model = arch.get("model") or {"swcs": {}, "allocation": {}, "interfaces": []}
-    rows1 = [{"swr": r, "swc": s, "status": "ALLOCATED"} for s, rs in model["allocation"].items() for r in rs]
+    # CAPA-229 (owner 2026-11-11: "add the interface allocation to matrix 1"): a functional requirement of a component
+    # is allocated to the component's interfaces (the IF ids of its connections); a component-level constraint (budget,
+    # initial state) to the component itself
+    level = component_constraints(ws)
+    ifs = {s: " ".join(sorted({m.group(0) for c in model["interfaces"] if s in (c["from"], c["to"])
+                               for m in [IF_RX.match(c["label"])] if m})) for s in model["swcs"]}
+    rows1 = [{"swr": r, "swc": s, "interfaces": "COMPONENT_LEVEL" if r in level else ifs.get(s) or "NONE",
+              "status": "ALLOCATED"} for s, rs in model["allocation"].items() for r in rs]
     allocated = {r["swr"] for r in rows1}
-    rows1 += [{"swr": r, "swc": "", "status": "NOT_ALLOCATED"} for r in reqs if r not in allocated]
+    rows1 += [{"swr": r, "swc": "", "interfaces": "", "status": "NOT_ALLOCATED"} for r in reqs if r not in allocated]
     rep["matrices"].append(write_matrix(ws, 1, rows1, [r for r in reqs if r not in allocated], write=w(1)))
     if k < 1:
         return rep
@@ -637,8 +728,18 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
     if k >= 2:
         run = latest_run(ws, "run_unit")
         res = check_results(run["raw"]) if run else {}
-        tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")), ws)
+        # owner 2026-11-03: GoogleTest requirement-based tests (.cpp) carry the same @test/@verifies blocks
+        tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")) + sorted(ws.glob("software/tests/unit/*.cpp")),
+                             ws)
+        from ..workflow import unit_target_carry, unit_target_observation, unit_target_timing, unit_target_wwdg_timing
+
         rows4, f4 = [], []
+        for adapter in (unit_target_timing, unit_target_observation, unit_target_wwdg_timing):
+            target_tests, target_results, target_issues = unit_target_carry.trace(ws, adapter)
+            duplicate = {t["test"] for t in tests} & {t["test"] for t in target_tests}
+            tests += target_tests
+            res.update(target_results)  # recomputed target failures cannot be replaced by a printed PASS
+            f4 += target_issues + [f"UT:DUPLICATE_TARGET_HOST_TEST:{t}" for t in sorted(duplicate)]
         for t in tests:
             if not t["verifies"]:
                 f4.append(f"UT:TEST_WITHOUT_TRACE:{t['test']}")
@@ -655,6 +756,9 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
                               "status": "VERIFIED" if res.get(t["test"]) == "PASS" and v in specs else "UNVERIFIED"})
         ok = {r["uspec"] for r in rows4 if r["status"] == "VERIFIED"}
         f4 += [f"UT:SPEC_NOT_VERIFIED:{s}" for s in specs if s not in ok]
+        from . import uspec_plan  # owner 2026-11-03: the SWE.4 plan names one UT id per USPEC item
+
+        f4 += uspec_plan.missing_tests(ws, tests)
         if run is None:
             f4.append("UT:NO_EXECUTED_RUN")
         rep["findings"]["SWE.4"] = f4

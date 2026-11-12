@@ -1,0 +1,1 @@
+{"reason":"STOP_REQUESTED","pid":2661907,"gateway_pid":"2662162","signal":"TERM","exit_status":0,"process_gone":"yes","gateway_gone":"yes","stop_seconds":1.05,"vram_peak_MiB":46590,"gpu_memory_used_MiB_after":936,"gpu_compute_apps_after":"","port_open_after":"no","gateway_port_open_after":"no","at":"2026-10-31T15:38:17Z"}

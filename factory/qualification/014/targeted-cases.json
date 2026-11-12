@@ -1,0 +1,34 @@
+{
+  "schema": "forge-c/protocol-cases/1",
+  "scope": "Owner-requested 2026-10-30 controlled Qwen reasoning pilot; diagnosis only, no full product or role qualification",
+  "cases": [
+    {
+      "case_id": "late-finding",
+      "expected": "PROPOSE_REPAIR",
+      "recoverable": true,
+      "repeats": 2,
+      "source_case_required": true
+    },
+    {
+      "case_id": "obligation-counterexample",
+      "expected": "PROPOSE_REPAIR",
+      "recoverable": true,
+      "repeats": 2,
+      "source_case_required": true
+    },
+    {
+      "case_id": "upstream-owner",
+      "expected": "PROPOSE_REPAIR",
+      "recoverable": true,
+      "repeats": 2,
+      "source_case_required": true
+    },
+    {
+      "case_id": "missing-primary",
+      "expected": "NEEDS_EVIDENCE",
+      "recoverable": false,
+      "repeats": 2,
+      "source_case_required": true
+    }
+  ]
+}

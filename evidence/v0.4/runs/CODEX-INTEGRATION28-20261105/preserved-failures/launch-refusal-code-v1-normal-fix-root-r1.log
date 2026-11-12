@@ -1,0 +1,9 @@
+{"candidate": "11dd97481907057174812ad26e109a506dfa3435", "decision_id": "pd-f0867e34e0081b55de97", "decision": "REJECTED", "gates": {"protected_files": "PASS", "policy_integrity": "PASS", "reproducer": "FAIL", "prevention": "NOT_RUN", "quality_process": "NOT_RUN", "golden_benchmark": "NOT_RUN", "holdout": "NOT_RUN"}}
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/launch-refusal-code-v1-normal-fix-runner-v1.py", line 109, in <module>
+    main()
+    ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/launch-refusal-code-v1-normal-fix-runner-v1.py", line 102, in main
+    assert decision['decision'] == 'ELIGIBLE_FOR_OFFLINE_REVIEW'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

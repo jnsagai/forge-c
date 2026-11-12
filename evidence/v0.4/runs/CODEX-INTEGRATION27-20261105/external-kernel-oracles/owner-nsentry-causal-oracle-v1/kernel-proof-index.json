@@ -1,0 +1,118 @@
+{
+  "schema": "forge-c/namespace-entry-private-kernel-proof/1",
+  "status": "FROZEN_BASELINE887_SOURCE_CAUSE_VERIFIED_ENGINEERING_ONLY",
+  "source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "helper_sha256": "1a12b0b8761511ea219a9dd69c26dbf0bd6cb5d633982a2de6d868cda7082762",
+  "source_tracked_dirty": false,
+  "findings": [
+    "Source nestedUSER inheritedNET _in_ns fails EPERM at ns/net. Independent ordered outerUSER+NET then providerUSER+MNT/PID succeeds with exact actualnamespace identity.",
+    "Source sameUSER provider frominitialhost and nonservingouter frominitialhost pass. Rejoining sameUSER inorderedcontrol failsEINVAL; skipping innerUSER passes.",
+    "Actualsource nonserving _in_ns calledalreadyinouterUSER failsEINVAL; safe candidate must also skip outerUSER when alreadycurrent."
+  ],
+  "actual_provider_capture": true,
+  "source_function_or_capture_or_Popen_mocked": false,
+  "canonical_or_model_or_GPU_or_remote_effects": false,
+  "private_lifetimes": "All owned providerinits kernelquiet verified and processes reaped; own outer holder killed onlyafterproviderquiet.",
+  "files": [
+    {
+      "path": "baseline887-r1/nested-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/ordered-nested-control.json",
+      "sha256": "c310269394b95c059773b26e72658fa1e4c23ffce627e7bf5e23dd9b17aa8aa9",
+      "bytes": 185
+    },
+    {
+      "path": "baseline887-r1/ordered-nested-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/ordered-same-user-reentry-negative.log",
+      "sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038",
+      "bytes": 69
+    },
+    {
+      "path": "baseline887-r1/ordered-same-user-skip-control.json",
+      "sha256": "122dd064c7775a7997507208de73276114fcacc0792411e3b5fe72a83da28cd2",
+      "bytes": 185
+    },
+    {
+      "path": "baseline887-r1/ordered-same-user-skip-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/outer-holder.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/report.json",
+      "sha256": "42c4c5f3571292dacde8971841b5487328fd0d01c7f7bbd084358936152a9b46",
+      "bytes": 8124
+    },
+    {
+      "path": "baseline887-r1/report_namespaces.py",
+      "sha256": "83e1cded4f1d1e8defa3af3848770d4c8ada085ea26f2afa568137ea63a299f5",
+      "bytes": 268
+    },
+    {
+      "path": "baseline887-r1/same-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/same_current_user_source.py",
+      "sha256": "4be6a4746363407441e696a9eb19326c1a154d123be2860d879d4f9d389a786e",
+      "bytes": 330
+    },
+    {
+      "path": "baseline887-r1/source-nested-provider.log",
+      "sha256": "e7646730c24a8234f96ecf63133a49b0498f7cab81a7c41da402ed4de798b1cd",
+      "bytes": 75
+    },
+    {
+      "path": "baseline887-r1/source-normal-outer.json",
+      "sha256": "a483b20ea1c5a1fce1898dc53cd23e5c6553c33ae62eeaff856657bae1e0974a",
+      "bytes": 190
+    },
+    {
+      "path": "baseline887-r1/source-normal-outer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/source-normal-same-current-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1/source-normal-same-current-user.log",
+      "sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038",
+      "bytes": 69
+    },
+    {
+      "path": "baseline887-r1/source-same-user-provider.json",
+      "sha256": "4e4849fcca8cfbfeedf94984d0b1f3bc037d34eac0ac802adc02c9c849ec7b9b",
+      "bytes": 185
+    },
+    {
+      "path": "baseline887-r1/source-same-user-provider.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "baseline887-r1.stdout.log",
+      "sha256": "0848454ac15f3bdac5eb811bee772d460f9726dc596ae771b1d9a16a13e676f5",
+      "bytes": 632
+    },
+    {
+      "path": "kernel_probe.py",
+      "sha256": "1a12b0b8761511ea219a9dd69c26dbf0bd6cb5d633982a2de6d868cda7082762",
+      "bytes": 9919
+    }
+  ]
+}

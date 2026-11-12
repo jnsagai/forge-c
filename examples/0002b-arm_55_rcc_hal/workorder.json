@@ -54,5 +54,12 @@
     }
   ],
   "layer": "HAL",
-  "layer_note": "ADR-0009 (owner decision 2026-10-16): built on the PROVIDED LL header of a verified 0002a LL work order (--provided-from)"
+  "layer_note": "ADR-0009 (owner decision 2026-10-16): built on the PROVIDED LL header of a verified 0002a LL work order (--provided-from)",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 64,
+    "microseconds_per_call": 100,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
 }

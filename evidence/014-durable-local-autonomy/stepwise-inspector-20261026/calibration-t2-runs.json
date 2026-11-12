@@ -1,0 +1,695 @@
+{
+ "schema": "forge-c/feature014-calibration-runs/1",
+ "runs": [
+  {
+   "run": "calibration-t2-1",
+   "log_lines": [
+    "start 2026-10-27T04:18:49Z 9300475e7cec6d7ed751dd2bd6d1a84db4af45e0 subset=2",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"test_set_2_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=55; local: 61 passed in 160.50s (0:02:40)",
+    "preflight (recorded): FAIL ['WO-AFO-efc1871950537b1a-a1']",
+    "exit=0 2026-10-27T04:36:31Z"
+   ],
+   "summary": {
+    "seeded": 12,
+    "semantic_detection_on_target": 11,
+    "deterministic_detection": 0,
+    "inspection_fail_off_target": 1,
+    "missed": 0,
+    "false_rejections": 2,
+    "baselines": 2,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "model_calls": 0,
+    "rejected": [
+     "WO-AFO-efc1871950537b1a-a1"
+    ],
+    "rejection_codes": {
+     "WO-AFO-efc1871950537b1a-a1": [
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   },
+   "result_sha256": "d3a24cb1ce31251d2d8385501ba1b12283c9b1d2ee56826a541262b78f11f0a5",
+   "rows": [
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "GPIO_MODER.MODE5",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-022",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-025",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "CRC_CR.RESET",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-011",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   ]
+  },
+  {
+   "run": "calibration-t2-2",
+   "log_lines": [
+    "start 2026-10-27T04:36:31Z 9300475e7cec6d7ed751dd2bd6d1a84db4af45e0 subset=2",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"test_set_2_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=55; local: 61 passed in 160.50s (0:02:40)",
+    "preflight (recorded): FAIL ['WO-AFO-efc1871950537b1a-a1']",
+    "exit=0 2026-10-27T04:54:16Z"
+   ],
+   "summary": {
+    "seeded": 12,
+    "semantic_detection_on_target": 11,
+    "deterministic_detection": 0,
+    "inspection_fail_off_target": 1,
+    "missed": 0,
+    "false_rejections": 2,
+    "baselines": 2,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "model_calls": 0,
+    "rejected": [
+     "WO-AFO-efc1871950537b1a-a1"
+    ],
+    "rejection_codes": {
+     "WO-AFO-efc1871950537b1a-a1": [
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   },
+   "result_sha256": "663b986312369b88a97e4b4f34551fc8f5cf7591e5c85b96d0a8783a631aed73",
+   "rows": [
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "GPIO_MODER.MODE5",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-022",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-025",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "CRC_CR.RESET",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-011",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   ]
+  },
+  {
+   "run": "calibration-t2-3",
+   "log_lines": [
+    "start 2026-10-27T04:54:16Z 9300475e7cec6d7ed751dd2bd6d1a84db4af45e0 subset=2",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"test_set_2_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=55; local: 61 passed in 160.50s (0:02:40)",
+    "preflight (recorded): FAIL ['WO-AFO-efc1871950537b1a-a1']",
+    "exit=0 2026-10-27T05:12:00Z"
+   ],
+   "summary": {
+    "seeded": 12,
+    "semantic_detection_on_target": 11,
+    "deterministic_detection": 0,
+    "inspection_fail_off_target": 1,
+    "missed": 0,
+    "false_rejections": 2,
+    "baselines": 2,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "model_calls": 0,
+    "rejected": [
+     "WO-AFO-efc1871950537b1a-a1"
+    ],
+    "rejection_codes": {
+     "WO-AFO-efc1871950537b1a-a1": [
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   },
+   "result_sha256": "5c03d4fe166d5ec1ca65d2e4b25c301fde64652b5dfd597e71ee629223f7e6c9",
+   "rows": [
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "GPIO_MODER.MODE5",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-022",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-03122bd1dd4fb5ff-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-025",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "CRC_CR.RESET",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-QM",
+     "detected_by": "inspection (on target)",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-011",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-AFO-efc1871950537b1a-a1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    }
+   ]
+  }
+ ]
+}

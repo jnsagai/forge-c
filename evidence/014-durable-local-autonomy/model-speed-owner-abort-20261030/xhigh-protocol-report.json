@@ -1,0 +1,1 @@
+{"availability_proven":false,"correct_outcomes":2,"expected_denominator":8,"failures":["late-finding:0","late-finding:1","obligation-counterexample:0","obligation-counterexample:1","upstream-owner:0","upstream-owner:1"],"missing":[],"native_capability_only":true,"observed_denominator":8,"product_recovery_proven":false,"status":"FAIL","usage_unknown":2,"useful_plan_count":0}

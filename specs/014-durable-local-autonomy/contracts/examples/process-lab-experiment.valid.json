@@ -1,0 +1,43 @@
+{
+  "schema": "forge-c/process-lab-experiment/1",
+  "experiment_id": "crc-idr-a1",
+  "arm": "A",
+  "drivers": [
+    "crc-idr"
+  ],
+  "profiles": [
+    {
+      "role": "AUTHOR",
+      "profile": "local-rtx-v2-omniverse2-lab-ornith-q8",
+      "profile_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "model_key": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+      "model_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "units_file": {
+    "path": "operations/process-lab/crc-idr-a1/units.txt",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "oracles": {
+    "crc-idr": {
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reviewer": "owner",
+      "review_utc": "2026-10-31T12:00:00Z"
+    }
+  },
+  "reservations": {
+    "AUTHOR": 200000,
+    "INSPECT": 200000,
+    "REWORK": 200000
+  },
+  "mission_caps": {
+    "max_requests": 512,
+    "max_tools": 512,
+    "max_tokens": 400000
+  },
+  "end_utc": "2026-11-01T12:00:00Z",
+  "thresholds": {
+    "noncritical_coverage": 0.9,
+    "judgeable": 0.9
+  }
+}

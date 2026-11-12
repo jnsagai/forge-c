@@ -1,0 +1,68 @@
+{
+  "terminal-facts": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-terminal-facts.json",
+    "raw_sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4",
+    "view_sha256": "faa77fe1eebb9b557c0df76c54f5b59b15ec9abd0072dded231db37259765639",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "terminal-source-audit": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-terminal-source-audit.json",
+    "raw_sha256": "6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5",
+    "view_sha256": "04c50ab4e6100e62e112585849bafa48f3bf182e7c3b9ea80004fc138e059223",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "external-m1-audit": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-external-m1-audit.json",
+    "raw_sha256": "9ffc4f5651d779cf831f22f436fb454e48c17c7c681f261f1b39e9621139af89",
+    "view_sha256": "f2989d9f0f70c069e98c95dbe4cef0ff3e6bfae6a1121f9b226d67ca8e75c195",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "negative-control-index": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-negative-control-index.json",
+    "raw_sha256": "62f2e058492327f0cfb9f6d19b88cd8d62744ffaf00603ede5fd07ec1e85d88e",
+    "view_sha256": "afbbb7c4dd668bac97951a7e9fac8498036f32ad88ba8ec261de7c797be940ad",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "fresh-cohort-initial-observation": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/fresh-cohort-initial-observation.json",
+    "raw_sha256": "2ece647b5259f992451f019e96efb6b629f196498da974ea3bbb074c7e9fd4a9",
+    "view_sha256": "1220177e3632cb3b603a528defe575be71e259ced4f9af0d03725233f4b59450",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "cohort-intake-result": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/fresh-cohort-intake-result.json",
+    "raw_sha256": "70368acd7f30b7110265b56e5cb709d2e22db746db310a6f513611620ea6b267",
+    "view_sha256": "eccb8d95d214a8a591b885c968641a648a492469a004fd49a7d0e0af33e897e4",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "terminal-transfer-verification": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/native-01M67R1HNE9TKPWCYJ2SVKEPJS/transfer-verification.json",
+    "raw_sha256": "bc40440cff26b8399b4fcda34355c3d7503ffa0139fdb1d2067cf0756e58539b",
+    "view_sha256": "cc115258983fe8b9dad1cafe867f92e447a5703578b00f7d539b2baf2b280503",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "cohort-admission-binding": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/repeatability-remote-control-0320/admission-binding.json",
+    "raw_sha256": "8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4",
+    "view_sha256": "c2d8a1ea5f08058184870da32b6c0af5116cc235c999224e4b86c1788c2ca799",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "order-6-intake": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/repeatability-remote-control-0320/DF-AFO-CRC-IDR-20261030-06-intake.json",
+    "raw_sha256": "0d98e89f212eb2a013ae0580f362ea98bab6ad91cf7da63352e2cf972bc62d98",
+    "view_sha256": "7a03957ed83a75a0235e1302206c080db7805e61f6dc7dda4a8925ba1bf5192f",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "order-7-intake": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/repeatability-remote-control-0320/DF-AFO-CRC-IDR-20261030-07-intake.json",
+    "raw_sha256": "e4d70e172063935797a7953f8057da95a9bf245c79c4c7c135a96fd30e02b6c3",
+    "view_sha256": "df6aec7164dccdeb29093a473815a355bdae355e304192495c307866841d03f0",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  },
+  "order-8-intake": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/repeatability-remote-control-0320/DF-AFO-CRC-IDR-20261030-08-intake.json",
+    "raw_sha256": "83e2edd3fe15b47bc9dc9f67afb3d8972842dc6a736e6b5008d6754439ab188f",
+    "view_sha256": "eace619bedbb62b92e9a5c29fe5326387d96ec1891a81c6543fdba5c4e791cec",
+    "basis": "JSON_SEMANTIC_IDENTITY; RAW_BYTES_RETAINED_IN_DETERMINISTIC_GZIP"
+  }
+}

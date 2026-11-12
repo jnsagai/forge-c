@@ -1,0 +1,33 @@
+{
+  "status": "ALL_INSTALLED_Q38_BLOBS_HASH_VERIFIED",
+  "manifest_sha256": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "blobs": [
+    {
+      "digest": "sha256:04800723a245540d7a7c033e07ec223d7ec894abffcc15537327cf8b0107b2a6",
+      "bytes": 213,
+      "verified": true
+    },
+    {
+      "digest": "sha256:ac3714bfdddeca31351f2752bf1a63f266f4df87c0b68c895e44945ca704448e",
+      "bytes": 931146016,
+      "verified": true
+    },
+    {
+      "digest": "sha256:2bb22714289826d7b9e0ba376c3ce47d08bce39abe598745857c44d88c09bdbf",
+      "bytes": 29047084384,
+      "verified": true
+    },
+    {
+      "digest": "sha256:4c6a8e842ef0d8504549facfb03f1273a8d0022991519bc1888522cc1a5517d1",
+      "bytes": 11345,
+      "verified": true
+    },
+    {
+      "digest": "sha256:448d29437397713495b408d51b4ccbc5ba95240a7583643efb2304921950b111",
+      "bytes": 92,
+      "verified": true
+    }
+  ],
+  "elapsed_s": 15.912,
+  "inference_requests": 0
+}

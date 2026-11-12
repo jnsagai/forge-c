@@ -1,0 +1,13 @@
+{
+  "source_revision": "2d6b1bcfda29fe40a1f640ba042f89f6509d780f",
+  "source_tree_clean_at_test_launch_and_completion": true,
+  "tests": 64,
+  "passed": 63,
+  "skipped": 1,
+  "failures": 0,
+  "errors": 0,
+  "skip": "live Fabro disabled",
+  "evidence": "exact.xml",
+  "deployment": "NOT_DEPLOYED",
+  "scope": "DETERMINISTIC_REGRESSION_NOT_MODEL_BENEFIT_OR_RUNTIME_QUALIFICATION"
+}

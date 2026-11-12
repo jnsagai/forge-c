@@ -1,0 +1,57 @@
+def environment(scope):
+    if scope not in ("user", "system"):
+        raise Refused("BUS_AUDIT_SCOPE_INVALID")
+    env = {"PATH": PATH, "LC_ALL": "C"}
+    if scope == "user":
+        address = os.environ.get("DBUS_SESSION_BUS_ADDRESS", f"unix:path=/run/user/{os.getuid()}/bus")
+        if len(address) > 4096 or not address.startswith("unix:") or ";" in address or "\n" in address:
+            raise Refused("BUS_AUDIT_LOCAL_ADDRESS_REQUIRED")
+        env["DBUS_SESSION_BUS_ADDRESS"] = address
+    return env
+
+
+def _limits():
+    import resource
+
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    resource.setrlimit(resource.RLIMIT_CPU, (5, 6))
+    resource.setrlimit(resource.RLIMIT_AS, (256 * 1024**2, 256 * 1024**2))
+
+
+def _query(tool, scope, env, member):
+    # Only these two harmless bus-daemon queries are permitted. No service activation.
+    if member not in ("GetId", "GetNameOwner"):
+        raise Refused("BUS_AUDIT_QUERY_NOT_READ_ONLY")
+    argv = [tool, "--session" if scope == "user" else "--system", "--print-reply", "--reply-timeout=1000",
+            "--dest=" + BUS, "/org/freedesktop/DBus", BUS + "." + member]
+    if member == "GetNameOwner":
+        argv.append("string:" + SYSTEMD)
+    # These fixed replies are small; RLIMIT_FSIZE bounds the anonymous temporary spool.
+    import resource
+    import tempfile
+
+    def limits():
+        _limits()
+        resource.setrlimit(resource.RLIMIT_FSIZE, (8192, 8192))
+
+    try:
+        with tempfile.TemporaryFile() as out:
+            r = subprocess.run(argv, env=env, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.DEVNULL,
+                               timeout=2, check=False, start_new_session=True, preexec_fn=limits)
+            out.seek(0)
+            raw = out.read(8193)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"returncode": None, "error": type(exc).__name__}
+    if r.returncode or len(raw) >= 8192:
+        return {"returncode": r.returncode, "error": "BUS_QUERY_FAILED_OR_OVERSIZED"}
+    # Reserved bus sender + unique recipient/reply identity, and one constrained value.
+    pattern = (rb'method return time=[0-9]+\.[0-9]+ sender=org\.freedesktop\.DBus -> destination=(:[0-9]+\.[0-9]+) '
+               rb'serial=([0-9]+) reply_serial=([0-9]+)\n   string "([:0-9a-f.]+)"\n')
+    match = re.fullmatch(pattern, raw)
+    if match is None:
+        return {"returncode": r.returncode, "error": "BUS_QUERY_FORMAT_UNKNOWN"}
+    destination, serial, reply_serial, value = (v.decode("ascii") for v in match.groups())
+    if not (UNIQUE.fullmatch(value) if member == "GetNameOwner" else re.fullmatch(r"[0-9a-f]{32}", value)):
+        return {"returncode": r.returncode, "error": "BUS_QUERY_VALUE_UNKNOWN"}
+    return {"returncode": 0, "destination": destination, "serial": int(serial), "reply_serial": int(reply_serial),
+            "value": value, "reply_sha256": hashlib.sha256(raw).hexdigest()}

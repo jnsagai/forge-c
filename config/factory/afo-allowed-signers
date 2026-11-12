@@ -1,3 +1,3 @@
 # AFO authorization signers (AFO-T006): the owner's PUBLIC key only; the private key never leaves the owner.
 # Principal jnsagai = the repository owner (owner 2026-10-25: AFO PILOT for the production line, codex-claude).
-jnsagai namespaces="forge-afo-authorization" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ05MTERxTyyIDfAjm4XDIXKjeW6ElTQwxmGtfMwUtJk
+jnsagai namespaces="forge-afo-authorization,forge-onboarding-approval" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ05MTERxTyyIDfAjm4XDIXKjeW6ElTQwxmGtfMwUtJk

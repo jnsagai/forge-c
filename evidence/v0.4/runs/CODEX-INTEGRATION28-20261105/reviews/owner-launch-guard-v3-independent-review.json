@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/independent-source-review/1",
+  "source_revision": "686042292090e21c28c8e6509ee54b1abb09f748",
+  "scope": "BOUNDED_READ_ONLY_V2_TO_V3_DELTA",
+  "reviewer": "/root/omniverse_autonomy/m9_soak_preparation",
+  "status": "NO_BLOCKERS_FOUND_IN_REVIEWED_DELTA",
+  "reviewer_tests": false,
+  "runtime_effects": false,
+  "files": {
+    "factory/python/forge_factory/afo/owner_launch_guard.py": "c73ace0931661e2025d00dbd16c507e78366c0fadf09198f9ec2bd7bbf8ff3b3",
+    "factory/python/tests/test_owner_launch_guard.py": "b79269aae270c5be5b86460ea5a001b8bca63dfab559780ddd99764d836f1b86",
+    "factory/python/forge_factory/afo/owner_launch_guard.sh": "aa0a4cd740eb0424c8c5b08876598ac2c316a49ff043674a328b27009bb92121",
+    "docs/adr/ADR-014-owner-development-launch-guard.md": "76455a1c8e4dfa36d13ac91ffa8aa4026829d0589783ca4df1ac95ed59a68ca6"
+  },
+  "prior_review": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-launch-guard-v2-independent-review.json",
+    "sha256": "916b169025384204bde51be8e9eb79ad79ce5665e7c0e1feafd760fd44eac549"
+  },
+  "resolutions": [
+    {
+      "finding": "FINAL_CURRENT_FENCE",
+      "source": "evaluate repeats normal D.current after final worker/kernel walk, followed by small host guardian/Intent and sameboot MONOTONIC+BOOTTIME expiry checks before OK.",
+      "tests": "New explicit final-worker authority loss; STOP; guardian false; independent monotonic and BOOTTIME expiry controls. Leaves are explicit CONTROL fixtures; reviewer did not run them."
+    },
+    {
+      "finding": "EXACT_RUNTIME_SOURCE_PIN",
+      "source": "exact_runtime calls normal C.revision/factory_revision and requires commit equal config pin plus dirty is False at start and tail. Own host artifact SHA remains separately bound.",
+      "tests": "Wrong-but-allowed source and dirty exact source refuse in new normal checker controls."
+    }
+  ],
+  "scope_limits": [
+    "Read-only status observation does not create a transferable authority or atomic future-effect receipt. Normal runtime effects retain fresh existing authority/Intent/lease guards.",
+    "Parent reports focused47PASS; affected suite was live at review. No independent test-result verification or runtime qualification claimed.",
+    "Earlier mapped-worker/legacy-predicate review remains bounded to its frozen bytes; no tests/probes repeated."
+  ]
+}

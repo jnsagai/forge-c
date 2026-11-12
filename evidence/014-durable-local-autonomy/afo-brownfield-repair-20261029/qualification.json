@@ -1,0 +1,35 @@
+{
+  "runtime_revision": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "v4": {
+    "job": "afo-agent-239fde0d794a6068929fccc8",
+    "native_run": "01M64RG1FV5Y0B7M0VGN213D42",
+    "admitted_requests": 19,
+    "reported_tokens": 763063,
+    "native_agent_final_error": "JOB_TOKEN_ENVELOPE_EXHAUSTED",
+    "broker_receipt": false,
+    "candidate_artifacts_authored_by_qwen": true,
+    "candidate_independent_tests": {
+      "tests": 2,
+      "failures": 2,
+      "errors": 0
+    },
+    "baseline_sealed_reproducer_contract": "FAIL",
+    "candidate_accepted": false
+  },
+  "v5": {
+    "order": "afo-f516373e837db572",
+    "job": "afo-agent-97d070852addbf37acf1b7c9",
+    "native_run": "01M64TQWV0QAJ69YGBJSS2STN3",
+    "checkpoint_status": "RUNNING",
+    "seed_origin": "Exact V4 Qwen native write_source hashes; no operator code edits",
+    "authority_epoch": 44
+  },
+  "mission_reset": false,
+  "deadline_extended": false,
+  "deadline_utc": "2026-10-29T22:25:58Z",
+  "self_healing": "UNPROVEN",
+  "product_acceptance": "NOT_ESTABLISHED",
+  "general_local_model_capability": "NOT_QUALIFIED",
+  "learning_benefit": "NOT_MEASURED",
+  "operational_availability": "NOT_QUALIFIED"
+}

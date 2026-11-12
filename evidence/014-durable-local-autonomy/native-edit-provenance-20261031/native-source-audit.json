@@ -1,0 +1,128 @@
+{
+  "schema": "forge-c/delivery-first-source-provenance/1",
+  "at": "2026-10-31T01:45:00.589588Z",
+  "status": "VERIFIED_SOURCE_PROVENANCE",
+  "scope": "READ_ONLY_SOURCE_ORIGIN_NOT_FUNCTIONAL_OR_RELEASE_QUALIFICATION",
+  "work_order": "WO-AFO-ee4282b25001a15d-a1",
+  "producer_factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+    "dirty": false
+  },
+  "auditor_factory_revision": {
+    "commit": "30371da548bad2790a9f3c21dafc8964047ce06d",
+    "dirty": false,
+    "branch": "HEAD",
+    "basis": "recorded_at_launch"
+  },
+  "auditor_module_sha256": "8ceca6bdbe5d181b0e65f48b4cda3835540dc3ca587011ebc8e6e3879a304cd5",
+  "candidate_hashes": {
+    "software/ll/stm32n6xx_ll_crc.h": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e"
+  },
+  "candidate_hashes_after": {
+    "software/ll/stm32n6xx_ll_crc.h": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e"
+  },
+  "candidate_unchanged_during_audit": true,
+  "native_evidence": {
+    "status": "OBSERVED",
+    "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+    "native_status": "RUNNING",
+    "authorship": "CONFIRMED_NATIVE_WRITE_EDIT_CHAIN",
+    "authorship_basis": "SUCCESSFUL_NATIVE_SOURCE_TOOL_PAYLOAD_REPLAY_AND_EXACT_FINAL_BYTES; NOT_FUNCTIONAL_VERIFICATION",
+    "write_evidence": [],
+    "edit_chain_evidence": [
+      {
+        "anchor_content": "/*\n * STM32N6 CRC low-level driver - independent data register (IDR) access.\n *\n * Register authority: RM0486 Rev 4 section 26.4.2 (CRC_IDR), p.1172 -\n * general-purpose 32-bit data register at offset 0x04, bits IDR[31:0] all\n * read/write, reset value 0x00000000, not affected by CRC_CR.RESET.\n *\n * Register layout: forge_crc_device.h (immutable input fixture, derived from\n * ST cmsis-device-n6 v1.4.0 stm32n657xx.h CRC_TypeDef). This header does not\n * redeclare the type and adds no singleton register object.\n *\n * Invocation domain (inputs/IDR-CONTRACT.md): the caller supplies a valid,\n * accessible CRC_TypeDef instance; clock/power/security setup is a caller\n * precondition. No startup accesses, no status polling, no allocation and no\n * CRC calculation/configuration occur in this scope.\n */\n#ifndef STM32N6XX_LL_CRC_H\n#define STM32N6XX_LL_CRC_H\n\n#include \"forge_crc_device.h\" /* CRC_TypeDef layout (RM0486 p.1172) */\n\n/**\n * @brief  Write the supplied 32-bit value to the CRC independent data register.\n * @param  CRCx   Pointer to a valid accessible CRC_TypeDef instance.\n * @param  InData Value to store in CRC_IDR.IDR[31:0]; all 32 bits are written.\n * @retval None\n */\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *p_crc, uint32_t InData)\n{\n    p_crc->IDR = InData; /* volatile 32-bit word write (RM0486 p.1172) */\n}\n\n/**\n * @brief  Read the 32-bit value currently stored in the CRC independent\n *         data register.\n * @param  CRCx   Pointer to a valid accessible CRC_TypeDef instance.\n * @retval Current CRC_IDR.IDR[31:0] value.\n */\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *p_crc)\n{\n    return p_crc->IDR; /* volatile 32-bit word read (RM0486 p.1172) */\n}\n\n#endif /* STM32N6XX_LL_CRC_H */\n",
+        "edits": [
+          {
+            "tool_call_id": "TEWBRmT90thj43GIn2swmMooxZ1euIOU",
+            "node": "df_author_0",
+            "event_index": 181,
+            "old_string": "static inline void LL_CRC_Write_IDR(CRC_TypeDef *p_crc, uint32_t InData)\n{\n    p_crc->IDR = InData; /* volatile 32-bit word write (RM0486 p.1172) */",
+            "new_string": "static inline void LL_CRC_Write_IDR(CRC_TypeDef *p_crc, uint32_t pdata)\n{\n    p_crc->IDR = pdata; /* volatile 32-bit word write (RM0486 p.1172) */",
+            "before_sha256": "801f70077c72e182ae06bb481ea769d1a7b87f0ea10462026208e6aef0719ba7",
+            "after_sha256": "66527eb34060651275dd65875a15d39a81018a0a13941b45848a42045dee42da"
+          },
+          {
+            "tool_call_id": "MrpsuxETiZEDFhIysPpgJSFSaFi8y0pB",
+            "node": "df_author_0",
+            "event_index": 187,
+            "old_string": " * @param  InData Value to store in CRC_IDR.IDR[31:0]; all 32 bits are written.",
+            "new_string": " * @param  pdata  Value to store in CRC_IDR.IDR[31:0]; all 32 bits are written.",
+            "before_sha256": "66527eb34060651275dd65875a15d39a81018a0a13941b45848a42045dee42da",
+            "after_sha256": "6a5e917f1114f1ee61195260b1d8622b9853f2f4b7c55af392a7dde6e7133b74"
+          },
+          {
+            "tool_call_id": "zexNdc7Mw7ndFYWRBLKCFdWH1WMYJJ8f",
+            "node": "df_author_0",
+            "event_index": 199,
+            "old_string": "static inline void LL_CRC_Write_IDR(CRC_TypeDef *p_crc, uint32_t pdata)\n{\n    p_crc->IDR = pdata; /* volatile 32-bit word write (RM0486 p.1172) */",
+            "new_string": "static inline void LL_CRC_Write_IDR(CRC_TypeDef *crcx, uint32_t indata)\n{\n    crcx->IDR = indata; /* volatile 32-bit word write (RM0486 p.1172) */",
+            "before_sha256": "6a5e917f1114f1ee61195260b1d8622b9853f2f4b7c55af392a7dde6e7133b74",
+            "after_sha256": "0c9d704d86b52c9fda6857615e575df0c437e555556812d275cda8c5fde398bf"
+          },
+          {
+            "tool_call_id": "J8HGu5FV3PnVnM8IYogrSQxZCTyHzSay",
+            "node": "df_author_0",
+            "event_index": 201,
+            "old_string": "static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *p_crc)\n{\n    return p_crc->IDR; /* volatile 32-bit word read (RM0486 p.1172) */",
+            "new_string": "static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *crcx)\n{\n    return crcx->IDR; /* volatile 32-bit word read (RM0486 p.1172) */",
+            "before_sha256": "0c9d704d86b52c9fda6857615e575df0c437e555556812d275cda8c5fde398bf",
+            "after_sha256": "39b3b5e9d86164e3e5520631fda72b046ffe961d4f4db6cb6d88f5bfc548707c"
+          },
+          {
+            "tool_call_id": "NBdtcEcOtce42FBVvJP85SQKQMBSpWEV",
+            "node": "df_author_0",
+            "event_index": 219,
+            "old_string": " * @brief  Write the supplied 32-bit value to the CRC independent data register.\n * @param  CRCx   Pointer to a valid accessible CRC_TypeDef instance.\n * @param  pdata  Value to store in CRC_IDR.IDR[31:0]; all 32 bits are written.\n * @retval None\n */",
+            "new_string": " * @brief  Write the supplied 32-bit value to the CRC independent data register.\n * @param  crcx   Pointer to a valid accessible CRC_TypeDef instance.\n * @param  indata Value to store in CRC_IDR.IDR[31:0]; all 32 bits are written.\n * @retval None\n */",
+            "before_sha256": "39b3b5e9d86164e3e5520631fda72b046ffe961d4f4db6cb6d88f5bfc548707c",
+            "after_sha256": "036bc6a21b6854078904460601919cc4938df537fc0d68b0262c1d3d0964b165"
+          },
+          {
+            "tool_call_id": "CeSkpOKiVohhItvlgQ2vlSOnUx7UyZDh",
+            "node": "df_author_0",
+            "event_index": 221,
+            "old_string": " *         data register.\n * @param  CRCx   Pointer to a valid accessible CRC_TypeDef instance.\n * @retval Current CRC_IDR.IDR[31:0] value.",
+            "new_string": " *         data register.\n * @param  crcx   Pointer to a valid accessible CRC_TypeDef instance.\n * @retval Current CRC_IDR.IDR[31:0] value.",
+            "before_sha256": "036bc6a21b6854078904460601919cc4938df537fc0d68b0262c1d3d0964b165",
+            "after_sha256": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e"
+          }
+        ],
+        "anchor": {
+          "tool_call_id": "7gqJIBTefBdw0Zen83X7Bt5aGrNqRKqs",
+          "node": "df_author_0",
+          "path": "software/ll/stm32n6xx_ll_crc.h",
+          "sha256": "801f70077c72e182ae06bb481ea769d1a7b87f0ea10462026208e6aef0719ba7"
+        },
+        "anchor_event_index": 169,
+        "path": "software/ll/stm32n6xx_ll_crc.h",
+        "final_sha256": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e"
+      }
+    ]
+  },
+  "source_author_nodes": {
+    "df_author_0": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_1": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_2": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "swe3_author": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    }
+  },
+  "functional_verification": "NOT_EVALUATED_BY_THIS_AUDIT",
+  "model_generation_calls_by_auditor": 0,
+  "workspace_written_by_auditor": false,
+  "candidate_executed_by_auditor": false,
+  "runtime_source_unchanged": true
+}

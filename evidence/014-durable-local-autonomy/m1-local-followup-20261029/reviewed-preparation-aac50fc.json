@@ -1,0 +1,140 @@
+{
+  "schema": "forge-c/reviewed-requirements-preparation/1",
+  "source_revision": "aac50fcb3b415e7ac35fa6525f885d986ab4ca71",
+  "work_order": "WO-IDR-REVIEWED-EXACT-AAC50FC",
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/reviewed-exact-aac50fc/state/workorders/WO-IDR-REVIEWED-EXACT-AAC50FC/workspace",
+  "model_requests": 0,
+  "requirements_payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+  "review": {
+    "status": "REVIEWED",
+    "reviewed_by": "Jefferson Nascimento",
+    "reviewed_at": "2026-10-29T07:30:49.470801Z",
+    "record_ref": "evidence/014-durable-local-autonomy/m1-owner-review-simulation-20261029.json",
+    "payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463"
+  },
+  "manifest_sha256": "0f55dcefe36f73b1f487c7d6b31fbff57ec4e4c787e9211c73bfaefe539fb124",
+  "frozen_baseline_hash": "112600eefffb6f360c6cde033a6f5757485b8bd1314d493c620b7565f2a46d07",
+  "import_status": "PASS",
+  "inspection_gate": "REINSPECT",
+  "delivery": {
+    "status": "REFUSED",
+    "issues": [
+      "SWE1_NOT_PASSED:REINSPECT"
+    ]
+  },
+  "inspector_packets": [
+    {
+      "task": "inspect:SWE1-01",
+      "input_hash": "277e2f2c46d4c3430dc5c787f1f52fcf2af4bc32ea1f1cc3e4354f771e325654",
+      "accounting": {
+        "serialized_chars": 17114,
+        "estimated_prompt_tokens": 6287,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "aeeacd7c2ba50dc51f8c7fb191a4c11a7a57ea2017f4a2ddcb19a847413354e6",
+          "serialized_bytes": 18348,
+          "input_tokens": 18476,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    },
+    {
+      "task": "inspect:SWE1-02",
+      "input_hash": "004bef45ca0ee7236c5bfb5b5862b3599f20fc255f323edba0b9dca1d5b42c51",
+      "accounting": {
+        "serialized_chars": 17110,
+        "estimated_prompt_tokens": 6285,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "433612f52624f7c97e296d64d912f94b9f1086ed52748daccf62b8039a04065f",
+          "serialized_bytes": 18344,
+          "input_tokens": 18472,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    },
+    {
+      "task": "inspect:SWE1-03",
+      "input_hash": "94c55c600e6ccb5aa27f8511487a0ac75a4e98676d6429dd51bef6e57e58b096",
+      "accounting": {
+        "serialized_chars": 17106,
+        "estimated_prompt_tokens": 6284,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "b57edd4fbde00498430e076fcf498d84ee69f0ae3de18e743f1bb7577c2d7188",
+          "serialized_bytes": 18340,
+          "input_tokens": 18468,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    },
+    {
+      "task": "inspect:SWE1-04",
+      "input_hash": "78a8eec125d357b943b22d9c62ec9886bf6159ab471c26f7ab98c6d77e422efd",
+      "accounting": {
+        "serialized_chars": 17098,
+        "estimated_prompt_tokens": 6281,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "3c5f63dda2b1a8e11da2f36d99aa1dcb20101e3d9fb70a74a1efea632060c0ca",
+          "serialized_bytes": 18332,
+          "input_tokens": 18460,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    },
+    {
+      "task": "inspect:SWE1-05",
+      "input_hash": "36159ff6098d3851715e4ea494e65f582da4c7572e6d9f06069f6ce5e91a6090",
+      "accounting": {
+        "serialized_chars": 17102,
+        "estimated_prompt_tokens": 6282,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "ef419884c21ee5c954edcb0ca4967562ff10ef1ee69394aa548d094c9e546083",
+          "serialized_bytes": 18336,
+          "input_tokens": 18464,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    },
+    {
+      "task": "inspect:SWE1-06",
+      "input_hash": "c6a6c95316dd15222aaa597b9d0f14209189dea93dff54fd794114d3ea80755a",
+      "accounting": {
+        "serialized_chars": 17092,
+        "estimated_prompt_tokens": 6279,
+        "output_reserve": 2048,
+        "context_tokens": 24576,
+        "fits": true,
+        "complete_serialized_request": {
+          "sha256": "fd590dc16a4787ab88b17938e757a1d99430005ace22f01321a1010101b3bcc0",
+          "serialized_bytes": 18326,
+          "input_tokens": 18454,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false
+        }
+      }
+    }
+  ],
+  "runtime_authorization": "NOT_CHECKED_OR_GRANTED",
+  "role_admission": "NOT_RUN",
+  "qwen_capability": "NOT_RUN",
+  "product_acceptance": "NOT_RUN",
+  "measurement_scope": "Prepared structured requests only; gateway reasoning transform/native tokenizer not run"
+}

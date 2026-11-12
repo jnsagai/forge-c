@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/serving_observer.py", line 22, in <module>
+    p=stack._in_ns(int(holder),[sys.executable,backend,result],dict(os.environ),Path(log),Path(out),serving=rec)
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v1/factory/python/forge_factory/lrtx/stack.py", line 375, in _in_ns
+    enter = _nsenter(holder)
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v1/factory/python/forge_factory/lrtx/stack.py", line 356, in _nsenter
+    if os.readlink(target / "user") != os.readlink("/proc/self/ns/user"):
+       ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: '/proc/848191/ns/user'

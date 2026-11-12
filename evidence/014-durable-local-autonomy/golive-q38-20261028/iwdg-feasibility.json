@@ -1,0 +1,14 @@
+{
+  "scope": "READ_ONLY_RECORDED_RUN_FEASIBILITY_NOT_MODEL_QUALITY",
+  "source_revision": "97936d7deab55795248539b6f0577460fba75902",
+  "order_id": "afo-dfdd59e695d5333f",
+  "mission_id": "F014-GOLIVE-20261028-IWDG",
+  "request_limit": 32,
+  "requests_already_used": 31,
+  "known_unanswered_unique_required_packets": 13,
+  "minimum_new_requests_for_these_packets": 13,
+  "remaining_request_allowance": 1,
+  "completion_with_current_frozen_protocol_and_allowance": "NOT_FEASIBLE",
+  "qualification_claim": "NO_MODEL_ACCURACY_CONCLUSION",
+  "note": "Current frozen inspector requires each INVALID checkpoint to be answered; smaller-packet batching or changed prompts are not silently substituted. Additional uncreated checks are excluded, so this is a lower bound. No inference or allowance mutation."
+}

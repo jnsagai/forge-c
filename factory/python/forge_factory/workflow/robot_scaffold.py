@@ -30,6 +30,10 @@ HEADER = f"""{MARKER}: one test case per SWE.1 requirement (names and tags fixed
 #   Driver Flash Size Should Be At Most    <bytes>
 #   Driver Static RAM Should Be At Most    <bytes>
 #   Driver Stack Should Be At Most    <bytes>          (worst-case call chain of the driver)
+#   Register Accesses Before First Call Should Be Empty   (register-access log of the last run; the scenario
+#                                                          sets FORGE_ACCESS_PHASE(1U) before the first call)
+#   Register Accesses In Phase Should Be Empty    <phase>   (FORGE_ACCESS_PHASE(<phase>U) in the scenario)
+#   Register Access Log Should Not Contain    phase=<p>    access=<R|W>    offset=<0x...>
 #   Target Check Should Pass needs a TCHECK with that number in the scenario that was run last
 # Scenario files live next to this suite: software/tests/software/scn_<topic>.c
 # Register access in scenarios: ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)
@@ -58,12 +62,40 @@ def header(ws: Path | None = None) -> str:
     from ..layer import profile
 
     pr = profile(ws)
+    from ..simulation_performance import selected
+
+    budget = selected(ws) if ws is not None else None
+    text = HEADER
+    if ws is not None:
+        from ..delivery_first import selected as delivery_selected
+
+        cfg, _ = delivery_selected(ws)
+        from ..layer import ll_instance
+
+        inst = ll_instance(ws) if not cfg else None
+        if cfg:
+            text = re.sub(r"^# Register access in scenarios:.*$",
+                          "# Register access follows " + cfg["contract"] + "; use the actual candidate/device "
+                          "declarations, not assumed register arrays or mask macros.", text, flags=re.M)
+        elif inst is not None:  # instance mode: the members of the instance macro, no register-block array
+            text = re.sub(r"^# Register access in scenarios:.*$",
+                          f"# Register access in scenarios: {inst['macro']}-><MEMBER> & {pr['ll']['function_prefix']}"
+                          f"<REG>_<FIELD>_MSK ({inst['type_name']} of {inst['device_header']}; every LL call passes "
+                          f"{inst['macro']})", text, flags=re.M)
+    if budget:
+        text = text.replace("*** Settings ***", (
+            "# Simulation-only performance: use the declared instrumented test, not a copied scenario.\n"
+            f"#   Run Target Scenario    {budget['test_source']}\n"
+            "#   Simulation Performance Should Meet Budget\n"
+            "# The factory generates forge_performance_calls.h and links scoped wrappers for that test only.\n"
+            "# Missing/incomplete/over-budget measurements fail; physical hardware WCET is not measured.\n"
+            "*** Settings ***"))
     if pr["id"] == "rcc":
-        return HEADER
+        return text
     d, blk = pr["ll"]["function_prefix"], pr["ll"]["register_block"]
     rcc_model = ("(RCC model: RCC_SR reads RCC_CR & 0xF1F, read-only;\n#" + " " * 62 +
                  "other registers plain storage starting at 0)")
-    return (HEADER.replace(rcc_model, f"({pr['register_prefix']} behavioural model: see {pr['sim']['model']})")
+    return (text.replace(rcc_model, f"({pr['register_prefix']} behavioural model: see {pr['sim']['model']})")
             .replace("(ready flags never set: waits time out)", "(update flags never clear: waits time out)")
             .replace("ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)",
                      f"{blk}[{d}<REG>_OFFSET / 4U] & {d}<REG>_<FIELD>_MSK (e.g. "

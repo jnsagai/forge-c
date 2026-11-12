@@ -1,0 +1,53 @@
+{
+  "schema": "forge-c/integration28-source-assembly/1",
+  "status": "FROZEN_UNTESTED",
+  "source": "f9078b699668b3f5ea21ecead7dc28078dd9f0b1",
+  "base": "2e1ddd5cdaeb3871b2af62c55a98aa01f61f7c01",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-integration28",
+  "all8_component_bytes_verified": [
+    {
+      "path": "docs/adr/ADR-014-owner-development-launch-guard.md",
+      "sha256": "76455a1c8e4dfa36d13ac91ffa8aa4026829d0589783ca4df1ac95ed59a68ca6",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-launch-guard-v3"
+    },
+    {
+      "path": "docs/adr/ADR-DA-016-preserve-prelaunch-refusal-codes.md",
+      "sha256": "03a9e827b03b565d639fc0af1818dee7c00f0d125e39f5c091185b997ad70012",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-launch-refusal-code-v2"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/local_agent.py",
+      "sha256": "20d1cd5a929fda6e5c755e83e9cb395a0d8bb9158b4d7aef8a91407936601cae",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-launch-refusal-code-v2"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_launch_guard.py",
+      "sha256": "c73ace0931661e2025d00dbd16c507e78366c0fadf09198f9ec2bd7bbf8ff3b3",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-launch-guard-v3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_launch_guard.sh",
+      "sha256": "aa0a4cd740eb0424c8c5b08876598ac2c316a49ff043674a328b27009bb92121",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-launch-guard-v3"
+    },
+    {
+      "path": "factory/python/tests/test_launch_refusal_diagnostics.py",
+      "sha256": "4422010890a78f975e7ada17752e5ab3987626f2104a094854b2a0d9f4e2e769",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-launch-refusal-code-v2"
+    },
+    {
+      "path": "factory/python/tests/test_line_recovery_executor.py",
+      "sha256": "c424ca5b33f2160a2ed5bc259c68f4d3b2a5d2918594f5f4745ac48733949f9e",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-launch-refusal-code-v2"
+    },
+    {
+      "path": "factory/python/tests/test_owner_launch_guard.py",
+      "sha256": "b79269aae270c5be5b86460ea5a001b8bca63dfab559780ddd99764d836f1b86",
+      "equal_component": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-launch-guard-v3"
+    }
+  ],
+  "private_inputs_before_tests_sha256": "0f91c692823d75a6cc8702f0087dde5272a18fea3e4af1e2cd76785bfc9560dc",
+  "runtime_source": "F0 unchanged",
+  "public_push": false,
+  "qualification": "NOT_RUN"
+}

@@ -1,0 +1,138 @@
+FF...                                                                    [100%]
+=================================== FAILURES ===================================
+____ test_truncating_a_model_summary_at_a_space_still_commits_exactly_once _____
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-97/test_truncating_a_model_summar0/factory-repo')
+
+    def test_truncating_a_model_summary_at_a_space_still_commits_exactly_once(factory):
+        case = _case(factory)
+        _good_candidate(case)
+>       sub = M.submit(case, SUMMARY, REPRO, SIG)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_commit_reconciliation.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:378: in submit
+    return _submit(case, summary, reproducer, signature)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'allow': ['factory/python/forge_factory/**', 'factory/python/tests/afo_candidate/**'], 'base': '403c50dedc5e7c44c2695...sdk.py', 'factory/python/forge_factory/mcp/servers/maintainer.py', 'factory/python/forge_factory/repair/**', ...], ...}
+summary = 'word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word TAIL'
+reproducer = 'factory/python/tests/afo_candidate/rpr_calc.py'
+signature = 'calc.add subtracts'
+
+    def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+        from .durable import digest, immutable_bytes, immutable_json, strict_json
+    
+        src, pid = Path(case["src"]), case["proposal_id"]
+        if not (reproducer.startswith(CANDIDATE_TESTS) and reproducer.endswith(".py")):
+            raise MaintainerDenied("REPRODUCER_NOT_CANDIDATE_OWNED", reproducer)
+        if not re.fullmatch(r"[\w .:,/()'-]{8,160}", signature):
+            raise MaintainerDenied("BAD_SYMPTOM_SIGNATURE", signature[:60])
+        d = case_dir(pid)
+        frozen = d / "case.json"
+        if digest(strict_json(frozen.read_bytes(), 65536)) != digest(case):
+            raise MaintainerDenied("FROZEN_CASE_CHANGED")
+        request = digest({"case_sha256": sha256_file(frozen), "summary": summary,
+                          "reproducer": reproducer, "signature": signature})
+        intent_path = d / "submission-intent.json"
+        if intent_path.exists():
+            intent = strict_json(intent_path.read_bytes(), 65536)
+            if intent["request_sha256"] != request:
+                raise MaintainerDenied("SUBMISSION_REPLAY_CHANGED")
+        else:
+            _git("add", "-A", cwd=src)
+            if not _git("status", "--porcelain", cwd=src).strip():
+                raise MaintainerDenied("EMPTY_CANDIDATE")
+            intent = {"request_sha256": request, "case_sha256": sha256_file(frozen),
+                      "parent": _git("rev-parse", "HEAD", cwd=src).strip(),
+                      "tree": _git("write-tree", cwd=src).strip(), "submitted_utc": utc_now(),
+                      "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}"}
+            immutable_json(intent_path, intent)
+        if (d / "submission-receipt.json").exists():
+            return submission(case, require_receipt=True)[0]
+        head = _git("rev-parse", "HEAD", cwd=src).strip()
+        if head == intent["parent"]:
+            if _git("write-tree", cwd=src).strip() != intent["tree"]:
+                raise MaintainerDenied("SUBMISSION_TREE_CHANGED")
+            _git(*IDENTITY, "commit", "-q", "--no-verify", "-m", intent["message"], cwd=src)
+            head = _git("rev-parse", "HEAD", cwd=src).strip()
+        # A crash after commit but before receipt must adopt precisely that effect, never commit again.
+        actual = _git("show", "-s", "--format=%P%n%T%n%B", head, cwd=src).strip().split("\n", 2)
+        if actual != [intent["parent"], intent["tree"], intent["message"]]:
+>           raise MaintainerDenied("SUBMISSION_COMMIT_MISMATCH")
+E           forge_factory.afo.maintainer.MaintainerDenied: SUBMISSION_COMMIT_MISMATCH:
+
+factory/python/forge_factory/afo/maintainer.py:420: MaintainerDenied
+_ test_legacy_committed_intent_is_reconciled_without_rewrite_or_second_commit __
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-97/test_legacy_committed_intent_i0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ba91d549a70>
+
+    def test_legacy_committed_intent_is_reconciled_without_rewrite_or_second_commit(factory, monkeypatch):
+        case, path, intent = pending_after_commit(factory, monkeypatch)
+        before = path.read_bytes()
+        head = _head(Path(case['src']))
+        assert not (path.parent / 'submission-receipt.json').exists()
+>       sub = M.submit(case, SUMMARY, REPRO, SIG)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_commit_reconciliation.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:378: in submit
+    return _submit(case, summary, reproducer, signature)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = {'allow': ['factory/python/forge_factory/**', 'factory/python/tests/afo_candidate/**'], 'base': '403c50dedc5e7c44c2695...sdk.py', 'factory/python/forge_factory/mcp/servers/maintainer.py', 'factory/python/forge_factory/repair/**', ...], ...}
+summary = 'word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word TAIL'
+reproducer = 'factory/python/tests/afo_candidate/rpr_calc.py'
+signature = 'calc.add subtracts'
+
+    def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+        from .durable import digest, immutable_bytes, immutable_json, strict_json
+    
+        src, pid = Path(case["src"]), case["proposal_id"]
+        if not (reproducer.startswith(CANDIDATE_TESTS) and reproducer.endswith(".py")):
+            raise MaintainerDenied("REPRODUCER_NOT_CANDIDATE_OWNED", reproducer)
+        if not re.fullmatch(r"[\w .:,/()'-]{8,160}", signature):
+            raise MaintainerDenied("BAD_SYMPTOM_SIGNATURE", signature[:60])
+        d = case_dir(pid)
+        frozen = d / "case.json"
+        if digest(strict_json(frozen.read_bytes(), 65536)) != digest(case):
+            raise MaintainerDenied("FROZEN_CASE_CHANGED")
+        request = digest({"case_sha256": sha256_file(frozen), "summary": summary,
+                          "reproducer": reproducer, "signature": signature})
+        intent_path = d / "submission-intent.json"
+        if intent_path.exists():
+            intent = strict_json(intent_path.read_bytes(), 65536)
+            if intent["request_sha256"] != request:
+                raise MaintainerDenied("SUBMISSION_REPLAY_CHANGED")
+        else:
+            _git("add", "-A", cwd=src)
+            if not _git("status", "--porcelain", cwd=src).strip():
+                raise MaintainerDenied("EMPTY_CANDIDATE")
+            intent = {"request_sha256": request, "case_sha256": sha256_file(frozen),
+                      "parent": _git("rev-parse", "HEAD", cwd=src).strip(),
+                      "tree": _git("write-tree", cwd=src).strip(), "submitted_utc": utc_now(),
+                      "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}"}
+            immutable_json(intent_path, intent)
+        if (d / "submission-receipt.json").exists():
+            return submission(case, require_receipt=True)[0]
+        head = _git("rev-parse", "HEAD", cwd=src).strip()
+        if head == intent["parent"]:
+            if _git("write-tree", cwd=src).strip() != intent["tree"]:
+                raise MaintainerDenied("SUBMISSION_TREE_CHANGED")
+            _git(*IDENTITY, "commit", "-q", "--no-verify", "-m", intent["message"], cwd=src)
+            head = _git("rev-parse", "HEAD", cwd=src).strip()
+        # A crash after commit but before receipt must adopt precisely that effect, never commit again.
+        actual = _git("show", "-s", "--format=%P%n%T%n%B", head, cwd=src).strip().split("\n", 2)
+        if actual != [intent["parent"], intent["tree"], intent["message"]]:
+>           raise MaintainerDenied("SUBMISSION_COMMIT_MISMATCH")
+E           forge_factory.afo.maintainer.MaintainerDenied: SUBMISSION_COMMIT_MISMATCH:
+
+factory/python/forge_factory/afo/maintainer.py:420: MaintainerDenied
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_commit_reconciliation.py::test_truncating_a_model_summary_at_a_space_still_commits_exactly_once
+FAILED factory/python/tests/test_afo_commit_reconciliation.py::test_legacy_committed_intent_is_reconciled_without_rewrite_or_second_commit

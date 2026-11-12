@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -85,7 +86,7 @@ def record(decision: dict) -> None:
 def load(path: Path | None = None, *, auth_base: Path | None = None, now=None, log: bool = False) -> Effective:
     from . import authz
 
-    p = Path(path or POLICY_PATH)
+    p = Path(path or os.environ.get("FORGE_AFO_POLICY") or POLICY_PATH)
     try:
         pol = load_yaml(p) if p.is_file() else None
     except Exception as exc:  # noqa: BLE001 - unreadable policy is a DISABLED factory, never an exception path
@@ -101,6 +102,15 @@ def load(path: Path | None = None, *, auth_base: Path | None = None, now=None, l
         req = pol.get("mode") if isinstance(pol, dict) else None
         if issues:
             eff = Effective("DISABLED", req, sha, None, issues)
+        elif os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+            from .owner_supervised_development import effective
+
+            try:
+                eff = effective(pol, sha, p)
+            except (ValueError, OSError, KeyError, TypeError) as exc:
+                # Invalid/revoked development authority cannot fall back to any
+                # older signed grant. Existing native settlement remains runnable.
+                eff = Effective('OBSERVE_ONLY', req, sha, pol, [getattr(exc, 'code', type(exc).__name__)])
         elif req in ("DISABLED", "OBSERVE_ONLY"):
             eff = Effective(req, req, sha, pol)
         else:

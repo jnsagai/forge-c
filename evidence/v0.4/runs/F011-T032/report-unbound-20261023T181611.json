@@ -1,0 +1,230 @@
+{
+  "at": "2026-10-23T18:20:03.155787Z",
+  "inspector": "gpt-oss:120b",
+  "model": "qwen3-coder:30b",
+  "note": "Inspector NOT_QUALIFIED (F011-T029): verdicts are measurements only.",
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [
+        {
+          "load_ms": 32105.0,
+          "model": "qwen3-coder:30b"
+        }
+      ],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 75402.8,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5277,
+          "prompt_tokens": 10684,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 77.2,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/IWDG-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "interfaces: SWR-011 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-011 to it (functions now allocated to SWR-011: LL_IWDG_IsActive)",
+        "interfaces: SWR-012 names LL_IWDG_IsEnabled, which is not a defined function - the frozen SWE.1 requirement fixes this name: define the function as LL_IWDG_IsEnabled (rename the function you gave another name) and allocate SWR-012 to it (functions now allocated to SWR-012: LL_IWDG_IsActive)"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "interfaces": {
+          "call_wall_ms": 30436.2,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 5539,
+          "prompt_tokens": 10859,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 30.5,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/IWDG-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 5,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: no compliance/approval claim ('compliance'): state facts and open dependencies only"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 16791.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3110,
+          "prompt_tokens": 7577,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 19709.3,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3565,
+          "prompt_tokens": 6505,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 36.5,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/IWDG-LL/qwen3-coder_30b-03/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: concurrency_and_reentrancy must address reentrancy and ISR/interrupt use",
+        "design: sequence 'Oscillator Enable and Polling': LL_RCC_HSI_Enable(void) is not an interface function",
+        "design: sequence 'Oscillator Enable and Polling': LL_RCC_HSI_IsReady(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_EnableClock(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_ForceReset(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_ReleaseReset(void) is not an interface function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 14136.2,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2594,
+          "prompt_tokens": 8055,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 15296.9,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2840,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 29.5,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/RCC-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: sequence 'Oscillator Enable and Polling': LL_RCC_HSI_Enable(void) is not an interface function",
+        "design: sequence 'Oscillator Enable and Polling': LL_RCC_HSI_IsReady(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_EnableClock(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_ForceReset(void) is not an interface function",
+        "design: sequence 'Peripheral Clock and Reset Control': LL_RCC_GPDMA1_ReleaseReset(void) is not an interface function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 14814.8,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2723,
+          "prompt_tokens": 8118,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 13989.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2628,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 28.9,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/RCC-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: no compliance/approval claim ('compliance'): state facts and open dependencies only",
+        "design: sequence 'Oscillator Enable Followed by Polling': LL_RCC_HSI_Enable(void) is not an interface function",
+        "design: sequence 'Oscillator Enable Followed by Polling': LL_RCC_HSI_IsReady(void) is not an interface function",
+        "design: sequence 'Peripheral Clock Enable and Reset Control': LL_RCC_GPDMA1_EnableClock(void) is not an interface function",
+        "design: sequence 'Peripheral Clock Enable and Reset Control': LL_RCC_GPDMA1_ForceReset(void) is not an interface function",
+        "design: sequence 'Peripheral Clock Enable and Reset Control': LL_RCC_GPDMA1_ReleaseReset(void) is not an interface function"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 14303.6,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2670,
+          "prompt_tokens": 8123,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 13785.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2619,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 28.1,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032-scratch/RCC-LL/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/f011-t032/1"
+}

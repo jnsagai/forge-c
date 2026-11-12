@@ -1,0 +1,4 @@
+# sha256 of each holdout hash list taken on omniverse2 (before/after each run of this directory)
+# each equals run4-omniverse2/holdouts-before.sha256 (72d670c26f4aba06add7126bbf257b36c4f3b9b86596af001cfbf068feab13c9): the holdouts were unchanged
+72d670c26f4aba06add7126bbf257b36c4f3b9b86596af001cfbf068feab13c9  holdouts-after.sha256
+72d670c26f4aba06add7126bbf257b36c4f3b9b86596af001cfbf068feab13c9  holdouts-before.sha256

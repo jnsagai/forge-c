@@ -1,0 +1,3 @@
+
+--- stderr ---
+/mnt/data/forge-c/venv/bin/python: Error while finding module specification for 'forge_factory.lrtx.drill' (ModuleNotFoundError: No module named 'forge_factory')

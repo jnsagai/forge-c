@@ -1,0 +1,7 @@
+{
+  "source_revision": "bd527ae73367a0618f86acea2f25e8dc2a4d0004",
+  "expected_delivery_after_classification": false,
+  "observed_delivery_after_classification": true,
+  "exposures": 1,
+  "scope": "DETERMINISTIC_FIXTURE_NO_MODEL"
+}

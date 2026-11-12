@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-29T22:35:42.683371Z",
+  "trial_id": "F014-AFO-MCP-ROOT-REPAIR-20261029",
+  "source_revision": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 44,
+    "effective_stop": false
+  },
+  "deadline_utc": "2026-10-29T22:25:58Z",
+  "order": {
+    "order_id": "afo-f516373e837db572",
+    "state": "BLOCKED",
+    "terminal_reason": "ORDER_WALL_BUDGET_EXHAUSTED"
+  },
+  "original_order": {
+    "order_id": "afo-77ab6ea67e02ba0a",
+    "state": "BLOCKED",
+    "terminal_reason": "UNSUBMITTED_QWEN_ARTIFACTS_REQUIRE_INDEPENDENT_REWORK"
+  },
+  "jobs": [
+    {
+      "job_id": "afo-agent-97d070852addbf37acf1b7c9",
+      "state": "FAILED",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-afo-max-mtp",
+      "factory_revision": {
+        "commit": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M64TQWV0QAJ69YGBJSS2STN3",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": 510659,
+      "deadline_epoch": 1793325505.650556,
+      "review_state": null,
+      "error": "NO_VALID_MAINTENANCE_RECEIPT:FileNotFoundError",
+      "request_states": {
+        "QUIESCENT": 13
+      },
+      "candidate_uncommitted_diff_stat": " factory/python/forge_factory/fabro/runconfig.py | 11 ++++++++---\n 1 file changed, 8 insertions(+), 3 deletions(-)\n",
+      "candidate_submission_present": false,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-d0960b5edd5e6f0a73049a30",
+        "execution_liveness": "QUIESCENT",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-97d070852addbf37acf1b7c9",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-29T22:22:18.954809Z",
+        "launch_nonce": "fcf26a1ab1c2df675cb65109a03395d3",
+        "lease_epoch": 37,
+        "mission_id": "F014-IDR-M1-HIGH-20261028",
+        "native_run_ids": [
+          "01M64TQWV0QAJ69YGBJSS2STN3"
+        ],
+        "outcome_evidence_ref": "execution-outcome:9a01ae71096e5421e7b316990321a8f8e601da553f875df45bf565a424b65158",
+        "quiescence_evidence_ref": "native-terminals:8ec7b54ce9573586d603f6d93561c8129d8984a455a13e3b593ae97608b981d7",
+        "resource_lease": "RELEASED",
+        "revision": 154,
+        "schema_version": "1.0",
+        "task_outcome": "FAILED_PROTOCOL",
+        "terminal_reason": "NO_VALID_MAINTENANCE_RECEIPT:FileNotFoundError"
+      },
+      "verification_state": null
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793312758,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      },
+      {
+        "old_deadline": 1793297139.0,
+        "deadline_epoch": 1793312758,
+        "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+        "accepted_at": "2026-10-29T18:28:19.647876Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 5,
+    "requests": 407,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 404131072,
+    "usage_unknown": true,
+    "unique_executions": 9,
+    "unbounded_historical_usage": false
+  },
+  "proposals": [],
+  "read_only": true,
+  "model_requests_by_observer": 0,
+  "independent_frozen_candidate_verification": "NOT_RUN"
+}

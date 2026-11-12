@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-31T13:43:05.986963Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9086,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 8958,
+          "sha256": "5c02c239d571fb42e98d9e391e4c62edc0db509c6a49b81c0d5a5a03fb936d02"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2690,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7222
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 513,
+        "prompt_tokens": 1839,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 2352
+      },
+      "wall_ms": 3748.3
+    }
+  ],
+  "base_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "The RM0486 source does not specify whether LL_CRC_Write_IDR returns any value or status, so the return-value contract of the write function is unresolved.",
+      "The RM0486 source does not specify whether LL_CRC_Read_IDR returns the value directly or via an out-parameter, so the read return mechanism is unresolved."
+    ],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_IDR_STORES_VALUE",
+            "field": "IDR",
+            "op": "write",
+            "register": "CRC_IDR",
+            "value": "0xFFFFFFFF"
+          }
+        ],
+        "key": "write_idr_shall_store_supplied_value",
+        "source_page": 1172,
+        "statement": "When the caller invokes LL_CRC_Write_IDR with a valid CRC peripheral instance, the CRC LL driver shall write the supplied 32-bit value to the IDR field of CRC_IDR.",
+        "verification": "The test passes when LL_CRC_Write_IDR called with a supplied 32-bit value writes that value to CRC_IDR.IDR as read back from the register array, and no other register is accessed.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_IDR_RETURNS_CURRENT_VALUE",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": ""
+          }
+        ],
+        "key": "read_idr_shall_return_current_value",
+        "source_page": 1172,
+        "statement": "While the caller invokes LL_CRC_Read_IDR with a valid CRC peripheral instance, the CRC LL driver shall read the CRC_IDR register and return the current 32-bit value stored in the IDR field of CRC_IDR.",
+        "verification": "The test passes when LL_CRC_Read_IDR called after LL_CRC_Write_IDR returns the 32-bit value previously written to CRC_IDR.IDR, matching the register array read of the IDR field.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:CRC_IDR"
+}

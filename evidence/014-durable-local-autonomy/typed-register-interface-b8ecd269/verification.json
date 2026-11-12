@@ -1,0 +1,66 @@
+{
+  "source": "b8ecd2695b832c4905c5f538fda5b2c2193f8650",
+  "test_command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_typed_register_interface.py factory/python/tests/test_swe3_regmap.py factory/python/tests/test_swe3_implementation.py factory/python/tests/test_regmap_multi_instance.py factory/python/tests/test_guideline_check.py factory/python/tests/test_delivery_first.py factory/python/tests/test_delivery_first_scenario_contract.py factory/python/tests/test_delivery_first_package_order.py factory/python/tests/test_delivery_first_edit_provenance.py factory/python/tests/test_layer_split.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/typed-register-interface-exact.xml",
+  "checks": [
+    {
+      "name": "ruff",
+      "cmd": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m ruff check factory/python/forge_factory/inspection/typed_registers.py factory/python/forge_factory/inspection/regmap.py factory/python/forge_factory/inspection/implementation.py factory/python/forge_factory/delivery_first.py factory/python/tests/test_typed_register_interface.py",
+      "chunk_id": "c4bb4e",
+      "wall_time_seconds": 1.2996e-05,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "spec",
+      "cmd": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python specs/014-durable-local-autonomy/validate_spec.py",
+      "chunk_id": "6566ba",
+      "wall_time_seconds": 0.10290267,
+      "exit_code": 0,
+      "original_token_count": 84,
+      "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"requirements\": 58,\n  \"tasks\": 58,\n  \"acceptance_tests\": 58,\n  \"contracts\": {\n    \"result\": \"PASS\",\n    \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n    \"schemas\": 6,\n    \"fixtures\": 38,\n    \"positive\": 16,\n    \"negative\": 22,\n    \"errors\": []\n  },\n  \"errors\": []\n}\n"
+    },
+    {
+      "name": "contracts",
+      "cmd": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python specs/014-durable-local-autonomy/contracts/validate_contracts.py",
+      "chunk_id": "06d106",
+      "wall_time_seconds": 0.047060442,
+      "exit_code": 0,
+      "original_token_count": 39,
+      "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"schemas\": 6,\n  \"fixtures\": 38,\n  \"positive\": 16,\n  \"negative\": 22,\n  \"errors\": []\n}\n"
+    },
+    {
+      "name": "design",
+      "cmd": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python tests/spec/validate_design.py",
+      "chunk_id": "c49b4e",
+      "wall_time_seconds": 0.060197767,
+      "exit_code": 0,
+      "original_token_count": 379,
+      "output": "test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok\ntest_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok\ntest_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok\ntest_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok\ntest_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok\ntest_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok\ntest_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok\ntest_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok\ntest_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok\ntest_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok\ntest_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok\ntest_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok\ntest_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok\ntest_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.106s\n\nOK\nPASS: 14 static design tests. This does NOT validate runtime integrations.\n"
+    }
+  ],
+  "junit_summary": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "3",
+    "tests": "144",
+    "time": "72.174",
+    "timestamp": "2026-10-31T09:31:41.055807+00:00",
+    "hostname": "master"
+  },
+  "passed": 141,
+  "new_original_da_task_closures": [],
+  "live_qualification": "NOT_RUN",
+  "comparison_limit": "Before receipt is initial 22-case draft; final has 24 cases and corrected slice mutation assertion; not an identical-suite delta.",
+  "original_receipts": {
+    "typed-register-interface-before.xml": {
+      "sha256": "07ef60f88968ee0b15daf056a8fbe38d6c65456e821d39a6afda45daf81b4590",
+      "stored": "before-initial-22.xml.gz"
+    },
+    "typed-register-interface-after-initial.xml": {
+      "sha256": "480d3ad72613fc4f90de85577deb9dafdc9b2e0f32b99421c487146442a9adb2",
+      "stored": "after-initial-22.xml.gz"
+    }
+  }
+}

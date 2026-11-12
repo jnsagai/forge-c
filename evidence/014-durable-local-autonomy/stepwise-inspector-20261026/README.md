@@ -1,0 +1,232 @@
+# Stepwise local SWE.1 inspector — learning-set runs (Omniverse2, 2026-10-26)
+
+Owner decision 2026-10-26: "Stepwise inspector in 014". The inspector is split into small, closed,
+temperature-0 questions with deterministic assembly. This is the approach that took local diagnosis from 0 to
+95/95. Answers become typed claims, and the existing adjudicator decides them, so the model still decides every
+claim and no gate is added. The inspector is measured with Feature 011's seeded-defect harness
+(`forge_factory.lrtx.seeded`, catalogue `lrtx-seeded-2`) on Feature 011's **learning set**: 7 holdout work
+orders, each with a clean baseline and 6 seeded SWE.1 defects, giving 49 evaluations.
+
+**Preliminary. This is not inspector qualification.** Feature 011's rule applies: the frozen test set
+(F011-T046) is spent only on a candidate that already passes the learning set. No task is ticked from these
+runs (owner 2026-10-26: "Keep unticked").
+
+Model `qwen3.6:35b-a3b`, profile `local-rtx-v2-omniverse2-q36-noreason` (reasoning off), temperature 0,
+seed 1. The runtime is an isolated plain local stack (`/mnt/data/forge-c/inspector-014-b309039`) with no AFO
+authority and no durable autonomy.
+
+## Results ([learning-runs.json](learning-runs.json): every row, no findings text)
+
+| Run | Source | Evaluations | Correct | Note |
+|---|---|---|---|---|
+| learning-1 | 8d410f7 | 49 | 20 | first stepwise run; 13 inspections recorded nothing |
+| learning-2…9 | 199bf43…9aadfe8 | 4–32 each | — | stopped by the operator as soon as a defect was fixed |
+| learning-10 | 2e1af36 | 49 | **46** | 41/42 seeded defects; 5/7 clean baselines pass |
+| learning-11 | 8064062 | 49 | **48** | **42/42 seeded defects** (34 on target, 8 by the gate); 6/7 clean baselines pass |
+| learning-12 | caa2d3e | 6 | — | stopped: a closed self-check of citations withdrew a true S1-OMIT detection (removed) |
+| learning-13 | 964a8e3 | 49 | **48** | IWDG-HAL clean baseline passes; IWDG-HAL S1-OMIT missed ('leaving the already started watchdog') |
+| learning-14 | 285d21e | 49 | **49** | **first complete learning-set pass: 42/42 seeded defects, 7/7 clean baselines, 0 empty inspections** |
+
+Feature 011's best earlier learning-set trial (m9, reasoning on, `evidence/v0.4/runs/F011-T045/README.md`)
+for comparison:
+
+- S1-EFFECT: 0/7
+- S1-OMIT: 1/7 on target
+- S1-NOBUDGET: 2/7
+- 6/7 clean baselines passed
+
+Learning-14 (`285d21e`) is the first run with every evaluation correct, so it meets Feature 011's precondition for the
+frozen test set. The test set is measured as **calibration** (owner decision "Advisory + calibrate"): 3 runs,
+recorded as a result and never used to tune the inspector before all runs are done.
+
+## Calibration scope (owner ruling 2026-10-26: "Both: subset now, refresh later")
+
+Calibration-1 ran all 22 F011-T046 test baselines. Its truthful preflight showed that **13 of the 22 are rejected by
+today's deterministic SWE.1 author gate** (`STARTUP_INVARIANT_ON_HOST_TEST`: a startup requirement verified by a host
+unit test). Under the current factory they are not clean baselines, so calibration-1's detections are gate-inflated.
+It is recorded, not used as the inspector measurement.
+
+- **Now:** calibrate on the 9 baselines the current gate freezes. They were selected by the gate alone (truthful
+  preflight, zero model calls) and registered with tree hashes in
+  [calibration-subset.json](calibration-subset.json) (commit `1067d40`) before measurement. Two of the 9 (`b009`,
+  `h005`) are already rejected by an inspection rule under truthful answers. That is an expected result, not fixed
+  from test data.
+- **Later:** freeze a larger, refreshed held-out set from current-factory baselines (recorded seed), including
+  Feature 015 drivers.
+
+## Calibration results (registered subset, 3 runs, `285d21e`)
+
+[calibration-runs.json](calibration-runs.json) holds every row with finding codes only (no findings text), the gate
+log lines, the recorded preflight and the sha256 of each raw result. All gates passed before each run (22 test trees
+and 9 registered subset trees UNCHANGED; loop10 unit record 46 passed, 0 skipped). The three runs agree on every
+evaluation (temperature 0, seed 1), so one run's numbers stand for all three:
+
+| Per run, 63 evaluations | Result |
+|---|---|
+| Seeded defects caught on target by the inspector | 40/54 |
+| Seeded defects caught by the deterministic gate | 9/54 (every S1-QM) |
+| Seeded defects flagged off target | 4/54 |
+| Seeded defects missed | 1/54 (b007 S1-NOBUDGET) |
+| Clean baselines falsely rejected | **5/9** (b009, h003, h005, rc1, rc3) |
+| Inspections that recorded nothing | 0 |
+
+Compared with the learning set (learning-14: 42/42 seeded, 7/7 clean), defect detection carries over to unseen
+baselines but clean-baseline acceptance does not: 4 of the 5 IWDG-HAL test baselines are rejected. The truthful
+preflight predicted 2 of the 5 (b009, h005). Classes, read only after all registered runs ended:
+
+- **Parameterised write read as a contradiction** (h003, rc1, rc3): a requirement imposing "write the configured
+  prescaler (encoding) to IWDG_PR.PR" is judged inconsistent with each concrete value (PR = 0/1/2/4) in the register
+  effects. The same findings put h003 S1-OMIT, rc1 S1-NOSTART and rc3 S1-NOBUDGET off target.
+- **Key write reported uncovered** (h005, rc1): the scope behaviour "write IWDG_KR.KEY" is reported as having no
+  requirement.
+- **Recorded upstream gap reported again** (b009): budget placeholders recorded as NOT_PROVIDED are reported as missing
+  budgets.
+- **Verifiability judgement** (h005): "no register write before an initialisation request" is judged not verifiable.
+- **Miss** (b007 S1-NOBUDGET): a deleted budget row is not noticed.
+
+Under the owner's decision "Advisory + calibrate", these are measured rates of the advisory inspector, not a blocker.
+Any change made from these classes must be developed on the learning set (or a new learning sample), and its effect
+can then only be measured on a refreshed held-out set; this subset has now been looked at.
+
+## Learning set 2 (the spent calibration subset) and learning set 3 (Feature 015)
+
+After calibration the 9 subset baselines became learning set 2 ([learning-set-2.json](learning-set-2.json), registered
+before development). Rules were developed by replaying the recorded answers locally (no model) and checked live on
+Omniverse2 against learning set 1 each round:
+
+| Round | Revision | Learning set 1 (49) | Learning set 2 (63) | Changes |
+|---|---|---|---|---|
+| calibration | `285d21e` | 49/49 (learning-14) | 53/63, 5/9 clean rejected | — |
+| 1 | `9f001ed` | 49/49 (learning-15) | 59/63, 1/9 clean rejected | parameterised writes, budget rows, criterion clauses |
+| 2 | `e8e7fb6` | 49/49 (learning-16) | 61/63, 0/9 clean rejected | 'by writing ... to FIELD', key-write purposes, trace columns, budget citations |
+| 3 | `8d4208e` | **49/49** (learning-17) | **63/63** (learning2-3) | startup citation, time references and states are no purpose, write-protect purpose |
+
+The four owner-approved Feature 015 ST LL drivers were split with a recorded seed before any measurement
+([f015-split.json](f015-split.json)): SPI1 and USART1 became learning set 3, GPIOA and CRC the refreshed held-out test
+set 2. All four were gate-valid but failed the truthful preflight; only learning set 3 was studied. Its rule ('write that
+value', 'calculated from the supplied ...', '`requested ... encoding`') is in `6b8976a`; learning sets 1-3 run live on
+it before test set 2 is measured.
+
+## Learning set 3 rounds and the held-out test set 2 calibration (2026-10-27)
+
+| Round | Revision | Learning set 1 (49) | Learning set 2 (63) | Learning set 3 (14) | Changes |
+|---|---|---|---|---|---|
+| L3-1 | `6b8976a` | 49/49 (learning-18) | 63/63 (learning2-4) | 10/14: 2/2 clean rejected, S1-OMIT and S1-QM off target | 'write that value', computed writes, requested encodings |
+| L3-2 | `9300475` | **49/49** (learning-19) | **63/63** (learning2-5) | **14/14** (learning3-2) | safety-scope question, one-bit 'write 1/0', configuration writes, field named after 'shall', waits as reads, fixed-state assumptions |
+
+[learning-round-9300475.json](learning-round-9300475.json) holds the three learning runs (finding codes only).
+
+The S1-QM cases of Feature 015 were caught by no gate: the deterministic safety-scope check knows only the scopes
+registered on this revision (`config/factory/safety-scope.yaml`, a protected file left unchanged). The inspector now
+asks the fact itself in ASIL work orders and confirms a QM answer only when the safety document states a QM scope.
+
+With every learning set passing at `9300475`, the registered held-out **test set 2** (GPIOA
+`WO-AFO-03122bd1dd4fb5ff-a1`, CRC `WO-AFO-efc1871950537b1a-a1`; [f015-split.json](f015-split.json), commit `48207f1`)
+was measured in 3 runs by the same GPU job (`q014-calibrate-t2.sh`). Before inference, each run verified the 22
+F011-T046 trees and both test-set-2 trees UNCHANGED, recorded the remote unit tests (55 skipped there, see gate defect 2)
+and the loop10 record ([unit-local-9300475….txt](unit-local-9300475e7cec6d7ed751dd2bd6d1a84db4af45e0.txt): 61 passed, 0
+skipped), and recorded the truthful preflight. [calibration-t2-runs.json](calibration-t2-runs.json) holds every row with
+finding codes only. The three runs agree on every evaluation:
+
+| Per run, 14 evaluations | Result |
+|---|---|
+| Seeded defects flagged on target by the inspector | 11/12 |
+| Seeded defects flagged off target | 1/12 (GPIOA S1-OMIT) |
+| Seeded defects missed | 0/12 |
+| Clean baselines falsely rejected | **2/2** |
+| Inspections that recorded nothing | 0 |
+| Truthful preflight (zero model calls) | FAIL on CRC |
+
+**Read this with the false rejections.** Both clean baselines fail, so every seeded copy carries the same baseline
+findings, and "on target" only means the target is named among them. Counting only seeded cases that add a finding
+code their clean baseline lacks gives 10/12. Detection carries over to unseen drivers; clean-baseline acceptance does
+not. Classes, read only after all registered runs ended:
+
+- **GPIOA (model):** the effects step answered `not_stated` for SWR-021's BSRR toggle write
+  (`TOGGLE_MIXED_PIN6_SET`), giving a `requirements_inconsistent` claim. The truthful preflight passes, so the rules
+  decide this baseline correctly when the answer is right.
+- **CRC (rules):** the truthful preflight already rejects it. The REV_IN/RTYPE_IN/REV_OUT/RTYPE_OUT and DR writes of
+  the scope are not matched to the requirements stating them, and the Budgets row of the gaps table is not recognised.
+  The model added `requirement_not_verifiable` claims.
+
+`verify_calibration.py` checks the protocol of both calibrations from these records (registration before measurement,
+integrity, unit and preflight records, learning-set precondition, complete rows, summaries equal to row counts) and
+never judges the rates. It is the DA-T055 evidence (`evidence/v0.4/runs/DA014-calibration-t2`). Test set 2 is now
+spent: fixes for these classes belong to a learning set, and only a further refreshed held-out set can measure them
+(known issue KI-014-003).
+
+## Learning set 4 and the inspector freeze (2026-10-27)
+
+After all registered test-set-2 runs ended, the spent GPIOA/CRC pair was registered as learning set 4
+([learning-set-4.json](learning-set-4.json), `41e12e0`) before any development. Its rules (`e0c020d`: indexed field
+families such as `GPIO_BSRR.BSy`, 'write the requested <noun>' and argument writes, 'Flash budget: N bytes' rows,
+'<method>: <outcome>' pass criteria) made the truthful preflight pass on all 20 learning baselines. GPU job 040
+([learning-round-e0c020d.json](learning-round-e0c020d.json)):
+
+| Set | Evaluations | Result |
+|---|---|---|
+| Learning set 1 (learning-20) | 49 | 49/49 |
+| Learning set 2 (learning2-6) | 63 | 63/63 |
+| Learning set 3 (learning3-3) | 14 | 14/14 |
+| Learning set 4 (learning4-1) | 14 | 13/14: both clean baselines accepted; GPIOA S1-OMIT flagged off target |
+
+These are learning-data results; they do not re-measure the held-out rate (KI-014-003 stays OPEN). GPIOA S1-OMIT
+removes one MODER value while other requirements still cover the field; catching it needs an encoding-completeness
+check against the RM, not built because of its false-rejection risk. Owner 2026-10-27: inspector development is frozen
+here; the next measurement needs at least four new frozen held-out baselines.
+
+## Gate defects found while preparing calibration (2026-10-26)
+
+1. **The test-set integrity check did not run in calibration-1.** A comment placed mid-line in the ops script
+   swallowed the verifier's arguments. The verifier failed with `IndexError`, and the redirect-only next line
+   "succeeded", so the log says `test set verified:` with nothing after it. The subset script runs the verifier with its
+   arguments, requires the `"status": "UNCHANGED"` line, and also checks each subset tree against its registered hash.
+   A local dry run on loop10 returned UNCHANGED for all 22 trees and for the subset.
+2. **The remote unit gate ran only 6 of 46 tests.** On Omniverse2, all 40 tests in `test_lrtx_v2_review.py` skip
+   because the pinned SafeC engine and owner inputs (git-ignored) are not on that host. The learning runs' remote
+   gate had the same limit. On loop10 the same 46 tests at exactly `285d21e` give **46 passed, 0 skipped**. The subset
+   script refuses to start without that loop10 record for the deployed revision, and it logs the remote skip count.
+   For earlier learning revisions, no loop10 record of a non-skipping run is kept, so for those runs the remote unit
+   gate counts as partial.
+
+## What changed between runs
+
+Each change was driven by one measured failure. Each has a regression test (`tests/test_lrtx_v2_review.py`,
+`tests/test_lrtx_seeded.py`).
+
+- **Closed answer sets.**
+  - Coverage fields come from the sources' own REGISTER.FIELD names or REGISTER.*.
+  - `evidence_checked` lists only the provided sources.
+  - Effect answers include `set_then_clear`.
+- **Scope coverage.**
+  - Behaviours come from the scope sentence alone, with the requirements hidden.
+  - Each behaviour gets one closed question.
+  - Citations are checked against the verb the requirement imposes ("shall …", including and/then).
+  - Purpose words and documented values tell writes on one field apart, with one closed check when only a
+    synonym differs.
+  - Non-register sentences are not asked.
+- **Startup.** One question per field, where startup is stated per field.
+- **Adjudication rules.** Each refutes only what the baseline contradicts:
+  - ambiguities quoted from Open points or the gaps table;
+  - recorded upstream inputs (labels with explanations, PENDING/NOT_PROVIDED objections);
+  - count bounds;
+  - ranged and parameterised writes.
+- **One closed TRUE/FALSE check per standing judgement no rule decides.** FALSE keeps the claim in the record as
+  WITHDRAWN.
+- **Harness fixes.**
+  - On-target scoring reads every item's findings: the capped 200-character summary line hid detections, so
+    Feature 011's earlier counts may be undercounted the same way.
+  - The ADJUDICATED_PASS note crash is fixed.
+
+## Deterministic gates before any inference (owner request)
+
+`q014-inspector-run.sh` runs these steps in order:
+
+1. **Unit tests** inside the stack environment (on Omniverse2 the review tests skip; see gate defect 2).
+2. **Truthful preflight** (`seeded --preflight`). Every clean baseline is inspected with scripted truthful
+   answers and zero model calls. If any is rejected, the script exits 2 and Qwen is never called.
+3. **The measured run.** It stops itself (exit 3) after 3 inspections that record nothing.
+
+Before each deploy the same preflight runs locally on loop10 over all seven holdouts. Recorded model answers of
+a failing evaluation are replayed through the new code (`q014-replay.py`). The preflight caught 5 defects before
+inference. The unit-test gate caught the SWE.4 unit build having no compiler outside the stack environment.

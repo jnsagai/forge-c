@@ -1,0 +1,63 @@
+{
+  "source_revision": "3849410a4de676266c0754ae86b91f1c82b0180f",
+  "local": {
+    "result": {
+      "tests": "50",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1",
+      "time": "10.381",
+      "timestamp": "2026-10-27T21:59:34.078898+00:00",
+      "hostname": "master"
+    },
+    "command": "PYTHONDONTWRITEBYTECODE=1 FORGE_REPO_ROOT=<source> PYTHONPATH=<source>/factory/python <venv>/bin/python -m pytest -q factory/python/tests/test_lrtx_stack_cli.py factory/python/tests/test_lrtx_profile.py factory/python/tests/test_lrtx_drill.py factory/python/tests/test_da014_production_policy.py factory/python/tests/test_da014_provider_recovery.py --basetemp=<loop10>/production-cli-exact-env-tmp --junitxml=<loop10>/production-cli-exact-env-tests.xml"
+  },
+  "omniverse2": {
+    "result": {
+      "tests": "51",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1",
+      "time": "34.301",
+      "timestamp": "2026-10-27T22:00:52.785542+00:00",
+      "hostname": "omniverse2"
+    },
+    "command": "<root>/venv/bin/python <root>/deployment/native-final-tests.py",
+    "suites": [
+      "test_lrtx_stack_cli.py",
+      "test_da014_production_policy.py",
+      "test_cre_d0_policy.py",
+      "test_afo_m6_operations.py",
+      "test_lrtx_profile.py",
+      "test_lrtx_drill.py"
+    ]
+  },
+  "separate_native_pin_drill": {
+    "result": {
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.903",
+      "timestamp": "2026-10-27T22:03:40.307545+00:00",
+      "hostname": "omniverse2"
+    },
+    "case": "test_lrtx_drill.py::test_an_interrupted_engine_leaves_nothing_admissible_and_recovers",
+    "pin_source": "config/factory/profiles/local-rtx-v2-omniverse2-q36-noreason.yaml safec.engine"
+  },
+  "qualification_limits": [
+    "No Qwen request",
+    "No product attempt",
+    "No RCC recovery or benchmark qualification",
+    "No 24/72/168-hour qualification",
+    "Formal tasks remain30/58"
+  ],
+  "receipts": {
+    "cutover.json": {
+      "sha256": "64e80bd5eaa55929292f3156210d3b1b0eba7ed73b97602474a23b30bcad2b8c"
+    },
+    "clean-exit-smoke.json": {
+      "sha256": "012a3e70df64ac0213052562bd3b9a9a3a97eeb68c371847aca2e7facd888220"
+    }
+  }
+}

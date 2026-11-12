@@ -1,0 +1,24 @@
+{
+  "observed_utc": "2026-11-04T18:00:14.190518+00:00",
+  "run_id": "01M6KPE5H69XZMP9BSMS5PSB8S",
+  "seq": 1319,
+  "node": "swe6_author",
+  "tool_name": "write_file",
+  "tool_call_id": "aAphuyLD03VnDznYckim2LpkhPsp9WKv",
+  "event_timestamp": {
+    "ts": "2026-11-04T17:27:50.348151839Z"
+  },
+  "static_error_message": null,
+  "output_sha256": "4ceb7d52972fb8b16b5eff3e37a0a06dbbcbf5df781e707c2ff466b9e83fc2b3",
+  "started_seq": 1318,
+  "start_call_id_matches": true,
+  "start_tool_matches": true,
+  "hook_event_names": [],
+  "scope": "READONLY_INTERNAL_STATIC_ERROR_ONLY_NO_MODEL_OUTPUTS",
+  "confirmed_static_error": {
+    "value": "FORGE_POLICY:HOOK_ERROR:JSONDecodeError",
+    "bytes": 39,
+    "method": "Followup exact39byte native-tool-error read permittedbyroot; sameobservedhash/callID. No modeltext/prompt.",
+    "confirmed_utc": "2026-11-04T18:45:27.333532+00:00"
+  }
+}

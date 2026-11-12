@@ -1,0 +1,101 @@
+{
+ "CAPA-080": {
+  "history": [
+   {
+    "at": "2026-11-01T01:48:38.743622Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[\"fabro-swe1-obl-04-crosscut-register\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-OBL-20261031-04 (Ornith): cross-cutting answer kept register requirements for obligations with register effects (CAPA-079 'keep' wording); one repair pass exhausted",
+    "seq": 607,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T01:48:38.783617Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 608,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T01:48:38.885631Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-079 assigned",
+    "seq": 609,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T01:48:43.755550Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[\"reproducer-run:rr-b5f08dbbd510cd096636\", \"reproducer-run:rr-2e73c83ffdac55e7f5a6\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 610,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T01:48:43.795418Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[\"git:4fcfa3a9038f..26fb5894ac37\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 26fb5894ac37 (patch 8747 bytes)",
+    "seq": 611,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T01:51:15.550482Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[\"reproducer-run:rr-d19bae74df3bc8270890\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-079 absent at 26fb5894ac37",
+    "seq": 612,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T01:51:15.570524Z",
+    "capa_id": "CAPA-080",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 613,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-7bd4a08943885d34eb91a119a3c63fd963a7d824",
+   "4fcfa3a9038ffb98a35373913a8babfed13594ba",
+   "26fb5894ac37b5d08483ed2ff5223f08718ca972",
+   "pd-4345c458e65cf1f6043e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<26fb5894ac37"
+   ],
+   "candidate_patch_sha256": "c05cef98bdbc6ed99fe0fcbce06170a4459fdd3c13ee216e6e6f0892df22d11f",
+   "capa_id": "CAPA-080",
+   "created_at": "2026-11-01T01:48:38.743622Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-04-crosscut-register"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-079",
+   "reproducer_id": "RPR-079",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-b5f08dbbd510cd096636",
+    "reproducer-run:rr-2e73c83ffdac55e7f5a6"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "CAPA-079 told the author to keep any cross-cutting requirement citing an obligation, including obligations with register effects that belong to the register tasks",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T01:51:15.570524Z"
+  }
+ }
+}

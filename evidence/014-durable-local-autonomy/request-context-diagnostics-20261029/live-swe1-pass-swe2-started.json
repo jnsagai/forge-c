@@ -1,0 +1,343 @@
+{
+  "captured_utc": "2026-10-29T14:18:52.171513Z",
+  "order_id": "afo-774900b297bdde37",
+  "order_state": "RUNNING",
+  "terminal_reason": null,
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "native": [
+    {
+      "run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+      "status": "RUNNING",
+      "labels_match_job_and_nonce": true,
+      "event_count_observed": 113,
+      "latest_node_events": [
+        {
+          "seq": 102,
+          "ts": "2026-10-29T14:18:19.666908385Z",
+          "event": "agent.llm.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 103,
+          "ts": "2026-10-29T14:18:23.975905876Z",
+          "event": "agent.llm.first_output",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 104,
+          "ts": "2026-10-29T14:18:23.978943667Z",
+          "event": "agent.message",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 105,
+          "ts": "2026-10-29T14:18:23.980531738Z",
+          "event": "agent.tool.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 106,
+          "ts": "2026-10-29T14:18:23.981649123Z",
+          "event": "agent.tool.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 107,
+          "ts": "2026-10-29T14:18:24.177397673Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 108,
+          "ts": "2026-10-29T14:18:24.403205190Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 109,
+          "ts": "2026-10-29T14:18:24.406662219Z",
+          "event": "agent.llm.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 110,
+          "ts": "2026-10-29T14:18:48.787299886Z",
+          "event": "agent.llm.first_output",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 111,
+          "ts": "2026-10-29T14:18:48.789624799Z",
+          "event": "agent.message",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 112,
+          "ts": "2026-10-29T14:18:48.791645995Z",
+          "event": "agent.tool.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        },
+        {
+          "seq": 113,
+          "ts": "2026-10-29T14:18:48.792602609Z",
+          "event": "agent.tool.started",
+          "node_id": "swe2_author",
+          "node_label": "swe2_author"
+        }
+      ],
+      "event_types": [
+        "agent.input",
+        "agent.llm.first_output",
+        "agent.llm.started",
+        "agent.mcp.server.ready",
+        "agent.memory.loaded",
+        "agent.message",
+        "agent.session.activated",
+        "agent.session.started",
+        "agent.skill.activated",
+        "agent.skills.discovered",
+        "agent.tool.completed",
+        "agent.tool.started",
+        "agent.tools.available",
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "run.created",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "stage.completed",
+        "stage.prompt",
+        "stage.started"
+      ],
+      "event_shapes": [
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "session_id": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "tool_call_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        },
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "session_id": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "tool_call_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-b715f920180f440b708e55a0",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-774900b297bdde37-a1/workspace",
+      "execution": {
+        "native_run_ids": [
+          "01M63ZTJ5QM1R96484Y2KN97H6"
+        ],
+        "execution_liveness": "LIVE",
+        "resource_lease": "HELD",
+        "task_outcome": "ACTIVE",
+        "identity_state": "CONFIRMED",
+        "last_reconciled_at": "2026-10-29T14:18:28.037609Z"
+      },
+      "requests": [
+        {
+          "request_id": "structured-request-69a4760f2dff4058bd2bc278b49336f5",
+          "state": "QUIESCENT",
+          "charge": 8891,
+          "reported_tokens": 8891
+        },
+        {
+          "request_id": "structured-request-6b55ddc2a3424bc3a35897c2be0edcee",
+          "state": "QUIESCENT",
+          "charge": 20991,
+          "reported_tokens": 20991
+        },
+        {
+          "request_id": "structured-request-3aa112ef266b45729d96f0738d53b143",
+          "state": "QUIESCENT",
+          "charge": 7725,
+          "reported_tokens": 7725
+        },
+        {
+          "request_id": "structured-request-73dc7cde5589403b98326ef0e4d77e07",
+          "state": "QUIESCENT",
+          "charge": 10653,
+          "reported_tokens": 10653
+        },
+        {
+          "request_id": "structured-request-c7048e6007d5449a9e6cfbbe4db67a2f",
+          "state": "QUIESCENT",
+          "charge": 8867,
+          "reported_tokens": 8867
+        },
+        {
+          "request_id": "structured-request-f2771ef9c5334aabbcabe4444349be41",
+          "state": "QUIESCENT",
+          "charge": 6655,
+          "reported_tokens": 6655
+        },
+        {
+          "request_id": "native-request-c19b32d73ec24ba9971bfecff06bec50",
+          "state": "QUIESCENT",
+          "charge": 7322,
+          "reported_tokens": 7322
+        },
+        {
+          "request_id": "native-request-c8b1558ce69347f8adf5e8d46f05bace",
+          "state": "QUIESCENT",
+          "charge": 8030,
+          "reported_tokens": 8030
+        },
+        {
+          "request_id": "native-request-e449b772f70f41c88e9f57755cf34f88",
+          "state": "QUIESCENT",
+          "charge": 26099,
+          "reported_tokens": 26099
+        },
+        {
+          "request_id": "native-request-8a9fa3606d8a4dcea57b6c8cd710cf20",
+          "state": "QUIESCENT",
+          "charge": 26255,
+          "reported_tokens": 26255
+        },
+        {
+          "request_id": "native-request-138efe5652d2489692856a9f19cc903f",
+          "state": "QUIESCENT",
+          "charge": 26364,
+          "reported_tokens": 26364
+        },
+        {
+          "request_id": "native-request-f1e1e96655e146169ab4d8c19ddc83cf",
+          "state": "QUIESCENT",
+          "charge": 27860,
+          "reported_tokens": 27860
+        },
+        {
+          "request_id": "native-request-41d765e36a8947eba5499dcd6f99b680",
+          "state": "QUIESCENT",
+          "charge": 36994,
+          "reported_tokens": 36994
+        }
+      ],
+      "inspections": {
+        "SWE.1": {
+          "count": 1,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.1-001",
+              "recorded_at": "2026-10-29T14:17:44.822406Z",
+              "verdict": "PASS",
+              "findings": [],
+              "baseline_hash": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.2": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.3": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.4": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.5": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.6": {
+          "count": 0,
+          "latest": []
+        }
+      },
+      "structured_result_files": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 0,
+    "requests": 82,
+    "tools": 203,
+    "corrections": 0,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "unique_executions": 4,
+    "unbounded_historical_usage": false
+  },
+  "read_only_snapshot": true,
+  "request_or_restart_performed": false
+}

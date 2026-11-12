@@ -1,0 +1,11 @@
+{
+  "status": "EXISTING_PROGRESS_BRANCH_HISTORY_PRESERVED_NEW_SOURCE_OBSERVER_STARTED",
+  "previous_commit": "90ebb643d55499392792022e3f67e0181f4454c4",
+  "progress_branch": "q38/2026-10-28-local-factory",
+  "progress_repo": "/mnt/data/forge-c/production-local-014/q38-progress-2c774b4-20261028",
+  "deadline_epoch": 1793196391.0,
+  "new_intake": false,
+  "new_generation_requests": 0,
+  "engineering_intervention": true,
+  "retained_failure": "original immutable recorder plan refused changed source plan"
+}

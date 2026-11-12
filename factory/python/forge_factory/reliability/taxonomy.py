@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from ..common import canonical_json
 
-CLASSIFIER_VERSION = "cre-rules-1.4"  # bump on any rule change; superseded observations are retracted, not deleted
+CLASSIFIER_VERSION = "cre-rules-1.5"  # bump on any rule change; superseded observations are retracted, not deleted
 CLASSES = ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY", "POLICY_SECURITY", "UNKNOWN")
 CATEGORIES = ("INFRASTRUCTURE", "WORKFLOW_ORCHESTRATION", "MCP_TOOL", "RESOURCE_BUDGET", "TRANSIENT_ENVIRONMENT",
               "PRODUCT_ENGINEERING", "REQUIREMENTS_SPEC", "AGENT_OUTPUT", "POLICY_SECURITY", "UNKNOWN")
@@ -35,7 +35,10 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     (r"TOKEN_BUDGET_EXHAUSTED", "RESOURCE_BUDGET", "TOKEN_BUDGET_EXHAUSTED"),
     (r"cost cap .* reached|COST_CAP", "RESOURCE_BUDGET", "COST_CAP_REACHED"),
     # transient dependencies
-    (r"\b429\b|rate.?limit|timed? ?out|TIMEOUT(?!_VALUE)|temporar(?:il)?y unavailable|connection (?:reset|refused)|"
+    # CAPA-125: TIMEOUT inside a product/check identifier is not a transport timeout. Keep actual timeout
+    # words and conventional provider exception names (httpx ReadTimeout, Python TimeoutError, etc.).
+    (r"\b429\b|rate.?limit|\btimed? ?out\b|\b(?:read|write|connect|pool)?timeout(?:error|exception)?\b|"
+     r"temporar(?:il)?y unavailable|connection (?:reset|refused)|"
      r"dropped_output|upstream.*(?:empty|dropped)", "TRANSIENT_ENVIRONMENT", "TRANSIENT_UPSTREAM"),
     # orchestration / infrastructure
     (r"run_not_completed|deterministic failure cycle|stdin_source .* not found|max_visits|WORKFLOW_ERROR|"

@@ -1,0 +1,32 @@
+{
+  "external-fresh-trial-audit": {
+    "original_sha256": "bf2dc88af050973621c5f5b602b486797fe1df8397e8e7814db9b97ae84275d3",
+    "view_sha256": "2351904f0a87f63bbf3878c9f7a772a5f2c7d24fc3caae7db7e57110053710d1",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  },
+  "terminal-observation": {
+    "original_sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709",
+    "view_sha256": "e6c9ca4b44aee5cd3e98c64a2494005031bdfce8d8488f3a0e86c3aba7463102",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  },
+  "terminal-source-audit": {
+    "original_sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61",
+    "view_sha256": "1ce17fa2480bbcbb76fbe899fa4b515f688978bdb445df53a4eca06122273528",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  },
+  "administrative-reprobe08": {
+    "original_sha256": "8c28d61e599e5b6474c9357b1f2dd594fd31fce11b3a17b4572372f9fd4f4a47",
+    "view_sha256": "14c0c35299b6d553ab2cda149222f3e6742a6b836e39aff833ae1bd4aadece30",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  },
+  "cohort-summary-2of3": {
+    "original_sha256": "5bccfb580d02fef502fdebe2e7c356ec7af1691af37cd01ba95a35102c7f77fa",
+    "view_sha256": "5bccfb580d02fef502fdebe2e7c356ec7af1691af37cd01ba95a35102c7f77fa",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  },
+  "transfer-verification": {
+    "original_sha256": "138b06ce0074dd42ccec324dda593ca12f8ee7cdeae1124cc84e37bb7552a2f8",
+    "view_sha256": "4661cc08796c7ca1719135bdaf181da38a9227922563a733e8db86c54d5afc39",
+    "raw_encoding": "gzip mtime0; decompress to original bytes"
+  }
+}

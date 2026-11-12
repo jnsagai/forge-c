@@ -1,0 +1,165 @@
+{
+  "at": "2026-10-29T15:47:31.592015Z",
+  "phase": "SWE.5",
+  "baseline": null,
+  "current_baseline": false,
+  "gate": {
+    "phase": "SWE.5",
+    "decision": "REWORK",
+    "reason": "NO_BASELINE",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "gates": [],
+  "tools": [
+    {
+      "at": "2026-10-29T15:46:05.803516Z",
+      "server": "forge-sim-mcp",
+      "op": "run_renode",
+      "role": "swe5-author",
+      "status": "FAIL",
+      "issues": [
+        "BUILD_FAIL:test_performance.c",
+        "software/tests/target/test_performance.c:11:13: error: void value not ignored as it ought to be",
+        "software/tests/target/test_performance.c:13:13: error: void value not ignored as it ought to be"
+      ],
+      "summary": "renode cortex-m55: 23 checks passed, 1 failed (2 images; behavioural CRC model)",
+      "provenance": {
+        "exit_code": 1,
+        "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+        "invocation_id": "inv-f48084ad7d2240cc",
+        "output_sha256": "4dcaf6dae20e1e4ae8ea10269fa6fa223347e1b373dbc1be312dd90fe62487fd",
+        "tool": "renode",
+        "version": "Renode v1.17.0"
+      },
+      "artifact_refs": [
+        "artifact:sha256:4dcaf6dae20e1e4ae8ea10269fa6fa223347e1b373dbc1be312dd90fe62487fd"
+      ],
+      "metric_fields": [
+        "cpu",
+        "failed",
+        "passed",
+        "platform",
+        "silicon_verified",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "failed": 1,
+        "passed": 23,
+        "silicon_verified": false
+      }
+    },
+    {
+      "at": "2026-10-29T15:46:25.839091Z",
+      "server": "forge-sim-mcp",
+      "op": "run_renode",
+      "role": "swe5-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "renode cortex-m55: 27 checks passed, 0 failed (2 images; behavioural CRC model)",
+      "provenance": {
+        "exit_code": 0,
+        "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+        "invocation_id": "inv-06a0329957cd4045",
+        "output_sha256": "0e1d87d295216dbf463158697d6aff16ea0588658b5cc77e2f3978be57a6cdd5",
+        "tool": "renode",
+        "version": "Renode v1.17.0"
+      },
+      "artifact_refs": [
+        "artifact:sha256:0e1d87d295216dbf463158697d6aff16ea0588658b5cc77e2f3978be57a6cdd5",
+        "artifact:sha256:80d9950bb83e0374b05a9c1f969ed07cac090b1c52424aae137c624b4de60587",
+        "artifact:sha256:9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f"
+      ],
+      "metric_fields": [
+        "cpu",
+        "failed",
+        "passed",
+        "platform",
+        "silicon_verified",
+        "simulation_performance_report",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "failed": 0,
+        "passed": 27,
+        "silicon_verified": false
+      }
+    },
+    {
+      "at": "2026-10-29T15:47:24.496686Z",
+      "server": "forge-docs-mcp",
+      "op": "validate_artifact",
+      "role": "swe5-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "markdown: 0 issues",
+      "provenance": {
+        "input_sha256": "81b560ac18159bd92891f1273a546936064a53d40c0302dc287af9046ce468f1",
+        "invocation_id": "inv-3c4bed54db004391",
+        "tool": "forge-artifact-check",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "bytes"
+      ],
+      "measured_dimensions": {
+        "bytes": 6433
+      }
+    },
+    {
+      "at": "2026-10-29T15:47:24.991866Z",
+      "server": "forge-evidence-mcp",
+      "op": "validate_trace",
+      "role": "swe5-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "9/9 requirements traced; 6 test links planned (test files are due at SWE.4)",
+      "provenance": {
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-7e96bfb4053f432e",
+        "tool": "forge-trace-gate",
+        "version": "0.4.0"
+      },
+      "artifact_refs": [],
+      "metric_fields": [
+        "planned_test_links",
+        "requirements",
+        "rows",
+        "test_files_required",
+        "traced"
+      ],
+      "measured_dimensions": {
+        "planned_test_links": 6,
+        "requirements": 9,
+        "rows": 9,
+        "test_files_required": true,
+        "traced": 9
+      }
+    }
+  ],
+  "build_files": [
+    {
+      "path": "build/target-cm55-gcc/driver.elf",
+      "bytes": 1056,
+      "sha256": "730855b86d4618bf10103ef086b846b9298daa5f0ff829c7e3741a5eb9849b0d"
+    },
+    {
+      "path": "build/target-cm55-gcc/driver.map",
+      "bytes": 5371,
+      "sha256": "f3699d08e3e02c32823e8ff35099285256230f853f1b2ff88d492be85927bc43"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.o",
+      "bytes": 1056,
+      "sha256": "8cadbc7a843f983be74e9e5d4f968870490be105952a9200f303c56e880d8ba3"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.su",
+      "bytes": 352,
+      "sha256": "185f5f61c6ec0ed1a52ef26e7ca7f7b1b5d86e8682f39ae182d0753ab03f7747"
+    }
+  ],
+  "read_only": true,
+  "generation_requests": 0
+}

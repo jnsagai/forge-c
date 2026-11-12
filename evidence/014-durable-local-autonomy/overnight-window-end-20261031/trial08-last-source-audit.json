@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-31T07:54:12.077669Z",
+  "auditor_factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "30371da548bad2790a9f3c21dafc8964047ce06d",
+    "dirty": false
+  },
+  "auditor_module_sha256": "8ceca6bdbe5d181b0e65f48b4cda3835540dc3ca587011ebc8e6e3879a304cd5",
+  "candidate_executed_by_auditor": false,
+  "candidate_hashes": {
+    "software/ll/stm32n6xx_ll_crc.h": "c0851300b39ff6a8b782887ffd51a13a45190e3bbf8320765718de95b9aa9535"
+  },
+  "candidate_hashes_after": {
+    "software/ll/stm32n6xx_ll_crc.h": "c0851300b39ff6a8b782887ffd51a13a45190e3bbf8320765718de95b9aa9535"
+  },
+  "candidate_unchanged_during_audit": true,
+  "functional_verification": "NOT_EVALUATED_BY_THIS_AUDIT",
+  "model_generation_calls_by_auditor": 0,
+  "native_evidence": {
+    "authorship": "CONFIRMED_NATIVE_WRITE_FILE",
+    "authorship_basis": "SUCCESSFUL_NATIVE_SOURCE_TOOL_PAYLOAD_REPLAY_AND_EXACT_FINAL_BYTES; NOT_FUNCTIONAL_VERIFICATION",
+    "edit_chain_evidence": [],
+    "native_id": "01M68CMQAZNN7QGRZSX5DGRMYY",
+    "native_status": "RUNNING",
+    "status": "OBSERVED",
+    "write_evidence": [
+      {
+        "node": "df_author_0",
+        "path": "software/ll/stm32n6xx_ll_crc.h",
+        "sha256": "c0851300b39ff6a8b782887ffd51a13a45190e3bbf8320765718de95b9aa9535",
+        "tool_call_id": "Q08HIj70NHh6pc6ZQeGwWjLAdXK7mIO2"
+      }
+    ]
+  },
+  "producer_factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+    "dirty": false
+  },
+  "runtime_source_unchanged": true,
+  "schema": "forge-c/delivery-first-source-provenance/1",
+  "scope": "READ_ONLY_SOURCE_ORIGIN_NOT_FUNCTIONAL_OR_RELEASE_QUALIFICATION",
+  "source_author_nodes": {
+    "df_author_0": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_1": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_2": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "swe3_author": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    }
+  },
+  "status": "VERIFIED_SOURCE_PROVENANCE",
+  "work_order": "WO-AFO-48b5f7eb60495e69-a1",
+  "workspace_written_by_auditor": false
+}

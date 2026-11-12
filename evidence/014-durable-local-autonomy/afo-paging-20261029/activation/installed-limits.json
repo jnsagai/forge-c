@@ -1,0 +1,1 @@
+{"page_chars":32768,"preflight":"PASS","read_bytes":4194304,"response_bytes":65536,"roles":{"afo-factory-maintainer":{"response_bytes":65536,"tool_calls":200},"afo-recovery-planner":{"response_bytes":65536,"tool_calls":200}}}

@@ -1,0 +1,66 @@
+{
+  "files": [
+    {
+      "path": ".forge-run/delivery-first/attempt-0/independent_behavior.stdout",
+      "sha256": "88a4b58146e9dbf667d2dd92980ca3c610c73835057144efe812b3e2b1817477",
+      "bytes": 52
+    },
+    {
+      "path": ".forge-run/delivery-first/attempt-0/result.json",
+      "sha256": "0e5d90824895b191391b9ab5938d077207d6c65b4146e2ec6ef785424b8583d4",
+      "bytes": 15947
+    },
+    {
+      "path": ".forge-run/delivery-first/attempt-final/independent_behavior.stdout",
+      "sha256": "b1837120ab91c800f15c2485599f00b575442bc8510a74c60941cabb2c025f22",
+      "bytes": 1757
+    },
+    {
+      "path": ".forge-run/delivery-first/attempt-final/result.json",
+      "sha256": "956832aa176e20ef2a1c7cfc1016148663621f6bb574e0113b94f06aa89eb572",
+      "bytes": 3730
+    },
+    {
+      "path": ".forge-run/delivery-first/initial.json",
+      "sha256": "2a2635d40be81dc6866ed2f36885e6f9b176775f0cf7ab943e5d1b5bf90fbeb0",
+      "bytes": 3354
+    },
+    {
+      "path": "intent.json",
+      "sha256": "6e998ba4a761de11728f2a1402a8ab895dab147e149ed64ae5bdea2599519bbd",
+      "bytes": 312
+    },
+    {
+      "path": "packages/forge-c-EXTERNAL-VERIFY-58EF89B7-FINAL-MUTANT-review/SCORECARD.md",
+      "sha256": "4653a3a559a9cde3a485b7fdfa4f81ae3518c002eed3150c7d2e977424d626e5",
+      "bytes": 1885
+    },
+    {
+      "path": "packages/forge-c-EXTERNAL-VERIFY-58EF89B7-FINAL-MUTANT-review/report.json",
+      "sha256": "ed2e9330a34c1ca11419f63853a2f60fb9da170887ebdcf694c664a97db24c4b",
+      "bytes": 41630
+    },
+    {
+      "path": "packages/forge-c-EXTERNAL-VERIFY-58EF89B7-POSITIVE-review/SCORECARD.md",
+      "sha256": "7c33f3185d94285ec58af8932363b8523da43838dd5cbe98d8833d686725e256",
+      "bytes": 1843
+    },
+    {
+      "path": "packages/forge-c-EXTERNAL-VERIFY-58EF89B7-POSITIVE-review/report.json",
+      "sha256": "590a2b1a57949b5d25a3b038c9d01f22f0c2ed60ee93a1a9de58e86a37db73e8",
+      "bytes": 36575
+    },
+    {
+      "path": "qualify-delivery-integrated-58ef89b7.py",
+      "sha256": "1f0bb9115ffcf59f01a710e08c0fcb7ab1835fa7905fc936af497459a5905823",
+      "bytes": 4176
+    },
+    {
+      "path": "summary.json",
+      "sha256": "3d8560157da13512a8db0e8aa6a1365bd7f16c5d9f383c8b9effed541242d7eb",
+      "bytes": 883
+    }
+  ],
+  "raw_model_reasoning_included": false,
+  "input_contents_included": false
+}

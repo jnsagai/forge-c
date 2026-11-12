@@ -1,0 +1,55 @@
+{
+  "source_revision": "c221b65ebc011cbed488db83af3e2804790c1129",
+  "members": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "bytes": 1056393,
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "bytes": 2203410,
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "bytes": 3472,
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/inputs-manifest.json",
+      "bytes": 1980,
+      "sha256": "0d6165ae2aaa911eef0dd245a3d93d1dce6e31916871615995f70a0caeb24a2a"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "bytes": 455865,
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "bytes": 1056393,
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "bytes": 2203410,
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "bytes": 3472,
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/inputs-manifest.json",
+      "bytes": 1980,
+      "sha256": "0d6165ae2aaa911eef0dd245a3d93d1dce6e31916871615995f70a0caeb24a2a"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "bytes": 455865,
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    }
+  ]
+}

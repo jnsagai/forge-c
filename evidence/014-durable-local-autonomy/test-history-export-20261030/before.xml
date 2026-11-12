@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="6" time="12.616" timestamp="2026-10-30T23:52:12.667403+00:00" hostname="master"><testcase classname="factory.python.tests.test_release_test_history" name="test_final_package_retains_failed_and_passed_test_versions" time="2.341"><failure message="KeyError: &quot;There is no item named 'evidence/verification/test-history/integrity.jsonl' in the archive&quot;">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+
+    def test_final_package_retains_failed_and_passed_test_versions(history_ws):
+        ws, records = history_ws
+        raw_log = (ws / INTEGRITY_LOG).read_bytes()
+        result = F.finalize(ws, "WO-HISTORY-FIXTURE")
+        assert result["package_status"] == "READY_FOR_OFFLINE_REVIEW", result["gaps"]
+        with zipfile.ZipFile(result["archive"]) as archive:
+            root = "evidence/verification/test-history/"
+&gt;           assert archive.read(root + "integrity.jsonl") == raw_log
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_release_test_history.py:43:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1615: in read
+    with self.open(name, "r", pwd) as fp:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1652: in open
+    zinfo = self.getinfo(name)
+            ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;zipfile.ZipFile [closed]&gt;
+name = 'evidence/verification/test-history/integrity.jsonl'
+
+    def getinfo(self, name):
+        """Return the instance of ZipInfo given 'name'."""
+        info = self.NameToInfo.get(name)
+        if info is None:
+&gt;           raise KeyError(
+                'There is no item named %r in the archive' % name)
+E           KeyError: "There is no item named 'evidence/verification/test-history/integrity.jsonl' in the archive"
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1580: KeyError</failure></testcase><testcase classname="factory.python.tests.test_release_test_history" name="test_incomplete_or_unsafe_test_history_blocks_without_losing_package[missing]" time="1.993"><failure message="AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + READY_FOR_OFFLINE_REVIEW">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-262/test_incomplete_or_unsafe_test0')
+fault = 'missing'
+
+    @pytest.mark.parametrize("fault", ["missing", "corrupt", "symlink", "malformed_log", "invalid_digest"])
+    def test_incomplete_or_unsafe_test_history_blocks_without_losing_package(history_ws, tmp_path, fault):
+        ws, records = history_ws
+        source = ws / SNAPSHOTS / records[0]["files"]["software/tests/unit/t.c"]
+        secret = b"DO_NOT_COPY_OUTSIDE_HISTORY_FIXTURE"
+        if fault == "missing":
+            source.unlink()
+        elif fault == "corrupt":
+            source.write_bytes(b"changed after the recorded hash")
+        elif fault == "symlink":
+            external = tmp_path / "external-fixture"
+            external.write_bytes(secret)
+            source.unlink()
+            source.symlink_to(external)
+        elif fault == "malformed_log":
+            with (ws / INTEGRITY_LOG).open("a") as log:
+                log.write("incomplete json record\n")
+        else:
+            records[0]["files"]["software/tests/unit/t.c"] = "../../external-fixture"
+            (ws / INTEGRITY_LOG).write_text("".join(json.dumps(r) + "\n" for r in records))
+        result = F.finalize(ws, "WO-HISTORY-FAULT-FIXTURE")
+&gt;       assert result["package_status"] == "BLOCKED"
+E       AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + READY_FOR_OFFLINE_REVIEW
+
+factory/python/tests/test_release_test_history.py:74: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_release_test_history" name="test_incomplete_or_unsafe_test_history_blocks_without_losing_package[corrupt]" time="1.991"><failure message="AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + READY_FOR_OFFLINE_REVIEW">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-262/test_incomplete_or_unsafe_test1')
+fault = 'corrupt'
+
+    @pytest.mark.parametrize("fault", ["missing", "corrupt", "symlink", "malformed_log", "invalid_digest"])
+    def test_incomplete_or_unsafe_test_history_blocks_without_losing_package(history_ws, tmp_path, fault):
+        ws, records = history_ws
+        source = ws / SNAPSHOTS / records[0]["files"]["software/tests/unit/t.c"]
+        secret = b"DO_NOT_COPY_OUTSIDE_HISTORY_FIXTURE"
+        if fault == "missing":
+            source.unlink()
+        elif fault == "corrupt":
+            source.write_bytes(b"changed after the recorded hash")
+        elif fault == "symlink":
+            external = tmp_path / "external-fixture"
+            external.write_bytes(secret)
+            source.unlink()
+            source.symlink_to(external)
+        elif fault == "malformed_log":
+            with (ws / INTEGRITY_LOG).open("a") as log:
+                log.write("incomplete json record\n")
+        else:
+            records[0]["files"]["software/tests/unit/t.c"] = "../../external-fixture"
+            (ws / INTEGRITY_LOG).write_text("".join(json.dumps(r) + "\n" for r in records))
+        result = F.finalize(ws, "WO-HISTORY-FAULT-FIXTURE")
+&gt;       assert result["package_status"] == "BLOCKED"
+E       AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + READY_FOR_OFFLINE_REVIEW
+
+factory/python/tests/test_release_test_history.py:74: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_release_test_history" name="test_incomplete_or_unsafe_test_history_blocks_without_losing_package[symlink]" time="2.063"><failure message="AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + READY_FOR_OFFLINE_REVIEW">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-262/test_incomplete_or_unsafe_test2')
+fault = 'symlink'
+
+    @pytest.mark.parametrize("fault", ["missing", "corrupt", "symlink", "malformed_log", "invalid_digest"])
+    def test_incomplete_or_unsafe_test_history_blocks_without_losing_package(history_ws, tmp_path, fault):
+        ws, records = history_ws
+        source = ws / SNAPSHOTS / records[0]["files"]["software/tests/unit/t.c"]
+        secret = b"DO_NOT_COPY_OUTSIDE_HISTORY_FIXTURE"
+        if fault == "missing":
+            source.unlink()
+        elif fault == "corrupt":
+            source.write_bytes(b"changed after the recorded hash")
+        elif fault == "symlink":
+            external = tmp_path / "external-fixture"
+            external.write_bytes(secret)
+            source.unlink()
+            source.symlink_to(external)
+        elif fault == "malformed_log":
+            with (ws / INTEGRITY_LOG).open("a") as log:
+                log.write("incomplete json record\n")
+        else:
+            records[0]["files"]["software/tests/unit/t.c"] = "../../external-fixture"
+            (ws / INTEGRITY_LOG).write_text("".join(json.dumps(r) + "\n" for r in records))
+        result = F.finalize(ws, "WO-HISTORY-FAULT-FIXTURE")
+&gt;       assert result["package_status"] == "BLOCKED"
+E       AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + READY_FOR_OFFLINE_REVIEW
+
+factory/python/tests/test_release_test_history.py:74: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_release_test_history" name="test_incomplete_or_unsafe_test_history_blocks_without_losing_package[malformed_log]" time="1.943"><failure message="AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + READY_FOR_OFFLINE_REVIEW">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-262/test_incomplete_or_unsafe_test3')
+fault = 'malformed_log'
+
+    @pytest.mark.parametrize("fault", ["missing", "corrupt", "symlink", "malformed_log", "invalid_digest"])
+    def test_incomplete_or_unsafe_test_history_blocks_without_losing_package(history_ws, tmp_path, fault):
+        ws, records = history_ws
+        source = ws / SNAPSHOTS / records[0]["files"]["software/tests/unit/t.c"]
+        secret = b"DO_NOT_COPY_OUTSIDE_HISTORY_FIXTURE"
+        if fault == "missing":
+            source.unlink()
+        elif fault == "corrupt":
+            source.write_bytes(b"changed after the recorded hash")
+        elif fault == "symlink":
+            external = tmp_path / "external-fixture"
+            external.write_bytes(secret)
+            source.unlink()
+            source.symlink_to(external)
+        elif fault == "malformed_log":
+            with (ws / INTEGRITY_LOG).open("a") as log:
+                log.write("incomplete json record\n")
+        else:
+            records[0]["files"]["software/tests/unit/t.c"] = "../../external-fixture"
+            (ws / INTEGRITY_LOG).write_text("".join(json.dumps(r) + "\n" for r in records))
+        result = F.finalize(ws, "WO-HISTORY-FAULT-FIXTURE")
+&gt;       assert result["package_status"] == "BLOCKED"
+E       AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + READY_FOR_OFFLINE_REVIEW
+
+factory/python/tests/test_release_test_history.py:74: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_release_test_history" name="test_incomplete_or_unsafe_test_history_blocks_without_losing_package[invalid_digest]" time="1.965"><failure message="AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + READY_FOR_OFFLINE_REVIEW">history_ws = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...software/tests/unit/t.c': 'b5f3ef9c04cdef65bfdb8637993a7004d0f3e8704eb3020754a85f55e164eba2'}, 'op': 'run_unit', ...}])
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-262/test_incomplete_or_unsafe_test4')
+fault = 'invalid_digest'
+
+    @pytest.mark.parametrize("fault", ["missing", "corrupt", "symlink", "malformed_log", "invalid_digest"])
+    def test_incomplete_or_unsafe_test_history_blocks_without_losing_package(history_ws, tmp_path, fault):
+        ws, records = history_ws
+        source = ws / SNAPSHOTS / records[0]["files"]["software/tests/unit/t.c"]
+        secret = b"DO_NOT_COPY_OUTSIDE_HISTORY_FIXTURE"
+        if fault == "missing":
+            source.unlink()
+        elif fault == "corrupt":
+            source.write_bytes(b"changed after the recorded hash")
+        elif fault == "symlink":
+            external = tmp_path / "external-fixture"
+            external.write_bytes(secret)
+            source.unlink()
+            source.symlink_to(external)
+        elif fault == "malformed_log":
+            with (ws / INTEGRITY_LOG).open("a") as log:
+                log.write("incomplete json record\n")
+        else:
+            records[0]["files"]["software/tests/unit/t.c"] = "../../external-fixture"
+            (ws / INTEGRITY_LOG).write_text("".join(json.dumps(r) + "\n" for r in records))
+        result = F.finalize(ws, "WO-HISTORY-FAULT-FIXTURE")
+&gt;       assert result["package_status"] == "BLOCKED"
+E       AssertionError: assert 'READY_FOR_OFFLINE_REVIEW' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + READY_FOR_OFFLINE_REVIEW
+
+factory/python/tests/test_release_test_history.py:74: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,10 @@
+{
+  "original_script_sha256": "0da4c518389acab4df8ca32115a2d008760cab1648aee6da9a376deee0a3742a",
+  "original_frozen_archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa169-oracle-v1-frozen",
+  "original_candidate_error": "git show requirements/forge-factory.lock absent from incomplete private fixture",
+  "new_script": "rpr169_v2_watchdog_artifact_recovery_dependencies.py",
+  "new_sha256": "2871f3ba9a10dbe2254550132e5ae764b69ec53327151e4e3228046632d9211b",
+  "change": "Copy exact evaluated dependency lock into the private committed mirror, preserving all source and predicate checks. No candidate/policy/evaluator change.",
+  "old168_prefix_byte_exact": true,
+  "failed_cycle": "Actual candidateERROR recorded through normal Capa.verify_cause -> UNRESOLVED; original records retained. Both new causal legs must be rerun."
+}

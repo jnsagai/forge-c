@@ -16,7 +16,7 @@ NoNewPrivileges=yes
 UMask=0077
 Environment=FORGE_REPO_ROOT=@REPO@
 Environment=FORGE_DATA_ROOT=@DATA@
-Environment=FORGE_STATE_DIR=@DATA@/state
+Environment=FORGE_STATE_DIR=@STATE@
 Environment=PYTHONPATH=@REPO@/factory/python
 Environment=PATH=@PATH@
 ExecStartPre=@VENV@/bin/python -m forge_factory.afo.host preflight

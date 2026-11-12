@@ -1,0 +1,45 @@
+{
+  "preserved_private_root": "operations/feature014/incremental-e2e-20261028",
+  "records": [
+    {
+      "artifact": "native-incremental-610556a.log",
+      "correction": "Harness added readonly original inputs; corrected native cohort 133 PASS. Source unchanged.",
+      "failure": "8 fixture setup errors: isolated data namespace lacked original pinned inputs link"
+    },
+    {
+      "artifact": "idr-anchor-first.log",
+      "correction": "Selected installed pinned LLVM19.1.7.",
+      "failure": "System Clang12 rejected -fstack-usage"
+    },
+    {
+      "artifact": "idr-anchor-toolchain.log",
+      "correction": "Invoked existing real delivery gate; no verdict substitution for deterministic checks.",
+      "failure": "Fixture omitted ordinary delivery verification before inspection"
+    },
+    {
+      "artifact": "idr-anchor-delivery.log",
+      "correction": "Replace complete test-body placeholder lines.",
+      "failure": "Robot placeholder replacement included documentation comment"
+    },
+    {
+      "artifact": "idr-anchor-robot.log",
+      "correction": "Real UT003 test and existing owner All5LLheaders disposition for identical frozen header; no new waiver.",
+      "failure": "Missing UT003 trace and existing vendor naming findings blocked release"
+    },
+    {
+      "artifact": "mtp-xhigh-first-result.json",
+      "correction": "Corrected harness; V2 parent bound to first attempt/deadline, no allowance refill.",
+      "failure": "MCP Tool uses input_schema rather than inputSchema Python attribute; zero inference requests"
+    },
+    {
+      "artifact": "product-preflight-review.log",
+      "correction": "Assert existing full typed refusal; production check unchanged.",
+      "failure": "New assertion expected shortened review error code"
+    },
+    {
+      "artifact": "preflight-context-incident.log",
+      "correction": "Use actual brownfield namespace and copy only explicit qualification fixture to it; real resume path retained.",
+      "failure": "Two reused fixtures selected different private state roots"
+    }
+  ]
+}

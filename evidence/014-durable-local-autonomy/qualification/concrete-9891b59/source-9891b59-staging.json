@@ -1,0 +1,9 @@
+{
+  "source_revision": "9891b593dcea0949ad53c363ac2d3e8ca100a242",
+  "destination": "/mnt/data/forge-c/qualification-014-17e6cbd/repo-9891b59",
+  "bundle_sha256": "fe1fa04f9a250e90bf499f15f5d69890bd0f6d11d5d05a257290a876e1b380ba",
+  "source_clean": true,
+  "new_service_starts": 0,
+  "new_inference_requests": 0,
+  "historical_runtime_unchanged": true
+}

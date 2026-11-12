@@ -1,0 +1,6 @@
+{
+  "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+  "sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d",
+  "version": "1.2026.8",
+  "execution": "LOCAL_DETERMINISTIC_FIXTURE_ONLY_NO_QWEN"
+}

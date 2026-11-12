@@ -1,0 +1,16 @@
+{
+  "schema": "forge-c/independent-source-review/1",
+  "reviewed_revision": "18988bf4fb8229515f7ff48dde1f278493d940ec",
+  "file": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-launch-refusal-code-v2/factory/python/tests/test_line_recovery_executor.py",
+  "sha256": "c424ca5b33f2160a2ed5bc259c68f4d3b2a5d2918594f5f4745ac48733949f9e",
+  "scope": "Read-only fixture-only delta vs11dd; no tests by reviewer",
+  "findings": [],
+  "conclusion": "NO_BLOCKER_FOUND_IN_SCOPED_DIFF",
+  "facts": [
+    "Adds private explicit inspection finding using normal planner.case; production select_obligation unchanged.",
+    "Asserts the chosen obligation identity after normal preparation; no monkeypatch of obligation selection.",
+    "Original eight baseline fixture failures remain preserved; prior all-suite pass is not inferred."
+  ],
+  "reported_qa": "Root actual40PASS/0skip, not independently rerun",
+  "effects": false
+}

@@ -1,0 +1,78 @@
+{
+  "artifacts": {
+    "affected.log": "805cb10c27ac442e337d8a14af0dec4586f8e91c255bcd611b597084c24d2bae",
+    "affected.xml": "828c57452ec32e860bfc2c96e3006d73319b59f5f30691b2e07a16abd7b23402",
+    "independent-cre.json": "4fbb984acee00162a40d3e9006cd0416edf04a4730665d94bd9578e4af54876a",
+    "invocation.json": "eb59bf1d36baebeec57c2caeae80a5cfb63c4865e5a5c55fa0047c19053b7949",
+    "native-preflight-invocation.json": "45cf97e820a42ff2f53baac8fbc120d569f6e7d87c4a1f5a0e634cb2c7bc532b",
+    "native-preflight-r2.json": "efa114206af9f724d00a560471e20f799dac6aa190ae3d244b31dfb9c1871486",
+    "native-preflight-r2.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-preflight.json": "78eec3424f5ddae9e669e94473a3cef79c625eceb30e37ebe5cab9664bf66733",
+    "native-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-prerequisites.json": "8b29a7326d50233047c5612f887dadd730b2645c9e0164051d8f8caf6cf46112",
+    "private-input-hashes.json": "ed0bd488b6fc697c52b5d71b80d5153ca03531f5ae7202de67a10f231b3847b5",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "3a951e802420224f316195d0614017248d54f2ab940cb076b12d5811123b601a"
+  },
+  "formal_progress": "30/58; no new task checkbox",
+  "full_core_and_1840_test_cohorts_on_this_revision": "NOT_RUN; earlier exact cohorts remain distinct",
+  "host_intervention_count": null,
+  "implementation_status": "PARTIAL_SOURCE_CAPTURE; systemd-bus collection, authenticated-control correlation, segmented/rotation-safe capture and full intervention verification remain required",
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "learning_benefit": "NOT_RUN",
+  "native_preflight": {
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ],
+    "command": [
+      "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+      "-m",
+      "forge_factory.afo.host_audit",
+      "preflight",
+      "--out",
+      "/mnt/data/forge-c/inspector-014-b309039/host-audit-2928a93/native-preflight-r2.json"
+    ],
+    "exit_code": 2,
+    "factory_source_deployment": "NOT_ACTIVATED",
+    "host": "omniverse2",
+    "invocation_record": "native-preflight-invocation.json",
+    "invocations": 2,
+    "new_model_requests": 0,
+    "source_sha256": "a32049f9d573b12d59e4b25228a314bbfdac1b730e7bd8578ee523ffeec9cd45",
+    "status": "BLOCKED"
+  },
+  "new_qwen_requests": 0,
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "previous_systemd_history_checks": "7 local isolated systemd cases and history PASS on 08cc432; unchanged and not rerun on this leaf-only increment",
+  "product_success": "NOT_RUN",
+  "results": {
+    "affected": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 273,
+      "seconds": 27.347,
+      "skipped": 1,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        }
+      ],
+      "tests": 274
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 10.301,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "scope": "BOUNDED_KERNEL_AUDIT_SOURCE_ADAPTER_AND_NATIVE_PREREQUISITES_NOT_FULL_HOST_AUDIT",
+  "tested_revision": "2928a9377c3ef96aab7cef7cf94355b96bdaa381"
+}

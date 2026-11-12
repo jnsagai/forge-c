@@ -1,0 +1,118 @@
+{
+  "at": "2026-10-30T22:52:05.969474Z",
+  "order": {
+    "order_id": "afo-5faf7b5e42e6d55f",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "heartbeat": {
+    "ts": "2026-10-30T22:52:04.273729Z",
+    "epoch": 1793400724.2737684,
+    "pid": 1088365,
+    "cycle": 89,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  },
+  "product_jobs": [
+    {
+      "job_id": "afo-product-af2c3b6fc3d6986baacf3568",
+      "model": "qwen3.8:27b-q8_0",
+      "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+      "reserved_tokens": 67108864,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+        "dirty": false
+      }
+    },
+    {
+      "job_id": "afo-product-221ded78874865909a532471",
+      "model": "qwen3.8:27b-q8_0",
+      "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+      "reserved_tokens": 67108864,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+        "dirty": false
+      }
+    }
+  ],
+  "executions": [
+    {
+      "job_id": "afo-product-af2c3b6fc3d6986baacf3568",
+      "task_outcome": "BLOCKED",
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "native_run_ids": [
+        "01M67E5YEMFM4F5GR62AM0F9EM"
+      ]
+    },
+    {
+      "job_id": "afo-product-221ded78874865909a532471",
+      "task_outcome": "ACTIVE",
+      "execution_liveness": "LIVE",
+      "resource_lease": "HELD",
+      "native_run_ids": [
+        "01M67ETTPXS1Q73QPMQ98DNJX0"
+      ]
+    }
+  ],
+  "request_states": [
+    {
+      "state": "QUIESCENT",
+      "n": 37
+    },
+    {
+      "state": "SENT",
+      "n": 1
+    }
+  ],
+  "native_runs": [
+    {
+      "id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+      "status": "RUNNING"
+    },
+    {
+      "id": "01M67E5YEMFM4F5GR62AM0F9EM",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "last_stages": [
+    {
+      "event": "stage.started",
+      "node": "swe1_author_gate",
+      "at": "2026-10-30T22:46:43.642888094Z",
+      "failure": null
+    },
+    {
+      "event": "stage.failed",
+      "node": "swe1_author_gate",
+      "at": "2026-10-30T22:46:44.113204573Z",
+      "failure": {
+        "message": "Script failed with exit code: 11\n\n## output\ngate execution b\n{\"rejected\": \"MISSING_REQUIRED_OUTPUTS\", \"issues\": [\"CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:WRITE_IDR_KEEP_CR:CRC_CR.CR\", \"CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:WRITE_IDR_KEEP_INIT:CRC_INIT.INIT\", \"CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:READ_IDR_KEEP_CR:CRC_CR.CR\", \"CONTRACT_NOT_IN_RM:workproducts/SWE.1/register_effects.json:READ_IDR_KEEP_INIT:CRC_INIT.INIT\"]}\n",
+        "category": "deterministic"
+      }
+    },
+    {
+      "event": "stage.started",
+      "node": "swe1_demo_snapshot",
+      "at": "2026-10-30T22:46:44.184537033Z",
+      "failure": null
+    },
+    {
+      "event": "stage.completed",
+      "node": "swe1_demo_snapshot",
+      "at": "2026-10-30T22:46:44.333251255Z",
+      "failure": null
+    },
+    {
+      "event": "stage.started",
+      "node": "swe1_inspector",
+      "at": "2026-10-30T22:46:44.404813215Z",
+      "failure": null
+    }
+  ]
+}

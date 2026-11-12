@@ -1,0 +1,27 @@
+{
+  "schema": "forge-c/task-evidence/0.4",
+  "task": "DA014-docs",
+  "ts_utc": "2026-10-25T10:55:54.145795+00:00",
+  "git_head": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "git_dirty": true,
+  "scope": "DOCUMENTATION_ONLY_NOT_RUNTIME",
+  "status": "PASS",
+  "exit_code": 0,
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "command": [
+    "python specs/014-durable-local-autonomy/validate_spec.py",
+    "python tests/spec/validate_design.py",
+    "python evidence/014-durable-local-autonomy/verify_handoff.py"
+  ],
+  "log": "evidence/v0.4/runs/DA014-docs/20261025T105554.log",
+  "log_sha256": "9b3f77a479d69695561780bbc7445fb7d9257683c3d3596c02d7447a61c12a0d",
+  "results": {
+    "requirements": 52,
+    "tasks": 52,
+    "acceptance_tests": 52,
+    "schemas": 3,
+    "structural_fixtures": 25,
+    "static_design_tests": 14,
+    "checked_tasks": 22
+  }
+}

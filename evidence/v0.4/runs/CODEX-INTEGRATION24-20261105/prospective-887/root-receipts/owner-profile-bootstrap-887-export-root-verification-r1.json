@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/root-verified-887-remote-proof/1",
+  "source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-887-actual-prospective-proof.tar",
+  "archive_sha256": "755f7bc43c046c8a9b72c4ebdf245aa9e37b1c1747e8d9f76defb3d350f0c77c",
+  "index_sha256": "f79e90f15928d3fbe6d6103819ca4224382917ecd446dc9b0b8c01f43dc8d52f",
+  "all7member_hashes_verified": true,
+  "affected185": "PASS0FAIL0SKIP_XMLverified",
+  "native_run_id": "01M6PKR21GZG3Y4WK1QG362MM1",
+  "measurement_sha256": "de7a39c7c637ee3717410fbb0933a16d1aae8c3c5ef4e1ecc25dd2c3da39a9da",
+  "native_fixture_terminal_and_own_server_stopped": true,
+  "scope": "PRIVATE_CPU_KERNEL_TRANSPORT_STUB_ONLY_NO_REAL_ROLE_COMPETENCE",
+  "model_calls": 0,
+  "actual_driver_jobs_started": 0
+}

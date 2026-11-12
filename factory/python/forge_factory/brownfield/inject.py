@@ -29,11 +29,20 @@ def inject(ws: Path) -> dict:
         return {"status": "ALREADY_INJECTED", "issues": [], **json.loads(rec_path.read_text())}
     st = Store(ws)
     issues = []
+    from ..development_demonstration import selected as demonstration
+    from ..development_demonstration import validate_inputs
+
+    demo = demonstration(ws)
+    if demo:
+        validate_inputs(ws)
     if st.gate("SWE.1").get("decision") != "PASS":
-        issues.append(f"SWE1_NOT_PASSED:{st.gate('SWE.1').get('decision')}")
+        if not demo:
+            issues.append(f"SWE1_NOT_PASSED:{st.gate('SWE.1').get('decision')}")
     base = st.latest_baseline("SWE.1")
     if not base:
         issues.append("SWE1_NOT_FROZEN")
+    elif demo and st.stale_reason("SWE.1", base):
+        issues.append("DEMONSTRATION_SWE1_BASELINE_CHANGED")
     wo = m["work_order"]
     files = D.stored(wo)
     expected = {d["path"]: d["sha256"] for d in m.get("delivered") or []}
@@ -59,6 +68,8 @@ def inject(ws: Path) -> dict:
     rec = {"schema": "forge-c/delivery-injection/0.1", "swe1_baseline_id": base["baseline_id"],
            "swe1_baseline_hash": base["baseline_hash"], "injected_at": utc_now(),
            "files": [d for d in m.get("delivered") or []]}
+    if demo:
+        rec.update(demonstration_only=True, provisional=True, swe1_quality_gate=st.gate("SWE.1")["decision"])
     rec_path.write_text(pretty_json(rec))
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True, capture_output=True)
     subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",

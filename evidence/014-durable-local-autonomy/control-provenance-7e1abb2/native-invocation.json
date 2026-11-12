@@ -1,0 +1,53 @@
+{
+  "git_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "start_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "start_dirty": "",
+  "started_at": 1793104562.0325177,
+  "results": [
+    {
+      "label": "native-tests",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_control_context.py",
+        "factory/python/tests/test_da014_bus_audit.py",
+        "--basetemp=/mnt/data/forge-c/inspector-014-b309039/host-control-7e1abb2/tmp/native-tests",
+        "--junitxml=/mnt/data/forge-c/inspector-014-b309039/host-control-7e1abb2/native-tests.xml"
+      ],
+      "exit_code": 0,
+      "started_at": 1793104562.0325918,
+      "ended_at": 1793104573.9853818
+    },
+    {
+      "label": "user-bus",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "bus-preflight",
+        "--bus",
+        "user",
+        "--seconds",
+        "1",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-control-7e1abb2/user-bus.json"
+      ],
+      "exit_code": 0,
+      "started_at": 1793104573.9855008,
+      "ended_at": 1793104575.2034686
+    }
+  ],
+  "new_model_requests": 0,
+  "factory_deployment": "NOT_ACTIVATED",
+  "end_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "end_dirty": "",
+  "ended_at": 1793104575.2138715,
+  "artifacts": {
+    "user-bus.json": "bfbc6af2415a18e22201a86b42a0553220ee22138d91bc916554718ee4e2c4a9",
+    "native-tests.log": "de0615cf37b5c81f3262e96c1af6d39e3e1ed022fb623f364a1d3c083a4e551f",
+    "native-tests.xml": "abb542451972835ce500668681ad48876300a909a294e3b0944c4d0a8188ae95",
+    "user-bus.log": "320dd845de3db04562638457ee1a3c82d533da31bdf35185dd7c424da3b81e78"
+  }
+}

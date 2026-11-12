@@ -1,0 +1,18 @@
+{
+  "native-observation": {
+    "original_sha256": "976eeb14cca7dcd02ff76b0ccce01cd79720a6cab9cb132c5fb1b56c709df009",
+    "view_sha256": "fbf3007ea98474301aec26bd6298fa652978d4dbb3b50c71ded035c6eeb2a180"
+  },
+  "gateway-queue-red.xml": {
+    "decompressed_sha256": "8d000781771a4b918a408f619da94de530c144483dfe7f29438ee2a1c8524c61"
+  },
+  "gateway-queue-green.xml": {
+    "decompressed_sha256": "24ee9656a4b93b7dae951a76f5a4ffda6f8d1d4bf7ef292822e187908885b5b4"
+  },
+  "gateway-queue-exact.xml": {
+    "decompressed_sha256": "ea1846cf3952d59401d540fb92f4d1a51a9020c09b335cc17670795be3057dca"
+  },
+  "gateway-queue-inherited.xml": {
+    "decompressed_sha256": "a6fa858aa566006b7dbde576c51216cbc1fb1ab53ebebe1b9c6314788666f332"
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "archive": {
+    "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-ee4282b25001a15d-a1/forge-c-WO-AFO-ee4282b25001a15d-a1-review.zip",
+    "sha256": "4a20153d88fed3dea1c9499ce071e4230c1a3f54a484833d19f691c4a1703a79"
+  },
+  "at": "2026-10-31T03:20:10.250129+00:00",
+  "auditor_revision": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "candidate_sha256": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e",
+  "commands": {
+    "archive_validation": "Existing verify_archive; remote SHA, SCP SHA, member hashes and contained final receipt compared without candidate execution",
+    "negative_control_command_ref": "evidence/014-durable-local-autonomy/native-edit-provenance-20261031/source-qualification.json",
+    "source_audit": "E/venv/bin/python -m forge_factory.delivery_first --workspace WS --step source-provenance; inside actual holder namespace; PYTHONPATH=E/control/source-auditor-30371da5/factory/python",
+    "terminal_bindings_collector": "E/venv/bin/python record-native05-terminal-bindings.py on remote host API32404"
+  },
+  "conditions": {
+    "1": {
+      "basis": "New authorized AFO order; exact two-function scope,14 frozen inputs and independent oracle match archived initial preflight.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/archived_preflight",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/repeatability-prepared-20261031-v4b/frozen-contract.json",
+          "sha256": "ae24e15a92221fdb98865cd9f245c18b661c6811ff0c12d14d1b3bca9f5f6d26"
+        },
+        {
+          "primary_scope_sha256": "83c919dcc947cf003db192a2936dd093c19021ce0fa80c3702f8cfe68a2f1a34",
+          "repository_path": "evidence/014-durable-local-autonomy/package-order-20261031/primary-scope-v4.json"
+        }
+      ],
+      "status": "PASS"
+    },
+    "2": {
+      "basis": "Actual local model digest/network binding; candidate initially absent; accepted native source write plus six edits reconstruct final archived bytes, no supplied vendor implementation.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/packaged_report/model_profile",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/native_evidence",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/source-provenance-terminal-6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5.json",
+          "sha256": "6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5"
+        },
+        {
+          "json_pointer": "/archived_candidate_sha256",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        }
+      ],
+      "status": "PASS"
+    },
+    "3": {
+      "basis": "Declared host/target compilation,630 host assertions,351 simulated assertions, independent simulation cost and object/frame budgets pass for final candidate.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/archived_final_receipt",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/repeatability-prepared-20261031-v4b/frozen-contract.json",
+          "sha256": "ae24e15a92221fdb98865cd9f245c18b661c6811ff0c12d14d1b3bca9f5f6d26"
+        }
+      ],
+      "status": "PASS"
+    },
+    "4": {
+      "basis": "All six author/inspector attempts recorded; available phase files3/8/9/3/3/3 are present with matching archive hashes; failed gates remain explicit.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/stage_outcomes",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/phase_files",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/packaged_phase_evidence",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        }
+      ],
+      "status": "PASS"
+    },
+    "5": {
+      "basis": "External session observation: no post-launch job steering, implementation/test fixes, input/model/source deployment or active-job administrative repair by operator/assistant was needed.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/external_steering_event_count",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/source_revision",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/workspace_written_by_auditor",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/source-provenance-terminal-6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5.json",
+          "sha256": "6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5"
+        }
+      ],
+      "observer_limit": "Session-scoped external observation, not a general tamper-proof human-activity detector. Read-only audits/local unactivated code work are disclosed; all engineering handoff fixes preceded launch.",
+      "status": "PASS"
+    },
+    "6": {
+      "basis": "Sealed archive SHA/integrity passes; archived final receipt equals live bytes and report entry; candidate/source/model/profile/scope and full gaps preserved; private local transfer matches SHA.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/archive_integrity",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/archived_final_receipt_sha256",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/archived_report_has_same_final_receipt",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/native-01M67R1HNE9TKPWCYJ2SVKEPJS/transfer-verification.json",
+          "sha256": "bc40440cff26b8399b4fcda34355c3d7503ffa0139fdb1d2067cf0756e58539b"
+        }
+      ],
+      "status": "PASS"
+    },
+    "7": {
+      "basis": "Process GAPS and strict release BLOCKED/25gaps remain; QM development demonstration only. Native success does not upgrade release.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/package",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/packaged_report",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        }
+      ],
+      "status": "PASS"
+    },
+    "8": {
+      "basis": "Indexed actual synthetic framework negative controls reject compilation error, behavioral mutants, absent/changed evidence and tampered provenance. Functional verifier source identity matches producer0e and auditor303.",
+      "evidence_refs": [
+        {
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/negative-controls/native05-negative-control-index.json",
+          "sha256": "62f2e058492327f0cfb9f6d19b88cd8d62744ffaf00603ede5fd07ec1e85d88e"
+        },
+        {
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/negative-controls/cli-exact.xml",
+          "sha256": "bc0ce1eb5475605a3e3f32abe65c7d1a6536a5edc9b48833f321b31b54897598"
+        },
+        {
+          "repository_path": "evidence/014-durable-local-autonomy/repeatability-preregistration-20261031/prepared-cohort/functional-verifier-identity.json",
+          "sha256": "409e04c02de100cef1e5c90458d482c718bedc732bccc74a1445c543dd21d91a"
+        }
+      ],
+      "limit": "Framework fixture controls, not live Qwen capability tests; provenance controls reject source/milestone proof rather than pretending compilation itself fails.",
+      "status": "PASS"
+    },
+    "9": {
+      "basis": "Exact identities,source/model/profile hashes,commands,timestamps,297request-ledger entries and provider-reported time/tokens retained. Reasoning breakdown remains UNKNOWN.",
+      "evidence_refs": [
+        {
+          "json_pointer": "/actual_terminal_metrics",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/stage_outcomes",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "json_pointer": "/packaged_report/metrics",
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+          "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+        },
+        {
+          "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/source-provenance-terminal-6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5.json",
+          "sha256": "6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "external_observation": {
+    "post_launch_job_interventions": 0,
+    "post_terminal_observer_recording_failure": "First terminal source-audit record wrapper lacked host import path; CLI audit itself completed. Fixed observer path and repeated read-only audit; no candidate/model/job change.",
+    "prelaunch_engineering_fixes": "Disclosed in package-order-20261031; not autonomous healing",
+    "source_provenance": "VERIFIED_SOURCE_PROVENANCE"
+  },
+  "fresh_trials_submitted_by_this_audit": 0,
+  "gap_count": 25,
+  "internal_report_unchanged": {
+    "authorship": "UNVERIFIED_EDIT_CHAIN",
+    "human_interventions": "UNKNOWN_REQUIRES_EXTERNAL_OBSERVER",
+    "milestone": "NOT_PROVEN"
+  },
+  "metrics": {
+    "native_requests": "UNKNOWN_NOT_REPORTED",
+    "reasoning_token_breakdown": "UNKNOWN; provider zero does not measure hidden reasoning",
+    "requests_from_ledger": 297,
+    "timing": {
+      "active_time_ms": 7533345,
+      "inference_time_ms": 7258734,
+      "tool_time_ms": 274611,
+      "wall_time_ms": 7597950
+    },
+    "tokens": {
+      "cache_read": 11534747,
+      "cache_write": 0,
+      "input": 982904,
+      "output": 339976,
+      "reasoning": 0
+    }
+  },
+  "milestone": "FUNCTIONAL_MILESTONE_PASS",
+  "model_calls_by_this_audit": 0,
+  "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+  "order_id": "afo-ee4282b25001a15d",
+  "process_qualification": "GAPS",
+  "producer": "CODEX_EXTERNAL_OBSERVER_NOT_OWNER_RELEASE_AUTHORITY",
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "release_eligibility": "BLOCKED",
+  "remaining_claims_not_established": [
+    "three fresh repeatability trials",
+    "full LL/HAL delivery",
+    "clean process qualification",
+    "production release",
+    "assessed ASPICE compliance",
+    "safety",
+    "generic-driver qualification",
+    "model learning benefit",
+    "24/7 availability"
+  ],
+  "remote_artifact_refs": [
+    {
+      "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/terminal-facts-c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4.json",
+      "sha256": "c28b073a2ecf93a71e4778bfeaddcb8ecb82fb79e912b83acebf671299047ec4"
+    },
+    {
+      "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/source-provenance-terminal-6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5.json",
+      "sha256": "6f9453c9ba5e481350e9798b2b0deb44df08b5fcf57defe43886b516698a56e5"
+    },
+    {
+      "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/negative-controls/native05-negative-control-index.json",
+      "sha256": "62f2e058492327f0cfb9f6d19b88cd8d62744ffaf00603ede5fd07ec1e85d88e"
+    },
+    {
+      "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/native05/negative-controls/cli-exact.xml",
+      "sha256": "bc0ce1eb5475605a3e3f32abe65c7d1a6536a5edc9b48833f321b31b54897598"
+    },
+    {
+      "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/repeatability-prepared-20261031-v4b/frozen-contract.json",
+      "sha256": "ae24e15a92221fdb98865cd9f245c18b661c6811ff0c12d14d1b3bca9f5f6d26"
+    }
+  ],
+  "schema": "forge-c/delivery-first-external-m1-audit/1",
+  "scope": "ONLY_PREREGISTERED_TWO_FUNCTION_CRC_IDR_INCREMENT; NOT_FULL_LL_OR_HAL",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "work_order": "WO-AFO-ee4282b25001a15d-a1"
+}

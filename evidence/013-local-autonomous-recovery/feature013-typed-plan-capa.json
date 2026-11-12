@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<335a2e0b326f"
+  ],
+  "candidate_patch_sha256": null,
+  "capa_id": "CAPA-070",
+  "created_at": "2026-10-24T21:03:33.538439Z",
+  "event_ids": [],
+  "incident_ids": [
+    "cre-obs-omni-q36-planner-typed-schema"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": null,
+  "reproducer_id": "AFO-operator-typed-plan",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-e2367ebb190ad2b4e33e",
+    "reproducer-run:rr-13cc18cbb7980ca9c66b"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "The shared SDK exposes field annotations but strips Field metadata; an opaque JSON string has no declared plan fields or types on the actual MCP wire. A nested authoritative schema should expose the existing contract without weakening its independent validation.",
+  "schema_version": "1.0",
+  "state": "CAUSE_VERIFIED",
+  "updated_at": "2026-10-24T21:05:58.344325Z"
+}

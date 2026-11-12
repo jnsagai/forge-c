@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/owner-development-prospective/1",
+  "source": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "scope": "CPU_KERNEL_AND_TRANSPORT_STUB_ONLY",
+  "actual_model_calls": 0,
+  "production_mutations": false,
+  "role_competence": "NOT_RUN",
+  "actual_owner_authority": "NOT_ISSUED",
+  "status": "PASS_PROSPECTIVE_ONLY",
+  "native_id": "01M6P56T88AT55C4701SJEG46A",
+  "measurement_sha256": "f653472b2224344b33cb35b908739d32e242febb0917e67bb659b7f10161f0e9"
+}

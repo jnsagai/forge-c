@@ -1,0 +1,79 @@
+{
+  "actual_models_or_GPU_inference": 0,
+  "actual_native_role_competence": "NOT_RUN",
+  "benchmark_rows": 4,
+  "causal": "NOT_RUN_NOT_APPLICABLE_FOR_CHANGE",
+  "counting_limit": "Source209distinct/208PASS+1FAIL, root90PASS and remote56PASS overlap; never sum as355distinct. Earlier failed QA runs are retained, not recast as final passes.",
+  "decision_id": "pd-a628033c80b802774a4d",
+  "endurance_acceptance": "NOT_RUN",
+  "excluded": [
+    "runtime-inputs.tar",
+    "outer transport.tar",
+    "vendor text/source inputs",
+    "whole private Fabro server tree",
+    ".env/credentials/private owner keys",
+    "live telemetry payloads"
+  ],
+  "hard_gates": {
+    "golden_benchmark": "PASS",
+    "holdout": "PASS",
+    "policy_integrity": "PASS",
+    "prevention": "PASS",
+    "protected_files": "PASS",
+    "quality_process": "PASS",
+    "reproducer": "NOT_RUN"
+  },
+  "integration_source": "c541a3b44db25a26cbbd784485d9938c361ca3bd",
+  "limitations": [
+    "Signature-free development source qualification does not activate a live mission or authorize a job by itself.",
+    "A transport STUB validates wire/header/control plumbing, not Ornith/Qwen inference or role competence.",
+    "Human review/safety and production signature guards remain independent.",
+    "No certification, production release, main merge, new task acceptance or M9 endurance claim."
+  ],
+  "new_source_only_task_ticks": 0,
+  "preserved": [
+    "all54 source QA artifacts including failures",
+    "baseline-identical IWDG assertion + append-only reason correction",
+    "stage no-refs failure log + exact safe v2 correction/script",
+    "transfer-recovery JSON; archives themselves excluded"
+  ],
+  "prevention": {
+    "all_raw_logs_sha256_verified": true,
+    "all_symptom_absent": true,
+    "rows": 175
+  },
+  "production_ACT": false,
+  "prospective_omniverse": {
+    "actual_model_calls": 0,
+    "cpu_preflight": "PASS_PROSPECTIVE_ONLY",
+    "namespace_authority_tests": 56,
+    "namespace_skip": 0,
+    "native_stub_run_id": "01M6P56T88AT55C4701SJEG46A",
+    "native_stub_terminal": "SUCCEEDED",
+    "own_stub_server_stopped": true,
+    "owner_record_issued": false,
+    "production_mission_or_services_mutated": false,
+    "scope": "NEW_PRIVATE_CPU_KERNEL_AND_DETERMINISTIC_NATIVE_STUB_ONLY"
+  },
+  "publication_scope": "OPS overlay only; root independently reviews/applies/commits. No source/Git/policy/grant/ledger edits or push.",
+  "qualified_baseline": "74e44a1f23b01f3200350436df1691249b441292",
+  "qualified_source": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "root_integration_QA": {
+    "PASS": 90,
+    "SKIP": 0,
+    "design": 14,
+    "v01_make_test": "PASS",
+    "v03_packager": "PASS"
+  },
+  "schema": "forge-c/integration23-publication-validation/1",
+  "source_QA": {
+    "FAIL": 1,
+    "PASS": 208,
+    "baseline_identical_NOT_RUN_assertion_preserved": true,
+    "detailed_failure_reason": "UNVERIFIED; see correction and read-only static diagnosis",
+    "distinct_cases": 209,
+    "failure_not_waived": true
+  },
+  "source_binding": "29source/test/ADRfiles byte-identical between qualifieddc27 and integrationc541; exactI23whole-tree CRE is not asserted",
+  "status": "SOURCE_ELIGIBLE_OFFLINE_PLUS_PROSPECTIVE_CPU_STUB_ONLY"
+}

@@ -1,0 +1,3 @@
+{
+  "reason": "Baseline symptom correctly reproduced; candidate actually exited0 and printed SYMPTOM_ABSENT:<signature>, but independent runner requires exact SYMPTOM_ABSENT. Preserve ERROR. Correct ONLY oracle output serialization; no candidate/evaluator/fixture behavior change."
+}

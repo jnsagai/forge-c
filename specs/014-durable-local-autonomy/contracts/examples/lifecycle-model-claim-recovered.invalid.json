@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "mission_id": "mission-example",
+  "job_id": "job-example",
+  "execution_id": "execution-example",
+  "revision": 1,
+  "lease_epoch": 2,
+  "launch_nonce": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "authorization_state": "VALID",
+  "admission_state": "RESERVED",
+  "identity_state": "NONE",
+  "native_run_ids": [],
+  "execution_liveness": "NOT_STARTED",
+  "cancellation_state": "NOT_REQUESTED",
+  "cancel_attempts": 0,
+  "last_cancel_error": null,
+  "resource_lease": "HELD",
+  "task_outcome": "RECOVERED",
+  "terminal_reason": "MODEL_SAID_DONE",
+  "quiescence_evidence_ref": null,
+  "outcome_evidence_ref": "model:claim",
+  "last_reconciled_at": null
+}

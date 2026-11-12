@@ -23,17 +23,28 @@ REQ_ID = r"(SWR-[A-Z0-9][A-Z0-9_.-]*)"
 _BULLET = re.compile(rf"^\s*(?:[-*]\s*)?\*\*{REQ_ID}\*\*\s*[:\-–]?\s*(?:\(EARS:\s*[a-z]+\)\s*)?(.+?)\s*$")
 _TABLE = re.compile(rf"^\s*\|\s*{REQ_ID}\s*\|\s*([^|]+?)\s*\|")
 
+# Reset events may name their controller/domain or reset type. These are
+# language classifiers, not evidence that the physical reset behavior is correct.
+# Exclude reset-control/reset_code identifiers from the event noun.
+RESET_AFTER = r"\bafter\s+(?:(?:a|an|the)\s+)?(?:[A-Za-z_][\w-]*\s+){0,3}reset(?![\w-])"
+STARTUP_NO_CALL = r"While\s+no\b[^.\n]*" + RESET_AFTER
+
 _SYS = r"the\s+(?P<system>[A-Za-z0-9][\w ./-]{1,60}?)\s+shall\s+(?P<response>.+)"
+# CAPA-136 (WWDG HAL L32 SWE.1): a condition may contain commas (a list of invalid arguments, "activation,
+# configuration or refresh"); it ends at the comma that is followed by "[then] the <system> shall". The condition is
+# matched non-greedily, so every statement the first-comma form `[^,]+` matched keeps the identical split.
+_PRE = r".+?"
 PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("COMPLEX", re.compile(
-        r"^(?:where\s+[^,]+,\s*)?(?:while\s+[^,]+,\s*)?(?:when\s+[^,]+,\s*|if\s+[^,]+,\s*then\s+)" + _SYS + r"$",
-        re.I)),
-    ("UNWANTED", re.compile(r"^if\s+(?P<pre>[^,]+),\s*then\s+" + _SYS + r"$", re.I)),
-    ("EVENT", re.compile(r"^when\s+(?P<pre>[^,]+),\s*" + _SYS + r"$", re.I)),
-    ("STATE", re.compile(r"^while\s+(?P<pre>[^,]+),\s*" + _SYS + r"$", re.I)),
-    ("OPTIONAL", re.compile(r"^where\s+(?P<pre>[^,]+),\s*" + _SYS + r"$", re.I)),
+        rf"^(?:where\s+{_PRE},\s*)?(?:while\s+{_PRE},\s*)?(?:when\s+{_PRE},\s*|if\s+{_PRE},\s*then\s+)" + _SYS
+        + r"$", re.I)),
+    ("UNWANTED", re.compile(rf"^if\s+(?P<pre>{_PRE}),\s*then\s+" + _SYS + r"$", re.I)),
+    ("EVENT", re.compile(rf"^when\s+(?P<pre>{_PRE}),\s*" + _SYS + r"$", re.I)),
+    ("STATE", re.compile(rf"^while\s+(?P<pre>{_PRE}),\s*" + _SYS + r"$", re.I)),
+    ("OPTIONAL", re.compile(rf"^where\s+(?P<pre>{_PRE}),\s*" + _SYS + r"$", re.I)),
     ("UBIQUITOUS", re.compile(r"^" + _SYS + r"$", re.I)),
 ]
+_KEYWORD = re.compile(r"^\s*(if|when|while|where)\b", re.I)
 WEAK_MODALS = re.compile(r"\b(should|may|might|could|will|must|can)\b", re.I)
 VAGUE = re.compile(r"\b(fast|quickly|efficient(ly)?|user[- ]friendly|as appropriate|as required|"
                    r"if possible|etc\.?|and/or|TBD|TBC|approximately|adequate|sufficient)\b", re.I)
@@ -77,7 +88,15 @@ def check_statement(req: Requirement, systems: set[str] | None = None) -> Requir
     found = match(text) if shall_count == 1 else None
     req.pattern = found[0] if found else None
     if shall_count == 1 and req.pattern is None:
-        req.findings.append(f"{req.req_id}:EARS_PATTERN_NONCONFORMANT")
+        kw = _KEYWORD.match(text)
+        if kw:  # CAPA-136: the bare code gave no clue (~70 author tool calls); the code token stays first
+            sysname = next(iter(systems)) if systems and len(systems) == 1 else "<system>"
+            then = "then " if kw.group(1).lower() == "if" else ""
+            req.findings.append(f"{req.req_id}:EARS_PATTERN_NONCONFORMANT:expected '{kw.group(1).capitalize()} "
+                                f"<condition>, {then}the {sysname} shall <response>.' (one 'shall'; the condition "
+                                f"ends at the comma before '{then}the {sysname} shall')")
+        else:
+            req.findings.append(f"{req.req_id}:EARS_PATTERN_NONCONFORMANT")
     if weak := WEAK_MODALS.search(text):
         req.findings.append(f"{req.req_id}:EARS_WEAK_MODAL:{weak.group(1).lower()}")
     if vague := VAGUE.search(text):

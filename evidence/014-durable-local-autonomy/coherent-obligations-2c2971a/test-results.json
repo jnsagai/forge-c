@@ -1,0 +1,33 @@
+{
+  "source_revision": "2c2971a7e3d04bf892180c3b6bef1c96dfd2b52b",
+  "cohorts": {
+    "baseline": {
+      "tests": "2",
+      "failures": "2",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.114",
+      "timestamp": "2026-10-28T15:05:46.846554+00:00"
+    },
+    "candidate": {
+      "tests": "56",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "17.348",
+      "timestamp": "2026-10-28T15:08:26.376416+00:00"
+    },
+    "exact": {
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.460",
+      "timestamp": "2026-10-28T15:10:47.148234+00:00"
+    }
+  },
+  "native_qualification": "NOT_RUN_REMOTE_OCCUPIED_BY_ACTIVE_MISSION",
+  "actual_Qwen_candidate_requests": 0,
+  "deployed": false,
+  "runtime_still_pinned": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61"
+}

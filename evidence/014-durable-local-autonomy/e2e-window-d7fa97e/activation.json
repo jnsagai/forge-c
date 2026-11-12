@@ -1,0 +1,22 @@
+{
+  "status": "SCOPED_E2E_WINDOW_ACTIVATED",
+  "captured_utc": "2026-10-28T12:46:05.447224Z",
+  "source_revision": "d7fa97e41f6e265e55737478379052db8d6bd859",
+  "scope_sha256": "570a031c15ff4bc668cfa58ab9d3602ac70e1f7e935352b57398b6641258d35d",
+  "operator_epoch": 13,
+  "deadline_utc": "2026-10-28T16:29:12Z",
+  "order_ids": [
+    "afo-99cc4f39103951e7",
+    "afo-8298dbdf8767eb9c"
+  ],
+  "progress_branch": "e2e/2026-10-28-q38-five-hour-window",
+  "historical_missions_unchanged": true,
+  "old_grants_renewed": false,
+  "inference_concurrency": 1,
+  "factory_controller_owns_dispatch": true,
+  "authorization_basis_sha256": "9bd26db507fc835645fa3082533f1bfc15fecff422ac7446407ed6754f55e7cf",
+  "new_approval_reply_received": false,
+  "existing_standing_qualification_approval_used": true,
+  "original_policy_restore_required_after_window": true,
+  "role_qualification": "NOT_ESTABLISHED"
+}

@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0 -- /mnt/data/forge-c/production-local-014/venv/bin/python
+rootdir: /mnt/data/forge-c/production-local-014/deployment/qualification-launch-integrity-899865d-v1/repo
+configfile: pyproject.toml
+collecting ... collected 17 items
+
+factory/python/tests/test_t005_t006_agents_skills.py::test_repository_preflight_passes_for_all_20_roles PASSED [  5%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_missing_skill_blocks_with_code PASSED [ 11%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_corrupt_skill_blocks_invalid_and_hash PASSED [ 17%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_frontmatter_name_mismatch_and_tool_list_drift PASSED [ 23%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_duplicate_role_and_ungranted_tool PASSED [ 29%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_readonly_role_with_mutating_tool_and_cloud_model_rejected PASSED [ 35%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_unsafe_skill_path_rejected PASSED [ 41%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_skills_render_deterministically_and_match_lock PASSED [ 47%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_swe1_skills_require_ears PASSED [ 52%]
+factory/python/tests/test_t005_t006_agents_skills.py::test_fabro_discovered_all_20_skills_in_live_probe PASSED [ 58%]
+factory/python/tests/test_local_stack_toolchain_path.py::test_optional_installed_tools_are_on_the_stack_path PASSED [ 64%]
+factory/python/tests/test_local_stack_toolchain_path.py::test_uninstalled_optional_tools_preserve_the_existing_environment PASSED [ 70%]
+factory/python/tests/test_lrtx_profile.py::test_stack_environment_inherits_nothing_from_the_existing_deployment PASSED [ 76%]
+factory/python/tests/test_lrtx_stack_cli.py::test_exec_parses_stack_options_and_preserves_worker_arguments[header0] PASSED [ 82%]
+factory/python/tests/test_lrtx_stack_cli.py::test_exec_parses_stack_options_and_preserves_worker_arguments[header1] PASSED [ 88%]
+factory/python/tests/test_lrtx_stack_cli.py::test_expose_api_honors_host_port_after_command PASSED [ 94%]
+factory/python/tests/test_lrtx_stack_cli.py::test_non_exec_does_not_ignore_unknown_arguments PASSED [100%]
+
+- generated xml file: /mnt/data/forge-c/production-local-014/deployment/qualification-launch-integrity-899865d-v1/scratch/pytest.xml -
+============================== 17 passed in 0.53s ==============================

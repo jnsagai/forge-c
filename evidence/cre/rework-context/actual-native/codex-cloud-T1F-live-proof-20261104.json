@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-11-04T16:17:12.528125+00:00",
+  "control": "OWNER_AUTHORIZED_MANUAL_OPERATOR_LADDERS; CLOUD_ACT_SUPERVISOR_NOT_ENABLED",
+  "runs": [
+    {
+      "driver": "CRCHAL",
+      "phase": "SWE.3",
+      "work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1F",
+      "run_id": "01M6KNFFV3JPJ4FR8AG2GCKBXN",
+      "actual_api_status": "RUNNING",
+      "source_directory_matches": true,
+      "last_good": "WO-F014-CMP-SWE2-CRCHAL-20261104-T1E",
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "run/cloud-gen25-bound-rework",
+        "commit": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+        "dirty": false
+      },
+      "context_sha256": "9344fc92459b31a39da69447328a663555503b7960f04550f34485b6e7884a79",
+      "receipt_sha256": "0565061f917bf38841981d4d7dfdb8d993f0f8eeb0f10b09c76c74d3402c98ea",
+      "context_bytes": 5626,
+      "context_lines": 146,
+      "inspection_state": "ABSENT",
+      "failed_items": [],
+      "gate_records": 10,
+      "inherited_verdict": false,
+      "inspector_calls_per_visit": 64
+    },
+    {
+      "driver": "WWDGHAL",
+      "phase": "SWE.4",
+      "work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1F",
+      "run_id": "01M6KNFFV49TWDA0K335TNQRTD",
+      "actual_api_status": "RUNNING",
+      "source_directory_matches": true,
+      "last_good": "WO-F014-CMP-SWE3-WWDGHAL-20261104-T1E",
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "run/cloud-gen25-bound-rework",
+        "commit": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+        "dirty": false
+      },
+      "context_sha256": "d38f0f460b19c35d561290eb665921bea45d62a71a43dd68b8e3ad1e2af58291",
+      "receipt_sha256": "fb8ed6166570286fcc93235ac7ad036eee6b297af7061450769978dd32901165",
+      "context_bytes": 7106,
+      "context_lines": 172,
+      "inspection_state": "BOUND",
+      "failed_items": [
+        "SWE4-01",
+        "SWE4-02",
+        "SWE4-04",
+        "SWE4-06"
+      ],
+      "gate_records": 7,
+      "inherited_verdict": false,
+      "inspector_calls_per_visit": 64
+    }
+  ]
+}

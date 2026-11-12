@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "evidence/013-local-autonomous-recovery/verify-recorded-evidence.py"
+  ],
+  "duration_s": 0.033,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "36ed0fc70bd8765f0cc90a45b21bbf02924b0269",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LA-T005/20261024T211811.log",
+  "log_sha256": "c7bd131d6a1262735a46faef58c403fcfb5cacf55c668c94576ab8454df42903",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "LA-T005",
+  "ts_utc": "2026-10-24T21:18:11.333369Z"
+}

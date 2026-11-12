@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "path": "archive-inventory.json",
+      "sha256": "c004f5b7ccd518391c30e78e63063900e8ad799826abc8dafc820e37ff002029",
+      "bytes": 7754
+    },
+    {
+      "path": "delivery-report.json",
+      "sha256": "07feeac03d37ecb16729df254f201048280748f2aef4b7c19100331869f19e8c",
+      "bytes": 5852
+    },
+    {
+      "path": "terminal-proof.json",
+      "sha256": "ef58c2ea184048dbd869324aa7b1d79349a60343e714d8f85e136f42a5b80688",
+      "bytes": 50826
+    }
+  ],
+  "raw_hidden_reasoning": false
+}

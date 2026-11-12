@@ -1,0 +1,62 @@
+{
+  "trial08-external-audit": {
+    "original_sha256": "67a84e879c58e5e653587a6fe6df7af01a2a2702ccca537e48aae7cf4eafd341",
+    "view_sha256": "3481271a51829b3b22850d267ef226f6987fe298361d5db09edc1f4d5c725f25",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/cohort-audits/native08-67a84e879c58e5e653587a6fe6df7af01a2a2702ccca537e48aae7cf4eafd341.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "trial08-terminal-observation": {
+    "original_sha256": "b4972089518d95fc795b5e42d9688468a163850cc17790466e719b0b6b8d5503",
+    "view_sha256": "bc0ec15e2c1effd73e6d020a7723bf3f38226037e1af828887ed53985c76496c",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native08-final-terminal-observation.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "trial08-last-source-audit": {
+    "original_sha256": "6e33be7f96586c47f9347c165da1eb7453696e73a5d48c74bfa79aaeb6faac98",
+    "view_sha256": "68cf7ea501d71a1b972d33af8c32499b18344a1b878d4ca794b6b36435fefbb3",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native08-final-pre-stop-source-audit.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "owner-stop-request": {
+    "original_sha256": "7018818235c8d242bc2ea390668e57150aab3c7ec4f97f4a08cbab637ba75f79",
+    "view_sha256": "5befba906587c4abf289afa60d04566374dbf14f16add9c6b5429cd01b4601cb",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/owner-window-stop-request.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "guard-final": {
+    "original_sha256": "df91e2fccbf4f56e0733a52dc1822ff5e6a0240b12730426af48f684e162298e",
+    "view_sha256": "4743aada09a12ad49db2ce2ad0fa9a54b00c4e233d6f8c45c92d38763d61efa0",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/owner-window-guard-final.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "settlement-observation": {
+    "original_sha256": "4b755921a7245b58fc460644fe228188e7c3c23731789ae96f14c181bf16af88",
+    "view_sha256": "960f693ddcbef8bafbad0b3db465cb1f29607a1925d439f5b262409036ba6025",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/owner-window-final-settlement.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "queue-terminal-reconciliation": {
+    "original_sha256": "e7eedd16568ffa32eaa8356f394aa48332b851a8f4f89d69fc14d14e6bbb4aa6",
+    "view_sha256": "78e6b711518c1de6b02ccf8ecadc4e22a0729e8e57e2cd4a405b73b3d828e8bd",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/owner-stop-queue-reconciliation.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "trial08-partial-transfer-source": {
+    "original_sha256": "e25d306963979b0e0747d6c3f65da03d24134e7af6c5cf83bd473189cd817388",
+    "view_sha256": "5138b70e959f86b4957e186522336b4511f1fadcea12aa6e2912ceb8e27ea529",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native08-final-partial-transfer-source.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "trial08-local-transfer-verification": {
+    "original_sha256": "fec3c5c28b131e26c0a07d03d872ea9dbf05b9c04fc41245b2aab2785c269c25",
+    "view_sha256": "fc9578b68b3bc4a581fb628cc291117c4f68681359a197f2dffe6587c4c5e6b7",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/native-01M68CMQAZNN7QGRZSX5DGRMYY-PARTIAL/final-operator-stop/transfer-verification.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  },
+  "final-cohort-summary": {
+    "original_sha256": "71b8773faed8ce85660446d7a08cc821b6daf43378dfeea2923b377fe795fcb5",
+    "view_sha256": "71b8773faed8ce85660446d7a08cc821b6daf43378dfeea2923b377fe795fcb5",
+    "original_source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/cohort-summary-final-2of3-v1.json",
+    "encoding": "gzip mtime0; decompress for original bytes"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "capacity-red.xml": {
+    "sha256_decompressed": "1ba2a756418ad7521d5386735e952f4fe350ad6d31e9aec0e7290a6911961d3a",
+    "encoding": "gzip mtime0"
+  },
+  "capacity-red2.xml": {
+    "sha256_decompressed": "c32afd7ea2c8bd5c67f6820f5e5310185fb2b5c019dc4d4083a78b209d9d62c9",
+    "encoding": "gzip mtime0"
+  },
+  "capacity-green.xml": {
+    "sha256_decompressed": "8f7b6c8ea524ba01b0d6f31500236626e0bec5cdb05c1577e29ccf759b69eaf3",
+    "encoding": "gzip mtime0"
+  },
+  "capacity-regression.xml": {
+    "sha256_decompressed": "88f25c2241056107188c32fc33a196f44034a2e85f7cbc6b9ffdeb677e4f19e4",
+    "encoding": "gzip mtime0"
+  },
+  "capacity-exact-d2e083e3.xml": {
+    "sha256_decompressed": "71a21e65075de8f5d7e12406e7729ac2c5bb34fc97b48daa2193c3f1f0ad5544",
+    "encoding": "gzip mtime0"
+  }
+}

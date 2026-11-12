@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_actual_private_pid_accepts_only_pinned_kernel_and_store_view _______
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388775...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-121/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-121/test_actual_private_pid_accept0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x71840de2e060>
+
+    def test_actual_private_pid_accepts_only_pinned_kernel_and_store_view(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch) as (record, instance, view):
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    from forge_factory.afo.durable import digest
+    folder=Path(record['store_path']).parents[2]/'run/owner-development-views'/digest(record)
+    raw=(folder/'stat').read_text();fields=raw[raw.rfind(')')+2:].split()
+    print(json.dumps(dict(kernel_pid=raw.split('(',1)[0].strip(),state=fields[0],start=fields[19],expected_pid=record['guardian_pid'],expected_start=record['guardian']['start_ticks'],uid_map=(folder/'uid_map').read_text().splitlines())))
+    assert not Path('/proc/'+str(record['guardian_pid'])).exists(), 'HOST_PROCESS_NOT_HIDDEN'
+    assert D.current()['acceptance']=='UNACCEPTED'
+    print('REAL_NESTED_PID_KERNEL_VIEW_PASS')
+    """,
+            )
+>           assert r.returncode == 0, (r.stderr, r.stdout)
+E           AssertionError: ('Traceback (most recent call last):
+E               File "<string>", line 15, in <module>
+E                 assert D.current()[\'acceptance\']=...": "5612868", "expected_pid": 635338, "expected_start": "5612868", "uid_map": ["         0 4294967295 4294967295"]}
+E             ')
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '635342', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...OWNER_DEVELOPMENT_VIEW_" + code)\nforge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:\n').returncode
+
+factory/python/tests/test_owner_development_view.py:131: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_development_view.py::test_actual_private_pid_accepts_only_pinned_kernel_and_store_view

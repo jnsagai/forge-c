@@ -1,0 +1,15 @@
+{
+  "manifest_sha256": "de0e96836276ae8a255d6c5824d0676baad2493d2c5cdeb7ae052b3aa9841d32",
+  "status": "BLOCKED",
+  "blockers": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+  ],
+  "runtime_implementation": "SEPARATE_TEST_EVIDENCE",
+  "local_model_capability": "NOT_RUN",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_availability": "NOT_RUN",
+  "trial_scope": null,
+  "campaign_denominator": 1
+}

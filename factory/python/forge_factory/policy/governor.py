@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import fcntl
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,10 @@ def _update(binding_id: str, fn: Any) -> Any:
         f.seek(0)
         f.truncate()
         f.write(json.dumps(st))
+        # Buffered a+ writes must reach the file before another hook takes the lock.
+        # Unlocking before close otherwise lets concurrent closes append several JSON snapshots.
+        f.flush()
+        os.fsync(f.fileno())
         fcntl.flock(f, fcntl.LOCK_UN)
     return out
 
@@ -62,6 +67,71 @@ TRACE_EXTRA_TURNS = 8
 LOOP_EXTRA_TURNS = 15
 
 
+def native_capacity_binding() -> dict:
+    from ..common import CONFIG_DIR, load_yaml, sha256_file
+
+    path = CONFIG_DIR / "token-policy.yaml"
+    limit = load_yaml(path)["native_aspice_author_tool_calls_per_visit"]
+    if type(limit) is not int or not 1 <= limit <= 10000:
+        raise ValueError("NATIVE_ASPICE_TOOL_BUDGET_INVALID")
+    return {"schema": "forge-c/native-aspice-tool-budget/1", "policy_sha256": sha256_file(path),
+            "author_calls_per_visit": limit}
+
+
+def _native_author_limit(role: str, workspace: str) -> int | None:
+    if role not in {f"swe{n}-author" for n in range(1, 7)}:
+        return None
+    path = Path(workspace) / ".forge-run/manifest.json"
+    if not path.is_file():
+        return None
+    manifest = json.loads(path.read_text())
+    native = manifest.get("native_aspice_backends") or {}
+    binding = native.get("tool_budget")
+    if binding is None:
+        return None  # Existing native jobs retain their recorded registry budget.
+    if (manifest.get("purpose") != "ASPICE_ONLY" or native.get("authors") != "codex"
+            or native.get("inspectors") != "claude" or binding != native_capacity_binding()):
+        raise ValueError("NATIVE_ASPICE_TOOL_BUDGET_BINDING_CHANGED")
+    return binding["author_calls_per_visit"]
+
+
+def profile_inspector_capacity_binding(profile: dict) -> dict | None:
+    """Prospective finite capacity, bound to the selected profile; no tools or review criteria are granted."""
+    limit = (profile.get("structured") or {}).get("native_inspector_tool_calls_per_visit")
+    if limit is None:
+        return None
+    if type(limit) is not int or not RESERVED_FOR_INSPECTORS < limit <= 256:
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_INVALID")
+    return {"schema": "forge-c/profile-inspector-tool-budget/1", "profile_id": profile["id"],
+            "profile_sha256": profile["_sha256"], "inspector_calls_per_visit": limit}
+
+
+def _profile_inspector_limit(role: str, workspace: str) -> int | None:
+    if role not in {f"swe{n}-inspector" for n in range(1, 7)}:
+        return None
+    path = Path(workspace) / ".forge-run/manifest.json"
+    if not path.is_file():
+        return None
+    manifest = json.loads(path.read_text())
+    binding = manifest.get("profile_inspector_budget")
+    if binding is None:
+        return None  # Existing jobs do not acquire capacity from a later profile edit.
+    import re
+
+    from ..lrtx.profile import load
+
+    local = manifest.get("local_profile") or {}
+    ident = local.get("id")
+    if not isinstance(ident, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,127}", ident):
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_BINDING_CHANGED")
+    profile = load(ident)
+    if (manifest.get("purpose") not in ("ASPICE_ONLY", "QM")
+            or local.get("config_sha256") != profile["_sha256"]
+            or binding != profile_inspector_capacity_binding(profile)):
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_BINDING_CHANGED")
+    return binding["inspector_calls_per_visit"]
+
+
 def _in_fix_loop(workspace: str, role: str) -> bool:
     phase = {"swe1-author": "SWE.1", "swe2-author": "SWE.2", "swe3-author": "SWE.3"}.get(role)
     if not phase:
@@ -81,7 +151,20 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
     it recovers a detailed design and unit specification for every delivered unit, reading the delivered code first.
     USART1 (21 functions, budget 47) and TIM2 (22, budget 48) exhausted every SWE.3 turn (TURN_BUDGET_EXHAUSTED, then
     AGENT_OUTPUT_PROSE, rework budget exhausted); SPI (22) passed with 3 denials; CRC (10) was denied on its first turn."""
-    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
+    if workspace:
+        from ..development_execution import selected
+
+        policy = selected(workspace)
+        if policy and policy.get("max_tool_calls_per_visit"):
+            return policy["max_tool_calls_per_visit"]
+        native = _native_author_limit(role, workspace)
+        if native is not None:
+            return native
+        inspector = _profile_inspector_limit(role, workspace)
+        if inspector is not None:
+            return inspector
+    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"),
+                                               include_onboarding=role.startswith("onboard-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled
 
@@ -137,7 +220,8 @@ def check_run(run_id: str, nodes: dict, workspace: Path | None = None, client=No
             return {"run_id": run_id, "status": "TOKEN_BUDGET_DISABLED", "reason": prof["token_budget"],
                     "checked_at": utc_now()}
     c = client or FabroClient(token=load_token(), timeout=10)
-    budgets = {a.id: a.max_stage_tokens for a in load_agents()[0]}
+    onboarding = any(str(n.get("role", "")).startswith("onboard-") for n in nodes.values())
+    budgets = {a.id: a.max_stage_tokens for a in load_agents(include_onboarding=onboarding)[0]}
     try:
         usage = c.usage(run_id)
     except Exception as exc:  # noqa: BLE001

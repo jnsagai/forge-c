@@ -1,0 +1,30 @@
+{
+  "schema": "forge-c/capa171-independent-source-review/1",
+  "at": "2026-11-04T23:57:30.419897+00:00",
+  "revision": "8e7f6a74d274507e28c699b960a60e81bdddff76",
+  "base": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "scope": "Independent root read-only review of frozen seven-file source; no testing or runtime acceptance claimed",
+  "blocking_findings": [],
+  "file_hashes": {
+    "factory/python/forge_factory/inspection/swtrace.py": "9f53b354e22d3d64169a2cc6a457c6f9f1ee5c8a377e625d6be0ecd5c7ea9952",
+    "factory/python/forge_factory/mcp/servers/evidence.py": "d2a6728a6b522cd70925613435cf02a98caf1f8755902b52d25d16b8ac1fe61f",
+    "factory/python/forge_factory/mcp/servers/tests.py": "5bd22193f1df233a750fd793b0ee4c9061977e0f585756eec16c420cf7d8cbfa",
+    "factory/python/forge_factory/workflow/prompts.py": "f16c5355baff57a755ca97f4c7a609d0c0cb6df45e617e27316cc9415c0b5a2b",
+    "factory/python/forge_factory/workflow/unit_target_carry.py": "c01081d458f9a8a486602c65d20c06af22f640302704e3129fde1eecd6be7ea6",
+    "factory/python/forge_factory/workflow/unit_target_wwdg_timing.py": "cae63de8811b2a622e606626fd4cbb5140b9c449a5b9ca0e8911575aaf2137d5",
+    "factory/python/tests/test_unit_target_wwdg_timing.py": "e40564d8538e6563d3a85a91c74b8e7931095c58d579d9aaed8479cb7eeb11c8"
+  },
+  "reviewed": [
+    "semantic plan/spec selection requires target proof even with declaration omitted",
+    "four exact approved per-call rows and current budget/SWR text/USPEC/argument binding",
+    "actual target status mailbox and unchanged simulator instruction/virtual-time observer recomputation",
+    "proof binds current provided effective input, HAL/LL/compiler/simulator assets/source/ELF/raw artifacts/normal invocation",
+    "host duplicates and carry failures cannot restore target-only row credit",
+    "explicit simulator-only scope; no WCET/silicon conclusion"
+  ],
+  "limitations": [
+    "Parent formal causal oracle and then-resolved complete prevention are separate.",
+    "Actual model authored qualification not established by CPU target controls.",
+    "Candidate will be stacked with qualified170 before formal171 release."
+  ]
+}

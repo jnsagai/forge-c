@@ -1,0 +1,81 @@
+{
+  "status": "V1_FROZEN_TESTED22_NOT_CRE_QUALIFIED_HARDENING_PENDING",
+  "revision": "903dd7d3eb3fdbae43287bd12f2bf0105edb4da6",
+  "base": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap",
+  "source_files": [
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "971f86a52c14a1b6a1b11be3301d2968b8dfea4e690dbba8656d1571df7f3aec"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "sha256": "fe91cd83361be3d716feef2ecf8ca694108bef4d01d23aff93a45a51321ad32a"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "de5ebc1bf11ac919759d43a4ac04f214b9f373b9d430a4811e444e66053ed4bf"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f"
+    },
+    {
+      "path": "factory/python/tests/test_owner_profile_bootstrap.py",
+      "sha256": "cd766ac59c2378eb45547dd09a8285c672ef029a0c79eebe86494a5602547075"
+    }
+  ],
+  "test_evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-first.xml",
+      "sha256": "e6fdee94fdaa19153d310e5b8329486679a7ba6ad37fc145631d3fcb9a3df8dd"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-first.log",
+      "sha256": "e2289c230135b682d66e48107f8caab30f5b37878e8daf2e9fb92df9aebb1375"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-inputs-before-tests.json",
+      "sha256": "cc9ab1218f0e7c2817749f3809a7377ae9fde3ce6d7711a0c3e32cac2e4993c7"
+    }
+  ],
+  "pyc_header_source_binding_check": [
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "source_sha256": "971f86a52c14a1b6a1b11be3301d2968b8dfea4e690dbba8656d1571df7f3aec",
+      "pyc_header_source_mtime_size_match": true,
+      "source_mtime_before_first22case_run": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "source_sha256": "fe91cd83361be3d716feef2ecf8ca694108bef4d01d23aff93a45a51321ad32a",
+      "pyc_header_source_mtime_size_match": true,
+      "source_mtime_before_first22case_run": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "source_sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973",
+      "pyc_header_source_mtime_size_match": true,
+      "source_mtime_before_first22case_run": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "source_sha256": "de5ebc1bf11ac919759d43a4ac04f214b9f373b9d430a4811e444e66053ed4bf",
+      "pyc_header_source_mtime_size_match": true,
+      "source_mtime_before_first22case_run": true
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "source_sha256": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f",
+      "pyc_header_source_mtime_size_match": true,
+      "source_mtime_before_first22case_run": true
+    }
+  ],
+  "source_edited_after_first22_tests": false,
+  "runtime_effects": false,
+  "models": 0
+}

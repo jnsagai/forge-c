@@ -1,0 +1,5 @@
+# before fix, source 2d91c2fa (ST inputs present, 8 hash-verified)
+E       KeyError: 'withdrawn_in_repair'
+E       KeyError: 'withdrawn_in_repair'
+FAILED factory/python/tests/test_lrtx_review_withdrawn_findings.py::test_findings_dropped_in_repair_are_recorded_as_withdrawn
+FAILED factory/python/tests/test_lrtx_review_withdrawn_findings.py::test_findings_kept_by_a_fail_are_not_reported_as_withdrawn

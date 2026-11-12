@@ -1,0 +1,43 @@
+{
+  "at": "2026-11-04T11:20:34.622192+00:00",
+  "workorder": "WO-F014-CMP-SWE1-WWDGHAL-20261104-T1D",
+  "run_id": "01M6K40RNVX84V4ENFJEAKH4CE",
+  "executed_inspector_requests": [
+    {
+      "seq": 157,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 163,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 172,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 183,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 198,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 211,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    },
+    {
+      "seq": 217,
+      "node": "swe1_inspector",
+      "requested_model": "gpt-6.1-sol"
+    }
+  ],
+  "outcome": "First genuine Sol inspection returned REWORK; Terra author correcting requirement contradictions. This is model-binding effectiveness proof, not a SWE1 PASS."
+}

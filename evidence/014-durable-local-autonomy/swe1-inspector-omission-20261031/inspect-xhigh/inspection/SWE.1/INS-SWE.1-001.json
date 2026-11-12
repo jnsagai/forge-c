@@ -1,0 +1,119 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "c566b006b392caf1244548d73d26855a43bff399caa2648acdc3de2d066c14b6",
+  "baseline_id": "BL-SWE.1-001",
+  "checklist_sha256": "baffe47eeb5b33095a500378e6b6e5db44105a0929cbaa3148fa6a1cb4a1bdd9",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "SWR-003 in workproducts/SWE.1/software_requirements.md is not consistently verifiable as written: the requirement says the driver shall not write any register, but its verification only checks that no",
+      "id": "SWE1-02",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-001",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "traceability/upstream_gaps.md",
+        "traceability/requirements_to_tests.csv",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [
+        "SWR-003 in workproducts/SWE.1/software_requirements.md is not consistently verifiable as written: the requirement says the driver shall not write any register, but its verification only checks that no register write to any CRC register occurs before the first explicit function call."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-31T164154.844125Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-31T164155.169092Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-31T16:41:55.169306Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

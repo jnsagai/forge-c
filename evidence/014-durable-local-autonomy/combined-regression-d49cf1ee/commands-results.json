@@ -1,0 +1,19 @@
+{
+  "tested_revision": "d49cf1eecce40de34872977e2cd504db284fe46d",
+  "environment": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+  "command_suffix": "-m pytest factory/python/tests/test_afo_m2_queue.py factory/python/tests/test_da014_integration.py factory/python/tests/test_mission_capacity.py factory/python/tests/test_da014_workflow_capacity.py factory/python/tests/test_da014_product_outcomes.py factory/python/tests/test_da014_overnight_stall.py factory/python/tests/test_mcp_ticket_factory_defaults.py factory/python/tests/test_mcp_input_schema_metadata.py factory/python/tests/test_m2_mcp.py factory/python/tests/test_t007_policy.py factory/python/tests/test_delivery_cohort_summary.py -q --basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/overnight-combined-d49cf1ee-tmp --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/overnight-combined-d49cf1ee.xml",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "2",
+    "tests": "173",
+    "time": "29.224",
+    "timestamp": "2026-10-31T06:05:19.331673+00:00",
+    "hostname": "master"
+  },
+  "passed": 171,
+  "raw_junit_sha256": "dac25a385684ef19a5b760f7c2bc06ef0362ef6259f0a0f0314ea9f1c92fccce",
+  "scope": "SYNTHETIC_FRAMEWORK_AND_OFFLINE_METADATA; NOT_NATIVE_QWEN_QUALIFICATION",
+  "runtime_activation": false
+}

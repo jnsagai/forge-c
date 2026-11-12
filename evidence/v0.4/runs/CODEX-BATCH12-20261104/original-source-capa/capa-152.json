@@ -1,0 +1,147 @@
+{
+ "CAPA-152": {
+  "history": [
+   {
+    "at": "2026-11-04T11:40:29.073908Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"INC-NATIVE-HAL-HOST-RESULT-20261104\"]",
+    "from_state": null,
+    "reason": "Native HAL SWE5 author lacks stdout protocol required by unchanged strict trace observer; wrong filename hypothesis retracted and wrong model IDs remain separate.",
+    "seq": 1118,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T11:40:29.253236Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1119,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T11:40:29.485124Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-152 assigned",
+    "seq": 1120,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T11:40:36.415105Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"reproducer-run:rr-119957557172daadeb9d\", \"reproducer-run:rr-24002d909cc768d02178\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1121,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T11:40:36.448237Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"git:5ecf65b9565a..7ccdfa992a31\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 7ccdfa992a31 (patch 15340 bytes)",
+    "seq": 1122,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T12:01:00.714594Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"promotion-decision:pd-13e7f7fd1bd2cab0ae29\", \"reproducer-run:rr-119957557172daadeb9d\", \"reproducer-run:rr-24002d909cc768d02178\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "Initial candidate changed frozen legacy graph controls; initial reproducer omitted actual provided-CMSIS API. Preserve v1 and retriage the actual affected workflow.",
+    "seq": 1123,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T12:01:00.788546Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1124,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T12:01:01.065806Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-152 assigned",
+    "seq": 1125,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T12:01:07.682830Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"reproducer-run:rr-416e5a3b31be52935701\", \"reproducer-run:rr-36b443b23ec0cbde7ae7\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1126,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T12:01:07.712785Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"git:5ecf65b9565a..38bc52aa5d13\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 38bc52aa5d13 (patch 15891 bytes)",
+    "seq": 1127,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T12:07:02.773251Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[\"reproducer-run:rr-11ba8edd4e54d46fc186\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-152 absent at 38bc52aa5d13",
+    "seq": 1128,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T12:07:02.822169Z",
+    "capa_id": "CAPA-152",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1129,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-6bd066922745c44c8c1f699edd04a7e16a46effc",
+   "5ecf65b9565a40f001e813d015b2949890e82e72",
+   "7ccdfa992a313de599c867c868d1f1df9211512b",
+   "38bc52aa5d135f7092c2776b7a3cfd466f86bf17",
+   "pd-20f340ab233f81a1de56"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<38bc52aa5d13"
+   ],
+   "candidate_patch_sha256": "193b2e47e003155ed2efbf4f199e8546dc66cc3903fd63dc3f62fe84e119f874",
+   "capa_id": "CAPA-152",
+   "created_at": "2026-11-04T11:40:29.073908Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-NATIVE-HAL-HOST-RESULT-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-152",
+   "reproducer_id": "RPR-152",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-416e5a3b31be52935701",
+    "reproducer-run:rr-36b443b23ec0cbde7ae7"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Native HAL with provided CMSIS LL and GoogleTest unit verification lacks host result grammar after the unit CHECK harness disappears. Scope the repair to that actual context, preserve greenfield/non-GTest graph controls, keep strict parser and all functional assertions.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T12:07:02.822169Z"
+  }
+ }
+}

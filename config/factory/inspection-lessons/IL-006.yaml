@@ -1,0 +1,33 @@
+# Cloud cross-inspection 2026-11-02, classes X8 + X9 (candidate IL-C4): an owner-approved obligation filed as a gap
+# "because the rules forbid an invented contract", or cited by a requirement narrower than the obligation
+id: IL-006
+version: 1
+purpose: DETECTION
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-03, SWE1-05]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md, traceability/obligations_to_requirements.csv]
+statement: >-
+  An obligation the work-order owner approved is a recorded source, not invented behaviour: a requirement implements
+  all of it and cites it. Listing an approved obligation as a gap because the rules forbid invented contracts, or
+  citing it from a requirement that states only part of it while the gap reason stays empty, is a defect. A genuine
+  obligation gap names the input that is missing.
+source: {kind: contract, ref: "factory/python/forge_factory/assurance/owner_obligations.py#coverage_findings"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X8, X9]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-OBLDECLINE, S1-OBLNARROW]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE2-OBL-20261101-01, baseline_id: BL-SWE.1-001, baseline_hash: 5c1770617b28b2992a34b356d205df3ca1545225a3ba800bd703405e4173df01, item: SWE1-03, element: OBL-no-error-code-valid-call}
+    - {work_order: WO-F014-SWE1-OBL-20261031-12, baseline_id: BL-SWE.1-001, baseline_hash: 603f652406e5fea33264ef90e9815eeb2a3dfe2fc09d54a60371ccce1b7f5725, item: SWE1-03, element: OBL-no-error-code-valid-call}
+    - {work_order: WO-F014-SWE2-OBL-20261101-01, baseline_id: BL-SWE.1-001, baseline_hash: 5c1770617b28b2992a34b356d205df3ca1545225a3ba800bd703405e4173df01, item: SWE1-05, element: OBL-no-startup-accesses}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}

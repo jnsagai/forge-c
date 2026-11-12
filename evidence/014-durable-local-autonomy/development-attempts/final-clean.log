@@ -1,0 +1,44 @@
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 56%]
+........................................................................ [ 75%]
+..................s...................F................................. [ 93%]
+........................                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_t046_external_finalizer_asks_the_server_that_holds_the_run ________
+
+env = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-final-clean/test_t046_external_finalizer_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d737987c6e0>
+
+    def test_t046_external_finalizer_asks_the_server_that_holds_the_run(env, monkeypatch):
+        """r56: a cloud-benchmark run lives on another Fabro server; asking the local one (404) left it unpackaged."""
+        from forge_factory.supervisor import service as S
+        ws = env / "state/workorders/WO-CLOUD/workspace"
+        (ws / ".forge-run").mkdir(parents=True)
+        subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
+        (ws / ".forge-run/fabro_run_id").write_text("RUN-CLOUD")
+        (ws / ".forge-run/fabro_server.json").write_text(json.dumps({"url": "http://127.0.0.1:32291/api/v1",
+                                                                     "storage": str(env / "cloud-storage")}))
+        (env / "cloud-storage").mkdir()
+        (env / "cloud-storage/server.env").write_text("FABRO_DEV_TOKEN=cloud-token\n")
+        import forge_factory.fabro.client as C
+        calls = []
+    
+        def fake(**kw):
+            calls.append(kw)
+            return FakeFabro([], status="failed")
+    
+        monkeypatch.setattr(C, "FabroClient", fake)
+        S.Supervisor(S.load_policy(), None, home=env / "sup", dispatch_enabled=False).external_finalizer()
+>       assert calls[0]["base_url"].endswith(":32291/api/v1") and calls[0]["token"] == "cloud-token"  # status probe
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert (True and '[REDACTED:fabro_token]' == 'cloud-token'
+E        +  where True = <built-in method endswith of str object at 0x7d73793e5a20>(':32291/api/v1')
+E        +    where <built-in method endswith of str object at 0x7d73793e5a20> = 'http://127.0.0.1:32291/api/v1'.endswith
+E         
+E         - cloud-token
+E         + [REDACTED:fabro_token])
+
+factory/python/tests/test_m7_governance_release.py:286: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_m7_governance_release.py::test_t046_external_finalizer_asks_the_server_that_holds_the_run

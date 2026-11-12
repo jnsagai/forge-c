@@ -178,6 +178,18 @@
         "max_model_tokens_per_order": {
           "type": "integer",
           "minimum": 1,
+          "maximum": 100000000000
+        },
+        "max_inference_requests_per_order": {
+          "description": "Optional explicit request cap, independent of recovery-job count; legacy default remains eight per recovery job.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000000
+        },
+        "max_tool_calls_per_order": {
+          "description": "Optional explicit tool cap; legacy default remains eight per recovery job.",
+          "type": "integer",
+          "minimum": 1,
           "maximum": 100000000
         },
         "max_gpu_seconds_per_order": {
@@ -274,6 +286,13 @@
         },
         "protect_holdouts": {
           "const": true
+        },
+        "max_retained_reworks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "default": 0,
+          "description": "Optional bounded same-order reworks after an independent safe-candidate rejection; default0 preserves legacy behavior."
         }
       }
     },

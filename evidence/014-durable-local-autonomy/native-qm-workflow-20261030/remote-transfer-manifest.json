@@ -1,0 +1,52 @@
+{
+  "source_revision": "c221b65ebc011cbed488db83af3e2804790c1129",
+  "members": [
+    {
+      "path": "prepared.json",
+      "bytes": 694,
+      "sha256": "23f01bd4ab95e0703a8466b5fdeab145a2c053400d02d954a7451339c77bef89"
+    },
+    {
+      "path": "launch.json",
+      "bytes": 722,
+      "sha256": "382fad8ffac4a45ace6487824442026854901c8692386b5c764f166e2f406930"
+    },
+    {
+      "path": "input-copy.json",
+      "bytes": 2063,
+      "sha256": "023434560a45db41ebeb259a41dcdb8b2617688fb8ce3b517165e69ab314a678"
+    },
+    {
+      "path": "dashboard-proof.json",
+      "bytes": 237,
+      "sha256": "324c141fbe702c5831d8c6b284aeef3721339008b617d7a3322abb8a2d280a2a"
+    },
+    {
+      "path": "hal-check.json",
+      "bytes": 125,
+      "sha256": "cfd103c3e6002f7e3639df33a8ebf9426a94e9506fd6c3518497513918b493ef"
+    },
+    {
+      "path": "previous-run/maintenance-pause.json",
+      "bytes": 536,
+      "sha256": "16a28542d51526ffa331d67254f808cf54c17d315601d8bbc06f1b9075d59421"
+    },
+    {
+      "path": "previous-run/owner-provider-stop.json",
+      "bytes": 1043,
+      "sha256": "ff8058744e925392250994c4c2944f10011f7231a799435287de178906f6e530"
+    },
+    {
+      "path": "previous-run/provider-reconciliation.json",
+      "bytes": 392,
+      "sha256": "d79cc300b393c986a98e0e7e37e81d64a5e147fca2d29a2c8a3c186cd6a9f466"
+    },
+    {
+      "path": "previous-run/sealed-result.json",
+      "bytes": 3493,
+      "sha256": "64b3e24aa6d785123167404205d969dc42619c25aaa29f655cf3c9f4158fff55"
+    }
+  ],
+  "private_environment_or_database_exported": false,
+  "raw_prompts_or_reasoning_exported": false
+}

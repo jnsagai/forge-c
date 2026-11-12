@@ -1,0 +1,51 @@
+{
+  "schema": "forge-c/onboarding-gap-review/0.1",
+  "recorded_at": "2026-10-27T14:20:20.659875Z",
+  "status": "REVIEWED",
+  "reviewer": "Codex implementation review, source-cited; owner adjudication pending",
+  "request_id": "BENCH-GPIO-ST-HAL-OB",
+  "attempt_id": "afo-6a6875714405b8ce-a1",
+  "archive_sha256": "ddea8b4c93b6d0dea365e4ce666e1c6e29655b4037ab23de9c1593761aa437f6",
+  "gap_count": 52,
+  "gap_list_sha256": "abc03d052e50ae9eb1d3665babb73c7184714bad565eafbc6f70797f256142d3",
+  "gap_groups": {
+    "failed_or_missing_quality_check": 13,
+    "missing_or_empty_file": 13,
+    "missing_or_empty_section": 14,
+    "missing_required_pattern": 4,
+    "run_not_completed": 1,
+    "unresolved_finding:DELIVERY": 1,
+    "unresolved_finding:SWE.1": 1,
+    "unresolved_finding:SWE.2": 1,
+    "unresolved_finding:SWE.3": 1,
+    "unresolved_finding:SWE.4": 1,
+    "unresolved_finding:SWE.5": 1,
+    "unresolved_finding:SWE.6": 1
+  },
+  "onboarding_fact_causes_identified": [
+    {
+      "fact": "register_index",
+      "cause": "RM comma-separated advanced-configuration fields, including RET0/RET8, were omitted; native gate rejected those fields. Corrected under CAPA-073 with a baseline/candidate causal contrast."
+    }
+  ],
+  "assessment": "Initial GPIO failed at SWE.1 because derived RM facts were missing; subsequent artifacts and delivery injection were not completed.",
+  "interpretation_limit": "This reviews causes of named gaps against the onboarding subject. It is not owner acceptance or independent adjudication of every generated CODE/requirement finding. Earlier unsuccessful attempts remain explicit.",
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-6a6875714405b8ce-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "284b95de40b42dcf7aaadcff89ba4488c03c9a6d115d56991378b727480af931"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-6a6875714405b8ce-a1/workspace/.forge-run/package.json",
+      "sha256": "64df223291f74b7cc3bc1686c889235f3641b85ee859563d65f221ce957baa53"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/cre/capa/f016-field-order-fix/package.json",
+      "sha256": "b7df849f2acc2f43ff97ca03220eb8214057786f6e1a1ca5970a507809b8b689"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/cre/decisions/pd-29aa710d612f9cbae9e3.json",
+      "sha256": "b4510811bb5ecbbb45ac51597cfa024d5d1142deaf4769bfb3160b44984922ba"
+    }
+  ]
+}

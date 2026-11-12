@@ -1,0 +1,78 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 CRC calculation unit (CRC) HAL driver (on the verified CRC LL driver)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 26 (CRC) + memory map p.176"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.26 CRC register interface + memory map p.176 (CRC secure base 0x56024C00)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the CRC work orders"
+  },
+  "scope": [
+    "HAL: hal_status_t API with HAL_CRC_ prefix and a const configuration pointer, built only on the PROVIDED LL_CRC_ functions",
+    "Initialise the calculation unit from a configuration (polynomial, polynomial size, initial value, input and output reversal), then reset the calculation unit (RM0486 26.3)",
+    "Calculate the CRC of a buffer of 32-bit words: reset the calculation unit, feed the words, write the CRC to the caller's result",
+    "Accumulate: feed further 32-bit words onto the current CRC without a reset and write the CRC to the caller's result",
+    "Parameter checks before any register write, returning HAL_ERROR: NULL configuration, buffer or result pointer, a word count of 0, a polynomial size or reversal value outside its field, an even polynomial (not supported, RM0486 26.3.3)",
+    "No HAL_CRC_ function waits on a CRC flag (a fed word is computed within 4 AHB clock cycles, RM0486 26.3.3)",
+    "Performance: each HAL_CRC_ call completes within the simulation performance budget for buffers of at most 64 words (HAL_CRC_Calculate/HAL_CRC_Accumulate count <= 64); larger buffers are outside the per-call budget",
+    "The LL header is provided by a verified CRC LL work order (--provided-from)",
+    "Out of scope: 8-bit and 16-bit data register accesses, DMA, interrupts, low-power modes, the independent data register in the HAL API"
+  ],
+  "system_names": [
+    "CRC HAL driver",
+    "CRC driver",
+    "STM32N6 CRC HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets as the IWDG HAL order (owner 2026-10-15 targets); simulation performance budget set 2026-11-03 under the owner's delegation of timing/CPU decisions (as 0009b, buffers <= 64 words)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "role": "reference_manual_crc_chapter"
+    },
+    {
+      "path": "../0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0014-crc-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "Owner 2026-11-03 ('After IWDG we must implement HAL for other simple module that already have LL'; 'start the CRC HAL example after IWDG HAL'): built on the PROVIDED LL header of a verified full CRC LL work order (0014l lineage, --provided-from); peripheral profile config/factory/peripherals/crc.yaml (HAL section: Init/Calculate/Accumulate, no wait)",
+  "peripheral": "crc",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

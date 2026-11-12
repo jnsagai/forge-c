@@ -1,0 +1,48 @@
+{
+  "schema": "forge-c/local-source-qualification/1",
+  "source_revision": "b1536d78bbfa23677c562a2e2e82aef4d27f423a",
+  "source_diff_after": false,
+  "host": "master (local; not Omniverse2)",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "37",
+    "time": "112.827",
+    "timestamp": "2026-10-29T16:34:55.768421+00:00",
+    "hostname": "master"
+  },
+  "new_model_requests": 0,
+  "remote_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
+  "deployed": false,
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "commands": [
+    "python -m pytest -q factory/python/tests/test_simulation_performance.py factory/python/tests/test_robot_swe6.py factory/python/tests/test_fabro_runconfig_context.py factory/python/tests/test_da014_qualification_state.py factory/python/tests/test_m2_mcp.py::test_t018_preflight_live_handshake_and_run_config_has_no_shell --junitxml=swe6-contract-b1536d7-local.xml",
+    "ruff check --select E9,F,B factory/python/forge_factory/mcp/servers/tests.py factory/python/forge_factory/workflow/robot_scaffold.py factory/sim/stm32n6/ForgeTarget.py factory/python/tests/test_simulation_performance.py",
+    "python specs/014-durable-local-autonomy/validate_spec.py"
+  ],
+  "initial_iteration": {
+    "source": "UNCOMMITTED_PRE_SERIALIZATION_FIX; NOT_EXACT_FINAL_SOURCE",
+    "tests": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "2",
+      "skipped": "0",
+      "tests": "24",
+      "time": "105.368",
+      "timestamp": "2026-10-29T16:31:51.985134+00:00",
+      "hostname": "master"
+    },
+    "cause": "Two new integration cases failed because MCP scalar-only metrics removed nested contract. Corrected to compact JSON string, then exact-source cohort passed."
+  },
+  "scope": [
+    "Real Robot/compiler/Renode correct-source PASS and copied-scenario FAIL",
+    "Existing gate retained: wrong source, changed budget, missing/failed measurement, failing target checks rejected",
+    "Full scoped six-phase fixture uses explicitly scripted semantic artifacts; not Qwen proof",
+    "Inherited Robot gates and MCP/hook environment regressions"
+  ],
+  "spec_validation_scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "product_acceptance": "NOT_ESTABLISHED",
+  "hardware_wcet": "NOT_MEASURED"
+}

@@ -1,0 +1,82 @@
+{
+  "git_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "status": "PASS_DETERMINISTIC",
+  "exit_code": 0,
+  "scope": "FROZEN_APPLICATION_CONTROL_SOURCE_INGESTION_AND_REPLAY_NOT_INDEPENDENT_HOST_AUDIT",
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_control_context.py",
+      "factory/python/tests/test_da014_control_observation.py",
+      "factory/python/tests/test_da014_bus_audit.py",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_operational_work.py",
+      "factory/python/tests/test_da014_operational_report.py",
+      "factory/python/tests/test_da014_read_snapshot.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "factory/python/tests/test_da014_operational_facts.py",
+      "factory/python/tests/test_da014_qualification.py",
+      "factory/python/tests/test_da014_qualification_audit.py",
+      "factory/python/tests/test_da014_qualification_state.py",
+      "factory/python/tests/test_da014_integration.py",
+      "factory/python/tests/test_afo_m2_queue.py",
+      "factory/python/tests/test_afo_m3_reconcile.py",
+      "factory/python/tests/test_afo_m6_operations.py",
+      "factory/python/tests/test_afo_m8_acceptance.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2246a58-affected",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2246a58-affected.xml"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_m7_governance_release.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2246a58-release",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2246a58-release.xml"
+    ],
+    [
+      "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_control_observation.py",
+      "factory/python/tests/test_da014_control_context.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "--basetemp=/mnt/data/forge-c/inspector-014-b309039/control-ingestion-2246a58/tmp/tests",
+      "--junitxml=/mnt/data/forge-c/inspector-014-b309039/control-ingestion-2246a58/tests.xml"
+    ]
+  ],
+  "results": {
+    "affected": {
+      "tests": 381,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 380,
+      "seconds": 34.483
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.214
+    },
+    "omniverse2": {
+      "tests": 83,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 83,
+      "seconds": 123.011
+    }
+  },
+  "evidence": "evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json",
+  "evidence_sha256": "f753f8bae535759ed315a05f261eadac59d20d9c500c5db29821042e78bf5599",
+  "new_task_checkboxes": []
+}

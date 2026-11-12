@@ -1,0 +1,81 @@
+{
+  "FAIL": 1,
+  "PASS": 16,
+  "actual_models_or_GPU_calls": 0,
+  "all_private_handles_closed": true,
+  "fixture_overlays": "Private authority/history/resource/Intent leaves for harmless sameNET PID graph; actual Runtime.signal, pidfd APIs, TERM/quiet sequencing executed. Normal SQL/resource primitives separately actual-private tested; no live owner authority claim.",
+  "no_D_current_or_new_authority": true,
+  "no_canonical_remote_or_owner_record_changes": true,
+  "results": [
+    {
+      "PASS": false,
+      "error": "TypeError:'NoneType' object is not subscriptable",
+      "name": "actual_sameNET_private_Fabro_holder_waiter_2TERM_natural_exit_preserves_unknown_and_charge"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_graph_refuses_active"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_graph_refuses_unknown"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_graph_refuses_fd"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_graph_refuses_intent"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_graph_refuses_stall"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_boundary_quiet_positive"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_refuses_resource"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_refuses_lease"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_refuses_request"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_refuses_order"
+    },
+    {
+      "PASS": true,
+      "name": "actual_private_SQL_resource_refuses_command"
+    },
+    {
+      "PASS": true,
+      "name": "unit_loaded_failed_original_invocation_positive"
+    },
+    {
+      "PASS": true,
+      "name": "unit_legitimately_collected_inactive_accepted_without_reset"
+    },
+    {
+      "PASS": true,
+      "name": "unit_active_foreign_actor_refused"
+    },
+    {
+      "PASS": true,
+      "name": "unit_rebound_invocation_refused"
+    },
+    {
+      "PASS": true,
+      "name": "actual_default_PLAN_ONLY_no_runtime_import_or_effect"
+    }
+  ],
+  "schema": "forge-c/partial-bootstrap-cleanup-private-controls/1"
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="11" time="6.374" timestamp="2026-10-30T20:17:11.151563+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first" name="test_new_scope_contains_no_vendor_candidate_or_imported_review" time="0.365" /><testcase classname="factory.python.tests.test_delivery_first" name="test_real_positive_oracle_fixture_and_stale_final_candidate" time="0.882" /><testcase classname="factory.python.tests.test_delivery_first" name="test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include &quot;forge_crc_device.h&quot;\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\n{\n    CRCx-&gt;IDR = InData &amp; 0xFFU;\n}\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\n{\n    return CRCx-&gt;IDR;\n}\n#endif\n]" time="0.527" /><testcase classname="factory.python.tests.test_delivery_first" name="test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include &quot;forge_crc_device.h&quot;\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\n{\n    CRCx-&gt;IDR = InData;\n}\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\n{\n    return CRCx-&gt;IDR &amp; 0xFFU;\n}\n#endif\n]" time="0.547" /><testcase classname="factory.python.tests.test_delivery_first" name="test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include &quot;forge_crc_device.h&quot;\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\n{\n    CRCx-&gt;IDR = InData; CRCx-&gt;DR = 0U;\n}\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\n{\n    return CRCx-&gt;IDR;\n}\n#endif\n]" time="0.531" /><testcase classname="factory.python.tests.test_delivery_first" name="test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include &quot;forge_crc_device.h&quot;\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\n{\n    CRCx-&gt;IDR = InData;\n}\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\n{\n    return 0U;\n}\n#endif\n]" time="0.485" /><testcase classname="factory.python.tests.test_delivery_first" name="test_compile_failure_then_two_corrections_preserve_failed_candidates" time="0.817" /><testcase classname="factory.python.tests.test_delivery_first" name="test_missing_candidate_and_tampered_authority_never_pass" time="0.297" /><testcase classname="factory.python.tests.test_delivery_first" name="test_profile_boundary_and_escaped_candidate" time="0.310" /><testcase classname="factory.python.tests.test_delivery_first" name="test_native_graph_has_exactly_two_corrections_then_all_six_phases" time="0.323" /><testcase classname="factory.python.tests.test_delivery_first" name="test_existing_finalizer_packages_attempts_without_releasing" time="1.015"><failure message="KeyError: &quot;There is no item named 'verification/delivery-first/report.json' in the archive&quot;">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...7c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_existing_finalizer_packages_attempts_without_releasing(prepared):
+        from forge_factory.release import finalize
+    
+        ws, _ = prepared
+        D.preflight(ws)
+        candidate(ws)
+        assert D.verify(ws, 0)["status"] == "PASS"
+        result = finalize.finalize(ws, "delivery-first-fixture-only")
+        assert result["package_status"] == "BLOCKED"
+        import zipfile
+    
+        with zipfile.ZipFile(result["archive"]) as archive:
+&gt;           doc = json.loads(archive.read("verification/delivery-first/report.json"))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_delivery_first.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1615: in read
+    with self.open(name, "r", pwd) as fp:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1652: in open
+    zinfo = self.getinfo(name)
+            ^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;zipfile.ZipFile [closed]&gt;
+name = 'verification/delivery-first/report.json'
+
+    def getinfo(self, name):
+        """Return the instance of ZipInfo given 'name'."""
+        info = self.NameToInfo.get(name)
+        if info is None:
+&gt;           raise KeyError(
+                'There is no item named %r in the archive' % name)
+E           KeyError: "There is no item named 'verification/delivery-first/report.json' in the archive"
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/zipfile/__init__.py:1580: KeyError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,34 @@
+{
+  "status": "EXPERIMENT_RUNNING",
+  "runtime_test_revision": "7fbefc40e0912e15aabeb70ca6b85932085b1b27",
+  "native_run_id": "01M66MQ89VRBEJ538HDJ3CQFH4",
+  "order_id": "afo-c9331219520d5237",
+  "job_id": "afo-product-ff72d4fd63fa0f77f125fe69",
+  "operator_epoch": 104,
+  "default_reasoning": "medium",
+  "inspector_reasoning": "xhigh",
+  "first_xhigh_inspection_observed": false,
+  "native_checks": {
+    "tests": 443,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "local_checks": {
+    "tests": 133,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "deadline_utc": "2026-10-30T19:40:00Z",
+  "deadline_changed_for_role_split": false,
+  "historical_counters_reset": false,
+  "source_deployed": true,
+  "full_clean_LL": "UNPROVEN",
+  "HAL": "NOT_SUBMITTED",
+  "role_capability": "EXPERIMENT_NOT_QUALIFIED",
+  "learning_benefit": "NOT_MEASURED",
+  "continuous_availability": "UNPROVEN",
+  "formal_tasks": "30/58 unchanged",
+  "newly_completed_task_ids": []
+}

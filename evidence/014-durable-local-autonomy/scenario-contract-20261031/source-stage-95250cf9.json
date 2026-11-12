@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-31T00:41:12.057203Z",
+  "authorization_renewed": false,
+  "bundle_sha256": "a1ce3cce0c0c08bca01af6f6b9a0ef3f529a320e0a823fc61bdc65b037a0258f",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "new_jobs_submitted": 0,
+  "new_model_calls": 0,
+  "operations_epoch": 4,
+  "operations_intent_unchanged": true,
+  "runtime_source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "runtime_tracked_source_clean_and_unchanged": true,
+  "runtime_untracked_launch_records_preserved": {
+    ".forge-run/delivery-first-afo/launch-DF-AFO-CRC-IDR-20261030-02.json": "e29b965ab3f0537d7c93445fa4fe980372c56ba0ef8b7555511e928dedaa2f1f",
+    ".forge-run/delivery-first-afo/launch-DF-AFO-CRC-IDR-20261030-03.json": "4d19dd756832eed52ac43e236a97dcb7663f64edaa665cf801944b7e5ce0d460"
+  },
+  "source_revision": "95250cf902afe404dc85d8337b05b98ebda77651",
+  "staged_source_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/source-stage-95250cf9",
+  "status": "STAGED_NOT_ACTIVATED",
+  "supersedes_unused_staging": "source-stage-dd36baee; preserved, not activated"
+}

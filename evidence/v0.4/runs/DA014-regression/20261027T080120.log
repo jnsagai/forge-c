@@ -1,0 +1,10 @@
+PARTIAL_FAILURES_OR_TIMEOUTS
+full rc=0
+
+core 0
+release 0
+provider rc=0
+
+REJECTED PROTECTED_PATH_CHANGE
+PASS history/systemd; prepared six blocked manifests; independent CRE retained 20650af67953220737166062e857e06b1a48081f
+aux rc=0

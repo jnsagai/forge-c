@@ -1,0 +1,106 @@
+{
+  "schema": "forge-c/delivery-first-overnight-scope/1",
+  "root": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1",
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "model": "qwen3.8:27b-q8_0",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "precision": "Q8_0",
+  "provider_context_tokens": 262144,
+  "reasoning": "medium",
+  "mtp_draft": 3,
+  "slots": 1,
+  "purpose": "QM_DEVELOPMENT_QUALIFICATION_NOT_PRODUCTION",
+  "example": "examples/0014g-st-crc-idr-qwen-delivery",
+  "request_id": "DF-AFO-CRC-IDR-20261030-03",
+  "order_id": "afo-5faf7b5e42e6d55f",
+  "tenant_scope": "feature014-delivery-first-20261030",
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "policy_sha256": "c7868cf14f2242d6aab209062a38056403cd15ee47fb3f413f68181372453fb1",
+  "primary_authorization": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V3",
+  "role_authorization": "AUTH-014-DF-AFO-ROLES-20261030-V3",
+  "issued_utc": "2026-10-30T22:23:44.551660Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "deadline_epoch": 1793433479.0,
+  "mission_limits": {
+    "max_attempts": 10,
+    "max_jobs": 1,
+    "max_requests": 8000,
+    "max_tokens": 1073741824,
+    "max_tools": 100000,
+    "max_corrections": 20,
+    "deadline": 1793433479.0
+  },
+  "current_job_token_reservation": 67108864,
+  "historical_native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+  "historical_request_reservation": 246,
+  "historical_token_reservation": 64487424,
+  "historical_token_basis": "CONSERVATIVE_GATEWAY_REQUEST_COUNT_TIMES_PHYSICAL_CONTEXT_BOUND; ACTUAL_GENERATION_COUNT_UNKNOWN",
+  "historical_counts": {
+    "requests": 246,
+    "tools": 439,
+    "corrections": 0
+  },
+  "historical_reported_tokens": {
+    "input": 610015,
+    "output": 209145,
+    "cache_read": 4545363,
+    "reasoning": "UNKNOWN"
+  },
+  "standing_signing_delegation": "always approve it for now on automatically",
+  "owner_window": "2026-10-30T21:57:59Z plus ten hours",
+  "authorization_basis": [
+    "owner requested implement DELIVERY-FIRST-E2E.md",
+    "owner delegated qualification signing",
+    "owner: continue the goal in overnight during 10 hours"
+  ],
+  "production_operations_must_remain": "PAUSED111",
+  "no_safety_or_review_signing": true,
+  "no_automatic_grant_renewal": true,
+  "release_policy": "UNCHANGED_STRICT",
+  "progression": "First retry DF-M1. Fresh three-run cohort only after DF-M1; do not queue repeatability/expansion before prerequisites. All declared orders stay in the same cumulative mission.",
+  "supersedes_prelaunch_scope_sha256": "a9aa5d63086f6fdf41762304a881457efadb99979cc9d92514ed5ebce4c6c967",
+  "prelaunch_correction": "Retire complete managed provider namespace; verify actual worker policy before admission",
+  "mission_registration_authorization": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+  "mission_before_sha256": "11b16346427221896cff077717a72e8024cc7c1405b50b1ecd264cd4e02218c4",
+  "mission_allowances_changed": false,
+  "prior_new_product_attempts": 1,
+  "deadline_extended": false,
+  "predeclared_orders": [
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-03",
+      "order_id": "afo-5faf7b5e42e6d55f"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-04",
+      "order_id": "afo-002d8ed0e31b5cc1"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-05",
+      "order_id": "afo-ee4282b25001a15d"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-06",
+      "order_id": "afo-7f71565db57f0a76"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-07",
+      "order_id": "afo-f83452175591716f"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-08",
+      "order_id": "afo-48b5f7eb60495e69"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-09",
+      "order_id": "afo-de6809c9be417bd6"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-10",
+      "order_id": "afo-2786814af730ce77"
+    }
+  ],
+  "prior_failure_sha256": "d708ee7568b87e223b9e9846e2a9f49ddebf0a5873b8a44649d5806deb3bc84a",
+  "candidate_reuse": false
+}

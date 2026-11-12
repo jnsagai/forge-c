@@ -1,0 +1,47 @@
+{
+  "revision": "c38158cd687ac974056296662aa48b46e2fcdeca",
+  "scope": "STATIC_CHECKS_NOT_RUNTIME_QUALIFICATION",
+  "results": [
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/validate_spec.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/contracts/validate_contracts.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "tests/spec/validate_design.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "evidence/014-durable-local-autonomy/verify_handoff.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "factory/python/forge_factory/afo/host_audit.py",
+        "factory/python/forge_factory/afo/audit_segments.py",
+        "factory/python/tests/test_da014_audit_segments.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "log_sha256": "c8609fb72ef6eb5223c2eb8babc893d381a39569ec6f60617ae4d2860f2c0678"
+}

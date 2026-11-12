@@ -1,0 +1,56 @@
+{
+  "source_revision": "d9d70e16523f1b928fd2d5f9ff265594e8f266f8",
+  "scope": "DETERMINISTIC_COMPARISON_REPORTING_NOT_LIVE_MODEL_QUALIFICATION",
+  "local": {
+    "tests": 542,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 1,
+    "passed": 541,
+    "seconds": 49.069
+  },
+  "release": {
+    "tests": 13,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 13,
+    "seconds": 9.047
+  },
+  "tests_cover": [
+    "exact one-factor identities",
+    "unchanged controls/cases/source/gates",
+    "frozen candidate preregistration",
+    "original independent oracles and observed effective settings",
+    "failed attempt and learning costs",
+    "unknown totals and fixed denominators",
+    "quality regression refusal recommendation",
+    "NOT_RUN CLI exit 2"
+  ],
+  "development_attempts": "Original 44-case development run passed. Two-case fixture reduction retained an incorrect /99 expected denominator (one test failed); fixed to the new denominator without runtime/gate change. All logs/XML retained; these are WIP, not exact-revision qualification.",
+  "live_DA_AT_028": "NOT_RUN",
+  "backlog_A3": "REPORT_GENERATOR_TESTED; LIVE_COMPARISON_MISSING",
+  "rcc_success_prerequisite": false,
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_availability": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "new_task_checkboxes": [],
+  "artifacts": {
+    "affected.log": "dbb3b89f590a2e533d7126b8fb93665007bccea17410c8ed6d1eef6a8b86349a",
+    "affected.xml": "3088c529e6c76a505603462064245c01c2811b83f202e644b65fc0ba92adaa68",
+    "development-attempts/corrected.log": "341d5dca33250b815baddbafb6001e174c20bf1716bb74f3d612e77777db8938",
+    "development-attempts/corrected.xml": "47bb66236ae12a19d2aea1721069b48403debf47b81f379f6fb3e574e9c30b83",
+    "development-attempts/first.log": "70bd93f29a65727e5cc0991aac37bb59b433f6d667824853361ad51e262a38ec",
+    "development-attempts/first.xml": "1a749dbbfebf1f121837b617f0f0bafa19454fd23faf192905ed620ed3381f62",
+    "development-attempts/settings.log": "70bd93f29a65727e5cc0991aac37bb59b433f6d667824853361ad51e262a38ec",
+    "development-attempts/settings.xml": "2b7ae457f3bb3c338a342281ef17a323a377af777e2c305620aa0ecb86b336aa",
+    "development-attempts/two-cases.log": "12289e51b9989f8ea6b84ceefa961099e24f17e6d34c4cb29794b360fb6c1df6",
+    "development-attempts/two-cases.xml": "ee99484c4ebffb9d062ea06a82a7c4a2a845e0ca7eb2b2baff59f9090ad0af42",
+    "invocation.json": "1c397cc39aec3adf127625b2f486e32742aa588f52800ab8309b78a5dfbb4851",
+    "recorded-run-assessment.json": "5f1c2ce0b05df5cde666564a3721d1ac52e012bef3a41205f823322ac0afb65f",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "83438b9280158daaf7848b2a87a7b863c84eaf80fc0e33b9c422d8363dd33c81",
+    "synthetic-not-run-cli-report.json": "fc81e2c8a85e137db36e36da4a50c3987b2d1d4b5f8701432c97b15d7621650d"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "after_final_core_evidence": "evidence/v0.4/runs/DA014-core/latest.json",
+  "before_new_regression_tests": {
+    "evidence": "isolation-before.xml",
+    "failures": 3,
+    "tests": 3
+  },
+  "before_runtime_revision": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "earlier_reports_retained": true,
+  "frozen_reproducer_sources_changed": false,
+  "historical_Qwen_v4_cause": "UNKNOWN",
+  "runtime_revision": "e9732866604a1d1b33246c06405496e4d118cac3",
+  "runtime_source_identical_in_test_fixture_descendant": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03",
+  "scope": "OFFLINE_COMPILER_ENVIRONMENT_CONTRAST_NOT_QWEN_DIAGNOSIS",
+  "unchanged_reproducer_contrast": "cre-scratch-fix.json"
+}

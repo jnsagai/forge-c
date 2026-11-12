@@ -1,0 +1,41 @@
+{
+  "status": "PROSPECTIVE_CONFIGURATION_CORRECTION_NOT_SIGNED_OR_ACTIVATED",
+  "required_at_future_signing": "Bind exact accepted post-repair source, current policy/order/epoch/deadline and actual provider allocation",
+  "observed_failed_job": "afo-agent-2ae4c086f6e5cb032903e2a4",
+  "actual_missing_sampling": {
+    "temperature": 0,
+    "seed": null,
+    "top_p": null
+  },
+  "sampling_configurations": [
+    {
+      "temperature": null,
+      "seed": null,
+      "top_p": null
+    },
+    {
+      "temperature": 0.2,
+      "seed": 1,
+      "top_p": null
+    },
+    {
+      "temperature": 0,
+      "seed": 1,
+      "top_p": null
+    },
+    {
+      "temperature": 0,
+      "seed": null,
+      "top_p": null
+    }
+  ],
+  "schema_modes": [
+    "tool",
+    "unconstrained",
+    "json_schema",
+    "json_object"
+  ],
+  "configurations_per_role": 16,
+  "qualification_receipt_created": false,
+  "past_failed_job_changed": false
+}

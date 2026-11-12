@@ -1,0 +1,123 @@
+FFFFF....                                                                [100%]
+=================================== FAILURES ===================================
+_ test_startup_invariant_does_not_refute_register_reset_findings[The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.] _
+
+frozen_requirements = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-105/test_startup_invariant_does_no0')
+finding = 'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.'
+
+    @pytest.mark.parametrize('finding', [
+        'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.',
+        'The requirements do not specify reset register values for CONTROL_RSTR.',
+        'There are no reset bit definitions for CONTROL_RSTR in the cited source.',
+        'The reset register semantics are not specified for CONTROL_RSTR.',
+        'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 '
+        'in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits '
+        'and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require '
+        'set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.',
+    ])
+    def test_startup_invariant_does_not_refute_register_reset_findings(frozen_requirements, finding):
+>       assert review.fact_conflicts(frozen_requirements, 'SWE.1', 'SWE1-02', [finding]) == []
+E       assert ['finding say... of the item'] == []
+E         
+E         Left contains one more item: "finding says reset/startup behaviour is not specified, but SWR-029 specifies it: 'While no LL function has been called after reset, the test driver shall not write any register.' - re-judge the remaining parts of the item"
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_startup_refutation_scope.py:35: AssertionError
+_ test_startup_invariant_does_not_refute_register_reset_findings[The requirements do not specify reset register values for CONTROL_RSTR.] _
+
+frozen_requirements = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-105/test_startup_invariant_does_no1')
+finding = 'The requirements do not specify reset register values for CONTROL_RSTR.'
+
+    @pytest.mark.parametrize('finding', [
+        'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.',
+        'The requirements do not specify reset register values for CONTROL_RSTR.',
+        'There are no reset bit definitions for CONTROL_RSTR in the cited source.',
+        'The reset register semantics are not specified for CONTROL_RSTR.',
+        'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 '
+        'in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits '
+        'and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require '
+        'set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.',
+    ])
+    def test_startup_invariant_does_not_refute_register_reset_findings(frozen_requirements, finding):
+>       assert review.fact_conflicts(frozen_requirements, 'SWE.1', 'SWE1-02', [finding]) == []
+E       assert ['finding say... of the item'] == []
+E         
+E         Left contains one more item: "finding says reset/startup behaviour is not specified, but SWR-029 specifies it: 'While no LL function has been called after reset, the test driver shall not write any register.' - re-judge the remaining parts of the item"
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_startup_refutation_scope.py:35: AssertionError
+_ test_startup_invariant_does_not_refute_register_reset_findings[There are no reset bit definitions for CONTROL_RSTR in the cited source.] _
+
+frozen_requirements = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-105/test_startup_invariant_does_no2')
+finding = 'There are no reset bit definitions for CONTROL_RSTR in the cited source.'
+
+    @pytest.mark.parametrize('finding', [
+        'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.',
+        'The requirements do not specify reset register values for CONTROL_RSTR.',
+        'There are no reset bit definitions for CONTROL_RSTR in the cited source.',
+        'The reset register semantics are not specified for CONTROL_RSTR.',
+        'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 '
+        'in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits '
+        'and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require '
+        'set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.',
+    ])
+    def test_startup_invariant_does_not_refute_register_reset_findings(frozen_requirements, finding):
+>       assert review.fact_conflicts(frozen_requirements, 'SWE.1', 'SWE1-02', [finding]) == []
+E       assert ['finding say... of the item'] == []
+E         
+E         Left contains one more item: "finding says reset/startup behaviour is not specified, but SWR-029 specifies it: 'While no LL function has been called after reset, the test driver shall not write any register.' - re-judge the remaining parts of the item"
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_startup_refutation_scope.py:35: AssertionError
+_ test_startup_invariant_does_not_refute_register_reset_findings[The reset register semantics are not specified for CONTROL_RSTR.] _
+
+frozen_requirements = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-105/test_startup_invariant_does_no3')
+finding = 'The reset register semantics are not specified for CONTROL_RSTR.'
+
+    @pytest.mark.parametrize('finding', [
+        'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.',
+        'The requirements do not specify reset register values for CONTROL_RSTR.',
+        'There are no reset bit definitions for CONTROL_RSTR in the cited source.',
+        'The reset register semantics are not specified for CONTROL_RSTR.',
+        'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 '
+        'in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits '
+        'and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require '
+        'set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.',
+    ])
+    def test_startup_invariant_does_not_refute_register_reset_findings(frozen_requirements, finding):
+>       assert review.fact_conflicts(frozen_requirements, 'SWE.1', 'SWE1-02', [finding]) == []
+E       assert ['finding say... of the item'] == []
+E         
+E         Left contains one more item: "finding says reset/startup behaviour is not specified, but SWR-029 specifies it: 'While no LL function has been called after reset, the test driver shall not write any register.' - re-judge the remaining parts of the item"
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_startup_refutation_scope.py:35: AssertionError
+_ test_startup_invariant_does_not_refute_register_reset_findings[workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.] _
+
+frozen_requirements = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-105/test_startup_invariant_does_no4')
+finding = 'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 in the same file...our is specified, while SWR-025 through SWR-028 require set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.'
+
+    @pytest.mark.parametrize('finding', [
+        'The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.',
+        'The requirements do not specify reset register values for CONTROL_RSTR.',
+        'There are no reset bit definitions for CONTROL_RSTR in the cited source.',
+        'The reset register semantics are not specified for CONTROL_RSTR.',
+        'workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 '
+        'in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits '
+        'and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require '
+        'set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.',
+    ])
+    def test_startup_invariant_does_not_refute_register_reset_findings(frozen_requirements, finding):
+>       assert review.fact_conflicts(frozen_requirements, 'SWE.1', 'SWE1-02', [finding]) == []
+E       assert ['finding say... of the item'] == []
+E         
+E         Left contains one more item: "finding says reset/startup behaviour is not specified, but SWR-029 specifies it: 'While no LL function has been called after reset, the test driver shall not write any register.' - re-judge the remaining parts of the item"
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_startup_refutation_scope.py:35: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_lrtx_startup_refutation_scope.py::test_startup_invariant_does_not_refute_register_reset_findings[The source section does not document CONTROL_RSTR reset bits, but SWR-025 requires asserting them.]
+FAILED factory/python/tests/test_lrtx_startup_refutation_scope.py::test_startup_invariant_does_not_refute_register_reset_findings[The requirements do not specify reset register values for CONTROL_RSTR.]
+FAILED factory/python/tests/test_lrtx_startup_refutation_scope.py::test_startup_invariant_does_not_refute_register_reset_findings[There are no reset bit definitions for CONTROL_RSTR in the cited source.]
+FAILED factory/python/tests/test_lrtx_startup_refutation_scope.py::test_startup_invariant_does_not_refute_register_reset_findings[The reset register semantics are not specified for CONTROL_RSTR.]
+FAILED factory/python/tests/test_lrtx_startup_refutation_scope.py::test_startup_invariant_does_not_refute_register_reset_findings[workproducts/SWE.1/software_requirements.md Open points is inconsistent with SWR-025 through SWR-028 in the same file: it states that the supplied source section does not document RCC_AHB1RSTR reset bits and that only RCC_AHB1ENR no-write behaviour is specified, while SWR-025 through SWR-028 require set/clear of RCC_AHB1RSTR.ADC12RST and RCC_AHB1RSTR.GPDMA1RST.]

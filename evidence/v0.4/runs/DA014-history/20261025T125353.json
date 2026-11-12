@@ -1,0 +1,21 @@
+{
+  "command": "python -m forge_factory.afo.history_qualification --dump <private-read-only-export> --sha256 86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783 --copy <new-loop10-offline-copy> --report <immutable-report>",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "0742d7a72ef0c14fc0285741237b75bf41dd8b59",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-history/20261025T125353.log",
+  "log_sha256": "4de43e2c39e40cd2db96b06e631c50dd495c050174d81ce2be504bcfd52e12a7",
+  "report": "evidence/014-durable-local-autonomy/baseline/history-0742d7a.json",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-history",
+  "ts_utc": "2026-10-25T12:53:53.716084+00:00"
+}

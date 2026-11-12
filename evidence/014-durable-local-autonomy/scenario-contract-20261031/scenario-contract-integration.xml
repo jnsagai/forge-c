@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="5" time="11.812" timestamp="2026-10-31T00:33:28.739921+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_robot_author_has_no_unprovided_register_array_instructions" time="0.377" /><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_robot_scaffold_points_to_declared_layout_in_delivery_mode" time="0.188" /><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_default_robot_header_keeps_existing_register_access_contract" time="0.002" /><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_real_robot_uses_the_declared_typed_api_and_preserves_failure[False]" time="5.560"><failure message="AssertionError: {'artifact_refs': ['artifact:sha256:3bac15c4afc17b6610355ea4f8021832ee5c8af9544d7f12eda82e7e69be5c16'], 'issues': ['RO...'44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 'invocation_id': 'inv-ed59c9d77e85414a', ...}, ...}&#10;assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73a89244f9b0&gt;
+mismatch = False
+
+    @pytest.mark.parametrize("mismatch", [False, True])
+    def test_real_robot_uses_the_declared_typed_api_and_preserves_failure(prepared, monkeypatch, mismatch):
+        """Deliberate local C fixture, not Qwen output or full-scope product qualification."""
+        from test_delivery_first import candidate
+
+        ws, _ = prepared
+        candidate(ws)
+        (ws / "workproducts/SWE.1").mkdir(parents=True)
+        (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+            "- **SWR-001** When called, the CRC driver shall write the supplied 32-bit IDR value.\n"
+            "- **SWR-002** When called, the CRC driver shall return the current 32-bit IDR value.\n"
+            "- **SWR-003** The CRC driver shall occupy at most 4096 bytes of flash.\n")
+        target = ws / "software/tests/software"
+        target.mkdir(parents=True)
+        code = ('#include "stm32n6xx_ll_crc.h"\n#include "forge_target_test.h"\nFORGE_MAILBOX_DEFINE;\n'
+                'int main(void) {\n CRC_TypeDef *crc = (CRC_TypeDef *)0x56024C00U;\n FORGE_TEST_BEGIN();\n'
+                ' LL_CRC_Write_IDR(crc, 0x12345678U);\n TCHECK(1, crc-&gt;IDR == 0x12345678U);\n'
+                ' crc-&gt;IDR = 0x87654321U;\n TCHECK(2, LL_CRC_Read_IDR(crc) == EXPECTED);\n'
+                ' FORGE_TEST_END();\n return 0;\n}\n')
+        (target / "scn_typed.c").write_text(code.replace("EXPECTED", "0U" if mismatch else "0x87654321U"))
+        (target / "test_crc_requirements.robot").write_text(
+            "*** Settings ***\nLibrary    ForgeTarget\n\n*** Test Cases ***\n"
+            "SWR-001\n    [Tags]    SWR-001\n    Run Target Scenario    scn_typed.c\n    Target Check Should Pass    1\n"
+            "SWR-002\n    [Tags]    SWR-002\n    Run Target Scenario    scn_typed.c\n    Target Check Should Pass    2\n"
+            "SWR-003\n    [Tags]    SWR-003\n    Driver Flash Size Should Be At Most    4096\n")
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_ROLE": "swe6-author",
+                           "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        assert sim.renode_bin() is not None
+        out = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+&gt;       assert out["status"] == ("FAIL" if mismatch else "PASS"), out
+E       AssertionError: {'artifact_refs': ['artifact:sha256:3bac15c4afc17b6610355ea4f8021832ee5c8af9544d7f12eda82e7e69be5c16'], 'issues': ['RO...'44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 'invocation_id': 'inv-ed59c9d77e85414a', ...}, ...}
+E       assert 'FAIL' == 'PASS'
+E
+E         - PASS
+E         + FAIL
+
+factory/python/tests/test_delivery_first_scenario_contract.py:70: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_real_robot_uses_the_declared_typed_api_and_preserves_failure[True]" time="5.439"><failure message="AssertionError: {'artifact_refs': ['artifact:sha256:6d45ec8da40ec72b2ef9f2b364ae840b86a703bd8f4d79c9f72bf4f900e07977'], 'issues': ['RO...'44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 'invocation_id': 'inv-652a471b8a624ff1', ...}, ...}&#10;assert 1 == 2">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73a89244fce0&gt;
+mismatch = True
+
+    @pytest.mark.parametrize("mismatch", [False, True])
+    def test_real_robot_uses_the_declared_typed_api_and_preserves_failure(prepared, monkeypatch, mismatch):
+        """Deliberate local C fixture, not Qwen output or full-scope product qualification."""
+        from test_delivery_first import candidate
+
+        ws, _ = prepared
+        candidate(ws)
+        (ws / "workproducts/SWE.1").mkdir(parents=True)
+        (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+            "- **SWR-001** When called, the CRC driver shall write the supplied 32-bit IDR value.\n"
+            "- **SWR-002** When called, the CRC driver shall return the current 32-bit IDR value.\n"
+            "- **SWR-003** The CRC driver shall occupy at most 4096 bytes of flash.\n")
+        target = ws / "software/tests/software"
+        target.mkdir(parents=True)
+        code = ('#include "stm32n6xx_ll_crc.h"\n#include "forge_target_test.h"\nFORGE_MAILBOX_DEFINE;\n'
+                'int main(void) {\n CRC_TypeDef *crc = (CRC_TypeDef *)0x56024C00U;\n FORGE_TEST_BEGIN();\n'
+                ' LL_CRC_Write_IDR(crc, 0x12345678U);\n TCHECK(1, crc-&gt;IDR == 0x12345678U);\n'
+                ' crc-&gt;IDR = 0x87654321U;\n TCHECK(2, LL_CRC_Read_IDR(crc) == EXPECTED);\n'
+                ' FORGE_TEST_END();\n return 0;\n}\n')
+        (target / "scn_typed.c").write_text(code.replace("EXPECTED", "0U" if mismatch else "0x87654321U"))
+        (target / "test_crc_requirements.robot").write_text(
+            "*** Settings ***\nLibrary    ForgeTarget\n\n*** Test Cases ***\n"
+            "SWR-001\n    [Tags]    SWR-001\n    Run Target Scenario    scn_typed.c\n    Target Check Should Pass    1\n"
+            "SWR-002\n    [Tags]    SWR-002\n    Run Target Scenario    scn_typed.c\n    Target Check Should Pass    2\n"
+            "SWR-003\n    [Tags]    SWR-003\n    Driver Flash Size Should Be At Most    4096\n")
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_ROLE": "swe6-author",
+                           "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        assert sim.renode_bin() is not None
+        out = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+        assert out["status"] == ("FAIL" if mismatch else "PASS"), out
+&gt;       assert out["metrics"]["requirements_verified"] == (2 if mismatch else 3), out
+E       AssertionError: {'artifact_refs': ['artifact:sha256:6d45ec8da40ec72b2ef9f2b364ae840b86a703bd8f4d79c9f72bf4f900e07977'], 'issues': ['RO...'44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 'invocation_id': 'inv-652a471b8a624ff1', ...}, ...}
+E       assert 1 == 2
+
+factory/python/tests/test_delivery_first_scenario_contract.py:71: AssertionError</failure></testcase></testsuite></testsuites>

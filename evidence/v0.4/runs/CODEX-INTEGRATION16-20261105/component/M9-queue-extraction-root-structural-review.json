@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-05T02:04:40.885251+00:00",
+  "status": "PASS_MECHANICAL_EXTRACTION_STRUCTURAL_EQUIVALENCE_ONLY",
+  "file": "factory/python/forge_factory/afo/queue.py",
+  "sha256": "56d7fca7d109c90b038394ff90eb159a51d77d2fbdbc26079c829290a1a0b3a2",
+  "baseline": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+  "checks": [
+    "All original pre-transaction statements AST identical after pure helper extraction and oid return assignment",
+    "Transactional body AST identical",
+    "Store.submit invokes pure helper exactly once with unchanged repo/approval arguments"
+  ],
+  "scope": "Static independent preservation check; no test/DB/runtime execution, no finalM9qualification. Childowns remainingmodule changes andcombinedtests."
+}

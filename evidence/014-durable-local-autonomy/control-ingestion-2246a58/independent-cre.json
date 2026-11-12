@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "decision_id": "pd-00c355e8fa99ff1b8246",
+  "candidate_sha256": "99c70b8576484bd2dc9eb651aa0b21be4748d55ad6e63d2d4072f6fbc00c09b4",
+  "baseline_sha256": "24123c9d281632466e22618d0d48e54e8f58e044b18cedadf352c56c5e8abcb8",
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "decision": "REJECTED",
+  "evaluator_id": "cre-promotion-runner@918c6a4a2577",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "evaluated_at": "2026-10-27T13:32:23.615895Z",
+  "hard_gates": [
+    {
+      "name": "protected_files",
+      "result": "FAIL",
+      "evidence_refs": [
+        "git-diff:918c6a4a2577..2246a58b0a36"
+      ],
+      "reason_code": "PROTECTED_PATH_CHANGE"
+    },
+    {
+      "name": "policy_integrity",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:policy_integrity"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    },
+    {
+      "name": "reproducer",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    },
+    {
+      "name": "prevention",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    },
+    {
+      "name": "quality_process",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    },
+    {
+      "name": "golden_benchmark",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    },
+    {
+      "name": "holdout",
+      "result": "NOT_RUN",
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL"
+    }
+  ],
+  "reproducer_evidence_refs": [],
+  "metrics_snapshot_ref": null,
+  "reasons": [
+    "protected paths changed: A:config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/software_safety_analysis.md, A:config/factory/safety-documents/SC-ST-BENCH-2026-10-25/v1.0/tool_assurance_assessment.md, A:config/factory/safety-documents/SC-ST-CAMPAIGN-2026-10-27/v0.1/software_safety_analysis.md, A:config/factory/safety-documents/SC-ST-CAMPAIGN-2026-10-27/v0.1/tool_assurance_assessment.md, M:config/factory/safety-scope.yaml",
+    "sandbox: 6763 protected paths read-only (OS) in the candidate/baseline worktrees"
+  ],
+  "allowed_auto_deployment": false,
+  "candidate_revision": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "baseline_revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238"
+}

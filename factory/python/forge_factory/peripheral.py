@@ -19,10 +19,27 @@ class ProfileError(ValueError):
     pass
 
 
+ONBOARDED = "onboarded:"  # feature 016: "onboarded:<key>" names the approved derived profile of that work order
+PREVIEW = "onboarding-preview:"
+
+
 @functools.lru_cache(maxsize=16)
 def load(pid: str = DEFAULT) -> dict:
     import jsonschema
 
+    if pid.startswith((ONBOARDED, PREVIEW)):  # PREVIEW: the leftover check before approval (never a run)
+        from .common import state_dir
+
+        name = "profile.json" if pid.startswith(ONBOARDED) else "profile.preview.json"
+        p = state_dir() / "onboarding" / pid.split(":", 1)[1] / "onboarding" / name
+        if not p.is_file():
+            raise ProfileError(f"PERIPHERAL_PROFILE_MISSING:{pid}")
+        prof = json.loads(p.read_text())
+        errs = [e.message[:120] for e in
+                jsonschema.Draft202012Validator(json.loads(CONTRACT.read_text())).iter_errors(prof)]
+        if errs or not prof.get("derived_from"):
+            raise ProfileError(f"PERIPHERAL_PROFILE_INVALID:{pid}:{errs[:3] or 'not a derived profile'}")
+        return {**prof, "sha256": sha256_file(p)}
     p = DIR / f"{pid}.yaml"
     if not p.is_file():
         raise ProfileError(f"PERIPHERAL_PROFILE_MISSING:{pid}")
@@ -36,7 +53,11 @@ def load(pid: str = DEFAULT) -> dict:
 def of_ws(ws) -> dict:
     """The profile of a workspace (its manifest's `peripheral`, else RCC)."""
     try:
-        pid = json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("peripheral") or DEFAULT
+        manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+        pid = manifest.get("peripheral") or DEFAULT
     except (OSError, ValueError):
         pid = DEFAULT
-    return load(pid)
+        manifest = {}
+    from .operation_scope import scoped
+
+    return scoped(load(pid), manifest.get("operation_scope"))

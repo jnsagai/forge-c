@@ -1,0 +1,45 @@
+F
+=================================== FAILURES ===================================
+___ test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap ____
+
+pending = {'before_unknown': <sqlite3.Row object at 0x7be29e875780>, 'boot': {'binary': PosixPath('/tmp/pytest-of-jefferson/pyte... 'forge-c/sqlite-logical-stream/1', 'encoded_bytes': 0, 'hash_chunk_bytes': 65536, 'max_row_bytes': 0, ...}, ...}, ...}
+
+    def test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap(pending):
+        p = pending
+        b = p["boot"]
+        with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+            B.bootstrap(b["store"], b["placer"])
+        token = reconcile(p)
+        assert b["effects"] == [] and b["placer"]._act_lock is None
+        with b["store"].tx() as c:
+            assert (
+                c.execute(
+                    "SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=?", (p["old"]["intent_id"] + "-result",)
+                ).fetchone()
+                == p["before_unknown"]
+            )
+            assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1
+        assert R.ledger_checkpoint(b["store"].path) == p["ledger"]
+>       assert B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)["status"] == "READY"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_bootstrap_reconciliation.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:140: in bootstrap
+    return _coordinate(
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:383: in _coordinate
+    D.require_compatible_provider(stack.serving_instance(settings))
+factory/python/forge_factory/afo/owner_supervised_development.py:769: in require_compatible_provider
+    _fail("KNOWN_PROVIDER_REPLACEMENT_REQUIRED")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 'KNOWN_PROVIDER_REPLACEMENT_REQUIRED'
+
+    def _fail(code):
+>       raise Refused("OWNER_DEVELOPMENT_" + code)
+E       forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_KNOWN_PROVIDER_REPLACEMENT_REQUIRED:
+
+factory/python/forge_factory/afo/owner_supervised_development.py:58: Refused
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_bootstrap_reconciliation.py::test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

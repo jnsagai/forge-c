@@ -1,0 +1,38 @@
+{
+  "root": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-stop-3015e47-v4/data",
+  "jar": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-stop-3015e47-v4/data/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+  "views_jar": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-stop-3015e47-v4/data/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+  "java": "/usr/bin/java",
+  "jar_sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d",
+  "cases": [
+    {
+      "file": "SWU-LL-01.puml",
+      "source_sha256": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+      "rendered": true,
+      "detail": "",
+      "svg_exit": 0,
+      "svg_sha256": "332ef7df4d77cd9cd0756a98c559388071b4e6248c9dfe34997647a18f56ef49",
+      "svg_bytes": 6205
+    },
+    {
+      "file": "SWU-LL-02.puml",
+      "source_sha256": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599",
+      "rendered": true,
+      "detail": "",
+      "svg_exit": 0,
+      "svg_sha256": "fe0965bc0c70206248032353aa771c5e671e74195685b165d303808f6df9776b",
+      "svg_bytes": 5557
+    }
+  ],
+  "generation_requests": 0,
+  "exit_code": 0,
+  "generated_mcp_environment_keys": [
+    "FORGE_BINDING_ID",
+    "FORGE_DATA_ROOT",
+    "FORGE_STATE_DIR",
+    "PATH",
+    "PYTHONPATH"
+  ],
+  "child_context_ambient_inherited": false,
+  "scope": "Original SWE.3 diagram/tool-context path only; no whole-driver pipeline or release claim"
+}

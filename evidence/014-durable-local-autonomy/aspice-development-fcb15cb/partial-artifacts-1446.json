@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-28T14:46:38.091308Z",
+  "observations": [
+    {
+      "attempt_id": "afo-533cd9ba25e792a5-a1",
+      "fresh_recovery_from": {
+        "basis": "fresh revalidation after externally approved factory change; no prior phase evidence or delivered-code corrections carried",
+        "source_fabro_run_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+        "source_manifest_sha256": "56c2d18fe2fe49b9085060ff14d1120b0df2e1aaa89f4fb80ba484b3e69d0714",
+        "work_order": "WO-AFO-99cc4f39103951e7-a1"
+      },
+      "packets": [
+        {
+          "effect_fields": [
+            "CRC_DR.DR"
+          ],
+          "effects": 2,
+          "excluded_fields": [],
+          "file": "requirements__CRC_DR.json",
+          "recomputed_local_finding_codes": [],
+          "recorded_error_count": 0,
+          "requirements": 2,
+          "sha256": "a338d5399beb677013023ab7a04d9fbaf6358959898d55ed626eb26a384f5bc9",
+          "status": "VALID",
+          "task": "requirements:CRC_DR"
+        },
+        {
+          "effect_fields": [
+            "CRC_IDR.IDR"
+          ],
+          "effects": 2,
+          "excluded_fields": [],
+          "file": "requirements__CRC_IDR.json",
+          "recomputed_local_finding_codes": [],
+          "recorded_error_count": 0,
+          "requirements": 2,
+          "sha256": "3e1ceca56dfd991535c6c78bcdee34fcb0fc577139b7d994ed55233434a08ecf",
+          "status": "VALID",
+          "task": "requirements:CRC_IDR"
+        }
+      ],
+      "phases": [
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.1"
+        },
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.2"
+        },
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.3"
+        },
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.4"
+        },
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.5"
+        },
+        {
+          "baseline_count": 0,
+          "gate": {
+            "decision": "REWORK",
+            "reason": "NO_BASELINE"
+          },
+          "inspection_count": 0,
+          "latest_baseline": null,
+          "latest_inspection": null,
+          "phase": "SWE.6"
+        }
+      ],
+      "profile": {
+        "config": "config/factory/profiles/local-rtx-v2-omniverse2-q38-aspice.yaml",
+        "config_sha256": "0b819ee873c59f4c31cb982c21c0e9d5eb2d546ba85c9a985a3d41ca50ef268e",
+        "id": "local-rtx-v2-omniverse2-q38-aspice",
+        "status": "OWNER_SELECTED_ASPICE_DEVELOPMENT; ROLE_QUALIFICATION_PENDING",
+        "version": 1
+      },
+      "purpose": "ASPICE_ONLY",
+      "required_group_count": 6,
+      "safeC_outputs_present": [
+        false,
+        false
+      ]
+    }
+  ],
+  "observer_correction": "Initial private observer passed workspace instead of RM section directory to hardware.index. Corrected to the actual author index path; original observation retained privately and not treated as factory failure.",
+  "recomputed_checks_scope": "Existing deterministic author checks re-evaluated; not independent correctness or completed-phase evidence.",
+  "runtime_source_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "scope": "READ_ONLY_PARTIAL_ARTIFACT_METADATA_NOT_PRODUCT_QUALIFICATION"
+}

@@ -1,0 +1,11 @@
+{
+  "source_id": "RM0486-rev4-ch26-crc",
+  "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+  "detailed_section": "26.4.2",
+  "detailed_register_width_bits": 32,
+  "offset": 4,
+  "reset_value": 0,
+  "access": "read-write",
+  "high_level_summary_discrepancy_bits": 8,
+  "scope": "Detailed register definition supports existing reviewed 32-bit scope; high-level feature summary differs. Source discrepancy recorded, no source/requirement/review rewrite, no silicon validation."
+}

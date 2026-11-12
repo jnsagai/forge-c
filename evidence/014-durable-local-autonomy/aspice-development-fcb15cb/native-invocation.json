@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_aspice_development.py",
+    "factory/python/tests/test_development_safety_policy.py",
+    "factory/python/tests/test_da014_holdout_runtime.py",
+    "factory/python/tests/test_da014_required_scope_coverage.py",
+    "factory/python/tests/test_lrtx_swe1.py",
+    "factory/python/tests/test_m7_governance_release.py",
+    "factory/python/tests/test_da014_product_role_trial.py",
+    "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-aspice-fcb15cb/tmp",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-aspice-fcb15cb/tests.xml"
+  ],
+  "end_dirty": "",
+  "exit_code": 0,
+  "finished_epoch": 1793197808.565013,
+  "revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "scope": "ISOLATED_NATIVE_FIXTURES_ZERO_MODEL_CALLS",
+  "start_dirty": "",
+  "started_epoch": 1793197698.655
+}

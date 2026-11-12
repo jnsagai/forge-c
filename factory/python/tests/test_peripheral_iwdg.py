@@ -81,7 +81,7 @@ def test_iwdg_harness_and_implementation_check(ws):
     assert r["verdict"] == "PASS", r["major_findings"]  # LL functions with a value parameter are allowed for IWDG
     out = scaffold(ws)
     t = (ws / out["file"]).read_text()
-    assert out["file"] == "software/tests/unit/test_iwdg.c"
+    assert out["file"] == "software/tests/unit/test_iwdg.cpp"  # owner 2026-11-03: GoogleTest harness
     assert '#include "stm32n6xx_ll_iwdg.h"' in t and "volatile uint32_t ll_iwdg_regs[LL_IWDG_REG_COUNT];" in t
     assert "rcc" not in t.lower()
 

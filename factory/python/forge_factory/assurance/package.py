@@ -54,7 +54,20 @@ def attestation(ws: Path) -> dict:
            "model": None if over else model, "provider": None if over else prov}
     if p.get("acp_inspectors"):  # OD-2026-10-19-08: inspectors on Claude through the ACP proxy
         ins |= {"model": p["acp_inspectors"].get("model"), "provider": p["acp_inspectors"].get("provider")}
-    return independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
+    out = independence.attest(ws.parent.name, au, ins, {"role": "easa-verifier", "kind": "deterministic"}, [])
+    manifest = ws / ".forge-run/manifest.json"
+    meta = json.loads(manifest.read_text()) if manifest.is_file() else {}
+    resumed = meta.get("resumed_from") or {}
+    if meta.get("delivery") and resumed.get("stable_phases"):
+        inherited = ws / ".forge-run/resume/inherited-independence.json"
+        prior = json.loads(inherited.read_text()) if inherited.is_file() else {
+            "decision": "UNKNOWN", "shared_common_cause_refs": ["RESUME_SOURCE_INDEPENDENCE_NOT_RECORDED"]}
+        rank = {"SUPPORTED": 0, "PARTIAL": 1, "UNKNOWN": 2, "NOT_INDEPENDENT": 3}
+        out["decision"] = max((out["decision"], prior["decision"]), key=rank.__getitem__)
+        out["independent"] = out["decision"] == "SUPPORTED"
+        out["shared_common_cause_refs"] = sorted(set(out["shared_common_cause_refs"] +
+            [f"INHERITED:{r}" for r in prior["shared_common_cause_refs"]]))
+    return out
 
 
 def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:
@@ -77,6 +90,15 @@ def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:
 
 
 def scope_dispositions(ws: Path, stage: Path) -> dict:
+    from ..release.qm import workspace_record as qm_record
+
+    qm = qm_record(ws)
+    from ..release.aspice import workspace_record
+
+    aspice = workspace_record(ws)
+    if aspice:
+        return {"status": "NOT_ASSESSED_ASPICE_ONLY", "issues": [], "safety_approval": None,
+                "assessed_aspice_compliance": None, "owner_scope_binding": aspice}
     p = ws / SCOPE_FILE
     if not p.is_file():
         return {"status": "NO_APPROVED_SCOPE", "note": "product ASIL/QM scope not recorded by the owner; safety "
@@ -93,6 +115,17 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
         ok = f.is_file() and f.stat().st_size and (signed is None or sha256_bytes(f.read_bytes()) == signed.get(rel))
         docs[key] = rel if ok else None
     ev = scope.evaluate(sc, docs, na)
+    from ..release.development import selected
+
+    development = selected(wo)
+    if development:
+        deferred = {f"{code}:{name}" for name in scope.DOC_FILES
+                    for code in ("SAFETY_EVIDENCE_MISSING", "QM_NA_WITHOUT_RATIONALE")}
+        ev["issues"] = [issue for issue in ev["issues"] if issue not in deferred]
+        for key in scope.DOC_FILES:
+            if not docs.get(key):
+                ev["dispositions"][key] = "DEFERRED_DEVELOPMENT"
+        ev["state"] = "BLOCKED" if ev["issues"] else "DEVELOPMENT_DEFERRED"
     if sc.get("target_asil") == "QM" and ev["state"] == "SATISFIED":
         for key, rel in SAFETY_FILES.items():
             if ev["dispositions"].get(key) == "NOT_APPLICABLE_QM" and not docs[key]:
@@ -106,7 +139,10 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
                              "This statement records an owner-approved scope decision. It is not a safety analysis "
                              "and not a safety approval.\n")
     return {"status": ev["state"], "issues": ev["issues"], "dispositions": ev["dispositions"],
-            "target_asil": sc.get("target_asil")}
+            "target_asil": sc.get("target_asil"),
+            **({"classification": "QM", "owner_scope_binding": qm, "assessed_aspice_compliance": None,
+                "safety_approval": None} if qm else {}),
+            **({"development_signature_deferral": development, "safety_approval": None} if development else {})}
 
 
 def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
@@ -118,6 +154,10 @@ def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:
     if prof.is_file():
         (stage / "configuration").mkdir(parents=True, exist_ok=True)
         (stage / "configuration/model-profile.json").write_bytes(prof.read_bytes())
+    recovery = ws / ".forge-run/recovery-plan.json"
+    if recovery.is_file():
+        (stage / "configuration").mkdir(parents=True, exist_ok=True)
+        (stage / "configuration/recovery-plan.json").write_bytes(recovery.read_bytes())
     quality_p = stage / "quality/final-gates.json"
     quality = json.loads(quality_p.read_text()) if quality_p.is_file() else {}
     checks = quality.get("checks") or {}  # the packaged quality report records each phase gate as sweN_inspection

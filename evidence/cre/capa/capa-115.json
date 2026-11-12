@@ -1,0 +1,101 @@
+{
+ "CAPA-115": {
+  "history": [
+   {
+    "at": "2026-11-02T19:03:40.093364Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[\"crcl-swe5-swe6-test-declaration-refused\"]",
+    "from_state": null,
+    "reason": "CRCL SWE.5 (local L12/L12B) and SWE.6 (cloud -07): report_defect kind TEST refused, STUCK",
+    "seq": 854,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T19:03:40.136775Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 855,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T19:03:40.309535Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-115 assigned",
+    "seq": 856,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T19:03:49.294554Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[\"reproducer-run:rr-788c9904b0d9da667942\", \"reproducer-run:rr-572c87184b932ae2f267\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 857,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T19:03:49.319444Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[\"git:e7ec0083726c..4ed8607b0e73\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 4ed8607b0e73 (patch 6436 bytes)",
+    "seq": 858,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T19:07:29.263400Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[\"reproducer-run:rr-2d75c8082d4fe10d3f50\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-115 absent at 4ed8607b0e73",
+    "seq": 859,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T19:07:29.325415Z",
+    "capa_id": "CAPA-115",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 860,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-0078e902beeaf175eec65c4bd1a7315caf55626d",
+   "e7ec0083726c32a0a7822df1b5735d97599fb972",
+   "4ed8607b0e739cd603326f46e126e20ba8b43887",
+   "pd-3b42c99b7e2e7d0a1a7b"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<4ed8607b0e73"
+   ],
+   "candidate_patch_sha256": "122721fa9e71a5db4f733fe579721261a7c0d3c9342f9a9348081e5b87526b5f",
+   "capa_id": "CAPA-115",
+   "created_at": "2026-11-02T19:03:40.093364Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crcl-swe5-swe6-test-declaration-refused"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-115",
+   "reproducer_id": "RPR-115",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-788c9904b0d9da667942",
+    "reproducer-run:rr-572c87184b932ae2f267"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T19:07:29.325415Z"
+  }
+ }
+}

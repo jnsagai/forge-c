@@ -1,0 +1,74 @@
+{
+  "schema": "forge-c/014-consumer-qualification/1",
+  "source_revision": "466d87bef4688af6209937433ef056baa4a5d51f",
+  "scope": "CONSUMER_INTEGRATION_PASS_WITH_SEPARATE_NATIVE_MODEL_MISMATCH",
+  "source_start_end": "CLEAN",
+  "tests": {
+    "local_affected_and_afo": {
+      "tests": 219,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 219,
+      "seconds": 45.525,
+      "junit_sha256": "b8da1bb9c33f900b23beafcf667165790b3fcbfe7ab3be6eceec07d4dfdea613"
+    },
+    "release_legacy": {
+      "tests": 29,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 29,
+      "seconds": 11.061,
+      "junit_sha256": "e7acda0a47bee267faac1b88686e42a7a888c1a265e291bd4e2873f47bef18d6"
+    },
+    "omniverse2_native": {
+      "tests": 42,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 42,
+      "seconds": 33.253,
+      "junit_sha256": "3bcc6d794b577d59ed7ebcf9906b9f51e6cd2b82e6bd2d0a09bd05c093d10c06"
+    }
+  },
+  "targeted_filter": "not wp_proves_each_register_effect and not target_oracle_on_the_iwdg",
+  "initial_reproducer_failures": {
+    "tests": 9,
+    "failed": 3,
+    "scope": "UNCOMMITTED_TDD_REAL_ENGINE_ORACLE_WP_MUTATION_POSITIVES"
+  },
+  "legacy_reader_replay": {
+    "status": "PASS",
+    "checks": 2,
+    "new_engine_requests": 0,
+    "new_model_calls": 0
+  },
+  "native_assessments": {
+    "runs": 3,
+    "engine_requests_each": 3,
+    "model_requests": 0,
+    "product_attempts": 0,
+    "status_each": "ABSTRACT_MODEL_MISMATCH",
+    "case_count_each": 44,
+    "matching_each": 40,
+    "mismatching_each": 4,
+    "note": "initial private harness, first committed reproducer, final bounded reproducer; unit-test engine calls are separate"
+  },
+  "reproducer_source": "factory/qualification/014/reproduce_wwdg_verification_model.py",
+  "reproducer_sha256": "ff68416dda948acac080352512f274ad3c384412bea392b94da60b38ab366b25",
+  "overwrite_control": {
+    "status": "PASS_EXISTING_DESTINATION_REFUSED_UNCHANGED_SUMMARY",
+    "exit_code": 1
+  },
+  "model_scope": "one-call plain-memory register image; no inference of hardware incorrectness",
+  "learning_benefit": "NOT_MEASURED",
+  "qualified_lessons_added": 0,
+  "formal_task_count": "30/58",
+  "product_success": "NOT_PROVEN",
+  "self_healing": "NOT_PROVEN",
+  "availability_campaigns": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "grant_changes": 0,
+  "historical_budget_resets": 0
+}

@@ -1,0 +1,100 @@
+PINNED_MODULE_SOURCES ["/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation/factory/python/forge_factory/knowledge/experience.py", "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation/factory/python/forge_factory/knowledge/qualification.py", "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation/factory/python/forge_factory/knowledge/improvement.py"]
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_late_holdout_classification_retracts_older_source_without_erasing_facts _
+
+memory = <forge_factory.knowledge.store.LessonStore object at 0x7fae4c491d30>
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-learning-before-pinned/test_late_holdout_classificati0')
+
+    def test_late_holdout_classification_retracts_older_source_without_erasing_facts(memory, tmp_path):
+        c = candidate(memory, tmp_path)
+        rec = memory.validate(memory.propose(c, phase="SWE.3")["lesson_id"])
+        assert rec["state"] == "VALIDATED"
+        correction = experience.capture(
+            memory,
+            "native-job-A",
+            "JOB",
+            "PASS",
+            facts={"classification": "frozen acceptance cohort"},
+            source_refs=["campaign:independent-frozen-manifest"],
+            cohort={"evaluation_holdout": True},
+        )
+>       assert "HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED" in qualification.issues(memory, c)
+E       AssertionError: assert 'HELDOUT_ACCEPTANCE_SOURCE_CANNOT_BE_DISTILLED' in []
+E        +  where [] = <function issues at 0x7fae4dc86fc0>(<forge_factory.knowledge.store.LessonStore object at 0x7fae4c491d30>, {'applicability': {'phases': ['SWE.3'], 'roles': ['swe3-author'], 'source_versions': ['v1'], 'targets': ['STM32N6']}, ... contract version v1, SWE.3 authors.', 'contract_version': '2.0', 'evidence_refs': ['independent-gate:receipt-A'], ...})
+E        +    where <function issues at 0x7fae4dc86fc0> = qualification.issues
+
+../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py:137: AssertionError
+_______ test_afo_and_qualification_job_capture_preserve_evaluation_scope _______
+
+protocol = namespace(store=<forge_factory.afo.queue.Store object at 0x7fae4c1ecec0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '..._and_qualification_job0/case.json', 'case_sha256': '3f575b4829b19b464dafa3c92a664f1b82718194366fd515be94f563eb5226bb'})
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-learning-before-pinned/test_afo_and_qualification_job0')
+
+    def test_afo_and_qualification_job_capture_preserve_evaluation_scope(protocol, tmp_path):  # noqa: F811
+        from forge_factory.afo.local_agent import save
+        from forge_factory.inspection.engine import Store as InspectionStore
+        from test_resume_from import _all_pass
+    
+        p = protocol
+        memory = LessonStore(tmp_path / "holdout-lessons.sqlite3")
+        (p.ws / ".forge-run").mkdir()
+        (p.ws / ".forge-run/manifest.json").write_text(json.dumps({"evaluation_holdout": True}))
+        for phase, name in (("SWE.1", "software_requirements.md"), ("SWE.2", "software_architecture.md")):
+            directory = p.ws / "workproducts" / phase
+            directory.mkdir(parents=True)
+            (directory / name).write_text("Frozen capture fixture: SWR-001 maps to USPEC-001.\n")
+        inspections = InspectionStore(p.ws)
+        for phase in ("SWE.1", "SWE.2", "SWE.3"):
+            role = phase.lower().replace(".", "")
+            baseline = inspections.freeze(phase, role + "-author")
+            inspections.record_inspection(phase, role + "-inspector", baseline["baseline_id"], _all_pass(phase))
+        p.store.attempt_transition(p.bundle["attempt_id"], "FAILED")
+        save(p.store, {**p.job, "state": "FAILED", "qualification_manifest_sha256": "a" * 64})
+        before = p.ledger.snapshot("mission-test")
+        ids = experience.capture_afo(p.store, memory, lambda _: p.ws)
+        assert len(ids) >= 2
+        with memory._conn() as db:
+            records = [json.loads(r[0]) for r in db.execute("SELECT record FROM job_experience")]
+>       assert all(r["cohort"].get("evaluation_holdout") is True for r in records)
+E       assert False
+E        +  where False = all(<generator object test_afo_and_qualification_job_capture_preserve_evaluation_scope.<locals>.<genexpr> at 0x7fae4c0c64d0>)
+
+../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py:180: AssertionError
+_ test_late_holdout_classification_excludes_old_facts_from_improvement_routing _
+
+memory = <forge_factory.knowledge.store.LessonStore object at 0x7fae4c085bd0>
+
+    def test_late_holdout_classification_excludes_old_facts_from_improvement_routing(memory):
+        from forge_factory.knowledge.improvement import route
+    
+        for native in ("heldout-A", "ordinary-B"):
+            experience.capture(
+                memory,
+                native,
+                "SWE.3",
+                "FAILED",
+                facts={"fingerprint": "same-failure"},
+                source_refs=["independent-gate:" + native],
+                cohort={"revision": "r1"},
+            )
+        assert len(route(memory)) == 1
+        experience.capture(
+            memory,
+            "heldout-A",
+            "JOB",
+            "FAILED",
+            facts={"classification": "frozen acceptance"},
+            source_refs=["campaign:heldout-manifest"],
+            cohort={"evaluation_holdout": True},
+        )
+>       assert route(memory) == []
+E       AssertionError: assert [{'path': '/m...0750'], ...}}] == []
+E         
+E         Left contains one more item: {'path': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-learning-be...apa_id': None, 'experience_refs': ['experience-08d87c986cadd67b10b53ebd', 'experience-3b6fb5b888686091d2080750'], ...}}
+E         Use -v to get more diff
+
+../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py:212: AssertionError
+=========================== short test summary info ============================
+FAILED ../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py::test_late_holdout_classification_retracts_older_source_without_erasing_facts
+FAILED ../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py::test_afo_and_qualification_job_capture_preserve_evaluation_scope
+FAILED ../../operations/feature014/provider-boot-followup/factory/python/tests/test_da014_learning.py::test_late_holdout_classification_excludes_old_facts_from_improvement_routing

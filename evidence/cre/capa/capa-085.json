@@ -1,0 +1,101 @@
+{
+ "CAPA-085": {
+  "history": [
+   {
+    "at": "2026-11-01T02:54:37.701382Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[\"fabro-swe1-iwdg-02-inspector-refusal-loop\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-IWDG-20261101-02: inspector refused its sources with zero calls; route re-inspected 166 times in 4 min until Fabro failed the run",
+    "seq": 645,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T02:54:37.777351Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 646,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T02:54:37.923443Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-084 assigned",
+    "seq": 647,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T02:54:43.599479Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[\"reproducer-run:rr-58582cc06e26e6c0544b\", \"reproducer-run:rr-59ac0b1a0f84bdfc9cd2\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 648,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T02:54:43.629097Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[\"git:5ac47d205bef..59d76925ee6d\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 59d76925ee6d (patch 7734 bytes)",
+    "seq": 649,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T02:57:19.630099Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[\"reproducer-run:rr-8af0439b2ed0ccddbb1a\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-084 absent at 59d76925ee6d",
+    "seq": 650,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T02:57:19.646253Z",
+    "capa_id": "CAPA-085",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 651,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4ad99a9bca301eb84a2764d9bf8260da3e354f47",
+   "5ac47d205befe71c58496484a7833d3d26ebabc3",
+   "59d76925ee6d10b9be2d3cf7c3b2dc76c5021bc8",
+   "pd-3568846eda79b2867894"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<59d76925ee6d"
+   ],
+   "candidate_patch_sha256": "eed4d1b1c40ad651a7191582b248b5f88abf871394f5b836860a7a202b1d4660",
+   "capa_id": "CAPA-085",
+   "created_at": "2026-11-01T02:54:37.701382Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-iwdg-02-inspector-refusal-loop"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-084",
+   "reproducer_id": "RPR-084",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-58582cc06e26e6c0544b",
+    "reproducer-run:rr-59ac0b1a0f84bdfc9cd2"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "A deterministic inspector refusal records no inspection, so it never counts as a rework cycle and REINSPECT has no bound",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T02:57:19.646253Z"
+  }
+ }
+}

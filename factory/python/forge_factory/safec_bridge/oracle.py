@@ -73,7 +73,8 @@ def reference_cases(domain: dict, operations: list[dict] | tuple[dict, ...]) -> 
 
 
 def verify(doc: dict, contract: ValidatedContract, domain_bytes: bytes) -> list[str]:
-    issues = [f"ORACLE_SCHEMA:{e}" for e in C.schema_errors("oracle", doc)]
+    profile = contract.raw.get("profile", "register-io-0.1")
+    issues = [f"ORACLE_SCHEMA:{e}" for e in C.schema_errors("oracle", doc, profile=profile)]
     if issues:
         return issues
     body = {k: v for k, v in doc.items() if k != "oracle_digest"}
@@ -88,7 +89,7 @@ def verify(doc: dict, contract: ValidatedContract, domain_bytes: bytes) -> list[
     if len(ref) != len(doc["cases"]):
         issues.append(f"ORACLE_CASE_COUNT: safec={len(doc['cases'])} forge-c={len(ref)}")
         return issues
-    for n, (got, want) in enumerate(zip(doc["cases"], ref)):
+    for n, (got, want) in enumerate(zip(doc["cases"], ref, strict=True)):
         for k, v in want.items():
             if got.get(k) != v:
                 issues.append(f"ENGINES_DISAGREE:case {n} {want['intent_id']}:{k}: safec={got.get(k)!r} forge-c={v!r}")

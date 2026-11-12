@@ -1,0 +1,10 @@
+{
+  "scope": "LOCAL_CLI_AST_AND_WRONG_HOST_REFUSAL_ONLY_NOT_NATIVE_QUALIFICATION",
+  "bootstrap_sha256": "a2f5894e23de38a0214a1a3387be3ea5f794471602ff9217d4664fe0a1f5bd96",
+  "help_exit_code": 0,
+  "wrong_host_exit_code": 1,
+  "reason": "host must be omniverse2 before accessing production environment/state or creating files",
+  "remote_execution": "NOT_RUN",
+  "operator_resume": false,
+  "namespace_and_signal_cleanup": "PREPARED_NOT_EXERCISED"
+}

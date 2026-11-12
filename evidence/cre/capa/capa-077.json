@@ -1,0 +1,101 @@
+{
+ "CAPA-077": {
+  "history": [
+   {
+    "at": "2026-10-31T18:30:53.568938Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[\"swe1-inspector-omission-20261031-owner-obligations\"]",
+    "from_state": null,
+    "reason": "Standalone SWE.1 inspector omission test on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-inspector-omission-20261031): gate-frozen Ornith a02 CRC IDR baseline omits no-polling, no-error-code and preserve-other-registers; four inspector configurations missed it",
+    "seq": 586,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T18:30:53.780366Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 587,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T18:30:53.919297Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-076 assigned",
+    "seq": 588,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T18:31:00.246839Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[\"reproducer-run:rr-83fa6c87893365dfafe3\", \"reproducer-run:rr-499a87b4b43688474e53\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 589,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T18:31:00.280432Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[\"git:15218323b24a..220bb9d822e0\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 220bb9d822e0 (patch 36705 bytes)",
+    "seq": 590,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T19:45:01.745565Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[\"reproducer-run:rr-89bac86f984db35154ba\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-076 absent at 220bb9d822e0",
+    "seq": 591,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T19:45:01.779778Z",
+    "capa_id": "CAPA-077",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 592,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4a3d7a56657ed13584038ca80921d4b284f7e600",
+   "15218323b24a283e365adf590817656ae8675fbe",
+   "220bb9d822e02812733ab759edc0927d0d566742",
+   "pd-f729f5be16ba802f13c9"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<220bb9d822e0"
+   ],
+   "candidate_patch_sha256": "d6ae9c27549ae208118a88719ff5b53c6417d7c53b2076fbe393f7ac9e3aef1a",
+   "capa_id": "CAPA-077",
+   "created_at": "2026-10-31T18:30:53.568938Z",
+   "event_ids": [],
+   "incident_ids": [
+    "swe1-inspector-omission-20261031-owner-obligations"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-076",
+   "reproducer_id": "RPR-076",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-83fa6c87893365dfafe3",
+    "reproducer-run:rr-499a87b4b43688474e53"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "No SWE.1 mechanism compares requirements with owner obligations: the author gate checks structure only and the inspector evidence excludes the owner contract",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T19:45:01.779778Z"
+  }
+ }
+}

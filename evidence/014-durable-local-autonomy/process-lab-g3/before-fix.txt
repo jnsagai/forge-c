@@ -1,0 +1,14 @@
+# before fix, source 876d75f6 + uncommitted test only
+E       KeyError: 'identity'
+
+factory/python/tests/test_lrtx_packet_identity.py:117: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_every_identity_field_invalidates_the_hash[change0]
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_every_identity_field_invalidates_the_hash[change1]
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_every_identity_field_invalidates_the_hash[change2]
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_every_identity_field_invalidates_the_hash[change3]
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_every_identity_field_invalidates_the_hash[change4]
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_role_effort_binds_only_the_role_it_applies_to
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_profile_config_sha_invalidates_the_hash
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_probed_schema_mode_invalidates_the_hash
+FAILED factory/python/tests/test_lrtx_packet_identity.py::test_identity_excludes_adapter_revision_and_never_reaches_the_prompt

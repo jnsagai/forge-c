@@ -1,0 +1,191 @@
+[
+  {
+    "trial_id": "late-finding:0",
+    "job_id": "afo-agent-35b0e28d0e0059d09d578ce4",
+    "proposal_sha256": "926fd3548c0e3683372dd5e932e9679cdd3f89dc8aafe0ae0ef56d58f45ada42",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The case is declared a synthetic contract fixture (case_scope.kind = DECLARED_SYNTHETIC_CONTRACT_FIXTURE) with NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED. The implementation A4 uses UINT32_C(2) where A"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "late-finding:1",
+    "job_id": "afo-agent-44a50678f650272387ef6e28",
+    "proposal_sha256": "95738eebd769e0148aaacf3c3537eda88aecdd9f583636ea68e31991a67a57b4",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The packet declares this a DECLARED_SYNTHETIC_CONTRACT_FIXTURE with NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED. The counterexample F9 (input 0 \u2192 2, expected 1) and the implementation A4 (UINT32_C(2) vs"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:0",
+    "job_id": "afo-agent-f868b207bb8ee981a43b9893",
+    "proposal_sha256": "aad21aebcf5f1ce765c1bb5d1e1eacd44293c7d074bef1ba7e290b9828b8dd26",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The EN ownership contract that authoritatively defines the bit-position semantics of reg_enable is unavailable. Finding F1 states 'SWR-001 requires 1' for input 0, but the authoritative EN contract (e"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:1",
+    "job_id": "afo-agent-cf8855da2fb9f50c1a224844",
+    "proposal_sha256": "02846adaa6e4238f509ae6d231238e45fc7cc94f6a8f5d3fa69f6009a23ba06d",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The EN ownership contract is explicitly listed as unavailable in both packet.missing and diagnosis_context.known_missing_evidence. While finding F1 states 'SWR-001 requires 1' for input 0, the full EN"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:0",
+    "job_id": "afo-agent-739730ce330d51f495ddfb28",
+    "proposal_sha256": "b5c1119cabfc034fdfc744fe0bfa59e9f642123d4aa4b4b2dff57a003abb685d",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The case is declared a synthetic contract fixture with NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED. The requirement text in A1/A3 states the EN mask is UINT32_C(1), and the implementation A4 uses UINT32"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:1",
+    "job_id": "afo-agent-f86aa64e83054b28443ef81b",
+    "proposal_sha256": "0134fcbbd6d38fb2903b646537b88838f5760e81c738662b8560ed2598bef90b",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The case is declared a synthetic contract fixture with NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED. The requirement text in A1/A3 states EN is bit 0 with mask UINT32_C(1), and the implementation A4 uses"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:0",
+    "job_id": "afo-agent-7c185e1794a619aabb769ee6",
+    "proposal_sha256": "2955789f5dce74d63ff6b439285289d57d31f77dff0f9efd58602afcf1c78354",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The finding F1 states 'the owning design must be corrected' and identifies A2 (SWE.2 architecture, mask 2) as contradicting A1/A3 (SWE.1/SWE.3, mask UINT32_C(1)). However, the case is declared as a NO"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:1",
+    "job_id": "afo-agent-d9fd1dce25a11d19725764bd",
+    "proposal_sha256": "f752fe463219337c0ba0597fdcc7a012de7b25d752709abf9c47bf54c72bcd5a",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The case is declared a synthetic contract fixture with NO_BASELINE_OR_RELEASE_AUTHORITY_INFERRED. The finding F1 states 'the owning design must be corrected,' identifying A2 (SWE.2 architecture, mask "
+          }
+        ]
+      },
+      "reason": null
+    }
+  }
+]

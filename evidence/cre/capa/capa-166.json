@@ -1,0 +1,101 @@
+{
+ "CAPA-166": {
+  "history": [
+   {
+    "at": "2026-11-04T20:37:15.705038Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[\"CAPA166-PROVIDED-PROTOCOL-20261104\"]",
+    "from_state": null,
+    "reason": "Existing normal reviewed CODE correction is rejected by verification inputs despite unchanged provided origin and independently passed SWE3.",
+    "seq": 1246,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T20:37:15.736398Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1247,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T20:37:15.906014Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-166 assigned",
+    "seq": 1248,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T20:37:23.333633Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[\"reproducer-run:rr-6927b369bb324763c62e\", \"reproducer-run:rr-52ad5ea7c9f2a5f2c57d\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1249,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T20:37:23.355003Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[\"git:297f8ebd8f13..9dcc5c4e3774\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 9dcc5c4e3774 (patch 69818 bytes)",
+    "seq": 1250,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T21:22:47.440510Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[\"reproducer-run:rr-fe5e3cff1ddd4298ceee\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-166 absent at 1f6802b53ab5",
+    "seq": 1251,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T21:22:47.478757Z",
+    "capa_id": "CAPA-166",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1252,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-8b1fe87b1249cfb7e2747403207b131463965c7a",
+   "297f8ebd8f130b31536f77790f5fa99808c8f3e4",
+   "9dcc5c4e3774e0657619133a130c4b198fcc2a6d",
+   "pd-57805cf1b8cc4c102406"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<9dcc5c4e3774"
+   ],
+   "candidate_patch_sha256": "9a9db0af943d073499ed29c4aff7bb68967935b90bf096749596056ac1fc3a8f",
+   "capa_id": "CAPA-166",
+   "created_at": "2026-11-04T20:37:15.705038Z",
+   "event_ids": [],
+   "incident_ids": [
+    "CAPA166-PROVIDED-PROTOCOL-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-166",
+   "reproducer_id": "RPR-166",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-6927b369bb324763c62e",
+    "reproducer-run:rr-52ad5ea7c9f2a5f2c57d"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Strict original-only LL checks ignore the normal approved effective workspace correction and normal resume/reverify discard its approval context.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T21:22:47.478757Z"
+  }
+ }
+}

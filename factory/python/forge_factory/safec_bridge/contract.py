@@ -62,26 +62,43 @@ def reference_operation(domain: dict, intent: dict) -> dict:
     width = f["msb"] - f["lsb"] + 1
     mask = ((1 << width) - 1) << f["lsb"]
     action = intent["action"]
+    special = domain.get("profile") == "register-io-0.2"
+    if special and domain.get("schema") != C.domain_schema("register-io-0.2"):
+        raise ValueError("domain/profile mismatch")
+    access = {("r",): "RO", ("w",): "WO", ("rw",): "RW"}.get(tuple(f["access_tokens"]), "UNSUPPORTED")
+    if special and width == 1:
+        access = {("rs",): "RS", ("rc_w0",): "RC_W0"}.get(tuple(f["access_tokens"]), access)
+    if special and (access == "UNSUPPORTED" or (action == "read_field" and access == "WO")):
+        raise ValueError("unsupported source access")
     if action == "read_field":
         value, kind, encoded, preserved = None, "none", None, 0xFFFFFFFF
     else:
         value = {"set_field": 1, "clear_field": 0}.get(action, _literal(intent.get("logical_value")))
         if value is None and action == "write_key_sequence":  # the key of the one value fact the intent cites
             value = next(int(v["value"], 16) for v in f["values"] if v["fact_id"] in intent["source_fact_ids"])
+        if special and (access == "RO" or (access == "RS" and value != 1) or (access == "RC_W0" and value != 0)):
+            raise ValueError("illegal special-access write")
         bits = value << f["lsb"]
         used = 0
         for x in reg["fields"]:
             used |= ((1 << (x["msb"] - x["lsb"] + 1)) - 1) << x["lsb"]
         reserved = ~used & 0xFFFFFFFF
-        if f["access_tokens"] == ["w"]:
+        if f["access_tokens"] == ["w"] or access == "RC_W0":
+            if special and (len(reg["fields"]) != 1 or int(reg["reset_defined_mask"], 16) & reserved != reserved):
+                raise ValueError("whole-register write is not source-defined")
             kind, encoded, preserved = "full_register_write", bits | (int(reg["reset_value"], 16) & reserved), 0
         else:
+            if special and any(x is not f and (
+                x["access_tokens"] not in (["r"], ["rw"])
+                and not (x["access_tokens"] == ["rs"] and x["msb"] == x["lsb"])
+            ) for x in reg["fields"]):
+                raise ValueError("unmodeled RMW sibling")
             kind, encoded, preserved = "read_modify_write", bits, ~mask & 0xFFFFFFFF
     return {"intent_id": intent["intent_id"], "action": action, "register": reg["register_id"],
             "field": f["field_id"], "offset": reg["offset"], "lsb": f["lsb"], "msb": f["msb"], "width": width,
             "logical_value": None if value is None else str(value), "field_mask": _h32(mask),
             "encoded_value": None if encoded is None else _h32(encoded),
-            "access": {"r": "RO", "w": "WO", "rw": "RW"}.get("+".join(f["access_tokens"]), "UNSUPPORTED"),
+            "access": access,
             "write_kind": kind, "preserved_mask": _h32(preserved),
             "source_fact_ids": list(intent["source_fact_ids"]),
             "precondition_fact_ids": list(intent.get("precondition_fact_ids") or [])}
@@ -103,7 +120,7 @@ def reference_reset_claim(domain: dict, intent: dict) -> dict | None:
 
 
 def verify(doc: dict, request: dict, domain_bytes: bytes, pin: EnginePin) -> list[str]:
-    issues = [f"CONTRACT_SCHEMA:{e}" for e in C.schema_errors("contract", doc)]
+    issues = [f"CONTRACT_SCHEMA:{e}" for e in C.schema_errors("contract", doc, profile=pin.semantic_profile)]
     if issues:
         return issues
     body = {k: v for k, v in doc.items() if k != "semantic_digest"}
@@ -118,11 +135,13 @@ def verify(doc: dict, request: dict, domain_bytes: bytes, pin: EnginePin) -> lis
     claims_in = [i for i in request["inputs"]["semantic_intents"] if i["action"] == "check_reset"]
     intents = [i for i in request["inputs"]["semantic_intents"] if i["action"] != "check_reset"]
     domain = json.loads(domain_bytes)
+    if domain.get("profile") != pin.semantic_profile or domain.get("schema") != C.domain_schema(pin.semantic_profile):
+        return issues + ["CONTRACT_DOMAIN_PROFILE_MISMATCH"]
     claims = doc.get("reset_claims") or []
     if [c["intent_id"] for c in claims] != [i["intent_id"] for i in claims_in]:
         issues.append("CONTRACT_RESET_CLAIMS_MISMATCH")
     else:
-        for it, got in zip(claims_in, claims):
+        for it, got in zip(claims_in, claims, strict=True):
             try:
                 ref = reference_reset_claim(domain, it)
             except (StopIteration, KeyError, ValueError) as exc:

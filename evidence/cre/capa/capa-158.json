@@ -1,0 +1,128 @@
+{
+ "CAPA-158": {
+  "history": [
+   {
+    "at": "2026-11-04T15:29:44.225647Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[\"omniverse-cpu-bwrap-python-version-alias\"]",
+    "from_state": null,
+    "reason": "ActualOmniversepinnedPythonkernelnamespacefailureandreadonlyaliascontrast; privateUVlayoutreproducerwithrealPython/venv/import/privacycontrols, zero model calls",
+    "seq": 1168,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T15:29:44.284628Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1169,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T15:29:44.453469Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-158 assigned",
+    "seq": 1170,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T15:29:46.623458Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[\"reproducer-run:rr-738b8cfb60564d226c32\", \"reproducer-run:rr-59f73c7e07a2ffaf1d8a\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 1171,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T15:31:32.850929Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1172,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T15:31:33.026921Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-158 assigned",
+    "seq": 1173,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T15:31:35.677485Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[\"reproducer-run:rr-3a0bd0c6048585c7cbe0\", \"reproducer-run:rr-62c125f0685709ba77dd\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1174,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T15:31:35.695367Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[\"git:f47ed125d617..4028292307bd\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 4028292307bd (patch 7577 bytes)",
+    "seq": 1175,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T15:34:14.419534Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[\"reproducer-run:rr-59cd0b44438367a6af3f\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-158 absent at 4028292307bd",
+    "seq": 1176,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T15:34:14.449457Z",
+    "capa_id": "CAPA-158",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1177,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-3c362458cda6918a85621fecfe43bb3504cb1b52",
+   "f47ed125d6173fc57fb653e920493f8873f61c79",
+   "4028292307bd44b206acf3ece81c14fa7dc7ae1d",
+   "pd-57093f8ca77d82da213b"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<4028292307bd"
+   ],
+   "candidate_patch_sha256": "7f5ebb2410283f99b20e8c08e3b03a13acaf7794a551a17f6e8b16cf10c09fc5",
+   "capa_id": "CAPA-158",
+   "created_at": "2026-11-04T15:29:44.225647Z",
+   "event_ids": [],
+   "incident_ids": [
+    "omniverse-cpu-bwrap-python-version-alias"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-158",
+   "reproducer_id": "RPR-158",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-3a0bd0c6048585c7cbe0",
+    "reproducer-run:rr-62c125f0685709ba77dd"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "ActualUVexecutable directoryalias absent from readonly runtime mounts; frozen nested-backend fixture now explicitly requests bubblewrap because isolated RR child defaultsnone. First ERRORruns retained; production source unchanged.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T15:34:14.449457Z"
+  }
+ }
+}

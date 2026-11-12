@@ -87,6 +87,71 @@ FILES = {"file:target": {"code": TARGET}, "file:target_timeout": {"code": TIMEOU
          "file:integration": {"code": INTEGRATION}}
 
 
+def test_opt_in_performance_stimulus_uses_existing_swe5_authority_and_real_observer(ws3, monkeypatch):  # noqa: F811
+    import json
+    import re
+
+    from forge_factory import simulation_performance as performance
+    from forge_factory.lrtx import tools
+    from forge_factory.policy.authz import Authorizer, Binding
+
+    monkeypatch.setattr(S, "call", _scripted(TESTS, []))
+    assert swe4.visit(ws3, "m")["status"] == "PASS" and _gate(ws3, "SWE.4", monkeypatch) == 0
+    path = ws3 / ".forge-run/manifest.json"
+    manifest = json.loads(path.read_text())
+    manifest[performance.FIELD] = {"schema": performance.SCHEMA, "instructions_per_call": 64,
+                                   "microseconds_per_call": 100, "performance_mips": 100,
+                                   "test_source": performance.TEST}
+    path.write_text(json.dumps(manifest))  # Synthetic prospective allocation; not an owner review.
+    text = '''/** @file test_performance.c @verifies IF-01 IF-02 */
+#include "stm32n6xx_ll_iwdg.h"
+#include "forge_performance_calls.h"
+#include "forge_target_test.h"
+FORGE_MAILBOX_DEFINE;
+int main(void) {
+ FORGE_TEST_BEGIN();
+ forge_measure_LL_IWDG_EnableWriteAccess();
+ forge_measure_LL_IWDG_SetPrescaler(4U);
+ forge_measure_LL_IWDG_SetReloadCounter(5U);
+ TCHECK(1, forge_measure_LL_IWDG_IsActiveFlag_PVU() == 1U);
+ TCHECK(2, forge_measure_LL_IWDG_IsActiveFlag_RVU() == 0U);
+ forge_measure_LL_IWDG_Enable();
+ forge_measure_LL_IWDG_ReloadCounter();
+ forge_measure_LL_IWDG_DisableWriteAccess();
+ TCHECK(3, forge_measure_LL_IWDG_IsActive() == 1U);
+ FORGE_TEST_END(); return 0;
+}
+'''
+    assert set(re.findall(r"\b(forge_measure_\w+)\(", text)) == set(performance.symbols(ws3))
+    assert swe5.validate_file(ws3, "target_performance", {"code": text}) == []
+    missing = text.replace("forge_measure_LL_IWDG_ReloadCounter();", "/* forge_measure_LL_IWDG_ReloadCounter(); */")
+    assert "missing measurement call forge_measure_LL_IWDG_ReloadCounter" in swe5.validate_file(
+        ws3, "target_performance", {"code": missing})
+    authorizer = Authorizer(Binding.load(ws3 / ".forge-run/binding.json"))
+    assert authorizer.decide("swe5_target_author", "write_file", {"path": performance.TEST, "content": ""}).allow
+    assert not authorizer.decide("swe6_test_author", "write_file", {"path": performance.TEST, "content": ""}).allow
+    observed = []
+    actual_call = tools.call
+
+    def capture(*args, **kwargs):
+        result = actual_call(*args, **kwargs)
+        if args[2] == "run_renode":
+            observed.append(result)
+            assert result["status"] == "PASS", result["issues"]
+        return result
+
+    monkeypatch.setattr(tools, "call", capture)
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted({**FILES, "file:target_performance": {"code": text}}, calls))
+    result = swe5.visit_tests(ws3, "m")
+    assert result["status"] == "PASS", result
+    assert len(calls) == 4 and (ws3 / performance.TEST).read_text() == text
+    assert any(a["path"] == "simulation-performance-contract" for a in calls[-1]["artifacts"])
+    assert performance.verify_result(ws3, observed[-1])["status"] == "PASS"
+    assert swe5.visit_report(ws3)["status"] == "PASS"
+    assert _gate(ws3, "SWE.5", monkeypatch) == 0
+
+
 def test_structured_swe5_passes_renode_integration_and_the_unchanged_gate(ws3, monkeypatch):  # noqa: F811
     monkeypatch.setattr(S, "call", _scripted(TESTS, []))
     assert swe4.visit(ws3, "m")["status"] == "PASS" and _gate(ws3, "SWE.4", monkeypatch) == 0

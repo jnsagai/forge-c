@@ -1,0 +1,13 @@
+{
+  "QA_index_count": 54,
+  "actual_secret_assignment_and_Bearer_header_lines": "checked",
+  "binary_bundle_handling": "Verified Git bundle solehead and exact29 source/test/ADR file delta; not treated as a plaintext secret log.",
+  "effects": false,
+  "forbidden_archives_excluded": true,
+  "line_header_scanned_items": 668,
+  "private_key_full_line_pattern": "checked",
+  "prospective_file_allowlist_count": 9,
+  "prospective_index_plus_files": 10,
+  "source_path_allowlist_count": 29,
+  "vendor_contents_excluded": true
+}

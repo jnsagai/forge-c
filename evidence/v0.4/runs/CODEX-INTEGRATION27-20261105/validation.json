@@ -1,0 +1,53 @@
+{
+  "schema": "forge-c/integration27-validation/1",
+  "source": "b66c018b18cca81732f14d04af384f2bf9984b07",
+  "source_parent_public": "97b847d80f33efc29ad1c1c8f46deddde5f6230f",
+  "runtime_source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "source_changed_paths": 9,
+  "unchanged_LINE_paths": 5,
+  "source_equivalence": "14paths byteequal qualified f0; archivecommit may differ onlyevidence.",
+  "decisions": [
+    {
+      "component": "bfe",
+      "decision_id": "pd-6ac385a2a8dec0c41a14",
+      "candidate": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+      "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "all7": "PASS",
+      "prevention": 175,
+      "causal": "ACTUAL_RR_BASELINE_PRESENT_CANDIDATE_ABSENT",
+      "RR_records_logs_verified": 177,
+      "benchmarks": 4
+    },
+    {
+      "component": "f0",
+      "decision_id": "pd-8219005fce92294b70f1",
+      "candidate": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+      "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "all7": "PASS",
+      "prevention": 175,
+      "causal": "ACTUAL_RR_BASELINE_PRESENT_CANDIDATE_ABSENT",
+      "RR_records_logs_verified": 177,
+      "benchmarks": 4
+    },
+    {
+      "component": "integration27",
+      "decision_id": "pd-a3e854df477781ca1ddc",
+      "candidate": "b66c018b18cca81732f14d04af384f2bf9984b07",
+      "baseline": "97b847d80f33efc29ad1c1c8f46deddde5f6230f",
+      "all7": "PASS",
+      "prevention": 175,
+      "causal": "ACTUAL_RR_BASELINE_PRESENT_CANDIDATE_ABSENT",
+      "RR_records_logs_verified": 177,
+      "benchmarks": 4
+    }
+  ],
+  "actual_f0_CPU": "270PASS0FAIL0SKIP",
+  "prospective_native_STUB": "Own0.362 fixture terminal+server stopped; no realmodel rolequalification.",
+  "prior_bfe_QA": "268PASS2FAIL0SKIP, UNKNOWN/noSTUB preserved; fixture-only correction f0, production bytes identical.",
+  "test_counting": "LocalV4 composite270 and actualOmniverse270 overlap; do not add them as540distinct. Privatehelpergroups overlap too.",
+  "actual_runtime": "Ready startup observed, firstBguard-refused before native/LLM; remainingC,D accounting conserved; no driverPASS.",
+  "role_competence": "NOT_ESTABLISHED",
+  "production_release": false,
+  "new_task_checkboxes": 0,
+  "publication": "LOCAL_ONLY_PENDING_ROOT_REVIEW_NO_PUSH"
+}

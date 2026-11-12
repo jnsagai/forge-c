@@ -44,22 +44,26 @@ def test_t042_turn_budget_blocks_and_resets_per_visit(env):
     from forge_factory.registry.agents import load_agents
 
     limit = {a.id: a.max_turns for a in load_agents()[0]}
-    assert limit["swe3-author"] == 35 and limit["swe3-inspector"] == 20  # owner decision 2026-10-15 (r70)
-    for _ in range(35):
+    assert limit["swe3-author"] == 4096 and limit["swe3-inspector"] == 200  # owner 2026-11-07
+    for _ in range(1000):
         ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
         assert ok
-    ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
-    assert not ok and n == 36 and lim == 35
+    assert lim == 4096
+    G.reset_node("b", "R", "swe3_author")
+    for _ in range(196):
+        assert G.count_tool_call("b", "R", "swe3_inspector", "swe3-inspector", "read_file")[0]
+    ok, n, lim, reserved = G.count_tool_call("b", "R", "swe3_inspector", "swe3-inspector", "read_file")
+    assert not ok and reserved and n == 196 and lim == 200
     G.reset_node("b", "R", "swe3_author")
     assert G.count_tool_call("b", "R", "swe3_author", "swe3-author")[0]
 
 
 def test_t042_inspector_last_calls_reserved_for_recording_the_inspection(env):
     """r63: the SWE.6 inspector used all 20 calls reading and never recorded its (correct) finding."""
-    for _ in range(16):
+    for _ in range(196):
         assert G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")[0]
     ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", "read_file")
-    assert not ok and reserved and n == 16  # denied without consuming budget
+    assert not ok and reserved and n == 196  # denied without consuming budget
     for tool in ("mcp__forge_evidence_mcp__report_defect", "mcp__forge_evidence_mcp__check_inspection"):
         ok, n, lim, reserved = G.count_tool_call("b", "R", "swe6_inspector", "swe6-inspector", tool)
         assert ok and not reserved
@@ -72,10 +76,10 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
     b = Binding("b2", str(tmp_path), {"insp": {"role": "swe1-inspector", "phase": "SWE.1"}})
     ctx = {"event": "pre_tool_use", "node_id": "insp", "run_id": "R", "tool_name": "read_file",
            "tool_input": {"file_path": "x"}}
-    decisions = [handle(ctx, b) for _ in range(17)]
-    assert all(d.allow for d in decisions[:16]) and decisions[16].code == "INSPECTION_CALLS_RESERVED"
+    decisions = [handle(ctx, b) for _ in range(197)]
+    assert all(d.allow for d in decisions[:196]) and decisions[196].code == "INSPECTION_CALLS_RESERVED"
     rec = {**ctx, "tool_name": "mcp__forge_evidence_mcp__check_inspection", "tool_input": {}}
-    decisions = [handle(rec, b) for _ in range(5)]  # the 4 reserved calls, then the authored limit (20)
+    decisions = [handle(rec, b) for _ in range(5)]  # the 4 reserved calls, then the authored limit (200)
     assert all(d.allow for d in decisions[:4]) and decisions[4].code == "TURN_BUDGET_EXHAUSTED"
     assert handle({"event": "stage_start", "node_id": "insp", "run_id": "R"}, b).allow
     assert handle(ctx, b).allow
@@ -84,7 +88,7 @@ def test_t042_hook_returns_turn_budget_exhausted(env, tmp_path):
 def test_t042_token_exhaustion_cancels_and_blocks_never_false_pass(env, tmp_path):
     ws = tmp_path / "ws"
     (ws / ".forge-run").mkdir(parents=True)
-    fake = FakeFabro([("swe3_author", 650_000, 2_000), ("swe1_author", 1000, 100)])  # cap 32000 x MAX_VISITS (18)
+    fake = FakeFabro([("swe3_author", 950_000_000, 2_000), ("swe1_author", 1000, 100)])  # cap 50,000,000 x MAX_VISITS (18)
     out = G.check_run("RUN-X", {"swe3_author": {"role": "swe3-author"}, "swe1_author": {"role": "swe1-author"}}, ws, fake)
     assert out["status"] == "TOKEN_BUDGET_EXHAUSTED" and fake.cancelled and out["basis"] == "reported"
     assert [e["node"] for e in out["exceeded"]] == ["swe3_author"]
@@ -233,6 +237,15 @@ def test_t045_ready_requires_every_check_and_tamper_detected(env, tmp_path):
             data = zin.read(n)
             zout.writestr(n, data + b"tamper" if n.endswith("final-gates.json") else data)
     assert F.verify_archive(t)["integrity"] == "FAIL"
+    missing = tmp_path / "missing-evidence.zip"
+    required = "evidence/quality/final-gates.json"
+    with zipfile.ZipFile(a) as zin, zipfile.ZipFile(missing, "w") as zout:
+        assert required in zin.namelist()
+        for name in zin.namelist():
+            if name != required:
+                zout.writestr(name, zin.read(name))
+    result = F.verify_archive(missing)
+    assert result["integrity"] == "FAIL" and "MEMBER_MISSING:" + required in result["issues"]
 
 
 # ---------------- T046 ------------------------------------------------------------------------------------

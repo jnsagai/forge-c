@@ -1,0 +1,52 @@
+.....F.................................................................. [ 84%]
+.............                                                            [100%]
+=================================== FAILURES ===================================
+__ test_native_launch_records_verified_rework_and_keeps_maintainer_mcp_scope ___
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-67/test_native_launch_records_ver0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a67bad92b50>
+
+    def test_native_launch_records_verified_rework_and_keeps_maintainer_mcp_scope(factory, monkeypatch):
+        import time
+        import tomllib
+        from types import SimpleNamespace
+    
+        from forge_factory import workorder
+        from forge_factory.lrtx import profile
+    
+        case = _case(factory)
+        M.write_source(case, "factory/python/forge_factory/calc.py", "def add(a, b):\n    return a + b\n")
+        case_path = M.case_dir(case["proposal_id"]) / "case.json"
+        monkeypatch.setattr(workorder, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
+        monkeypatch.setattr(profile, "select", lambda *a, **k: {"id": "test-local", "local_only": True})
+        job = {"job_id": "verified-rework", "role": "afo-factory-maintainer", "profile": "test-local", "model": "local-model",
+               "factory_revision": {"commit": "1" * 40}, "case": str(case_path), "case_sha256": sha256_file(case_path),
+               "deadline_epoch": time.time() + 60, "nonce": "test-launch-nonce"}
+        calls = []
+    
+        def launch(argv, **kwargs):
+            calls.append(argv)
+            return SimpleNamespace(returncode=0, stdout="RUN-FOCUSED-1\n")
+    
+>       assert L._launch(job, launch) == "RUN-FOCUSED-1"
+               ^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_retained_work_unit.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:374: in _launch
+    ws = directory(job["job_id"]) / "workspace"
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+job_id = 'verified-rework'
+
+    def directory(job_id: str) -> Path:
+        import re
+    
+        if not re.fullmatch(r"afo-agent-[0-9a-f]{24}", job_id):
+>           raise ValueError("INVALID_LOCAL_AGENT_JOB")
+E           ValueError: INVALID_LOCAL_AGENT_JOB
+
+factory/python/forge_factory/afo/local_agent.py:58: ValueError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_retained_work_unit.py::test_native_launch_records_verified_rework_and_keeps_maintainer_mcp_scope

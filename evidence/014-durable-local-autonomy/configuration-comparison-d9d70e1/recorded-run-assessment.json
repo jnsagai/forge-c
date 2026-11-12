@@ -1,0 +1,41 @@
+{
+  "status": "NOT_RUN",
+  "scope": "RECORDED_RUN_SUITABILITY_NOT_A_LIVE_COMPARISON",
+  "qualifying_pairs": 0,
+  "records": [
+    {
+      "path": "evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json",
+      "sha256": "8afb9ebcc79980f98ca5f58cee8048b4c22e38c6fbeb1cd0d31fdc1bc5ccb8eb",
+      "disposition": "HISTORICAL_CONTEXT_ONLY",
+      "reason": "Prior protocol audit; no new common-control preregistration or complete independent comparison-cost measurements. Historical UNKNOWN usage retained."
+    },
+    {
+      "path": "evidence/014-durable-local-autonomy/parallel-serving-20261026/learning-set-comparison.json",
+      "sha256": "1b694c8e907ed47f76fd50bd6ad6973705c75f4f761a03b45ef80686b31995c8",
+      "disposition": "HISTORICAL_CONTEXT_ONLY",
+      "reason": "Historical inspector serving study, including interrupted runs; not a current one-admitted-inference DA-AT-028 model/context experiment. Inspector freeze preserved."
+    },
+    {
+      "path": "evidence/014-durable-local-autonomy/st3-driver-runs/summary.json",
+      "sha256": "7244bc2beb5f0cb69051fd9163ca81d2fd9f5e6873e8ade70b88461da0339c70",
+      "disposition": "HISTORICAL_CONTEXT_ONLY",
+      "reason": "Three different product cases at one configuration; all SWE.1 blocked. No paired unchanged baseline/candidate or comparison oracles."
+    },
+    {
+      "path": "evidence/014-durable-local-autonomy/qwen-development-safety-review-1b32534/summary.json",
+      "sha256": "7acb2b76a847f40877fd2113e87f6346be09cba5279933be10a46b28b15a55b2",
+      "disposition": "HISTORICAL_CONTEXT_ONLY",
+      "reason": "One external review obligation, not a repeated frozen comparison case. One-call budget spent."
+    }
+  ],
+  "blockers": [
+    "MEASURED_UNCHANGED_COMPARABLE_BASELINE_REQUIRED",
+    "FROZEN_COMMON_CONTROLS_REQUIRED",
+    "CANDIDATE_PREREGISTRATION_AND_BOUNDED_AUTHORITY_REQUIRED",
+    "OBSERVED_SETTINGS_AND_COMPLETE_INDEPENDENT_COST_OUTCOME_MEASUREMENTS_REQUIRED"
+  ],
+  "rcc_success_prerequisite": false,
+  "new_model_requests": 0,
+  "automatic_selection": false,
+  "automatic_deployment": false
+}

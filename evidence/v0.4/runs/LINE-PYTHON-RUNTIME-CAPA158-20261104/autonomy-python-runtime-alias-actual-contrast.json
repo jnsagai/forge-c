@@ -1,0 +1,24 @@
+{
+  "schema": "forge-c/actual-python-alias-contrast/1",
+  "source": "0def0643",
+  "scope": "CPU_NAMESPACE_ONLY_NO_PRODUCTION_MUTATION",
+  "model_calls": 0,
+  "runtime_alias": "/home/omniverse2/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu",
+  "runtime_resolved": "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu",
+  "results": [
+    {
+      "explicit_readonly_runtime_alias": [],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "bwrap: execvp /mnt/data/forge-c/swe1-fabro-20261031/lrtx/venv/bin/python: No such file or directory\n"
+    },
+    {
+      "explicit_readonly_runtime_alias": [
+        "/home/omniverse2/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu"
+      ],
+      "exit": 0,
+      "stdout": "{\"prefix\": \"/mnt/data/forge-c/swe1-fabro-20261031/lrtx/venv\", \"base_prefix\": \"/home/omniverse2/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu\", \"dependency_import\": true}\n",
+      "stderr": ""
+    }
+  ]
+}

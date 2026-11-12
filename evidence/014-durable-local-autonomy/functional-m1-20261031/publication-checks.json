@@ -1,0 +1,9 @@
+{
+  "privacy_scan_including_gzip": "PASS",
+  "python_syntax": "PASS",
+  "raw_receipt_hashes": "MATCH",
+  "new_model_tests": 0,
+  "audit_replay": "PASS; original9ffc4f56 unchanged",
+  "original_DA_ledger": "30/58 unchanged",
+  "scope": "PUBLICATION_AND_OBSERVATION_CHECKS_NOT_NEW_MODEL_QUALIFICATION"
+}

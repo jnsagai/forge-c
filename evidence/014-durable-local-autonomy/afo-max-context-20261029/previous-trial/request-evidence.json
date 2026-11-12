@@ -1,0 +1,148 @@
+[
+  {
+    "kind": "REQUEST_METADATA:native-request-390c9e6f1d874e0d8062acf9071d7850",
+    "record": {
+      "body_sha256": "f7f1c818e5229b4e9130d8f04ab461286a00f804141a8c04e8d726e2629db523",
+      "measurement": {
+        "input_tokens": 23125,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 22997,
+        "sha256": "f7f1c818e5229b4e9130d8f04ab461286a00f804141a8c04e8d726e2629db523"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-390c9e6f1d874e0d8062acf9071d7850",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    "sha256": "0c803a23fa1da1fe7c79ca2f29a15908cacec3dd9b288a806cf5029e0d8ff482"
+  },
+  {
+    "kind": "REQUEST_METADATA:native-request-5247e2fd0f35448b970c01671e80404a",
+    "record": {
+      "body_sha256": "7089f51be4891359b44b33038043de1bcac859e475b5109f56f68a4542b6e40d",
+      "measurement": {
+        "input_tokens": 73403,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 73275,
+        "sha256": "7089f51be4891359b44b33038043de1bcac859e475b5109f56f68a4542b6e40d"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-5247e2fd0f35448b970c01671e80404a",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    "sha256": "9e25aae87dee04fbaa07896e82c1303570113372ba01342fc1a204aa165d2d95"
+  },
+  {
+    "kind": "REQUEST_METADATA:native-request-64cff7dd24ec4370a045ef4d47f71422",
+    "record": {
+      "body_sha256": "64303c7046cbbbc2790626985e277f19952dbe77ec3910739d6a1510a19d0e82",
+      "measurement": {
+        "input_tokens": 34552,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 34424,
+        "sha256": "64303c7046cbbbc2790626985e277f19952dbe77ec3910739d6a1510a19d0e82"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-64cff7dd24ec4370a045ef4d47f71422",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    "sha256": "183664a0da9d3ef208915f1d6a8b341f117d3381a20576144ae59b1d5d1bdeca"
+  },
+  {
+    "kind": "REQUEST_METADATA:native-request-fdbb67895a244999885bc565f1514c01",
+    "record": {
+      "body_sha256": "b6c0b336ce9ecbac2a32c696140b2b1fd92cb4d39b4c3dbac52dd25975d40a3b",
+      "measurement": {
+        "input_tokens": 14686,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 14558,
+        "sha256": "b6c0b336ce9ecbac2a32c696140b2b1fd92cb4d39b4c3dbac52dd25975d40a3b"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-fdbb67895a244999885bc565f1514c01",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    "sha256": "c0a0f519db9c2da139d92ff47ac10f79600a9a40a04abdeed3a7247b2e181af0"
+  },
+  {
+    "kind": "REQUEST_REFUSAL:native-request-2c5180313e2441fa89fd5d39975b56e8:6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+    "record": {
+      "body_sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 89824+49152 exceeds qualified context allowance 131072",
+      "measurement": {
+        "input_tokens": 89824,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 89696,
+        "sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-2c5180313e2441fa89fd5d39975b56e8",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    },
+    "sha256": "b79adcbec21555472d43d6a2f03448a835024c424760effb27bed7e149729eb2"
+  },
+  {
+    "kind": "REQUEST_REFUSAL:native-request-563966e8614743deab8e23e69651804f:6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+    "record": {
+      "body_sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 89824+49152 exceeds qualified context allowance 131072",
+      "measurement": {
+        "input_tokens": 89824,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 89696,
+        "sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-563966e8614743deab8e23e69651804f",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    },
+    "sha256": "0dfac351fee609a9e48ab9985e1f8b6c4bb2be20d766c94820b5371a3ce418d9"
+  },
+  {
+    "kind": "REQUEST_REFUSAL:native-request-601dc4c174654f01b87ea041d1ad5be6:6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+    "record": {
+      "body_sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 89824+49152 exceeds qualified context allowance 131072",
+      "measurement": {
+        "input_tokens": 89824,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 89696,
+        "sha256": "6bf9a00c6c70d65773d60664ecd99934f5c3d29dd24031d25da27bde3ae0e19b"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "2f73b64aea547f87321303cfab4668f02f78d3ab03a005797a336a933d21acb4",
+      "request_id": "native-request-601dc4c174654f01b87ea041d1ad5be6",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    },
+    "sha256": "bf9d846793e57a2cea1af1b43c8137310cc893ab22f949d3f419ebd7dc0630e5"
+  }
+]

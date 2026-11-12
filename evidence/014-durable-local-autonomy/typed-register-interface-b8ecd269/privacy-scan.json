@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "scope": "Pattern scan of published typed-interface evidence; gzip receipts decompressed; not a comprehensive secret detector",
+  "patterns": [
+    "private key PEM",
+    "GitHub token",
+    "OpenAI-style key"
+  ],
+  "matches": []
+}

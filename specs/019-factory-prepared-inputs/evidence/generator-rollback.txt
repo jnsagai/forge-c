@@ -1,0 +1,47 @@
+{
+ "source": "/mnt/data/forge-c/model-service/src-ecec42e9",
+ "campaign_source": "TEMPLATE",
+ "template_sha256_ignored": null,
+ "lineages": [
+  [
+   "gpio-ll",
+   "ON_HOLD",
+   40,
+   6,
+   null,
+   null
+  ],
+  [
+   "spi-ll",
+   "ON_HOLD",
+   39,
+   6,
+   null,
+   null
+  ],
+  [
+   "usart-ll",
+   "ON_HOLD",
+   38,
+   6,
+   null,
+   null
+  ],
+  [
+   "tim-ll",
+   "ON_HOLD",
+   37,
+   6,
+   null,
+   null
+  ],
+  [
+   "wwdg-ll",
+   "ACTIVE",
+   50,
+   1,
+   null,
+   null
+  ]
+ ]
+}

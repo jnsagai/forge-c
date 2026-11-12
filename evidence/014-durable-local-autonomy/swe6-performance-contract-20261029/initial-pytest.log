@@ -1,0 +1,89 @@
+.......FF...............                                                 [100%]
+=================================== FAILURES ===================================
+_ test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[False] __
+
+measured = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72289d767980>
+declared_source = False
+
+    @pytest.mark.parametrize("declared_source", [False, True])
+    def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measured, monkeypatch, declared_source):
+        """Actual Robot/compiler/Renode, synthetic two-budget requirement fixture; no model or live review."""
+        ws, _ = measured
+        from forge_factory.lrtx.swe1 import system_name
+        from forge_factory.mcp.servers import tests
+        from forge_factory.workflow.robot_scaffold import build_suite
+    
+        reqs = [r for r in swe1.budget_requirements(ws, system_name(ws))
+                if r["upstream"] == "WO-SIMULATION-PERFORMANCE"]
+        markdown = "\n".join(f"- **SWR-{i:03d}** {r['statement']}" for i, r in enumerate(reqs, 1)) + "\n"
+        req = ws / "workproducts/SWE.1/software_requirements.md"
+        req.chmod(0o644)
+        req.write_text(markdown)
+        source = F.TEST if declared_source else "software/tests/software/scn_performance.c"
+        # Same functional checks in a different file are not an instrumented measurement.
+        other = ws / "software/tests/software/scn_performance.c"
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text(TEST.replace('"forge_performance_calls.h"', '"stm32n6xx_ll_crc.h"')
+                        .replace("forge_measure_LL_", "LL_"))
+        suite = build_suite(markdown, ws)
+        for i in range(1, 3):
+            suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
+                                  f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+        (other.parent / "test_crc_requirements.robot").write_text(suite)
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
+                           "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        result = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+>       contract = result["metrics"]["simulation_performance_contract"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'simulation_performance_contract'
+
+factory/python/tests/test_simulation_performance.py:149: KeyError
+---------------------------- Captured stdout setup -----------------------------
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "eb60fa0ea8aa6cc62f6de8cb546a2111a673818b18ba70ff755063035b71b7ff"}
+__ test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[True] __
+
+measured = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72289bd44230>
+declared_source = True
+
+    @pytest.mark.parametrize("declared_source", [False, True])
+    def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measured, monkeypatch, declared_source):
+        """Actual Robot/compiler/Renode, synthetic two-budget requirement fixture; no model or live review."""
+        ws, _ = measured
+        from forge_factory.lrtx.swe1 import system_name
+        from forge_factory.mcp.servers import tests
+        from forge_factory.workflow.robot_scaffold import build_suite
+    
+        reqs = [r for r in swe1.budget_requirements(ws, system_name(ws))
+                if r["upstream"] == "WO-SIMULATION-PERFORMANCE"]
+        markdown = "\n".join(f"- **SWR-{i:03d}** {r['statement']}" for i, r in enumerate(reqs, 1)) + "\n"
+        req = ws / "workproducts/SWE.1/software_requirements.md"
+        req.chmod(0o644)
+        req.write_text(markdown)
+        source = F.TEST if declared_source else "software/tests/software/scn_performance.c"
+        # Same functional checks in a different file are not an instrumented measurement.
+        other = ws / "software/tests/software/scn_performance.c"
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text(TEST.replace('"forge_performance_calls.h"', '"stm32n6xx_ll_crc.h"')
+                        .replace("forge_measure_LL_", "LL_"))
+        suite = build_suite(markdown, ws)
+        for i in range(1, 3):
+            suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
+                                  f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+        (other.parent / "test_crc_requirements.robot").write_text(suite)
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
+                           "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        result = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+>       contract = result["metrics"]["simulation_performance_contract"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'simulation_performance_contract'
+
+factory/python/tests/test_simulation_performance.py:149: KeyError
+---------------------------- Captured stdout setup -----------------------------
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "eb60fa0ea8aa6cc62f6de8cb546a2111a673818b18ba70ff755063035b71b7ff"}
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_simulation_performance.py::test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[False]
+FAILED factory/python/tests/test_simulation_performance.py::test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[True]

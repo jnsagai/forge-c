@@ -1,6 +1,7 @@
 """Renode target simulation of the RCC driver on the Forge-C STM32N6 (Cortex-M55) model: real PASS and real FAIL."""
 import os
 import shutil
+from pathlib import Path
 
 import pytest
 from forge_factory.mcp import sdk
@@ -68,6 +69,10 @@ def test_renode_reports_failing_checks_and_missing_tests(tmp_path, monkeypatch):
 def test_renode_found_from_mcp_server_environment(monkeypatch):
     """MCP servers only receive FORGE_STATE_DIR (r45 run_renode reported 'not installed' without this)."""
     real = sim.renode_bin()
+    if os.environ.get("FORGE_DATA_ROOT"):
+        # the MCP contract is FORGE_STATE_DIR = <data root>/state; a hermetic run gives each file a private state
+        # directory elsewhere (F014 DA-T029, run_full_inherited.py), which is not what an MCP server receives
+        monkeypatch.setenv("FORGE_STATE_DIR", str(Path(os.environ["FORGE_DATA_ROOT"]) / "state"))
     monkeypatch.delenv("FORGE_DATA_ROOT", raising=False)
     monkeypatch.delenv("FORGE_RENODE_BIN", raising=False)
     monkeypatch.setenv("PATH", "/usr/bin:/bin")

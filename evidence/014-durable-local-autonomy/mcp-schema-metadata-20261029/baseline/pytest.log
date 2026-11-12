@@ -1,0 +1,47 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+______ test_actual_maintenance_schema_exposes_submission_and_page_limits _______
+
+    def test_actual_maintenance_schema_exposes_submission_and_page_limits():
+        tools = schemas(sdk.build_server("forge-maintainer-mcp", maintainer.OPERATIONS))
+        fields = tools["submit_candidate"]["properties"]
+        for name, bounds in {"summary": (10, 300), "reproducer": (10, 200), "symptom_signature": (8, 160)}.items():
+>           assert (fields[name].get("minLength"), fields[name].get("maxLength")) == bounds
+E           assert (None, None) == (10, 300)
+E             
+E             At index 0 diff: None != 10
+E             Use -v to get more diff
+
+factory/python/tests/test_mcp_input_schema_metadata.py:20: AssertionError
+___ test_native_call_rejects_overlong_summary_before_broker_without_clipping ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x757e23a11a70>
+
+    def test_native_call_rejects_overlong_summary_before_broker_without_clipping(monkeypatch):
+        calls = []
+        monkeypatch.setattr(sdk, "invoke", lambda server, op, args: calls.append(args) or {"status": "PASS"})
+        server = sdk.build_server("forge-maintainer-mcp", maintainer.OPERATIONS)
+        args = {"summary": "x" * 301, "reproducer": "factory/python/tests/afo_candidate/repro.py", "symptom_signature": "reproduction"}
+>       with pytest.raises(Exception, match="300|string_too_long"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'Exception'>
+
+factory/python/tests/test_mcp_input_schema_metadata.py:31: Failed
+_ test_nested_constraints_descriptions_optional_values_and_factories_survive_registration _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x757e20974290>
+
+    def test_nested_constraints_descriptions_optional_values_and_factories_survive_registration(monkeypatch):
+        calls = []
+        monkeypatch.setattr(sdk, "invoke", lambda server, op, args: calls.append(args) or {"status": "PASS"})
+        server = sdk.build_server("test-schema", [sdk.Operation("rich", RichInput, lambda *a: {}, "metadata probe")])
+        schema = schemas(server)["rich"]
+>       assert schema["properties"]["items"]["maxItems"] == 3
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'maxItems'
+
+factory/python/tests/test_mcp_input_schema_metadata.py:55: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_mcp_input_schema_metadata.py::test_actual_maintenance_schema_exposes_submission_and_page_limits
+FAILED factory/python/tests/test_mcp_input_schema_metadata.py::test_native_call_rejects_overlong_summary_before_broker_without_clipping
+FAILED factory/python/tests/test_mcp_input_schema_metadata.py::test_nested_constraints_descriptions_optional_values_and_factories_survive_registration

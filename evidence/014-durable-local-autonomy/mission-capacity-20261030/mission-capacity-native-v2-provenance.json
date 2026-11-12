@@ -1,0 +1,42 @@
+{
+  "source_revision": "b713e354b5c50744c549b1a9cada491c3ca017bd",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "pytest_exit_code": 0,
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-vv",
+    "-p",
+    "no:cacheprovider",
+    "--rootdir",
+    "/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v2/repo",
+    "factory/python/tests/test_mission_capacity.py",
+    "factory/python/tests/test_mission_deadline.py",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v2/scratch/pytest.xml"
+  ],
+  "started": 1793318974.9563973,
+  "finished": 1793319046.7080896,
+  "model_requests": 0,
+  "gpu_devices_exposed": false,
+  "network": false,
+  "cpu_affinity": [
+    20,
+    21,
+    22,
+    23
+  ],
+  "address_space_limit_bytes": 1610612736,
+  "cpu_seconds_limit": 240,
+  "backend": "bubblewrap",
+  "bundle_sha256": "adc69376ede79e3bae1db847fa7ad4f499a2365fb5d9fcf9b4b68c6b714894b5",
+  "production_changed": false,
+  "qualification_passwd_fixture": {
+    "uid": 2001,
+    "gid": 2001,
+    "passwd_sha256": "267bbeb12731c21187465b58eba05a90e20c49c7b4b6115346e6e730b44343a4",
+    "group_sha256": "2720b47bdf7d476167b27cf9c9cf3f262af6228cb0fcab95197cd3d4d2be3212"
+  },
+  "owner_identity_or_ssh_agent_exposed": false
+}

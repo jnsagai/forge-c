@@ -1,0 +1,38 @@
+{
+  "schema": "forge-c/capa167-actual-api-private-control/1",
+  "at": "2026-11-04T21:14:58.946688+00:00",
+  "source_work_order": "WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H",
+  "code_source_revision": "a86211f1e41136718b902f1189f417ab7ca07097",
+  "private_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa167-actual-2H-private-bac7ihke",
+  "baseline_witness_ref": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/cloud-WWDG2H-early-code-route-probe.json",
+  "baseline_witness_sha256": "29b9c9c67667f755cafb88f587e75f571ad8b21862e3b41059eb3a16558dfea4",
+  "baseline_refusal": {
+    "state": "REFUSED",
+    "error": "TARGET_NOT_UPSTREAM:SWE.3>SWE.2"
+  },
+  "candidate_result": {
+    "id": "DEF-002",
+    "kind": "CODE",
+    "status": "OPEN",
+    "target_phase": "SWE.3",
+    "target_kind": "PROVIDED_CODE",
+    "input_binding": {
+      "schema": "forge-c/provided-code-reference/1",
+      "path": "software/ll/stm32n6xx_ll_wwdg.h",
+      "original_sha256": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f",
+      "provided_item_sha256": "6d77a502cc65c3da127846fcba2201e690252d58eda1a2bcbc8b13f9d282dac5"
+    },
+    "defect_sha256": "552cdc16ac2c0dcfaa5aaa00a590d9263dbc0156f9bc7d8ac1324ad300686d07"
+  },
+  "existing_INPUT_history_unchanged": true,
+  "production_files_unchanged": {
+    ".forge-run/manifest.json": "5863b7ca264759affa6ebf94702febf5d632de27ed17d2c37516a8f657d1774d",
+    "workproducts/SWE.1/software_requirements.md": "a9bcfd10d147353c7174b4ab6964dabe47852be74c6190664d2de29900230484",
+    "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f",
+    ".forge-run/defects/DEF-001.json": "6d1accf679381b742204117b0fdd93a603403791464b3bb8966d88a2b35fba90",
+    ".forge-run/provided/original/software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+  },
+  "phase_PASS_created": false,
+  "model_calls": 0,
+  "live_actions": false
+}

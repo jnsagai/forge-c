@@ -1,0 +1,22 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "4ef317",
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n",
+      "wall_time_seconds": 1.3015e-05
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "d3fd43",
+      "exit_code": 0,
+      "original_token_count": 379,
+      "output": "test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok\ntest_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok\ntest_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok\ntest_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok\ntest_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok\ntest_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok\ntest_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok\ntest_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok\ntest_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok\ntest_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok\ntest_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok\ntest_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok\ntest_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok\ntest_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... PASS: 14 static design tests. This does NOT validate runtime integrations.\nok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.105s\n\nOK\n",
+      "wall_time_seconds": 0.065329265
+    }
+  }
+]

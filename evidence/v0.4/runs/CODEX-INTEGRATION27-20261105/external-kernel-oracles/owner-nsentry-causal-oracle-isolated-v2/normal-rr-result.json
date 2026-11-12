@@ -1,0 +1,28 @@
+{
+  "baseline": {
+    "run_id": "rr-eaf8f8d038079bbe3902",
+    "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+    "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+    "role": "BASELINE",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "provider entry rejects inherited ancestor network or already-current user namespace",
+    "log_sha256": "6708f6185fac98d3614caf91705c741ca58dd8b075e26194e36bd190a29a6843",
+    "at": "2026-11-05T21:18:12.678274Z"
+  },
+  "candidate": {
+    "run_id": "rr-8b8259cdcd2fc135acb3",
+    "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+    "revision": "a42f715489625f44f51213c72a422d3ae2944a40",
+    "role": "CANDIDATE",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "d2f6cf6679d3a5547630a3222ea61146cf56b54d2aaee80d2a4b536e9c9c28df",
+    "at": "2026-11-05T21:18:21.292204Z"
+  },
+  "causal": [
+    true,
+    "CAUSE_VERIFIED_BY_CONTRAST"
+  ]
+}

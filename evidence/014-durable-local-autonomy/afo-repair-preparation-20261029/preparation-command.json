@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "/mnt/data/forge-c/production-local-014/deployment/prepare-afo-repair-20261029/prepare_afo_repair_v2.py",
+    "--repo",
+    "/mnt/data/forge-c/production-local-014/deployment/qualification-core-stop-3015e47-v6/repo",
+    "--root",
+    "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2",
+    "--snapshot",
+    "/mnt/data/forge-c/production-local-014/deployment/prepare-afo-repair-20261029/self-heal-preparation-host-snapshot.json",
+    "--prerequisites",
+    "/mnt/data/forge-c/production-local-014/deployment/prepare-afo-repair-20261029/self-heal-prerequisites.json",
+    "--grader",
+    "/mnt/data/forge-c/production-local-014/deployment/prepare-afo-repair-20261029/test_fabro_runconfig_context.py"
+  ],
+  "host": "Omniverse2",
+  "exit_code": 0,
+  "repeat_requires_new_output_directory": true,
+  "model_requests": 0
+}

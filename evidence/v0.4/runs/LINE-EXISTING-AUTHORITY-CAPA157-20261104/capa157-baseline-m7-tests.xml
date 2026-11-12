@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="17" time="6.000" timestamp="2026-11-04T15:11:18.258861+00:00" hostname="master"><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_foreign_or_nonfactory_source_never_reaches_model" time="0.111" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_failure_evidence_change_never_becomes_an_opaque_repair_job" time="0.085" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_existing_role_job_and_exact_controller_authority_are_used" time="0.086" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_native_success_without_quiescence_does_not_start_cre" time="0.085" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_success_without_nonce_bound_submission_cannot_start_cre" time="0.086" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_complete_offline_review_is_reused_without_publication_or_reexecution" time="0.187" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_unknown_api_or_unreleased_execution_is_never_quiet" time="0.078" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_review_rechecks_fence_and_keeps_existing_independent_pipeline" time="0.387" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[policy]" time="0.764" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[intent]" time="0.527" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[deadline]" time="0.477" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[source]" time="0.490" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[case]" time="0.522" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[signed_intent]" time="0.522"><failure message="forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d1791aafe70&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d1791b45b50&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-216/test_independent_review_refuse5')
+change = 'signed_intent'
+
+    @pytest.mark.parametrize('change', ['policy', 'intent', 'deadline', 'source', 'case', 'signed_intent', 'signed_mission'])
+    def test_independent_review_refuses_revoked_or_changed_authority(terminal, monkeypatch, tmp_path, change):
+        from forge_factory.afo.operations import Intent
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store = args[0]
+        private = tmp_path / 'private-intent'
+        private.mkdir(mode=0o700)
+        intent = Intent(private / 'operations.json')
+        control = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only authority fixture', initialize=True)
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+        case = prepare(terminal)
+        job = prepare_job(terminal, case)
+        job.update(state='SUCCEEDED', operations_epoch=control['epoch'])
+        job['native_context']['FORGE_OPERATIONS_INTENT'] = str(intent.path)
+        C.L.save(store, job)
+        monkeypatch.setattr(C.line_recovery, 'valid_job', lambda *a: True)  # independently covered source binder
+        C._authorized(store, job, eff)
+        if change == 'policy':
+            monkeypatch.setattr(C.L, 'authorized_job', lambda *a: False)
+        elif change == 'intent':
+            intent.set('STOPPED', actor='qualification-fixture', reason='unit-only authenticated stop')
+        elif change == 'deadline':
+            job['deadline_epoch'] = 1
+            C.L.save(store, job)
+        elif change == 'source':
+            monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': 'f' * 40, 'dirty': False})
+        elif change == 'case':
+            path = Path(job['case'])
+            path.chmod(0o600)
+            path.write_text(path.read_text() + ' ')
+        else:
+            from forge_factory.afo import line_recovery_control
+            with store.tx() as c:
+                registered = json.loads(c.execute('SELECT record FROM afo_missions WHERE mission_id=?',
+                                                 (job['mission_id'],)).fetchone()[0])
+            control = {'operations_intent': str(intent.path), 'profile': job['profile'],
+                       'profile_sha256': job['profile_sha256'], 'authorization_ref': registered['authorization_ref'],
+                       'mission': {k: registered[k] for k in ('mission_id', 'lineage', 'limits')}}
+            # Signature/expiry checks have their own real parser controls; exercise the exact job/control binding here.
+            monkeypatch.setattr(line_recovery_control, 'configuration', lambda *a, **k: control)
+            job['line_role_authority_ref'] = {'path': str(tmp_path / 'signed-fixture.json'), 'sha256': 'a' * 64}
+            C.L.save(store, job)
+&gt;           C._authorized(store, job, eff)
+
+factory/python/tests/test_line_maintenance_coordinator.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = &lt;forge_factory.afo.queue.Store object at 0x7d1791aafe70&gt;
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-216/test_independent_review_refuse5..._sha256': 'e07264503c07a7b5d6041101f6f4cb2733901489e928ce52f1642cd9ae254b1a', 'created_epoch': 1793805083.1038723, ...}
+eff = Effective(mode='PILOT', requested_mode='PILOT', sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...s': 30, 'smoke_hours': 24, 'soak_hours': 168, 'transient_restore_p95_seconds': 600}}, issues=[], authorization_id=None)
+
+    def _authorized(store, job, eff):
+        from .operations import Intent
+        from ..workorder import factory_revision
+    
+        order = store.order(job['order_id'])
+        saved = _saved(store, job['job_id'])
+        revision = factory_revision()
+        if (saved != job or job.get('state') != 'SUCCEEDED'
+                or job.get('role') != ROLE or job.get('durable_native') != 'maintenance-1'
+                or not job.get('line_origin') or not L.enabled(ROLE, eff)
+                or eff.sha256 != job.get('policy_sha256') or not L.authorized_job(order, eff, job)
+                or not line_recovery.valid_job(job, store)
+                or revision.get('dirty') is not False
+                or revision.get('commit') != (job.get('factory_revision') or {}).get('commit')
+                or Path(job['case']).is_symlink() or sha256_file(Path(job['case'])) != job['case_sha256']):
+&gt;           raise Refused('LINE_MAINTENANCE_AUTHORITY_CHANGED')
+E           forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:
+
+factory/python/forge_factory/afo/line_maintenance_coordinator.py:68: Refused</failure></testcase><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[signed_mission]" time="0.518"><failure message="forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d1791299f30&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d17912f3330&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-216/test_independent_review_refuse6')
+change = 'signed_mission'
+
+    @pytest.mark.parametrize('change', ['policy', 'intent', 'deadline', 'source', 'case', 'signed_intent', 'signed_mission'])
+    def test_independent_review_refuses_revoked_or_changed_authority(terminal, monkeypatch, tmp_path, change):
+        from forge_factory.afo.operations import Intent
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store = args[0]
+        private = tmp_path / 'private-intent'
+        private.mkdir(mode=0o700)
+        intent = Intent(private / 'operations.json')
+        control = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only authority fixture', initialize=True)
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+        case = prepare(terminal)
+        job = prepare_job(terminal, case)
+        job.update(state='SUCCEEDED', operations_epoch=control['epoch'])
+        job['native_context']['FORGE_OPERATIONS_INTENT'] = str(intent.path)
+        C.L.save(store, job)
+        monkeypatch.setattr(C.line_recovery, 'valid_job', lambda *a: True)  # independently covered source binder
+        C._authorized(store, job, eff)
+        if change == 'policy':
+            monkeypatch.setattr(C.L, 'authorized_job', lambda *a: False)
+        elif change == 'intent':
+            intent.set('STOPPED', actor='qualification-fixture', reason='unit-only authenticated stop')
+        elif change == 'deadline':
+            job['deadline_epoch'] = 1
+            C.L.save(store, job)
+        elif change == 'source':
+            monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': 'f' * 40, 'dirty': False})
+        elif change == 'case':
+            path = Path(job['case'])
+            path.chmod(0o600)
+            path.write_text(path.read_text() + ' ')
+        else:
+            from forge_factory.afo import line_recovery_control
+            with store.tx() as c:
+                registered = json.loads(c.execute('SELECT record FROM afo_missions WHERE mission_id=?',
+                                                 (job['mission_id'],)).fetchone()[0])
+            control = {'operations_intent': str(intent.path), 'profile': job['profile'],
+                       'profile_sha256': job['profile_sha256'], 'authorization_ref': registered['authorization_ref'],
+                       'mission': {k: registered[k] for k in ('mission_id', 'lineage', 'limits')}}
+            # Signature/expiry checks have their own real parser controls; exercise the exact job/control binding here.
+            monkeypatch.setattr(line_recovery_control, 'configuration', lambda *a, **k: control)
+            job['line_role_authority_ref'] = {'path': str(tmp_path / 'signed-fixture.json'), 'sha256': 'a' * 64}
+            C.L.save(store, job)
+&gt;           C._authorized(store, job, eff)
+
+factory/python/tests/test_line_maintenance_coordinator.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = &lt;forge_factory.afo.queue.Store object at 0x7d1791299f30&gt;
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-216/test_independent_review_refuse6..._sha256': '9869e963056f2379b102bd64baa4c1905ed0f9b3cb5995d0baceae011b01d0d1', 'created_epoch': 1793805083.6495981, ...}
+eff = Effective(mode='PILOT', requested_mode='PILOT', sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...s': 30, 'smoke_hours': 24, 'soak_hours': 168, 'transient_restore_p95_seconds': 600}}, issues=[], authorization_id=None)
+
+    def _authorized(store, job, eff):
+        from .operations import Intent
+        from ..workorder import factory_revision
+    
+        order = store.order(job['order_id'])
+        saved = _saved(store, job['job_id'])
+        revision = factory_revision()
+        if (saved != job or job.get('state') != 'SUCCEEDED'
+                or job.get('role') != ROLE or job.get('durable_native') != 'maintenance-1'
+                or not job.get('line_origin') or not L.enabled(ROLE, eff)
+                or eff.sha256 != job.get('policy_sha256') or not L.authorized_job(order, eff, job)
+                or not line_recovery.valid_job(job, store)
+                or revision.get('dirty') is not False
+                or revision.get('commit') != (job.get('factory_revision') or {}).get('commit')
+                or Path(job['case']).is_symlink() or sha256_file(Path(job['case'])) != job['case_sha256']):
+&gt;           raise Refused('LINE_MAINTENANCE_AUTHORITY_CHANGED')
+E           forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:
+
+factory/python/forge_factory/afo/line_maintenance_coordinator.py:68: Refused</failure></testcase><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_complete_failure_evidence_is_paged_as_untrusted_data_and_tamper_is_refused" time="0.008" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence" time="0.449"><failure message="forge_factory.afo.durable.Refused: LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d17912cf590&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d17912fc690&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-216/test_maintainer_admission_pins0')
+
+    def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence(terminal, monkeypatch, tmp_path):
+        from forge_factory.afo import authz, line_recovery_control
+        from forge_factory.afo.durable import immutable_json
+        from forge_factory.lrtx.profile import load
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store, oid, aid, workspace, origin = args
+        case = prepare(terminal)
+        profile = load('local-rtx-v2-omniverse2')
+        mission = C.MissionLedger(store).snapshot('line-maintenance-fixture')
+        eff.policy['authorization_ref'] = 'fixture-maintenance-control'
+        revision = terminal[3]['source_revision']
+        monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': revision, 'dirty': False})
+        value = {'schema': line_recovery_control.SCHEMA, 'source_revision': revision,
+                 'policy_sha256': eff.sha256, 'authorization_ref': eff.get('authorization_ref'),
+                 'profile': profile['id'], 'profile_sha256': profile['_sha256'],
+                 'operations_intent': str(tmp_path / 'private-intent.json'),
+                 'mission': {'mission_id': 'line-maintenance-fixture', 'lineage': 'line-maintenance-fixture',
+                             'limits': mission['limits']}, 'role_capabilities': {}, 'product_role_trial': None}
+        path = tmp_path / (digest(value) + '.json')
+        immutable_json(path, value)
+        ref = {'path': str(path), 'sha256': digest(value)}
+        monkeypatch.setattr(authz, 'AUTH_DIR', tmp_path)
+        allowed = SimpleNamespace(allow=True, code='AUTH_OK')
+        monkeypatch.setattr(authz, 'find', lambda *a, **k: allowed)
+        (tmp_path / 'fixture-maintenance-control.json').write_text(json.dumps({
+            'signed_runbook_ref': 'line-recovery-014:' + digest(value), 'expires_utc': '2099-01-01T00:00:00Z'}))
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+&gt;       job = C.L.prepare(store, store.order(oid), aid, C.ROLE, C.M.case_dir(case['proposal_id']) / 'case.json',
+                          workspace, eff, line_origin=origin, line_role_authority_ref=ref)
+
+factory/python/tests/test_line_maintenance_coordinator.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:291: in prepare
+    require_job_binding(job, control, store=store)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-216/test_maintainer_admission_pins0...e_sha256': '67c14f1c5147e030a1939654cb30e565e97da2d3acf23045830f5a798f705f8f', 'created_epoch': 1793805084.231211, ...}
+control = {'authorization_ref': 'fixture-maintenance-control', 'mission': {'limits': {'deadline': 1793805684.0488586, 'max_attem...n_pins0/private-intent.json', 'policy_sha256': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', ...}
+
+    def require_job_binding(job, control, *, store=None):
+        """Intersect a signed control with the actual intent and linked effective mission; never refill it."""
+        from ..common import state_dir
+        from . import mission_capacity, mission_deadline
+        from .queue import ReadSnapshot
+    
+        if store is None:
+            with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=3) as reader:
+                return require_job_binding(job, control, store=reader)
+        native = job.get("native_context") or {}
+        if (native.get("FORGE_OPERATIONS_INTENT") != control["operations_intent"]
+                or native.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"):
+&gt;           raise Refused("LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH")
+E           forge_factory.afo.durable.Refused: LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH:
+
+factory/python/forge_factory/afo/line_recovery_control.py:126: Refused</failure></testcase></testsuite></testsuites>

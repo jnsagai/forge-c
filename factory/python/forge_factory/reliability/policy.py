@@ -10,12 +10,16 @@
   only in ACTIVE and only from the reversible catalogue. OBSERVE_ONLY is the default.
 * Live reload keeps the last good policy when an edit is invalid; every accept/reject is an audit event.
 """
+
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+import yaml
 
 from ..common import CONFIG_DIR, REPO_ROOT, canonical_json, load_yaml, sha256_bytes
 
@@ -59,16 +63,30 @@ HARD_INVARIANTS: dict[str, Any] = {
 }
 MANDATORY_NON_REPLAYABLE = {"hardware_flash", "safety_approval", "baselined_evidence_mutation", "release_signing"}
 MANDATORY_PROTECTED = {
-    ".specify/memory/constitution.md", "config/factory/*safety*", "config/factory/*release*",
-    "config/factory/reliability-policy.yaml", "evidence/**", "specs/001-factory/**",
-    "specs/002-self-healing-factory/**", "specs/003-manufacturing-kpis/**",
-    "specs/004-continuous-reliability-engineering/contracts/**", "tests/reliability/**",
-    "factory/checklists/**", "factory/release-manager/**",
+    ".specify/memory/constitution.md",
+    "config/factory/*safety*",
+    "config/factory/*release*",
+    "config/factory/reliability-policy.yaml",
+    "evidence/**",
+    "specs/001-factory/**",
+    "specs/002-self-healing-factory/**",
+    "specs/003-manufacturing-kpis/**",
+    "specs/004-continuous-reliability-engineering/contracts/**",
+    "tests/reliability/**",
+    "factory/checklists/**",
+    "factory/release-manager/**",
 }
 LEVEL_RANK = {"OFF": 0, "ERROR": 1, "WARN": 2, "INFO": 3, "DEBUG": 4, "TRACE": 5}
 # Reversible, pre-authorizable operational actions (ACTIVE only). Persistent code promotion is never in this list.
-REVERSIBLE_ACTIONS = {"restart_dashboard", "restart_mcp_server", "restart_llm_gateway", "drain_queue",
-                      "restart_collector"}
+REVERSIBLE_ACTIONS = {
+    "restart_dashboard",
+    "restart_mcp_server",
+    "restart_llm_gateway",
+    "drain_queue",
+    "restart_collector",
+    "restart_conductor",
+    "restart_local_stack",
+}
 
 
 class PolicyInvalid(ValueError):
@@ -96,8 +114,10 @@ def issues_of(pol: Any, supervisor_policy: dict | None = None) -> list[str]:
 
     if not isinstance(pol, dict):
         return ["POLICY_NOT_A_MAPPING"]
-    out = [f"SCHEMA:{'/'.join(map(str, e.path)) or '<root>'}:{e.message}"[:200]
-           for e in Draft202012Validator(schema()).iter_errors(pol)]
+    out = [
+        f"SCHEMA:{'/'.join(map(str, e.path)) or '<root>'}:{e.message}"[:200]
+        for e in Draft202012Validator(schema()).iter_errors(pol)
+    ]
     for path, want in HARD_INVARIANTS.items():
         got = _get(pol, path)
         if got is not KeyError and got != want:
@@ -106,8 +126,11 @@ def issues_of(pol: Any, supervisor_policy: dict | None = None) -> list[str]:
     missing = MANDATORY_NON_REPLAYABLE - set(rec.get("non_replayable_operation_classes") or [])
     if missing:
         out.append(f"NON_REPLAYABLE_FLOOR_REMOVED:{','.join(sorted(missing))}")
-    if isinstance(rec.get("initial_backoff_seconds"), (int, float)) and isinstance(rec.get("max_backoff_seconds"), (int, float)) \
-            and rec["initial_backoff_seconds"] > rec["max_backoff_seconds"]:
+    if (
+        isinstance(rec.get("initial_backoff_seconds"), (int, float))
+        and isinstance(rec.get("max_backoff_seconds"), (int, float))
+        and rec["initial_backoff_seconds"] > rec["max_backoff_seconds"]
+    ):
         out.append("BACKOFF_INITIAL_EXCEEDS_MAX")
     sec = pol.get("security") or {}
     gone = MANDATORY_PROTECTED - set(sec.get("protected_path_globs") or [])
@@ -120,19 +143,25 @@ def issues_of(pol: Any, supervisor_policy: dict | None = None) -> list[str]:
     auth = pol.get("authorization")
     if mode in ("PILOT", "ACTIVE") and not auth:
         out.append(f"MODE_{mode}_REQUIRES_AUTHORIZATION")
-    if isinstance(auth, dict) and any("TODO" in str(v).upper() or "PLACEHOLDER" in str(v).upper() or "<" in str(v)
-                                      for v in auth.values()):
+    if isinstance(auth, dict) and any(
+        "TODO" in str(v).upper() or "PLACEHOLDER" in str(v).upper() or "<" in str(v) for v in auth.values()
+    ):
         out.append("AUTHORIZATION_PLACEHOLDER")
     actions = set((pol.get("promotion") or {}).get("allowed_automatic_operational_actions") or [])
     if actions and mode != "ACTIVE":
         out.append("AUTOMATIC_ACTIONS_REQUIRE_ACTIVE_MODE")
     if actions - REVERSIBLE_ACTIONS:
         out.append(f"ACTION_NOT_REVERSIBLE_CATALOGUE:{','.join(sorted(actions - REVERSIBLE_ACTIONS))}")
-    sup = supervisor_policy if supervisor_policy is not None else (
-        load_yaml(SUPERVISOR_POLICY) if SUPERVISOR_POLICY.is_file() else {})
+    sup = (
+        supervisor_policy
+        if supervisor_policy is not None
+        else (load_yaml(SUPERVISOR_POLICY) if SUPERVISOR_POLICY.is_file() else {})
+    )
     rep = (sup or {}).get("repair") or {}
-    for mine, theirs in (("max_repair_attempts_per_incident", "max_attempts_per_incident"),
-                         ("max_repairs_per_hour", "max_attempts_per_hour")):
+    for mine, theirs in (
+        ("max_repair_attempts_per_incident", "max_attempts_per_incident"),
+        ("max_repairs_per_hour", "max_attempts_per_hour"),
+    ):
         if isinstance(rec.get(mine), int) and isinstance(rep.get(theirs), int) and rec[mine] > rep[theirs]:
             out.append(f"EXCEEDS_SUPERVISOR_BUDGET:recovery.{mine}={rec[mine]}>{rep[theirs]}")
     return out
@@ -159,9 +188,16 @@ class Policy:
         return self.mode == "ACTIVE" and action in set(self.get("promotion.allowed_automatic_operational_actions"))
 
 
+def selected_path(path: Path | None = None) -> Path:
+    return Path(path or os.environ.get("FORGE_CRE_POLICY") or POLICY_PATH)
+
+
 def load(path: Path | None = None, supervisor_policy: dict | None = None) -> Policy:
-    p = path or POLICY_PATH
-    data = load_yaml(p)
+    p = selected_path(path)
+    try:
+        data = load_yaml(p)
+    except yaml.YAMLError as exc:
+        raise PolicyInvalid(["POLICY_UNREADABLE:" + type(exc).__name__]) from exc
     errs = issues_of(data, supervisor_policy)
     if errs:
         raise PolicyInvalid(errs)
@@ -172,7 +208,7 @@ class PolicyHolder:
     """Live reload by mtime; an invalid edit is rejected (audit event) and the last good policy stays active."""
 
     def __init__(self, path: Path | None = None):
-        self.path = path or POLICY_PATH
+        self.path = selected_path(path)
         self.policy = load(self.path)
         self.mtime = self.path.stat().st_mtime
         self.rejections: list[list[str]] = []
@@ -192,6 +228,7 @@ class PolicyHolder:
             except (PolicyInvalid, OSError, ValueError) as exc:
                 issues = exc.issues if isinstance(exc, PolicyInvalid) else [str(exc)[:160]]
                 self.rejections.append(issues)
-                emit("audit", "WARN", f"cre policy edit rejected ({len(issues)} issues); last good policy kept: "
-                                      f"{issues[0][:120]}")
+                emit(
+                    "audit", "WARN", f"cre policy edit rejected ({len(issues)} issues); last good policy kept: {issues[0][:120]}"
+                )
         return self.policy

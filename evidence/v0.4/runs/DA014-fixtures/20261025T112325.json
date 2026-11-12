@@ -1,0 +1,32 @@
+{
+  "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q factory/python/tests/test_easa_m2.py factory/python/tests/test_kpi_003.py --basetemp=<loop10>/tmp/fixture-754e93c --junitxml=<loop10>/fixture-754e93c.xml (private state/events)",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+  "duration_s": 7.057,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-fixtures/20261025T112325.xml",
+    "sha256": "5f8b8a47aa59f4831e08ed9d59ebc701c435aecdfb74b91fedc7ac62c5156ad5"
+  },
+  "log": "evidence/v0.4/runs/DA014-fixtures/20261025T112325.log",
+  "log_sha256": "a7c06632e5751c187cd2392ea83c1c05669d142643096aa6daf4854c6638521a",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 7.057,
+    "skipped": 1,
+    "tests": 38,
+    "timestamp": "2026-10-25T11:14:26.178236+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-fixtures",
+  "ts_utc": "2026-10-25T11:23:25.599439+00:00"
+}

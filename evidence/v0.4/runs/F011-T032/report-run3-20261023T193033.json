@@ -1,0 +1,232 @@
+{
+  "at": "2026-10-23T19:33:57.947905Z",
+  "inspector": "gpt-oss:120b",
+  "local_profile": {
+    "config": "config/factory/profiles/local-rtx-v2-omniverse2.yaml",
+    "config_sha256": "c2cc0357c5b4ed32df74bf041e247d335c510aec98d237c091d31f0b19c4390b",
+    "id": "local-rtx-v2-omniverse2",
+    "status": "EXPERIMENTAL - not qualified (feature 011, ADR-0015); selecting it is an explicit owner/operator action",
+    "version": 1
+  },
+  "model": "qwen3-coder:30b",
+  "note": "Inspector NOT_QUALIFIED (F011-T029): verdicts are measurements only.",
+  "rows": [
+    {
+      "calls": 5,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: concurrency_and_reentrancy must address reentrancy and ISR/interrupt use"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 17605.7,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3233,
+          "prompt_tokens": 7959,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 19089.1,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3355,
+          "prompt_tokens": 9700,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 36.8,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/IWDG-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 6,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "VIEWS:TOOL_MISSING:plantuml"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 5805.1,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1051,
+          "prompt_tokens": 2957,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 20094.4,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3479,
+          "prompt_tokens": 9758,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 42.1,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/IWDG-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "VIEWS:TOOL_MISSING:plantuml"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "IWDG-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 6092.7,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1099,
+          "prompt_tokens": 3038,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 20826.0,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 3568,
+          "prompt_tokens": 9804,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 33.0,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/IWDG-LL/qwen3-coder_30b-03/workspace"
+    },
+    {
+      "calls": 5,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "VIEWS:TOOL_MISSING:plantuml"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 16472.8,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 3032,
+          "prompt_tokens": 9711,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 15290.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2861,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 37.4,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/RCC-LL/qwen3-coder_30b-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "VIEWS:TOOL_MISSING:plantuml"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 6661.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 1238,
+          "prompt_tokens": 3281,
+          "status": "VALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 13761.0,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2592,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 26.4,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/RCC-LL/qwen3-coder_30b-02/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "NOT_RUN (visit FAILED)",
+      "inspection": {
+        "status": "NOT_RUN (not frozen)"
+      },
+      "issues": [
+        "design: concurrency_and_reentrancy must address reentrancy and ISR/interrupt use"
+      ],
+      "model": "qwen3-coder:30b",
+      "model_loads": [],
+      "n": 3,
+      "phase": "SWE.2",
+      "pilot": "RCC-LL",
+      "tasks": {
+        "design": {
+          "call_wall_ms": 14713.8,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 2713,
+          "prompt_tokens": 8435,
+          "status": "INVALID"
+        },
+        "interfaces": {
+          "call_wall_ms": 13825.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 2619,
+          "prompt_tokens": 2275,
+          "status": "VALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 28.6,
+      "workspace": "/mnt/data/forge-c/lrtx-v2/state/t032c-scratch/RCC-LL/qwen3-coder_30b-03/workspace"
+    }
+  ],
+  "schema": "forge-c/f011-t032/1"
+}

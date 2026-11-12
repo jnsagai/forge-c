@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python3",
+    "-I",
+    "evidence/v0.4/runs/F011-T046/freeze_testset.py",
+    "verify",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders",
+    "evidence/v0.4/runs/F011-T046/testset.json"
+  ],
+  "duration_s": 1.57,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "254a7afed92c3b3b9e4e9a0e503c55896a54d318",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T046/20261024T072347.log",
+  "log_sha256": "520af730c3d38e6a66a4e8502d6f72993d0aa68df65cd91ca33911d9f737caa9",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T046",
+  "ts_utc": "2026-10-24T07:23:47.140346Z"
+}

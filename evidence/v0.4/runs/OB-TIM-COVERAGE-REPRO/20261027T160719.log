@@ -1,0 +1,29 @@
+{
+  "observation": "SYMPTOM_PRESENT",
+  "root_cause_status": "UNKNOWN",
+  "exit_code": 1,
+  "command": [
+    "llvm-cov",
+    "export",
+    "-summary-only",
+    "-instr-profile=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/build/tests-unit/merged.profdata",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/build/tests-unit/test_tim"
+  ],
+  "stderr": "error: failed to load coverage: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/build/tests-unit/test_tim': truncated coverage data\nerror: could not load coverage information\n",
+  "stdout_bytes": 0,
+  "inputs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/build/tests-unit/test_tim",
+      "sha256": "d8b625c716a3d2856b7329831d474b8fcfe9e7e4f0293677fa6e955e0ade1a63"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-a06f0cfbf6e556cc-a1/workspace/build/tests-unit/merged.profdata",
+      "sha256": "09b66297ca824d9cf6bc4461457295e83a4bb32dc0c26b4daabf0be8a9c070f8"
+    }
+  ],
+  "tool_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/llvm-cov",
+  "tool_version": "LLVM (http://llvm.org/):\n  LLVM version 19.1.7\n  Optimized build.",
+  "interpretation": "A successful replay check establishes the failed export symptom only. Coverage metrics remain unavailable; no factory cause, fix, effectiveness or delivered-code diagnosis is verified."
+}
+
+--- stderr ---

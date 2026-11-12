@@ -1,0 +1,23 @@
+{
+  "scope": "DETERMINISTIC_HISTORICAL_REQUIRED_INTENTS_NOT_DRIVER_RETRY",
+  "sdk_revision": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "native_engine_invocations": 16,
+  "model_requests": 0,
+  "pilot_phase_seconds": 2.243598,
+  "full_scope_phase_seconds": 14.05595,
+  "full_scope_unsupported": 9,
+  "full_scope_independent_contract_pass": 3,
+  "artifacts": {
+    "summary.json": "9fe9d0bcd94d0b1eb78321c1b84776cc0c507019b259f3bc4f5e2772ebb2d4fa",
+    "learning-capture.json": "c3a307e97d9b3f999c695f61cddce60e1f2a6a3e27b9f2c57ef24edd391c4cf6",
+    "initial-learning-capture.json": "35edbcb843dd2c9b8907b86067a101cafc5f30275eea61b89a7ccf4064b6d2cc",
+    "initial-four-intents.json": "8559b2df640130d8e4a955e947d7d54bbb3504255f5a79147e622ad9c5fd47f4"
+  },
+  "learning_capture_overhead": "NOT_SEPARATELY_TIMED; no comparable benefit claim",
+  "raw_vendor_domains_and_engine_outputs": "PRIVATE_NOT_PUBLISHED",
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "source_semantics_changed": false,
+  "old_workorders_missions_and_expenditure": "UNCHANGED",
+  "product_success": "NOT_PROVEN"
+}

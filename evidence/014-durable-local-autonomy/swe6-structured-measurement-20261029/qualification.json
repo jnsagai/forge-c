@@ -1,0 +1,50 @@
+{
+  "schema": "forge-c/local-source-qualification/1",
+  "source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "source_diff_after": false,
+  "host": "master (local; not Omniverse2)",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "41",
+    "time": "197.299",
+    "timestamp": "2026-10-29T16:43:38.767162+00:00",
+    "hostname": "master"
+  },
+  "commands": [
+    "python -m pytest -q factory/python/tests/test_simulation_performance.py factory/python/tests/test_robot_swe6.py factory/python/tests/test_lrtx_swe6.py factory/python/tests/test_fabro_runconfig_context.py factory/python/tests/test_da014_qualification_state.py factory/python/tests/test_m2_mcp.py::test_t018_preflight_live_handshake_and_run_config_has_no_shell --junitxml=swe6-structured-3015e47-local.xml",
+    "ruff check --select E9,F,B factory/python/forge_factory/lrtx/swe6.py factory/python/tests/test_simulation_performance.py",
+    "python specs/014-durable-local-autonomy/validate_spec.py"
+  ],
+  "model_generation_requests": 0,
+  "remote_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
+  "deployed": false,
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "counterexamples": {
+    "runtime_source_revision": "91ce79069b04f8ddd808bf1591cce3366191955f",
+    "new_uncommitted_test_cases_on_old_runtime": true,
+    "tests": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "3",
+      "skipped": "0",
+      "tests": "3",
+      "time": "4.937",
+      "timestamp": "2026-10-29T16:42:07.736060+00:00",
+      "hostname": "master"
+    },
+    "failure": "IndexError parsing the actual assembly task label budgets; positive and two negative bound-measurement cases all reproduced it"
+  },
+  "scope": [
+    "Structured SWE6 bound simulation allocations use existing instrumented test with no model scenario obligation",
+    "Changed statement, missing bound budget and unrelated timing requirement retain engineering coverage",
+    "Actual Robot/compiler/Renode correct-source PASS; copied scenario rejected",
+    "Inherited full IWDG structured SWE6 execution and unchanged gate",
+    "Full scoped six-phase scripted-artifact anchor, no Qwen capability claim",
+    "Inherited Robot and MCP/hook root checks"
+  ],
+  "product_acceptance": "NOT_ESTABLISHED",
+  "native_preparation": "LOCAL_ONLY_NOT_UPLOADED_NOT_RUN; exact bundle and guarded zero-model entrypoint prepared; newer authenticated RUNNING intent required"
+}

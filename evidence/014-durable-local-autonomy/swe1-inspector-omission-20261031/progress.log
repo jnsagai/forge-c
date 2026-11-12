@@ -1,0 +1,60 @@
+2026-10-31T16:26:15Z PREFLIGHT PASS (measured 16:26:15Z): gpu 936MiB used, 0% util, 0 compute procs; afo intent STOPPED, production-local-014 intent PAUSED (sha unchanged per guard); gpuq pending/running empty, no STOP; no own llama-server/gateway/scripts (a foreign tail -F 2670266 on the ornith progress.log, not ours, left alone); ports 18602-18607 free; guard OK; hard limit 17:41:00Z (75 min), server deadline 17:33:00Z, last pass start 17:15:00Z
+2026-10-31T16:28:36Z CHECKOUT: reusing clone /mnt/data/forge-c/operations/swe1-qwen-20261031/repo HEAD 2d91c2fa6f7cc7f7983e98259bd4ddb20fba6733, git status lines 0
+2026-10-31T16:28:36Z RO SNAPSHOT BEFORE: trial-06, ornith report-workspaces (incl. a02 source) + inspect-ws, qwen-medium and qwen-xhigh report-workspaces + inspect-ws + start-ws -> work/ro-before.json
+2026-10-31T16:28:36Z INSPECT-medium READY: fresh cp -a of ornith a02 workspace; isolation: binding.json+workflow.toml path -> copy, durable-binding.json moved to work-medium/isolated/ (work-medium/isolation-edits.json)
+2026-10-31T16:28:36Z INSPECT-xhigh READY: fresh cp -a of ornith a02 workspace; isolation: binding.json+workflow.toml path -> copy, durable-binding.json moved to work-xhigh/isolated/ (work-xhigh/isolation-edits.json)
+2026-10-31T16:28:46Z [medium] SERVER STARTING qwen3.8:27b-q8_0 pid 2756923 port 18602 (factory llama_server_spec argv)
+2026-10-31T16:28:51Z [medium] SERVER UP pid 2756923: health ok after 4.86s; VRAM 46558 MiB (baseline 936); n_ctx_slot = 262144
+2026-10-31T16:28:52Z [medium] GATEWAY UP pid 2757171 port 18603 -> llama 18602 (reasoning {"qwen3.8:27b-q8_0": {"effort": "medium", "extra_output_tokens": 8192, "role_efforts": {}, "system_message_order": "merge_first"}}); VRAM 46558 MiB
+2026-10-31T16:28:53Z [medium] INSPECT RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T16:28:53Z [medium] INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:29:13Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-01 attempt 0 errors 0 wall 19113.5 ms
+2026-10-31T16:29:23Z [medium] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:29:41Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-02 attempt 0 errors 0 wall 27468.1 ms
+2026-10-31T16:29:53Z [medium] INSPECT CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:29:59Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-03 attempt 0 errors 0 wall 19024.8 ms
+2026-10-31T16:30:17Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-04 attempt 0 errors 0 wall 16787.3 ms
+2026-10-31T16:30:23Z [medium] INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:30:39Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-05 attempt 0 errors 0 wall 22443.5 ms
+2026-10-31T16:30:53Z [medium] INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:30:56Z [medium] INSPECT RUNNER PASS 1 FINISHED rc 0 status PASS calls 6 wall {"pass":1,"rc":0,"status":"PASS","calls":"6","wall_s":123.3,"at":"2026-10-31T16:30:56Z"}
+2026-10-31T16:30:57Z [medium] INSPECT CALL inspect:c566b006b392caf1:SWE1-06 attempt 0 errors 0 wall 17866.3 ms
+2026-10-31T16:31:02Z [medium] SERVER+GATEWAY STOPPED (STOP_REQUESTED) server 2756923 signal TERM exit 0 gone=yes; gateway 2757171 gone=yes; GPU after 936 MiB apps []; ports 18602 open=no 18603 open=no; VRAM peak 46590 MiB
+2026-10-31T16:31:04Z [medium] INSPECT GATE rc 0: {"phase": "SWE.1", "decision": "PASS", "reason": "INS-SWE.1-001", "failed_inspections": 0, "max_rework_cycles": 3} 
+2026-10-31T16:31:04Z [xhigh] SERVER STARTING qwen3.8:27b-q8_0 pid 2762164 port 18605 (factory llama_server_spec argv)
+2026-10-31T16:31:09Z [xhigh] SERVER UP pid 2762164: health ok after 4.89s; VRAM 46558 MiB (baseline 936); n_ctx_slot = 262144
+2026-10-31T16:31:10Z [xhigh] GATEWAY UP pid 2762413 port 18606 -> llama 18605 (reasoning {"qwen3.8:27b-q8_0": {"effort": "xhigh", "extra_output_tokens": 32768}}); VRAM 46558 MiB
+2026-10-31T16:31:11Z [xhigh] INSPECT RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T16:31:11Z [xhigh] INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:31:41Z [xhigh] INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:31:49Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-01 attempt 0 errors 0 wall 36581.4 ms
+2026-10-31T16:32:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:32:41Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:33:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:33:41Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:34:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:34:41Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:35:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:35:41Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:36:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:36:41Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:37:11Z [xhigh] INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:37:37Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-02 attempt 0 errors 0 wall 347762.0 ms
+2026-10-31T16:37:41Z [xhigh] INSPECT CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict FAIL findings 1 (1 calls)
+2026-10-31T16:38:11Z [xhigh] INSPECT CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict FAIL findings 1 (1 calls)
+2026-10-31T16:38:41Z [xhigh] INSPECT CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict FAIL findings 1 (1 calls)
+2026-10-31T16:38:59Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-03 attempt 0 errors 0 wall 83626.1 ms
+2026-10-31T16:39:11Z [xhigh] INSPECT CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:39:41Z [xhigh] INSPECT CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:40:07Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-04 attempt 0 errors 0 wall 68271.5 ms
+2026-10-31T16:40:11Z [xhigh] INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:40:41Z [xhigh] INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:41:11Z [xhigh] INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:41:19Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-05 attempt 0 errors 0 wall 72003.1 ms
+2026-10-31T16:41:41Z [xhigh] INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:41:55Z [xhigh] INSPECT RUNNER PASS 1 FINISHED rc 0 status REWORK calls 6 wall {"pass":1,"rc":0,"status":"REWORK","calls":"6","wall_s":644.1,"at":"2026-10-31T16:41:55Z"}
+2026-10-31T16:41:55Z [xhigh] INSPECT CALL inspect:c566b006b392caf1:SWE1-06 attempt 0 errors 0 wall 35198.9 ms
+2026-10-31T16:42:01Z [xhigh] SERVER+GATEWAY STOPPED (STOP_REQUESTED) server 2762164 signal TERM exit 0 gone=yes; gateway 2762413 gone=yes; GPU after 936 MiB apps []; ports 18605 open=no 18606 open=no; VRAM peak 46590 MiB
+2026-10-31T16:42:03Z [xhigh] INSPECT GATE rc 11: gate execution bi {"phase": "SWE.1", "decision": "REWORK", "reason": "INS-SWE.1-001", "failed_inspections": 1, "max_rework_cycles": 3} 
+2026-10-31T16:42:03Z RUN DONE
+2026-10-31T16:43:19Z CLEANUP VERIFIED (16:42:29Z): servers 2756923/2762164 and gateways 2757171/2762413 gone, no own llama-server/gateway/scripts (own monitor tail stopped), GPU 936 MiB 0 compute apps, ports 18602-18607 closed, guard OK, runner 2742646 + conductor 3699940 untouched, gpuq empty, no STOP; intents unchanged; read-only proof: all 9 roots identical (work/ro-compare.json)

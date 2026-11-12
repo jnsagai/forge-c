@@ -1,0 +1,110 @@
+......FFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+_ test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning _
+
+    def test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning():
+        active = D.heldout_workorders()
+        assert "WO-0002A-STM32N6-RCC-LL-r168" in active
+>       assert "WO-0009B-STM32N6-IWDG-HAL-rc3" not in active
+E       AssertionError: assert 'WO-0009B-STM32N6-IWDG-HAL-rc3' not in {'WO-0002A-STM32N6-RCC-LL-r168', 'WO-0002A-STM32N6-RCC-LL-r170', 'WO-0008A-STM32N6-RCC-LL-b001', 'WO-0008A-STM32N6-RCC-LL-rc1', 'WO-0008B-STM32N6-RCC-HAL-b002', 'WO-0008B-STM32N6-RCC-HAL-b004', ...}
+
+factory/python/tests/test_da014_offline_disposition.py:107: AssertionError
+_ test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale _
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_confirmed_human_review_op0/export.zip'), 'key': PosixPat.../pytest-85/test_confirmed_human_review_op0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale(env):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env)
+        kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+        first = D.route(env["recs"], **kw)
+        registry = CapaRegistry(CREStore(), load())
+        records = registry.all()
+>       assert len(records) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+factory/python/tests/test_da014_offline_disposition.py:122: AssertionError
+_ test_other_review_verdicts_are_kept_without_fabricating_defect_capas[FALSE_FINDING] _
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are0/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'FALSE_FINDING'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+>       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError
+_ test_other_review_verdicts_are_kept_without_fabricating_defect_capas[MISSING_INPUT] _
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are1/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are1/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'MISSING_INPUT'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+>       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError
+_ test_other_review_verdicts_are_kept_without_fabricating_defect_capas[OUT_OF_SCOPE] _
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are2/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are2/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'OUT_OF_SCOPE'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+>       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError
+_____ test_reusing_a_review_id_with_different_signed_content_is_a_conflict _____
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_reusing_a_review_id_with_0/export.zip'), 'key': PosixPat.../pytest-85/test_reusing_a_review_id_with_0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_reusing_a_review_id_with_different_signed_content_is_a_conflict(env):
+        _rec(env)
+        kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+        D.route(env["recs"], **kw)
+        before = kw["out"].read_bytes()
+        _rec(env, verdict="FALSE_FINDING")
+        result = D.route(env["recs"], **kw)
+>       assert result["routed"] == 0 and result["refused"][0]["code"] == "DSP_ID_CONFLICT"
+                                         ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+factory/python/tests/test_da014_offline_disposition.py:154: IndexError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_other_review_verdicts_are_kept_without_fabricating_defect_capas[FALSE_FINDING]
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_other_review_verdicts_are_kept_without_fabricating_defect_capas[MISSING_INPUT]
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_other_review_verdicts_are_kept_without_fabricating_defect_capas[OUT_OF_SCOPE]
+FAILED factory/python/tests/test_da014_offline_disposition.py::test_reusing_a_review_id_with_different_signed_content_is_a_conflict

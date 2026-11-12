@@ -1,0 +1,11 @@
+{
+  "continuation_kind": "REWORK_EXACT_RETAINED_QWEN_ARTIFACTS",
+  "previous_job_id": "afo-agent-97d070852addbf37acf1b7c9",
+  "previous_result": "FAILED_PROTOCOL; no valid submission; independent frozen baseline2FAIL/candidate2FAIL; native CAPABILITY_LIMIT after13served requests",
+  "independent_failure_1": "Generated isolated MCP child does not inherit the host environment. Candidate removed default FORGE_DATA_ROOT; test child reports PLANTUML_NOT_AVAILABLE with an installed jar under the configured data root.",
+  "independent_failure_2": "Explicit MCP FORGE_DATA_ROOT override produces duplicate TOML keys; strict tomllib rejects Cannot overwrite a value. Both default and explicit override cases must work.",
+  "independent_failure_3": "Retained standalone reproducer prints diagnostics after SYMPTOM_PRESENT. Existing CRE protocol requires the last nonblank line to be exactly the submitted symptom signature on baseline and SYMPTOM_ABSENT on candidate.",
+  "verification_method": "Independent oracle parses generated config with tomllib and executes the generated hook and isolated child environment, including data/state/binding paths with spaces. Candidate-owned tests are supplemental.",
+  "submission_bounds": "summary10..300chars; reproducer10..200chars plain relative .py path; symptom_signature8..160chars. No prose appended to path. Final agent-output JSON follows SKILL contract.",
+  "source_authority": "Only the two exact retained native Qwen artifacts are seeded. No operator-authored repair, reference patch or hidden oracle source supplied."
+}

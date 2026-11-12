@@ -1,0 +1,38 @@
+{
+  "benefit": "UNKNOWN",
+  "candidate_file_sha256": "a519ba17f62bcbfedf12e1f0b45be6ce44c078f1421b9bebcb80ad880c4c647f",
+  "exposed": false,
+  "provenance": {
+    "archive_sha256": "995f31e322a1feb0370ecec97709424beab02c1d84102c02fae09b50113e4ad6",
+    "artifact": "workproducts/SWE.2/software_architecture.md",
+    "artifact_sha256": "76f2555249f9361a9a9554b5acfd942c4c42bcbdde804fc35ddf1f4267a357f3",
+    "baseline_hash": "a8e0347b9e75418a9ce42937ef277b51c72f132bc13dae28b25fe779239bad05",
+    "classification": {
+      "evaluation_holdout": false,
+      "intended_use": "TRAINING_REFERENCE",
+      "limitation": "Exclude this source from future learning evaluation; existing inspector holdouts remain excluded.",
+      "record_ref": "user-session:2026-10-28:reference-artifacts-ok"
+    },
+    "excerpt_sha256": "4a4a7b4bbcbfdf08acc4f93aeec63eb41023ef8d8e450769544e4fc43a7792ef",
+    "execution_id": "01M5WGH6D5HDSNEEMGD49D1DS2",
+    "factory_revision": {
+      "basis": "recorded_at_launch",
+      "branch": "HEAD",
+      "commit": "4f4e2ead7406110fb88fa3bb8159573fa3e84527",
+      "dirty": false
+    },
+    "phase": "SWE.2",
+    "selection_sha256": "547e93575dc91f9d1d0cc18782dba2781550748f391c94ed47baa13bc039122c",
+    "source_applicability": {
+      "holdout": false,
+      "source_version": "2893bcabc6d304145dffd487d193a290f54f8e514aeb65f526e6f00f026c8dfd",
+      "target": "STM32N657X0 (STM32N6x5/x7 family)",
+      "tool_versions": {}
+    },
+    "work_order": "WO-AFO-c2fd276494a54e7f-a1"
+  },
+  "qualified": false,
+  "status": "PENDING_INDEPENDENT_QUALIFICATION",
+  "store": "isolated loop10 reference preparation; no production memory writes",
+  "wrapped_excerpt_characters": 607
+}

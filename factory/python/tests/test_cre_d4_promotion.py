@@ -94,9 +94,10 @@ def test_tampered_fixture_harness_or_oracle_is_detected(tmp_path):
 
 
 # ---- CRE-T026 / AT-023 -------------------------------------------------------------------------------------------
-LAZY = ("        if b.exit_code != 0:\n            failed += 1",
-        "        if b.exit_code != 0:\n            passed += 1  # concealment: a build failure is reported as a pass\n"
-        "            continue\n            failed += 1")
+# anchored on the build-failure counter (b2b35566 put the progress update between the `if` and the counter)
+LAZY = ("            failed += 1\n            issues.append(f\"BUILD_FAIL:{t.name}\")",
+        "            passed += 1  # concealment: a build failure is reported as a pass\n"
+        "            continue\n            failed += 1\n            issues.append(f\"BUILD_FAIL:{t.name}\")")
 
 
 def test_independent_runner_evaluates_oracles_and_finds_regressions(clone, env):
@@ -123,8 +124,20 @@ def test_unsafe_but_faster_candidate_is_rejected_and_benign_one_is_only_eligible
     bad = candidate(clone, "cand-weaken", WEAKEN)
     d = PM.evaluate(bad, "HEAD", store, pol, kind="CHANGE", repo=clone, skip_quality=True)
     gates = {g["name"]: g["result"] for g in d["hard_gates"]}
-    # removing the gate-level anti-bending scan passes the reproducers and the golden suite - the holdout catches it
-    assert d["decision"] == "REJECTED" and gates["holdout"] == "FAIL" and gates["golden_benchmark"] == "PASS"
+    # removing the gate-level anti-bending scan is REJECTED by a behavioural gate: a frozen reproducer that exercises
+    # the scan (prevention, e.g. RPR-115) or the holdout - never by file/policy checks alone, never accepted by golden
+    failed = [n for n, r in gates.items() if r == "FAIL"]
+    assert d["decision"] == "REJECTED" and failed and set(failed) <= {"prevention", "holdout"}, gates
+    assert gates.get("golden_benchmark") in ("PASS", "NOT_RUN"), gates
+    if gates["prevention"] == "PASS":
+        assert gates["holdout"] == "FAIL", gates
+    # independent of which reproducers the frozen manifest holds: the golden suite alone passes the weakening and the
+    # holdout catches it (the reason the holdout exists)
+    with WorktreePool(clone) as pool:
+        runs = {k: (BM.run_suite(k, "HEAD", pool, store, pol), BM.run_suite(k, bad, pool, store, pol))
+                for k in ("golden", "holdout")}
+    assert not BM.regressions(*runs["golden"]), runs["golden"][1]["results"]
+    assert BM.regressions(*runs["holdout"]) or any(r["status"] in ("FAIL", "ERROR") for r in runs["holdout"][1]["results"])
     assert PM.schema_errors({k: v for k, v in d.items() if k not in ("candidate_revision", "baseline_revision")}) == []
     good = candidate(clone, "cand-uuid", {"factory/python/forge_factory/reliability/taxonomy.py": (
         '    t = re.sub(r"\\b[0-9a-f]{12,64}\\b", "<hash>", t)',
@@ -208,7 +221,13 @@ def test_concealed_negative_result_is_caught_by_the_runner(clone, env):
     lazy = candidate(clone, "adv-conceal", {"factory/python/forge_factory/mcp/servers/tests.py": LAZY})
     d = PM.evaluate(lazy, "HEAD", store, pol, kind="CHANGE", repo=clone, skip_quality=True)
     gates = {g["name"]: (g["result"], g["reason_code"]) for g in d["hard_gates"]}
-    assert d["decision"] == "REJECTED" and gates["golden_benchmark"] == ("FAIL", "REGRESSION")
+    assert d["decision"] == "REJECTED"
+    # Since RPR-132 (CAPA-132) a frozen reproducer drives run_unit's BUILD_FAIL path, so the prevention gate can
+    # reject the concealment before the golden benchmark runs; either independent runner catching it is the
+    # property. The benchmark-only path stays covered by test_independent_runner_evaluates_oracles_and_finds_regressions.
+    assert gates["golden_benchmark"] == ("FAIL", "REGRESSION") or (
+        gates["prevention"] == ("FAIL", "RESOLVED_FAILURE_REAPPEARED")
+        and any("RPR-132:" in r for r in d["reasons"])), (gates, d["reasons"])
 
 
 # ---- CRE-T043 (convergence): candidate code runs in an OS-hardened worktree ------------------------------------

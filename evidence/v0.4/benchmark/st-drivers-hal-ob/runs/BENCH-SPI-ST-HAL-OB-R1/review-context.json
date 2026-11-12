@@ -1,0 +1,167 @@
+{
+  "recorded_at": "2026-10-27T14:36:43.788269Z",
+  "request_id": "BENCH-SPI-ST-HAL-OB-R1",
+  "order_id": "afo-d5622d4914a0ac9d",
+  "attempt_id": "afo-d5622d4914a0ac9d-a1",
+  "archive_integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-d5622d4914a0ac9d-a1/forge-c-WO-AFO-d5622d4914a0ac9d-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "phases": {
+    "SWE.1": {
+      "inspections_passed": 1,
+      "inspections_failed": 1,
+      "reworks": 2,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.1-002"
+    },
+    "SWE.2": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 1,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.2-001"
+    },
+    "SWE.3": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.3-001"
+    },
+    "SWE.4": {
+      "inspections_passed": 0,
+      "inspections_failed": 0,
+      "reworks": 1,
+      "upstream_returns": 0,
+      "final": "BLOCKED",
+      "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-02, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-03, UT:SPE); stopped early"
+    }
+  },
+  "gap_count": 310,
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding": 288
+  },
+  "defects": [
+    {
+      "id": "DEF-001",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_SPI_Init does not provide general runtime configuration rejection for SPI1: most checks are assert_param, disabled in the delivered configuration; e.g. DataSize=0 reaches CR1/CFG1/CFG2 writes and returns HAL_OK. USE_SPI_CRC=0 also overwrites an invalid CRCCalculation with DISABLE. Route to delivered-code owner; requirements remain unchanged.",
+      "evidence_refs": [
+        "workproducts/SWE.1/software_requirements.md:33",
+        "software/hal/stm32n6xx_hal_spi.c:253",
+        "software/hal/stm32n6xx_hal_spi.c:294",
+        "software/hal/stm32n6xx_hal_spi.c:378",
+        "inputs/vendor/include/stm32n6xx_hal_conf.h:506"
+      ]
+    },
+    {
+      "id": "DEF-002",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_SPI_Init sets SSI for a software-NSS master only when NSSPolarity is LOW. A valid HIGH-polarity master configuration starting with SSI=0 leaves SSI clear, contrary to SWR-001's unconditional software-select SSI requirement. Route to delivered-code owner; do not weaken SWR-001.",
+      "evidence_refs": [
+        "workproducts/SWE.1/software_requirements.md:5",
+        "software/hal/stm32n6xx_hal_spi.c:392"
+      ]
+    },
+    {
+      "id": "DEF-003",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN HAL_SPI_Receive with CRC disabled closes immediately after consuming Size frames; its only EOT wait is conditional on CRC enabled. An SR schedule with data available but EOT stalled can return HAL_OK and disable SPI before end of transfer. Route to owner for completion-contract verification/fix.",
+      "evidence_refs": [
+        "workproducts/SWE.1/software_requirements.md:17",
+        "software/hal/stm32n6xx_hal_spi.c:1339",
+        "software/hal/stm32n6xx_hal_spi.c:1350",
+        "inputs/vendor/include/stm32n6xx_hal_conf.h:238"
+      ]
+    },
+    {
+      "id": "DEF-004",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN data waits return HAL_TIMEOUT with ERROR_TIMEOUT, not ERROR_FLAG. Transmit/TransmitReceive EOT expiry sets FLAG but returns HAL_ERROR. Receive omits EOT wait with USE_SPI_CRC=0. HAL_MAX_DELAY bypasses deadlines; progress/suspend branches can skip elapsed checks. Route to owner.",
+      "evidence_refs": [
+        "workproducts/SWE.1/software_requirements.md:41",
+        "software/hal/stm32n6xx_hal_spi.c:927",
+        "software/hal/stm32n6xx_hal_spi.c:1040",
+        "software/hal/stm32n6xx_hal_spi.c:1339",
+        "software/hal/stm32n6xx_hal_spi.c:1666",
+        "software/hal/stm32n6xx_hal_spi.c:1685",
+        "software/hal/stm32n6xx_hal_spi.c:4010"
+      ]
+    },
+    {
+      "id": "DEF-005",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-008 reproduces DEF-001 against FROZEN delivered code: DataSize=0 and DataSize=32 must be rejected with HAL_ERROR and preserve CR1/CFG1/CFG2, but the requirement-based return and register-preservation checks fail. The oversized packet case also fails. The test retains the SWE.1 expectations; route the delivered-code finding to the owner.",
+      "evidence_refs": [
+        "artifact:sha256:b54f382b4892e1c87e5916463eb602bd1363acc61ec9da8f479919f9fd00e26f",
+        "software/tests/unit/test_spi.c",
+        "workproducts/SWE.1/software_requirements.md:33",
+        ".forge-run/defects/DEF-001.json"
+      ]
+    },
+    {
+      "id": "DEF-006",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-010 fails the unchanged SWR-010 contract: HAL_SPI_Transmit data-stall expiry sets ERROR_TIMEOUT instead of ERROR_FLAG; EOT expiry sets ERROR_FLAG but returns HAL_ERROR instead of HAL_TIMEOUT. Confirms DEF-004 with failing unit evidence. Frozen code requires owner disposition.",
+      "evidence_refs": [
+        "artifact:sha256:b54f382b4892e1c87e5916463eb602bd1363acc61ec9da8f479919f9fd00e26f",
+        "software/tests/unit/test_spi.c:200",
+        "software/tests/unit/test_spi.c:206",
+        "software/hal/stm32n6xx_hal_spi.c:1027",
+        "software/hal/stm32n6xx_hal_spi.c:1055",
+        ".forge-run/defects/DEF-004.json"
+      ]
+    }
+  ],
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "ecfd0162c1032b9a4a1818216b76830a6725bd538e504776dfd0336cbca83b61"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/package.json",
+      "sha256": "1b0542e786e4505b102e990082608eb5e15e9adc4acc0b4716a96d0ed03e9ba5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "fe59621a848e30d86fbb6ada3b571bab27908b2e5b0d61c014383c4e775d9bb4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "971b2c28896506051c64d194d2e20a37f419d43acbe9cda5802576895026c47f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "92ac1ab01d0ab496a0b31fa6e60ec242fccf2a400720ef85e38827381af02b2e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b49a4e39cdef677ff3a21132d4f491c11161ec3bd1f62286af9c7a4c86481ef0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "31d62d925574cc8041fad7e3d28d9088dba781c9edc45aa70745daa84cf5c3e4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "f85e93c7cf6d0822d206d397ad330a1da10f0d9e8685de4412520440a0e669c7"
+    }
+  ],
+  "review_status": "PENDING_CAUSE_REVIEW",
+  "note": "Context capture is not an SC-005 or owner disposition claim."
+}

@@ -1,0 +1,8 @@
+{
+  "before": {
+    "raw_sha256": "c94f648c734fa96dd9a622453e22ed513545695ab3196cd292379b2f624d56ce",
+    "raw_gzip_sha256": "456e161a655dea5dc5f254ca665ddcf0654ec8022ff4d7ddcf7a5e06a4bfa43d",
+    "readable_view_sha256": "8dcd8a4dc0efc05f25f6c93a000c4359ba2510c8fff76662724d6d1f06f0c35e",
+    "view_transformation": "TRAILING_WHITESPACE_NORMALIZATION_ONLY"
+  }
+}

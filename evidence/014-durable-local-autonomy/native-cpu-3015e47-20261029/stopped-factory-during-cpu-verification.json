@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-29T17:15:28.435970Z",
+  "operator": {
+    "mode": "STOPPED",
+    "epoch": 33,
+    "effective_stop": true
+  },
+  "provider_quiet": true,
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "production_source_clean": true,
+  "outstanding_requests": 0,
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 0,
+    "requests": 345,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "unique_executions": 4,
+    "unbounded_historical_usage": false
+  },
+  "execution": {
+    "job_id": "afo-product-b715f920180f440b708e55a0",
+    "execution_liveness": "QUIESCENT",
+    "resource_lease": "RELEASED",
+    "task_outcome": "BLOCKED",
+    "outcome_reason": null,
+    "native_run_ids": [
+      "01M63ZTJ5QM1R96484Y2KN97H6"
+    ]
+  },
+  "parent_order": {
+    "order_id": "afo-774900b297bdde37",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "read_only": true,
+  "model_requests": 0,
+  "operator_or_service_mutation": false
+}

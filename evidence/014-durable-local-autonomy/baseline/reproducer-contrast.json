@@ -1,0 +1,68 @@
+[
+  {
+    "run_id": "rr-5942b540838e60fa3bb8",
+    "reproducer_id": "RPR-041",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "HAL unit test cannot observe LL polls",
+    "log_sha256": "3f87f0d9c67074d9f4b3a32a9571f276e46ffd60390b5d385cfb9cca989f3df2",
+    "at": "2026-10-25T09:54:48.154112Z"
+  },
+  {
+    "run_id": "rr-e7674f42962403313305",
+    "reproducer_id": "RPR-044",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "state query of the LL test double ignores Enable",
+    "log_sha256": "b9978d8aaa8775ddbee67be7221d755fe700071dcba9c4682809cad1d3d84625",
+    "at": "2026-10-25T09:54:49.430739Z"
+  },
+  {
+    "run_id": "rr-74a69d7716aef581e99d",
+    "reproducer_id": "RPR-047",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "LL test double has no state preset and accepts internal helper calls",
+    "log_sha256": "8e5ec87e6d18d79b79d5155fee2cde2937f07d9bd38c050a225ba452486cad10",
+    "at": "2026-10-25T09:54:50.608763Z"
+  },
+  {
+    "run_id": "rr-d714d8fec497d605cc1b",
+    "reproducer_id": "RPR-041",
+    "revision": "e0b340b16bf7a2debdc7be3cfc095adf93d18782",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "HAL unit test cannot observe LL polls",
+    "log_sha256": "3f87f0d9c67074d9f4b3a32a9571f276e46ffd60390b5d385cfb9cca989f3df2",
+    "at": "2026-10-25T09:54:52.213042Z"
+  },
+  {
+    "run_id": "rr-1d1fbfb979c888e69c4a",
+    "reproducer_id": "RPR-044",
+    "revision": "e0b340b16bf7a2debdc7be3cfc095adf93d18782",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "state query of the LL test double ignores Enable",
+    "log_sha256": "b9978d8aaa8775ddbee67be7221d755fe700071dcba9c4682809cad1d3d84625",
+    "at": "2026-10-25T09:54:55.031602Z"
+  },
+  {
+    "run_id": "rr-4360dfe6b0c94e5937e6",
+    "reproducer_id": "RPR-047",
+    "revision": "e0b340b16bf7a2debdc7be3cfc095adf93d18782",
+    "role": "verification",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "LL test double has no state preset and accepts internal helper calls",
+    "log_sha256": "8e5ec87e6d18d79b79d5155fee2cde2937f07d9bd38c050a225ba452486cad10",
+    "at": "2026-10-25T09:54:56.332295Z"
+  }
+]

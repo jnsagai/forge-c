@@ -1,0 +1,18 @@
+{
+  "schema": "forge-c/external-engineering-study/1",
+  "started_at": "2026-10-27T12:13:20.277538Z",
+  "source_revision": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "authority": "owner remote Qwen engineering-work request 2026-10-27",
+  "scope": "READ_ONLY_BUS_QUERY_HELPER_REVIEW_NOT_REPAIR_OR_ROLE_QUALIFICATION",
+  "model": "qwen3.6:35b-a3b",
+  "max_calls": 1,
+  "calls_attempted": 0,
+  "output_reserve": 1024,
+  "input_plus_output_bound": 16000,
+  "query_wall_bound_seconds": 180,
+  "product_success": "NOT_MEASURED",
+  "max_upstream_attempts": 3,
+  "conservative_total_token_bound": 48000,
+  "learning_benefit": "NOT_MEASURED",
+  "deployment": "NOT_ACTIVATED"
+}

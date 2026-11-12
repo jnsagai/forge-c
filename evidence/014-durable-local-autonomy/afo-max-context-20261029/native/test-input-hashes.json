@@ -1,0 +1,37 @@
+[
+  {
+    "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+    "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+    "bytes": 1056393
+  },
+  {
+    "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+    "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+    "bytes": 28656
+  },
+  {
+    "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+    "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+    "bytes": 3455
+  },
+  {
+    "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+    "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+    "bytes": 3358
+  },
+  {
+    "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+    "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+    "bytes": 697
+  },
+  {
+    "path": "examples/0014-crc-st/inputs/inputs-manifest.json",
+    "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+    "bytes": 1362
+  },
+  {
+    "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+    "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+    "bytes": 455865
+  }
+]

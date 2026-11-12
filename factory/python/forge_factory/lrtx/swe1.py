@@ -18,23 +18,130 @@ import json
 import re
 from pathlib import Path
 
-from ..common import sha256_bytes, utc_now
+from ..brownfield import interface as BI
+from ..common import canonical_json, sha256_bytes, utc_now
+from ..inspection.ears import RESET_AFTER, STARTUP_NO_CALL
 from . import structured as S
 from . import visit as V
 
 MAX_FIELDS = 5
+FUNCTIONAL_SOURCE_MAX_CHARS = 1_048_576  # CAPA-199: the whole functional chapter (was 20000 -> SOURCE_TOO_LARGE)
+SCOPE_COVERAGE_RULE = (
+    "A REGISTER.FIELD explicitly named in the in-scope work-order text must not be listed in not_covered. "
+    "A verifier limitation is an unresolved verification gap, not permission to remove a requested field."
+)
+# Owner change 2026-11-02 ("Build all four"; harvest of the cloud cross-inspection of local SWE.1 baselines, classes
+# X5-X12): author contract rules of the SWE.1 author packets, in generic wording (no peripheral, register or vendor text).
+AR_DOMAIN = (
+    "AR-1 argument domain: for a function that takes a value, the requirement decides the supported argument domain. "
+    "When the parameter type can hold values the field cannot, either state a caller precondition that excludes them "
+    "or state the driver handling (masking, rejection or saturation) - never leave this decision, or a recommended "
+    "minimum or maximum, to an open point. Its verification uses the minimum and the maximum supported value, and one "
+    "out-of-domain value when the driver handles it.")
+AR_ENABLING = (
+    "AR-2 enabling conditions: when the source names conditions under which a field write takes no effect or is not "
+    "allowed (write protection, an update still in progress, missing access rights), the statement states them as an "
+    "EARS While-clause ('While <condition>, when <call>, the ... shall ...'), so they are caller preconditions of the "
+    "supported domain.")
+AR_DISCRIMINATING = (
+    "AR-3 verification that can fail: a write case's value differs from the field's reset and initial contents (a "
+    "boundary case equal to the reset value starts from other contents), the surrounding bits of the register are "
+    "pre-set to non-zero values before a write or preservation check, and each function the requirement names has its "
+    "own pass condition.")
+AR_OBLIGATIONS = (
+    "AR-4 owner obligations: an owner-approved obligation is a provided source, not invented behaviour - implement it "
+    "in full and with its own scope (an obligation on accesses is not narrowed to writes).")
+AR_OBLIGATION_GAPS = (
+    " obligation_gaps only when an input the obligation needs is missing; the reason names that input. When the "
+    "requirements implement only part of an obligation, write the remainder, or (non-critical obligations only) record "
+    "the remainder in obligation_gaps with the reason.")
+AR_PRESERVATION = (
+    "AR-5 preservation: a rule for all functions is worded 'changes only the fields its requirement names, except the "
+    "side effects the source documents' (also when a coverage rule says a write changes only the named bit), so it "
+    "never contradicts a requirement that changes several fields together.")
+AR_PAGE = "AR-6 source page: source_page is a page of the section the statement cites."
+PROHIBITION_RULE = (
+    "A requirement that prohibits an access (no read, no write, no access before the first call or in another window) "
+    "is verified_by target_robot_test, never host_unit_test (the host fake register block keeps no access log): its "
+    "verification passes when the target simulation's register-access log shows no such access in the prohibited "
+    "window - never by final register contents alone.")
+# a statement that prohibits a register access (X12); startup invariants are matched by STARTUP as before
+PROHIBITION = re.compile(r"\bshall\s+(?:not|never)\s+(?:read|write|access)\b|"
+                         r"\bshall\s+(?:perform|make|issue)\s+no\s+(?:\w+\s+)?(?:reads?|writes?|access(?:es)?)\b", re.I)
+REGISTER_RULES = " ".join((AR_DOMAIN, AR_ENABLING, AR_DISCRIMINATING, AR_PAGE))
+CROSSCUT_RULES = " ".join((AR_DISCRIMINATING, AR_PRESERVATION, AR_PAGE))
+# owner 2026-11-03 ("consider not only positive paths but negative ones as well, to cover the behavior of the sw in
+# corner cases"), work orders with unit_verification
+AR_NEGATIVE = (
+    "AR-7 negative paths and corner cases: besides the positive path, each functional requirement set states the "
+    "software's behaviour in its negative paths and corner cases, as far as the inputs support them: an argument "
+    "outside its field width or valid range (state whether the driver keeps only the field bits - an effect with "
+    "requested and value - or rejects it), a NULL or invalid instance where the API takes one, a repeated or idempotent "
+    "call, a call in the wrong state or order, timeout and not-ready paths of a waiting function, and the register bits "
+    "that must stay unchanged. Ground each in the provided sources (RM, datasheet, guideline, owner obligations) or "
+    "state it explicitly as the driver's defined behaviour ('as the driver's defined behaviour, ...'); never invent a "
+    "hardware fact. A write of a field narrower than 32 bits names its out-of-range input behaviour (an effect with "
+    "requested, or a statement on an input above the field width), or open_points states why no invalid input exists.")
+CORNER_RX = re.compile(r"\b(above|exceed\w*|out[- ]of[- ]range|outside (?:its|the) (?:field|range)|wider than|greater "
+                       r"than|beyond|invalid|truncat\w*|confin\w*|only (?:the )?(?:low|lower)|low(?:er)? \d+ bits|mask"
+                       r"\w*|ignor\w*|reject\w*|discard\w*)\b", re.I)
+# an explicitly stated valid input domain ('called with a value from 0U to 15U'): the input outside it is the caller's
+# precondition violation, stated as such - accepted by the cheap check (RPR-076/077/078/108 statements)
+RANGE_RX = re.compile(r"\bfrom\s+(?:0x)?[0-9A-Fa-f]+U?\s+(?:to|through)\s+(?:0x)?[0-9A-Fa-f]+U?\b|\bin the range\b|"
+                      r"\bbetween\s+(?:0x)?[0-9A-Fa-f]+U?\s+and\s+(?:0x)?[0-9A-Fa-f]+U?\b", re.I)
+# the written value comes from the caller (an argument), not a fixed key/constant of the requirement
+VALUE_ARG_RX = re.compile(r"\b(called with (?:a|the|any|an)\b|argument|parameter|requested|the (?:given |input )?value\b|"
+                          r"value from\b)", re.I)
+
+
+def corner_case_findings(doc: dict, g: dict) -> list[str]:
+    """AR-7 check (cheap and safe): every field narrower than 32 bits that a requirement of this task WRITES a
+    caller-supplied value to has a corner case for an input above its width - an effect with requested, a statement on
+    that field naming the out-of-range behaviour, the explicitly stated valid input range of the caller value, or an
+    open point stating that no invalid input exists.
+    Set/clear/query/no-write effects (single bits, flags, accessors without a value) are never affected, nor is a
+    full-width field."""
+    out = []
+    reqs = doc.get("requirements") or []
+    opens = " ".join(doc.get("open_points") or [])
+    for f, v in (g.get("fields") or {}).items():
+        width = int(v["msb"]) - int(v["lsb"]) + 1
+        effects = [e for r in reqs for e in r["effects"] if e["field"] == f]
+        valued = [r for r in reqs if VALUE_ARG_RX.search(r["statement"])
+                  and any(e["field"] == f and e["op"] == "write" for e in r["effects"])]
+        if width >= 32 or not valued:  # a fixed key/constant write or no write: nothing out of range to state
+            continue
+        full = f"{g['register']}.{f}"
+        if any(e.get("requested") for e in effects):
+            continue
+        if any(full in r["statement"] and CORNER_RX.search(r["statement"]) for r in reqs):
+            continue
+        if any(RANGE_RX.search(r["statement"]) for r in valued):  # the valid input domain is stated explicitly
+            continue
+        if f in opens and re.search(r"\bno (?:invalid|out[- ]of[- ]range)\b", opens, re.I):
+            continue
+        out.append(f"AR-7: the write of {full} ({width} bits) states no corner case: add the behaviour for an input "
+                   f"above the field width (an effect with requested and the field value, a statement naming that "
+                   f"input, or the valid input range 'from 0U to <max>'), or state in open_points that no invalid "
+                   f"input exists for {full}")
+    return out
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
 GAPS = "traceability/upstream_gaps.md"
 SAFETY = "safety/software_safety_requirements.md"
-STARTUP = re.compile(r"^\s*While no .*after reset", re.I)
+STARTUP = re.compile(r"^\s*" + STARTUP_NO_CALL, re.I)
+# CAPA-120: an input a verification calls with ("call ... with 0x00001234", "LL_X_Set(0x1234U)"), not a preset or an
+# expected register word
+CALL_INPUT = re.compile(r"(?:\bwith\s+(?:the\s+)?(?:value\s+|input\s+|argument\s+)?|\w\(\s*)(0x[0-9A-Fa-f]{1,8})(?![0-9A-Fa-f])")
 
 EFFECT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["case", "register", "field", "op", "value"],
                  "properties": {"case": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,47}$"},
                                 "register": {"type": "string"}, "field": {"type": "string"},
                                 "op": {"type": "string", "enum": ["set", "clear", "write", "no_write"]},
-                                "value": {"type": "string"}}}
+                                "value": {"type": "string"},
+                                # CAPA-120: optional (baselines and provided documents without it stay valid)
+                                "requested": {"type": "string"}}}
 REQ_SCHEMA = {"type": "object", "additionalProperties": False,
               "required": ["key", "statement", "source_page", "verification", "verified_by", "effects"],
               "properties": {"key": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,40}$"},
@@ -49,6 +156,86 @@ GROUP_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["r
                                    "type": "object", "additionalProperties": False, "required": ["field", "reason"],
                                    "properties": {"field": {"type": "string"}, "reason": {"type": "string", "minLength": 5}}}},
                                "open_points": {"type": "array", "items": {"type": "string"}}}}
+
+
+# ---- owner obligations (docs/designs/swe1-owner-obligation-coverage.md; opt-in per work order) --------------------
+def owner_obligations(ws: Path) -> dict | None:
+    from ..assurance import owner_obligations as OO
+
+    return OO.declared(ws)
+
+
+# owner decision 2026-11-03 (V-model): SWE.1 keeps the verification criteria and the SWR -> SWE.6 qualification-test
+# allocation; it no longer decides the unit-test level or allocates UT ids (SWE.4 derives its tests from the SWE.3
+# USPEC items). verified_by is then neither asked for nor required (an answer that still states it stays valid).
+QUALIFICATION_RULE = (
+    "Every requirement is verified by the SWE.6 qualification test (the Robot suite on the target simulation); its "
+    "verification states that test's pass criterion. The unit-test level is not decided here: SWE.4 derives the unit "
+    "tests from the SWE.3 unit specification.")
+PROHIBITION_QUALIFICATION_RULE = (
+    "A requirement that prohibits an access (no read, no write, no access before the first call or in another window) "
+    "states a verification that passes when the target simulation's register-access log shows no such access in the "
+    "prohibited window - never by final register contents alone.")
+
+
+def uspec_mode(ws: Path | None) -> bool:
+    from ..layer import uspec_gtest
+
+    return ws is not None and uspec_gtest(ws)
+
+
+def _req_schema(ws: Path | None) -> dict:
+    if not uspec_mode(ws):
+        return REQ_SCHEMA
+    return {**REQ_SCHEMA, "required": [k for k in REQ_SCHEMA["required"] if k != "verified_by"]}
+
+
+def group_schema(obl: dict | None, crosscutting: bool = False, ws: Path | None = None) -> dict:
+    """GROUP_SCHEMA, unchanged when the work order declares no owner obligations; otherwise every requirement lists
+    the ids it implements, and the cross-cutting task may record obligation gaps."""
+    base = _req_schema(ws)
+    if obl is None:
+        if base is REQ_SCHEMA:
+            return GROUP_SCHEMA
+        return {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"],
+                                               "requirements": {"type": "array", "items": base}}}
+    ids = [o["id"] for o in obl["obligations"]]
+    req = {**base, "required": base["required"] + ["obligations"],
+           "properties": {**base["properties"],
+                          "obligations": {"type": "array", "items": {"type": "string", "enum": ids}}}}
+    out = {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"], "requirements": {"type": "array", "items": req}}}
+    if crosscutting:  # only non-critical obligations may be recorded as gaps (owner 2026-10-31)
+        gap_ids = [o["id"] for o in obl["obligations"] if not o.get("critical")]
+        out["required"] = GROUP_SCHEMA["required"] + ["obligation_gaps"]
+        out["properties"]["obligation_gaps"] = {"type": "array", "items": {
+            "type": "object", "additionalProperties": False, "required": ["id", "reason"],
+            "properties": {"id": {"type": "string", "enum": gap_ids or ["(none)"]},
+                           "reason": {"type": "string", "minLength": 10}}}}
+        if not gap_ids:
+            out["properties"]["obligation_gaps"]["maxItems"] = 0
+    return out
+
+
+def obligation_rule(obl: dict, crosscutting: bool) -> str:
+    rule = (f" Owner obligations ({obl['_path']}, a provided source): obligations lists the ids of the owner "
+            "obligations a requirement implements ([] if none). Cite an id only when the statement implements that "
+            "obligation; an obligation that names register effects is implemented only by a requirement with those "
+            "effects. " + AR_OBLIGATIONS)
+    if crosscutting:
+        critical = [o["id"] for o in obl["obligations"] if o.get("critical")]
+        register = [o["id"] for o in obl["obligations"] if o.get("effects")]
+        rule += (" Write the requirements for every owner obligation that no CURRENT ARTIFACT requirement implements "
+                 "and that is not a single register field's behaviour (e.g. no status polling, no error code, other "
+                 "fields and registers preserved). A non-critical obligation the inputs cannot support goes into "
+                 "obligation_gaps with the reason; never drop an obligation silently. obligation_gaps stays empty "
+                 "otherwise." + AR_OBLIGATION_GAPS)
+        if critical:
+            rule += (" Critical obligations always need an implementing requirement and can never be obligation gaps: "
+                     + ", ".join(critical) + ".")
+        if register:  # CAPA-080: those are the register tasks' requirements (CURRENT ARTIFACT), never written here
+            rule += (" Obligations with register effects are implemented by the register tasks, not here: "
+                     + ", ".join(register) + ".")
+    return rule
 
 
 # ---- inventory --------------------------------------------------------------------------------------------------------
@@ -67,6 +254,93 @@ def _section_files(ws: Path) -> dict[str, dict]:
     return out
 
 
+def _file_pages(text: str, start: int | None) -> list[int]:
+    """The RM pages of one section file: its header's start page, its page anchors and the index start page."""
+    return sorted({int(p) for p in re.findall(r"p\.(\d+)", text.split("\n", 1)[0])} |
+                  {int(p) for p in re.findall(r'id="p-(\d+)"', text)} | ({start} if start else set()))
+
+
+def section_pages(ws: Path, num: str, secs: dict[str, dict] | None = None) -> list[int]:
+    """CAPA-114: the pages of RM section `num` and of its subsections (inputs/index.md and the section files); [] when
+    the index has no such section."""
+    secs = _section_files(ws) if secs is None else secs
+    out: set[int] = set()
+    for n, s in secs.items():
+        if n == num or n.startswith(num + "."):
+            f = Path(ws) / s["file"]
+            out |= set(_file_pages(f.read_text(errors="replace"), s["page"]) if f.is_file() else
+                       ([s["page"]] if s["page"] else []))
+    return sorted(out)
+
+
+def cited_sections(ws: Path, text: str, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-114: the RM section ids a requirement text cites ('<RM doc> 26.4.3', 'section 26.4.3', 'sections 26.4.3 and
+    26.4.4') that the work order's section index lists."""
+    from ..layer import profile
+
+    secs = _section_files(ws) if secs is None else secs
+    try:
+        doc = str((profile(ws).get("rm") or {}).get("doc") or "")
+    except Exception:  # noqa: BLE001 - a workspace without a profile still has the generic section wording
+        doc = ""
+    lead = (re.escape(doc) + r"\s+(?:sections?\s+)?|" if doc else "") + r"\bsections?\s+"
+    num = r"\d+(?:\.\d+)+"
+    out = []
+    for m in re.finditer(rf"(?:{lead})({num}(?:\s*(?:,|and|or|/)\s*{num})*)", text, re.I):
+        out += [n for n in re.findall(num, m.group(1)) if n in secs and n not in out]
+    return out
+
+
+def cited_page_findings(ws: Path, r: dict, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-114 (run WO-F014-SWE1-CRCL-20261102-L12, SWR-006): a requirement whose text cites an RM section must take
+    its source_page from that section; otherwise the page-derived trace row names another section than the text (the
+    inspector failed SWE1-01/SWE1-05 and the author never saw why). Passes when the page lies in any cited section."""
+    secs = _section_files(ws) if secs is None else secs
+    cited = cited_sections(ws, r["statement"], secs)
+    ranges = {n: section_pages(ws, n, secs) for n in cited}
+    ranges = {n: p for n, p in ranges.items() if p}
+    page = r.get("source_page")
+    if not ranges or not isinstance(page, int) or any(min(p) <= page <= max(p) for p in ranges.values()):
+        return []
+    where = "; ".join(f"section {n}: pages {min(p)}-{max(p)}" for n, p in ranges.items())
+    return [f"[{r['key']}] source_page {page} is not a page of the RM section its statement cites ({where}): set "
+            "source_page to the page of the cited section that states the fact, or cite the section of that page"]
+
+
+def crosscut_page_findings(ws: Path, r: dict, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-218 (TIM LL L43R, 2026-11-10): a cross-cutting requirement has no register section of its own, so nothing
+    bounded its source_page. The author cited a page of no provided section (RM0486 p.3); the assembly traced it to the
+    first register section and the set inspector failed SWE1-05 on the mismatch round after round. The page must lie in
+    the pages of the provided reference-manual sections (inputs/index.md and the section files)."""
+    secs = _section_files(ws) if secs is None else secs
+    page = r.get("source_page")
+    if not secs or not isinstance(page, int):
+        return []
+    pages: set[int] = set()
+    for s in secs.values():
+        f = Path(ws) / s["file"]
+        pages |= set(_file_pages(f.read_text(errors="replace"), s["page"]) if f.is_file() else
+                     ([s["page"]] if s["page"] else []))
+    if not pages or min(pages) <= page <= max(pages):
+        return []
+    return [f"[{r['key']}] source_page {page} is not a page of the provided RM0486 sections (pages "
+            f"{min(pages)}-{max(pages)}): set source_page to the page of the provided section that states the fact"]
+
+
+def crosscut_sections(ws: Path, secs: dict[str, dict] | None = None) -> list[str]:
+    """The reference-manual sections the cross-cutting task reads: the chapter's functional description. CAPA-218 (TIM
+    LL L43R): when the input index has no such section (TIM: 54.4 absent, 54.4.2.. present), the owner scope's context
+    sections (the functional sections of the scope without a register layout), never no source at all."""
+    from ..layer import profile
+
+    secs = _section_files(ws) if secs is None else secs
+    chapter = str(profile(ws)["rm"]["chapter"])
+    func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
+    if func:
+        return func[:1]
+    return [n for n in inventory(ws).get("context_sections", []) if n in secs]
+
+
 def system_name(ws: Path) -> str:
     from ..layer import layer_of, profile
 
@@ -83,8 +357,20 @@ def inventory(ws: Path) -> dict:
 
     ws = Path(ws)
     prof, pfx, secs = profile(ws), register_prefix(ws), _section_files(ws)
-    regs, missing = [], []
-    for num in prof["rm"]["key_sections"]:
+    manifest = _manifest(ws)
+    local = manifest.get("local_profile") or {}
+    structured = {}
+    if local.get("id"):
+        from .profile import load
+
+        structured = load(local["id"]).get("structured") or {}
+    selected = list(prof["rm"]["key_sections"])
+    if structured.get("complete_scope_sections") is True:
+        from .obligations import scope_sections
+
+        selected = scope_sections(manifest["scope"], prof["rm"]["doc"], selected)
+    regs, missing, context = [], [], []
+    for num in selected:
         s = secs.get(num)
         if s is None:
             missing.append(num)
@@ -92,10 +378,13 @@ def inventory(ws: Path) -> dict:
         text = (ws / s["file"]).read_text(errors="replace")
         r = parse_section(text, pfx)
         if r is None:
-            missing.append(num)
+            # CAPA-186/189 (2026-11-07, GPIO L40B/L40C): the GPIO catalog and the delivery scope also name functional
+            # sections (15.3.3-15.3.5, "I/O port control registers") that describe registers without a register
+            # layout. Such a section is recorded as context, never dropped; a section that states a register layout
+            # ("Address offset") and still does not parse stays missing.
+            (missing if re.search(r"address\s+offset", text, re.I) else context).append(num)
             continue
-        pages = sorted({int(p) for p in re.findall(r"p\.(\d+)", text.split("\n", 1)[0])} |
-                       {int(p) for p in re.findall(r'id="p-(\d+)"', text)} | ({s["page"]} if s["page"] else set()))
+        pages = _file_pages(text, s["page"])
         desc = {m.group(3): " ".join(m.group(4).split())[:120] for m in re.finditer(
             r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[[^\]]*\])?\s*:\s*(.+)$", text, re.M)}
         regs.append({"section": num, "file": s["file"], "register": r["name"], "offset": r["offset"],
@@ -103,23 +392,52 @@ def inventory(ws: Path) -> dict:
                                                     "description": desc.get(k, "")}
                                                 for k, v in r["fields"].items()}})
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
-    return {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
-            "generated_at": utc_now()}
+    inv = {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
+           "generated_at": utc_now()}
+    if context:
+        inv["context_sections"] = context
+    if structured.get("complete_scope_sections") is True:
+        inv["scope_sections"] = {"document": prof["rm"]["doc"], "catalog_seeds": prof["rm"]["key_sections"],
+                                 "required_sections": selected, "basis": "LITERAL_OWNER_REFERENCES_AND_CATALOG"}
+    if structured.get("coherent_scope_groups") is True:
+        from .obligations import scope_field_sets
+
+        inv["coherent_field_sets"] = scope_field_sets(manifest["scope"])
+    return inv
 
 
 def groups(inv: dict) -> list[dict]:
     """One packet per register, split at MAX_FIELDS fields (field order of the RM section kept)."""
+    from .obligations import partition
+
     out = []
     for r in inv["registers"]:
         names = list(r["fields"])
-        n = -(-len(names) // MAX_FIELDS) or 1  # balanced parts, none larger than MAX_FIELDS
-        size = -(-len(names) // n) if names else 0
-        for i in range(0, len(names), size or 1):
-            part = names[i:i + size]
-            gid = f"{r['register']}" + (f"_{i // size + 1}" if n > 1 else "")
+        parts = partition(r["register"], names, inv.get("coherent_field_sets", []), MAX_FIELDS)
+        for i, part in enumerate(parts):
+            gid = f"{r['register']}" + (f"_{i + 1}" if len(parts) > 1 else "")
             out.append({"id": gid, "register": r["register"], "section": r["section"], "file": r["file"],
                         "pages": r["pages"], "fields": {f: r["fields"][f] for f in part}})
     return out
+
+
+def sibling_rule(ws: Path, g: dict) -> str:
+    """CAPA-208: a register split at MAX_FIELDS names its sibling tasks and their fields in each task's first draft
+    (SPI LL L41N: most failed first drafts acted on a field a sibling task owns). Unsplit registers: no text."""
+    sib = [x for x in groups(inventory(ws)) if x["register"] == g["register"]]
+    if len(sib) < 2:
+        return ""
+    parts = "; ".join(f"task {x['id']}: {', '.join(x['fields'])}" for x in sib)
+    return (f" Register {g['register']} is split into {len(sib)} tasks ({parts}). This task is {g['id']}: a "
+            "requirement, effect or not_covered entry for a field of another task of this register is written only "
+            "in that task, never here, and a function that acts on such a field belongs to that task.")
+
+
+def _owner_task(ws: Path, reg: str, fld: str) -> str | None:
+    try:
+        return next((x["id"] for x in groups(inventory(ws)) if x["register"] == reg and fld in x["fields"]), None)
+    except (OSError, KeyError, ValueError):
+        return None
 
 
 # ---- packet texts -----------------------------------------------------------------------------------------------------
@@ -144,7 +462,10 @@ def effect_rule(ws: Path) -> str:
     base = ("effects: one entry per bit and per function the requirement sets or clears (op set|clear), writes a value "
             "to (op write, value \"0x...\") or only reads (op no_write with register and field); value is \"\" unless "
             "op is write. register/field are the RM names the statement itself uses (write them as REGISTER.FIELD in "
-            "the statement). case ids are unique UPPER_CASE names.")
+            "the statement). case ids are unique UPPER_CASE names. A write whose requirement passes an input that does "
+            "not fit the field and keeps only its low bits (e.g. 'write only bits 11:0 of the requested value', "
+            "verified with 0x1234) also gives requested, the input the call passes (\"0x1234\"), while value is the "
+            "field result (\"0x234\"); omit requested otherwise.")
     return base + (" " + " ".join(rule.split()) if rule else "")
 
 
@@ -178,7 +499,30 @@ def out_of_scope_named(ws: Path) -> set[str]:
     return set(re.findall(rf"\b{register_prefix(ws)}_[A-Z0-9]+(?:\.[A-Z0-9_]+)?\b", out_txt))
 
 
+def required_scope_exclusions(ws: Path, doc: dict, g: dict) -> list[str]:
+    """Enforce explicit owner scope only; unmentioned hardware fields acquire no new requirement."""
+    text = " ".join(x for x in _manifest(ws)["scope"] if not x.lower().startswith("out of scope"))
+    excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}"
+                for x in doc["not_covered"]}
+    required = []
+    for field in g["fields"]:
+        full = f"{g['register']}.{field}"
+        if full in excluded and re.search(rf"(?<![\w.]){re.escape(full)}(?![\w.])", text):
+            required.append(full)
+    return [f"REQUIRED_SCOPE_FIELD_EXCLUDED:{full}: keep the requested scope and report the verification gap"
+            for full in sorted(required)]
+
+
+def delivered_interface(ws: Path) -> str | None:
+    """CAPA-112 (runs WO-F014-CMP-SWE1-CRCL-20261102-05/-06): the declared delivered-interface input of a brownfield
+    work order (the scoped functions' argument/return constants and values), else None."""
+    rel = BI.declared(_manifest(ws))
+    return rel if rel and (Path(ws) / rel).is_file() else None
+
+
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
     hints = scope_hints(ws, g)
@@ -190,50 +534,82 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
              "other registers are separate tasks, and reset/startup behaviour and rules for all functions belong to a "
              "separate cross-cutting task - never write them here. Every requirement of this task names a field of this "
              "task as REGISTER.FIELD. For every field of this task either write the requirements the scope "
-             "demands for it or list it in not_covered with the scope reason. Each statement uses EARS "
+             "demands for it or list it in not_covered with the scope reason. " + SCOPE_COVERAGE_RULE +
+             " Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
-             "when ...'), checking register bits and return values on the register array - never a count of register "
-             "accesses. verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') which "
-             f"is target_robot_test. source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
+             "when ...'), checking register bits and return values on the register array. " + (
+                 PROHIBITION_QUALIFICATION_RULE + " " + QUALIFICATION_RULE if uspec_mode(ws) else PROHIBITION_RULE +
+                 " verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') and access "
+                 "prohibitions, which are target_robot_test.") + \
+             f" source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
              + effect_rule(ws) + " key is a short snake_case name of the requirement. open_points lists ambiguities of "
-             "the source (or nothing).")
+             "the source (or nothing). Author rules: " + REGISTER_RULES + (" " + AR_NEGATIVE if uspec_mode(ws) else "")
+             + sibling_rule(ws, g))
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
+    srcs = [S.source(ws, g["file"])]
+    if api := delivered_interface(ws):  # CAPA-112: a FROZEN API's argument constants (brownfield)
+        instr += BI.AUTHOR_NOTE
+        srcs.append(S.source(ws, api))
+    obl = owner_obligations(ws)
+    if obl is not None:
+        instr += obligation_rule(obl, False)
+        srcs.append(S.source(ws, obl["_path"]))
+        crit.append("every cited obligation is implemented by its requirement")
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task=f"requirements:{g['id']}", role="swe1-author", instructions=instr,
-                    sources=[S.source(ws, g["file"])], criteria=crit, output_schema=GROUP_SCHEMA, model=model,
+                    sources=srcs, criteria=crit, output_schema=group_schema(obl, ws=ws), model=model,
                     findings=findings, previous=previous)
 
 
 def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list[str] | None = None,
                     previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
-    listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
+    obl = owner_obligations(ws)
+    if obl is None:
+        listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
+    else:  # CAPA-082: the answer schema's own field names, so obligation ids are never mistaken for statement text
+        listing = "\n".join(json.dumps({"key": r["key"], "statement": r["statement"],
+                                        "obligations": r.get("obligations") or []}) for r in functional)
     instr = (f"The register-level requirements of the {sysname} are already written (listed below as CURRENT "
              "ARTIFACT). Write only the requirements that do not belong to one register field: the reset/startup "
              f"behaviour (e.g. 'While no LL function has been called after reset, the {sysname} shall not write any "
              "register.'), the failure handling the work-order scope states (e.g. that the driver never waits on a "
              "status flag because the caller bounds its polling; SWE1-03 requires failure handling, reset/startup "
              "behaviour and safe states to be specified) and any rule the coverage rules state for all functions "
-             "(e.g. that a write changes only the named bits). Work-order scope: " + " | ".join(m["scope"]) +
+             "(e.g. that a function changes only the fields its requirement names, except the side effects the source "
+             "documents). Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules: {coverage_guidance(ws)} "
              "Do NOT write flash/RAM/stack budget requirements: the factory adds them from the owner's work-order "
-             "budgets. Same statement, verification and source_page rules as the register tasks; reset/startup "
-             "requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a named "
-             "field. not_covered stays empty.")
+             "budgets. Every statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', "
+             f"the subject 'the {sysname}', and ends with a period. "
+             "verification states the test and its explicit pass criterion ('... passes when ...'). " + (
+                 PROHIBITION_QUALIFICATION_RULE + " " + QUALIFICATION_RULE if uspec_mode(ws) else PROHIBITION_RULE) +
+             " source_page is the RM0486 page supporting the requirement, from the provided sources. " +
+             ("" if uspec_mode(ws) else "Reset/startup requirements are target_robot_test. ") + \
+             "effects stay empty unless a statement sets, clears or writes a "
+             "named field. not_covered stays empty. Author rules: " + CROSSCUT_RULES +
+             (" " + AR_NEGATIVE if uspec_mode(ws) else ""))
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
-    from ..layer import profile
-
-    chapter = str(profile(ws)["rm"]["chapter"])
-    func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
-    srcs = [S.source(ws, secs[n]["file"], max_chars=20_000) for n in func[:1]]
+    srcs = [S.source(ws, secs[n]["file"], max_chars=FUNCTIONAL_SOURCE_MAX_CHARS) for n in crosscut_sections(ws, secs)]
+    crit = [f"subject exactly 'the {sysname}'", "no budget requirements"]
+    if obl is not None:
+        instr += obligation_rule(obl, True)
+        srcs.append(S.source(ws, obl["_path"]))
+        crit.append("every owner obligation is implemented by a requirement or listed in obligation_gaps")
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
-                    sources=srcs, artifacts=[art], criteria=[f"subject exactly 'the {sysname}'",
-                                                             "no budget requirements"],
-                    output_schema=GROUP_SCHEMA, model=model, findings=findings, previous=previous)
+                    sources=srcs, artifacts=[art], criteria=crit,
+                    output_schema=group_schema(obl, crosscutting=True, ws=ws), model=model, findings=findings,
+                    previous=previous)
 
 
 # ---- deterministic validation of one answer -------------------------------------------------------------------------
@@ -257,11 +633,13 @@ def ears_hint(code: str, sysname: str) -> str:
 
 
 def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict) -> list[str]:
+    from ..assurance import register_contract as RC
     from ..assurance.register_contract import _needs_contract
     from ..inspection.ears import Requirement, check_statement
     from ..layer import register_prefix
 
     pfx = register_prefix(ws)
+    secs = _section_files(ws) if (Path(ws) / "inputs/index.md").is_file() else {}  # no index: no citable section
     out, keys, named = [], set(), set()
     for r in doc["requirements"]:
         k = r["key"]
@@ -269,7 +647,11 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] duplicate key")
         keys.add(k)
         st = r["statement"]
-        if g is not None and (STARTUP.match(st) or re.search(r"\bafter (?:a )?reset\b|\breset (?:value|state)\b", st,
+        tagged = re.search(r"\(\s*obligations?\s*:[^)]*\)|\bOBL-[a-z0-9][a-z0-9-]*", st, re.I)
+        if tagged:  # CAPA-082 (run -06): ten repairs answered only "end the statement with a period"
+            out.append(f"[{k}] the statement contains owner-obligation ids ('{tagged.group(0)}'): remove them from the "
+                       "statement text and list them only in the obligations field")
+        if g is not None and (STARTUP.match(st) or re.search(RESET_AFTER + r"|\breset (?:value|state)\b", st,
                                                              re.I)):
             # lrtx6 (2026-10-21): a reset-state requirement with effects stayed in a register task over 3 repairs
             out.append(f"[{k}] is a reset/startup requirement: those belong to the cross-cutting task - remove "
@@ -282,10 +664,20 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] {code}: {ears_hint(code, sysname)}")
         if "pass" not in r["verification"].lower():
             out.append(f"[{k}] verification has no pass criterion ('passes when ...')")
-        if STARTUP.match(st) and r["verified_by"] != "target_robot_test":
+        if uspec_mode(ws):  # owner 2026-11-03: the unit-test level is SWE.4's, not SWE.1's
+            pass
+        elif STARTUP.match(st) and r["verified_by"] != "target_robot_test":
             out.append(f"[{k}] a startup/reset invariant is verified by target_robot_test, not a host unit test")
+        elif PROHIBITION.search(st) and r["verified_by"] != "target_robot_test":
+            # owner 2026-11-02 (X12, "Allow access logging"): only the target simulation logs register accesses
+            out.append(f"[{k}] prohibits a register access: verified_by is target_robot_test - only the target "
+                       "simulation's register-access log can show that no such access happens (the host fake keeps no "
+                       "access log); state the pass condition on that log")
         if g is not None and g["pages"] and not (min(g["pages"]) <= r["source_page"] <= max(g["pages"]) + 2):
             out.append(f"[{k}] source_page {r['source_page']} is outside the section pages {g['pages']}")
+        out += cited_page_findings(ws, r, secs)
+        if g is None:  # CAPA-218: a cross-cutting page lies in the provided sections
+            out += crosscut_page_findings(ws, r, secs)
         for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", st):
             named.add(f"{f[0]}.{f[1]}")
             if f[0] not in idx or f[1] not in idx[f[0]]["fields"]:
@@ -293,7 +685,9 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for e in r["effects"]:
             reg, fld, op = e["register"], e["field"], e["op"]
             if g is not None and (reg != g["register"] or fld not in g["fields"]):
-                owner = f"the {reg} task" if reg != g["register"] else "another task of this register"
+                task = _owner_task(ws, reg, fld)  # CAPA-208: name the real task id (SPI_CR1_2, not "SPI_CR1")
+                owner = (f"task {task}" if task else
+                         f"the {reg} task" if reg != g["register"] else "another task of this register")
                 out.append(f"[{k}] acts on {reg}.{fld}, which {owner} covers: remove requirement [{k}] from this task")
                 continue
             if reg not in idx or fld not in idx[reg]["fields"]:
@@ -313,8 +707,22 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                 if v is None or not 0 <= v < (1 << width):
                     out.append(f"[{k}] effect {e['case']}: value {e['value']!r} must be a number that fits "
                                f"{reg}.{fld} ({width} bits)")
+                elif RC.requested_problem(e, width, idx[reg]["fields"][fld]["lsb"]):
+                    out.append(f"[{k}] effect {e['case']}: "
+                               f"{RC.requested_problem(e, width, idx[reg]['fields'][fld]['lsb'])}")
+                elif e.get("requested") in (None, ""):
+                    # CAPA-120: the verification calls with an input above the field that truncates to this value,
+                    # but the case records only the value - SWE.2 would then have to pass the truncated value
+                    big = [n for n in CALL_INPUT.findall(r["verification"])
+                           if int(n, 16) >= (1 << width) and int(n, 16) & ((1 << width) - 1) == v]
+                    if big:
+                        out.append(f"[{k}] effect {e['case']}: the verification calls with {big[0]}, which does not "
+                                   f"fit {reg}.{fld} ({width} bits) and leaves {e['value']}: give requested "
+                                   f"\"{big[0]}\" (the input the call passes) and keep value {e['value']}")
             elif e["value"] not in ("", None):
                 out.append(f"[{k}] effect {e['case']}: value must be \"\" for op {op}")
+            if op != "write" and RC.requested_problem(e, None):
+                out.append(f"[{k}] effect {e['case']}: {RC.requested_problem(e, None)}")
         if g is not None and not r["effects"] and not any(f"{g['register']}.{f}" in st or
                                                           (g["register"] in st and f in st) for f in g["fields"]):
             out.append(f"[{k}] names no field of this task: reset/startup and all-function rules belong to the "
@@ -326,6 +734,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         if _needs_contract(st, pfx) and not r["effects"]:  # the gate's rule (CONTRACT_SWR_NOT_COVERED)
             out.append(f"[{k}] the statement names a field it sets or clears but has no effect entry")
     if g is not None:
+        out += required_scope_exclusions(ws, doc, g)
         covered = named | {f"{e['register']}.{e['field']}" for r in doc["requirements"] for e in r["effects"]}
         excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}" for x in doc["not_covered"]}
         for f in g["fields"]:
@@ -340,22 +749,68 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         out.append("not_covered must be empty for the cross-cutting task")
     if g is None:  # lrtx6 (2026-10-21): the cross-cutting task wrote status-flag queries that a register task covers
         tasked = {x.split(".")[0] for x in inventory(ws)["items"]}
+        # CAPA-080 (run -04): only obligations WITHOUT register effects are the cross-cutting task's to keep
+        obl = owner_obligations(ws)
+        with_effects = {o["id"] for o in (obl or {}).get("obligations", []) if o.get("effects")}
+
+        def keepable(r: dict) -> bool:
+            return bool(r.get("obligations")) and not set(r["obligations"]) & with_effects
         for r in doc["requirements"]:
             # lrtx9 (2026-10-21): it rewrote the IWDG_KR/PR/RLR writes with effects, duplicating the register tasks
             for reg in sorted({e["register"] for e in r["effects"]} & tasked):
+                if keepable(r):  # CAPA-079: never tell the author to delete what an effect-free obligation needs
+                    out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers: keep [{r['key']}] for owner "
+                               f"obligation(s) {', '.join(r['obligations'])}, but remove its effects on {reg} and state "
+                               f"it for all scoped functions without naming {reg}")
+                    continue
+                effect_ids = sorted(set(r.get("obligations") or []) & with_effects)
                 out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers - remove requirement "
-                           f"[{r['key']}] from the cross-cutting task")
+                           f"[{r['key']}] from the cross-cutting task" + (
+                               f" (owner obligation(s) {', '.join(effect_ids)} have register effects: the {reg} task "
+                               "implements them)" if effect_ids else ""))
         if not any(STARTUP.match(r["statement"]) for r in doc["requirements"]):
             # lrtx9: a repair dropped the startup invariant the packet asks for (SWE1-03 then failed for real)
             out.append(f"the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has "
-                       f"been called after reset, the {sysname} shall not write any {pfx} register.' "
-                       "(verified_by target_robot_test)")
+                       f"been called after reset, the {sysname} shall not write any {pfx} register.'"
+                       + ("" if uspec_mode(ws) else " (verified_by target_robot_test)"))
         for r in doc["requirements"]:
             regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
                            if f[0] in idx} - {e["register"] for e in r["effects"]})
-            if regs and not STARTUP.match(r["statement"]) and not r["effects"]:
+            if regs and not STARTUP.match(r["statement"]) and not r["effects"] and keepable(r):
+                # CAPA-079 (run -03): "remove requirement" made the author delete the requirement an owner obligation
+                # needed; the rule stays (no register requirement here), the instruction says how to keep it
+                out.append(f"[{r['key']}] names {', '.join(regs)}, which its register task covers: keep [{r['key']}] for "
+                           f"owner obligation(s) {', '.join(r['obligations'])}, but state it for all scoped functions "
+                           f"without naming {', '.join(regs)} (e.g. 'the {sysname} shall leave every other register "
+                           f"and every other {pfx} instance unchanged')")
+            elif regs and not STARTUP.match(r["statement"]) and not r["effects"]:
+                effect_ids = sorted(set(r.get("obligations") or []) & with_effects)
                 out.append(f"[{r['key']}] is a requirement on {', '.join(regs)}, which its register task covers - remove "
-                           f"requirement [{r['key']}] from the cross-cutting task")
+                           f"requirement [{r['key']}] from the cross-cutting task" + (
+                               f" (owner obligation(s) {', '.join(effect_ids)} have register effects: the register "
+                               "task implements them)" if effect_ids else ""))
+    if g is not None and uspec_mode(ws):  # owner 2026-11-03: AR-7 negative paths and corner cases
+        out += corner_case_findings(doc, g)
+    return out
+
+
+def crosscut_obligation_findings(ws: Path, doc: dict, functional: list[dict]) -> list[str]:
+    """CAPA-079: the cross-cutting task (the last one, which sees every functional requirement) is checked for the
+    declared owner obligations without register effects, so their repair shares the task's own repair pass instead of
+    waiting for the post-assembly coverage check. Obligations with register effects belong to the register tasks."""
+    obl = owner_obligations(ws)
+    if obl is None:
+        return []
+    cited = {i for r in functional + doc["requirements"] for i in r.get("obligations") or []}
+    gaps = {g["id"] for g in doc.get("obligation_gaps") or []}
+    out = []
+    for o in obl["obligations"]:
+        if o.get("effects") or o["id"] in cited or (o["id"] in gaps and not o.get("critical")):
+            continue
+        kind = "critical owner obligation" if o.get("critical") else "owner obligation"
+        out.append(f"{kind} {o['id']} has no implementing requirement: write it here as a rule for all scoped "
+                   f"functions (owner: {o['statement'][:160]})" + ("" if o.get("critical") else
+                                                                     " or list it in obligation_gaps with the reason"))
     return out
 
 
@@ -373,11 +828,21 @@ def _page_section(ws: Path, page: int | None, fallback: str) -> str:
     return best or fallback
 
 
+def _task_section(ws: Path, page: int | None, g: dict) -> str:
+    """CAPA-107: a register task's requirement traces to the task's own section when its page is one of that section's
+    pages. Several RM0486 register sections can start on one page (IWDG_KR 59.7.1 and IWDG_PR 59.7.2 both on p.2989);
+    the page alone would trace every requirement on that page to the last of them."""
+    pages = g.get("pages") or []
+    if page is not None and pages and min(pages) <= page <= max(pages):
+        return g["section"]
+    return _page_section(ws, page, g["section"])
+
+
 def budget_requirements(ws: Path, sysname: str) -> list[dict]:
     b = _manifest(ws)["budgets"]
     src = "work-order budget (owner development target)"
     robot = "SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver image; "
-    return [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
+    requirements = [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
              "source": src, "verification": robot + f"passes when the driver flash usage is at most {b['flash_bytes']} "
              "bytes.", "verified_by": "target_robot_test", "effects": [], "upstream": "WO-BUDGET"},
             {"key": "budget_static_ram", "statement": f"The {sysname} shall use at most {b['static_ram_bytes']} bytes "
@@ -388,6 +853,67 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
              "for any public API call.", "source": src, "verification": robot + "passes when the worst-case stack usage "
              f"of every public API call chain is at most {b['stack_bytes']} bytes.", "verified_by": "target_robot_test",
              "effects": [], "upstream": "WO-BUDGET"}]
+    from ..simulation_performance import selected
+
+    performance = selected(ws)
+    if performance:
+        from ..mcp.servers.sim import measurement_profile
+
+        where = measurement_profile(ws)  # CAPA-110: name the one measurement configuration, not "the pinned profile"
+        source = "work-order simulation-only performance allocation; not a reference-manual or silicon timing claim"
+        for key, limit, units in (("cpu", performance["instructions_per_call"], "executed target instructions"),
+                                  ("time", performance["microseconds_per_call"], "microseconds of virtual time")):
+            requirements.append({"key": "budget_simulation_" + key,
+                                 "statement": f"When a scoped API is measured in the factory's pinned Renode simulation at "
+                                 f"{performance['performance_mips']} MIPS without injected interrupts or bus stalls, "
+                                 f"the {sysname} shall complete each measured call within {limit} {units}.",
+                                 "source": source, "verification": f"Measurement configuration: {where}. "
+                                 "SWE.6 Robot checks the independent Renode entry/return "
+                                 "instruction and virtual-time records for every scoped function; missing, incomplete or "
+                                 "over-budget measurements fail. Run Target Scenario on the declared test, then "
+                                 "Simulation Performance Should Meet Budget; no hardware WCET is established.",
+                                 "verified_by": "target_robot_test", "effects": [], "upstream": "WO-SIMULATION-PERFORMANCE"})
+    return requirements
+
+
+def budget_feasibility(ws: Path, m: dict, budget_rows: list[dict]) -> list[str]:
+    """CAPA-212 (SQ-07 interdependency and feasibility): the factory-generated budget rows get a factual feasibility
+    section - each budget, the implementation form quoted from the scope, the computed relationship of the simulation
+    budgets, what SWE.1 assesses and what only the SWE.6 measurement confirms, and the residual risk."""
+    if not budget_rows:
+        return []
+    from ..simulation_performance import selected
+
+    ids = {r["key"]: r["swr"] for r in budget_rows}
+    b = m["budgets"]
+    out = ["", "## Budget feasibility", "",
+           "Factory assessment at SWE.1 of the budget requirements above (no measurement exists before SWE.6).", "",
+           f"- Implementation form (work-order scope): {str(m['scope'][0]).strip()}",
+           f"- {ids['budget_flash']} flash at most {b['flash_bytes']} bytes, {ids['budget_static_ram']} static RAM at "
+           f"most {b['static_ram_bytes']} bytes and {ids['budget_stack']} stack at most {b['stack_bytes']} bytes per "
+           f"public API call are independent limits; source: {b.get('status') or 'work-order budgets'}."]
+    scope = " ".join(str(s) for s in m["scope"]).lower()
+    if "header-only" in scope:
+        out.append("- A header-only driver defines its functions at the call sites: its flash is the inlined code of "
+                   "the functions used and it needs no driver-owned static data for register access through the "
+                   "externally provided device structure.")
+    perf = selected(ws)
+    if perf and "budget_simulation_cpu" in ids:
+        allowed = perf["microseconds_per_call"] * perf["performance_mips"]
+        binding = ("the instruction budget is the binding one" if perf["instructions_per_call"] <= allowed
+                   else "the virtual-time budget is the binding one")
+        out.append(f"- {ids['budget_simulation_cpu']} ({perf['instructions_per_call']} executed instructions per call) "
+                   f"and {ids['budget_simulation_time']} ({perf['microseconds_per_call']} microseconds of virtual time "
+                   f"at {perf['performance_mips']} MIPS, i.e. {allowed} instructions) are consistent: {binding}.")
+    else:
+        out.append("- The work order allocates no simulation performance budget; no CPU or timing feasibility is "
+                   "assessed here.")
+    out += ["- Status: each budget is a development target that is not yet measured; it is confirmed or refuted only "
+            "by the SWE.6 measurement named in its verification. No conflict between these budgets is identified at "
+            "SWE.1.",
+            "- Residual risk: build options (optimisation level, inlining, debug instrumentation) change flash, stack "
+            "and executed instructions; the measured image and the pinned measurement configuration decide."]
+    return out
 
 
 def _scope_ids(alloc: str) -> tuple[str, str]:
@@ -399,6 +925,13 @@ def _scope_ids(alloc: str) -> tuple[str, str]:
 def safety_text(ws: Path) -> str | None:
     """The SWE.1 safety statement exactly as the SWE.1 author instructions prescribe it; None when an allocation exists
     (then the safety-relevant SWRs must come from an upstream SSR task - not implemented here: the visit fails)."""
+    from ..release import qm
+    if qm.workspace_record(ws):
+        return "# Quality management scope\n\n" + qm.STATEMENT + "\n"
+    from ..release.aspice import STATEMENT, workspace_record
+
+    if workspace_record(ws):
+        return "# Assurance scope\n\n" + STATEMENT + "\n"
     alloc = _manifest(ws)["target"].get("safety_allocation", "")
     if "OUT_OF_SCOPE" in alloc:
         return ("# Software safety requirements\n\nQM development scope: no software safety requirements are allocated "
@@ -414,7 +947,9 @@ def safety_text(ws: Path) -> str | None:
 
 def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
     """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+    from ..assurance import owner_obligations as OO
     from ..layer import profile
+    from . import review as R
 
     ws = Path(ws)
     m = _manifest(ws)
@@ -423,28 +958,75 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for g, rec in results:
         for r in rec["doc"]["requirements"]:
             rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
-                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+                         "upstream": f"RM0486-{_task_section(ws, r['source_page'], g)}",
+                         "heading": f"{g['register']} register requirements (RM0486 section {g['section']})"})
     first = inv["registers"][0]["section"] if inv["registers"] else "?"
     for r in cross["doc"]["requirements"]:
         rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
-                     "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
-    rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+                     "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}",
+                     "heading": "Cross-cutting requirements"})
+    rows += [{**r, "task": "budgets", "heading": "Resource and timing budget requirements"}
+             for r in budget_requirements(ws, sysname)]
     for n, r in enumerate(rows, 1):
         r["swr"] = f"SWR-{n:03d}"
-    opens = []
-    for _g, rec in results + [(None, cross)]:
-        opens += [o.strip() for o in rec["doc"]["open_points"] if o.strip() and o.strip() not in opens]
+    opens, open_points = [], {}
+    for group, rec in results + [(None, cross)]:
+        for raw in rec["doc"]["open_points"]:
+            text = raw.strip()
+            if not text:
+                continue
+            ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+            origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+                      "packet_input_hash": rec.get("base_hash"), "record_sha256": sha256_bytes(canonical_json(rec))}
+            # Reviewed provided requirements have a materialized record, not a model packet.
+            if m.get("provided_requirements"):
+                origin["provided_input_sha256"] = m["provided_requirements"]["sha256"]
+            if group is not None:
+                origin.update(register=group["register"], source_section=group["section"], source_file=group["file"])
+                scope = f"{group['register']}; source section {group['section']}"
+            else:
+                scope = "cross-cutting requirements"
+            if ident in open_points:
+                if open_points[ident] != origin:
+                    raise ValueError("OPEN_POINT_ID_COLLISION")
+                continue
+            open_points[ident] = origin
+            opens.append(f"**{ident}** (input scope: {scope}): {text}")
     up = m.get("upstream", {}).get("status", "NOT_PROVIDED")
-    opens += [f"Upstream inputs (HSI contract, safety allocation, budgets): {up}.",
+    from ..upstream import OUT_OF_CONTEXT
+
+    ooc = up == OUT_OF_CONTEXT
+    opens += [("Upstream inputs: OUT_OF_CONTEXT - developed out of context (owner 2026-11-09): no upstream system or "
+               "software safety requirement is allocated; the upstream baseline is the reference manual (every "
+               "requirement cites its section and page) plus the work-order scope and budgets."
+               if ooc else f"Upstream inputs (HSI contract, safety allocation, budgets): {up}."),
               f"Safety allocation as stated in the manifest: {m['target'].get('safety_allocation', 'UNSPECIFIED')}.",
+              *(["Safe state: no software safe state is allocated; the allocated safety safe state is outside this "
+                 "ASPICE-only work order's owner scope (inspection-assessment-context)."]
+                if R.safe_state_outside_scope(ws) else []),
               f"Target silicon revision: {m['target'].get('silicon_revision', 'UNSPECIFIED')}.",
               f"Flash, static RAM and stack limits: {m['budgets'].get('status', 'work-order budgets')}."]
+    # CAPA-210 (SQ-04 coherent structure and priorities): sections by hardware interface (one per register, in
+    # inventory order; a split register's tasks share its section), then cross-cutting, then budgets; release scope and
+    # priority in the header. Requirement lines and SWR numbering are unchanged.
     md = ["# Software requirements", "",
-          f"Software requirements of the {sysname} for this work order. Scope: " + " ".join(m["scope"]), ""]
+          f"Software requirements of the {sysname} for this work order. Scope: " + " ".join(m["scope"]), "",
+          f"Release scope: work order {m['work_order']} (a single release; every requirement below belongs to it). "
+          "Priority: mandatory - every requirement is required for this release; none is optional or deferred.", "",
+          "Organization: grouped by the driver's hardware interface - one section per peripheral register, in "
+          "reference-manual order - then cross-cutting requirements, then resource and timing budgets. SWR "
+          "identifiers are stable within this baseline.", ""]
+    heading = None
     for r in rows:
+        if r.get("heading") != heading:
+            heading = r.get("heading")
+            md += ([""] if md[-1] != "" else []) + [f"## {heading}", ""]
         md += [f"- **{r['swr']}** {r['statement'].strip()}", f"  - Source: {r['source']}",
-               f"  - Verification: {r['verification'].strip()}"]
-    md += ["", "## Open points", ""] + [f"- {o}" for o in opens] + [""]
+               f"  - Verification: {r['verification'].strip()}"] + OO.render_lines(r.get("obligations") or [])
+    md += budget_feasibility(ws, m, [r for r in rows if r["task"] == "budgets"])
+    md += ["", "## Open points", ""] + [f"- {o}" for o in opens]
+    obl_gaps = cross["doc"].get("obligation_gaps") or []
+    md += OO.render_gaps(obl_gaps) + [""]
     effects, seen = [], set()
     for r in rows:
         for e in r["effects"]:
@@ -457,10 +1039,14 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             item = {"case": case, "swr": r["swr"], "register": e["register"], "field": e["field"], "op": e["op"]}
             if e["op"] == "write":
                 item["value"] = e["value"]
+                if e.get("requested"):  # CAPA-120: the input of a truncating write
+                    item["requested"] = e["requested"]
             effects.append(item)
     csv, ut = ["requirement_id,test_id,test_file"], 0
     for r in rows:
-        if r["verified_by"] == "host_unit_test":
+        if uspec_mode(ws):  # owner 2026-11-03: SWR -> SWE.6 qualification test only; SWE.4 assigns the UT ids
+            csv.append(f"{r['swr']},{r['swr']},software/tests/software/test_{pid}_requirements.robot")
+        elif r["verified_by"] == "host_unit_test":
             ut += 1
             csv.append(f"{r['swr']},UT-{ut:03d},software/tests/unit/test_{pid}.c")
         else:
@@ -469,8 +1055,9 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for r in rows:
         by_up.setdefault(r["upstream"], []).append(r["swr"])
     t = m["target"]
-    reg_swr = [r["swr"] for r in rows if r["upstream"] != "WO-BUDGET"]
-    bud_swr = [r["swr"] for r in rows if r["upstream"] == "WO-BUDGET"]
+    budget_origins = ("WO-BUDGET", "WO-SIMULATION-PERFORMANCE")
+    reg_swr = [r["swr"] for r in rows if r["upstream"] not in budget_origins]
+    bud_swr = [r["swr"] for r in rows if r["upstream"] in budget_origins]
     gaps = ["# Upstream coverage", "", "| Input | Status as stated in the manifest | Affected SWR IDs |",
             "| --- | --- | --- |",
             f"| HSI contract | {t.get('hsi_contract', 'NOT_PROVIDED')}; upstream.status: {up} | {', '.join(reg_swr)} |",
@@ -479,7 +1066,10 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             f"| Budgets | {m['budgets'].get('status', '')}; flash_bytes: {m['budgets']['flash_bytes']}; static_ram_bytes: "
             f"{m['budgets']['static_ram_bytes']}; stack_bytes: {m['budgets']['stack_bytes']}; upstream.status: {up} | "
             f"{', '.join(bud_swr)} |", "",
-            "No allocation is invented: missing approved upstream inputs remain open gaps.", "",
+            ("Developed out of context (owner 2026-11-09): the upstream of every requirement is the reference-manual "
+             "section it cites (or the work-order budget); no upstream system or safety requirement is allocated, so "
+             "none is missing." if ooc else
+             "No allocation is invented: missing approved upstream inputs remain open gaps."), "",
             "## Upstream to software requirements", "", "| Upstream ID | SWR IDs |", "| --- | --- |"]
     gaps += [f"| {u} | {', '.join(s)} |" for u, s in by_up.items()]
     gaps += ["", "## Software requirements to upstream", "", "| SWR ID | Upstream ID |", "| --- | --- |"]
@@ -487,13 +1077,17 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     files = {REQS: "\n".join(md), EFFECTS: json.dumps({"schema": "forge-c/register-effects/1", "effects": effects},
                                                       indent=2) + "\n",
              CSV: "\n".join(csv) + "\n", GAPS: "\n".join(gaps)}
+    obl = owner_obligations(ws)
+    if obl is not None:
+        files[OO.CSV] = OO.trace_csv(rows, obl_gaps)
     st = safety_text(ws)
     if st is not None:
         files[SAFETY] = st
     write_scoped(ws, files)
     amap = {"schema": "forge-c/lrtx-swe1-assembly/1", "at": utc_now(),
             "swr": {r["swr"]: {"task": r["task"], "key": r["key"]} for r in rows},
-            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files)}
+            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files), "open_points": open_points,
+            "owner_obligations": OO.status(ws)}
     S.record(ws, "SWE.1/assembly.json", amap)
     return amap
 
@@ -514,7 +1108,11 @@ def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[tuple[str
                 seen[norm] = (rec["task"], r["key"])
             for e in r["effects"]:
                 ops.setdefault((e["case"], e["register"], e["field"]), []).append((rec["task"], e["op"]))
-                if e["op"] == "write" and _value(e["value"]) is not None:  # lrtx9: same write, other words
+                # lrtx9: same write, other words. CAPA-196 (WO-F014-SWE1-GPIOL-20261107-L40F): an effect with `requested` is
+                # AR-7's corner case (an out-of-range input and the field value it yields, e.g. requested 0x5 -> 0x1); it
+                # legitimately writes a value an in-range requirement also writes, so it is not a duplicate. Before, AR-7
+                # demanded it and this rule removed it again: the author's repair could never converge (REPAIR_STUCK).
+                if e["op"] == "write" and _value(e["value"]) is not None and not e.get("requested"):
                     w = (e["register"], e["field"], _value(e["value"]))
                     if w in writes and writes[w][1] != r["key"]:
                         first_task, first_key = writes[w]
@@ -547,6 +1145,30 @@ def self_check(ws: Path) -> list[str]:
     out += RC.check_effects(ws, "LL")
     out += startup_on_host(ws)
     out += workspace_scope_findings(ws, "SWE.1")
+    out += obligation_findings(ws)
+    return out
+
+
+def obligation_findings(ws: Path) -> list[str]:
+    """The owner-obligation coverage findings, each naming the task that repairs it: an uncovered obligation with
+    register effects goes to that register's task, any other uncovered obligation to the cross-cutting task."""
+    from ..assurance import owner_obligations as OO
+
+    found = OO.coverage_findings(ws)
+    if not found:
+        return []
+    try:
+        obl = owner_obligations(ws)
+        by_field = {(g["register"], f): f"requirements:{g['id']}" for g in groups(inventory(ws)) for f in g["fields"]}
+    except Exception:  # an invalid declaration is already a finding; inventory refusals fail the visit elsewhere
+        return found
+    effects = {o["id"]: {(e["register"], e["field"]) for e in o.get("effects") or []}
+               for o in (obl or {}).get("obligations", [])}
+    out = []
+    for f in found:
+        m = re.match(r"SWE1_OBLIGATION_(?:UNCOVERED|CRITICAL_GAP):(OBL-[a-z0-9-]+)", f)
+        tasks = sorted({by_field[k] for k in effects.get(m.group(1), set()) if k in by_field}) if m else []
+        out.append(f + "".join(f" (task {t})" for t in tasks))
     return out
 
 
@@ -571,8 +1193,37 @@ def rework_findings(ws: Path, since: str) -> list[str]:
     return V.rework_findings(ws, "SWE.1", since)
 
 
-def route_findings(findings: list[str], amap: dict | None) -> dict[str, list[str]]:
-    return V.route_findings(findings, amap, "requirements:crosscutting")
+def task_index(obligations: list[dict]) -> dict[str, dict]:
+    """Register task -> what it covers (register, RM section, fields): the names a finding is attributed by."""
+    return {f"requirements:{g['id']}": {"register": g["register"], "section": g["section"], "fields": list(g["fields"])}
+            for g in obligations}
+
+
+# CAPA-211 (SPI LL L41O): SQ-04 "coherent structure and priorities" judges what the factory assembles - sections, SWR
+# identifiers, release scope and priority (CAPA-210) - not any author task's requirements. Routed by its SWR range it
+# reopened every task and churned requirements that had passed individual inspection.
+_FACTORY_OWNED = re.compile(r"^\s*SWE1-\d{2}:\s*SQ-04\b")
+
+
+def factory_owned(finding: str) -> bool:
+    return bool(_FACTORY_OWNED.match(finding))
+
+
+def route_findings(findings: list[str], amap: dict | None, tasks: dict[str, dict] | None = None,
+                   ws: Path | None = None) -> dict[str, list[str]]:
+    """CAPA-108: each finding goes to the tasks it names; with `ws` the attribution is recorded (rework-routing.json),
+    including every finding that named no author task and kept the earlier fan-out. CAPA-211: a factory-owned
+    finding reaches no author task and is recorded as such."""
+    routed, report = V.attribute_findings([f for f in findings if not factory_owned(f)], amap,
+                                          "requirements:crosscutting", tasks)
+    report += [{"finding": f[:300], "tasks": [], "basis": [], "unattributed": False, "factory_owned": "SWE.1 assembly"}
+               for f in findings if factory_owned(f)]
+    if ws is not None:
+        S.record(ws, "SWE.1/rework-routing.json", {"schema": "forge-c/lrtx-rework-routing/1", "at": utc_now(),
+                                                   "assembly_at": (amap or {}).get("at"), "findings": report,
+                                                   "tasks": sorted(routed),
+                                                   "unattributed": sum(r["unattributed"] for r in report)})
+    return routed
 
 
 def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None, artifacts: list[str] | None = None) -> dict:
@@ -595,9 +1246,21 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap_p = ws / ".forge-run/lrtx/SWE.1/assembly.json"
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: rework_findings(ws, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, "SWE.1", role.max_turns, max_calls), time_budget_s)
+    routed = {}
+    if findings:  # CAPA-108: attributed with this inventory's register tasks, so only the named tasks re-author
+        from .obligations import CoherentScopeRefused
+
+        try:
+            tasks = task_index(groups(inventory(ws)))
+        except CoherentScopeRefused:
+            tasks = None  # the visit itself reports the refused scope
+        routed = route_findings(findings, amap, tasks, ws)
+        V.attach_keep_fixed(ws, "SWE.1", budget,  # CAPA-211: factory-owned findings are no task's to keep fixed
+                            lambda fs: V.attribute_findings([f for f in fs if not factory_owned(f)], amap,
+                                                            "requirements:crosscutting", tasks)[0])
     try:
-        return _visit(ws, model, budget, route_findings(findings, amap) if findings else {})
+        return _visit(ws, model, budget, routed)
     except V.Continue as c:
         return reply(ws, "CONTINUE", [f"time box used; the next node execution resumes at {c}"], budget)
 
@@ -625,15 +1288,28 @@ def _repair_rounds(ws: Path, model: str, results: list[tuple[dict, dict]], budge
 
 def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> dict:
     from ..assurance.hardware import index
+    from .obligations import CoherentScopeRefused
 
-    inv = inventory(ws)
+    try:
+        inv = inventory(ws)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     S.record(ws, "SWE.1/inventory.json", inv)
     if inv["missing_sections"]:
         return reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
+    try:
+        obligations = groups(inv)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
+    tasks = task_index(obligations)
     results = []
-    for g in groups(inv):
+
+    def cross_check(d: dict) -> list[str]:
+        return validate_group(ws, d, None, sysname, idx) + crosscut_obligation_findings(
+            ws, d, [r for _g, rec in results if rec["doc"] for r in rec["doc"]["requirements"]])
+    for g in obligations:
         task = f"requirements:{g['id']}"
         rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
                        lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget, routed.get(task))
@@ -642,7 +1318,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     issues = [f"{rec['task']}: {e}" for _g, rec in results if rec["status"] != "VALID" for e in rec["errors"][:5]]
     functional = [r for _g, rec in results if rec["doc"] for r in rec["doc"]["requirements"]]
     cross = run_task(ws, "requirements:crosscutting", lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                     lambda d: validate_group(ws, d, None, sysname, idx), budget, routed.get("requirements:crosscutting"))
+                     cross_check, budget, routed.get("requirements:crosscutting"))
     if cross["status"] != "VALID":
         issues += [f"requirements:crosscutting: {e}" for e in cross["errors"][:5]]
     if safety_text(ws) is None:
@@ -663,7 +1339,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
                 results = [(gg, rec if gg is g else rr) for gg, rr in results]
             else:
                 cross = run_task(ws, task, lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                                 lambda d: validate_group(ws, d, None, sysname, idx), budget, fs)
+                                 cross_check, budget, fs)
         bad = [rec for _g, rec in results + [(None, cross)] if rec["status"] != "VALID"]
         if bad:
             return reply(ws, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:5]], budget)
@@ -673,7 +1349,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     amap = assemble(ws, inv, results, cross)
     checks = self_check(ws)
     if checks and budget["calls"] < budget["max_calls"]:  # one localized repair round on the gate's own findings
-        for task, fs in route_findings(checks, amap).items():
+        for task, fs in route_findings(checks, amap, tasks).items():
             g = next((g for g, _r in results if f"requirements:{g['id']}" == task), None)
             if g is not None:
                 rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
@@ -682,7 +1358,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
             else:
                 cross = run_task(ws, "requirements:crosscutting",
                                  lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                                 lambda d: validate_group(ws, d, None, sysname, idx), budget, fs)
+                                 cross_check, budget, fs)
         bad = [rec for _g, rec in results + [(None, cross)] if rec["status"] != "VALID"]
         if bad:
             return reply(ws, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:5]], budget)
@@ -693,3 +1369,99 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     return reply(ws, "PASS", [], budget, artifacts=amap["files"])
 
 
+
+
+# ---- feature 018: one requirement replaced on its own (two-phase inspection, phase 1) -------------------------------
+def checkpoint_set(ws: Path) -> tuple[dict, list[tuple[dict, dict]], dict]:
+    """The assembled set's task records read from their checkpoints (every author task VALID), so that a single
+    requirement can be replaced and the set re-assembled without any author call."""
+    ws = Path(ws)
+    inv = inventory(ws)
+
+    def load(task: str) -> dict | None:
+        p = V._ckpt(ws, "SWE.1", task)
+        return json.loads(p.read_text()) if p.is_file() else None
+    results = [(g, load(f"requirements:{g['id']}")) for g in groups(inv)]
+    cross = load("requirements:crosscutting")
+    if any(r is None or r.get("status") != "VALID" or r.get("doc") is None for _g, r in results) or \
+            not cross or cross.get("status") != "VALID" or cross.get("doc") is None:
+        raise ValueError("PHASE1_SET_NOT_ASSEMBLED")
+    return inv, results, cross
+
+
+def requirement_hashes(ws: Path, results: list[tuple[dict, dict]], cross: dict) -> dict[tuple[str, str], str]:
+    """(task, key) -> sha256 of the canonical requirement object, for every requirement of the set."""
+    out = {}
+    for rec in [r for _g, r in results] + [cross]:
+        for r in rec["doc"]["requirements"]:
+            out[(rec["task"], r["key"])] = sha256_bytes(canonical_json(r))
+    for r in budget_requirements(ws, system_name(ws)):
+        out[("budgets", r["key"])] = sha256_bytes(canonical_json(r))
+    return out
+
+
+def splice(ws: Path, task: str, key: str, new: dict) -> tuple[list[str], tuple | None]:
+    """The findings of the set with requirement `key` of `task` replaced by `new` (nothing is written): the task's
+    own validator, the cross-task consistency rules and the key identity. Returns (errors, (inv, results, cross))."""
+    from ..assurance.hardware import index
+
+    ws = Path(ws)
+    if not isinstance(new, dict) or new.get("key") != key:
+        return [f"[{(new or {}).get('key')}] the requirement keeps its key '{key}'"], None
+    inv, results, cross = checkpoint_set(ws)
+    sysname, idx = system_name(ws), index(ws / "inputs/sections/RM0486")
+
+    def put(rec: dict) -> dict:
+        reqs = rec["doc"]["requirements"]
+        if sum(r["key"] == key for r in reqs) != 1:
+            raise ValueError(f"PHASE1_KEY_NOT_UNIQUE:{task}:{key}")
+        return {**rec, "doc": {**rec["doc"], "requirements": [new if r["key"] == key else r for r in reqs]}}
+    if task == "requirements:crosscutting":
+        cross = put(cross)
+        functional = [r for _g, rec in results for r in rec["doc"]["requirements"]]
+        errs = validate_group(ws, cross["doc"], None, sysname, idx) + crosscut_obligation_findings(
+            ws, cross["doc"], functional)
+    else:
+        if not any(rec["task"] == task for _g, rec in results):
+            return [f"PHASE1_TASK_NOT_AUTHORED:{task}"], None
+        results = [(g, put(rec) if rec["task"] == task else rec) for g, rec in results]
+        g, rec = next((g, rec) for g, rec in results if rec["task"] == task)
+        errs = validate_group(ws, rec["doc"], g, sysname, idx)
+    errs += [f"{t}: {f}" for t, f in consistency(results, cross)]
+    return errs, (inv, results, cross)
+
+
+def replace_requirement(ws: Path, task: str, key: str, new: dict) -> dict:
+    """Feature 018 (owner 2026-11-09: rework "requirement per requirement without modifying others"): write `new` in
+    place of requirement `key` of `task` and re-assemble the set from the task checkpoints. Every other requirement
+    stays byte-identical, verified before the change is kept; the set's own deterministic checks must not get worse.
+    Raises ValueError (nothing kept) otherwise. Returns the new assembly map."""
+    ws = Path(ws)
+    errs, state = splice(ws, task, key, new)
+    if errs:
+        raise ValueError("PHASE1_SPLICE_INVALID:" + errs[0][:300])
+    inv, results, cross = state
+    _inv0, results0, cross0 = checkpoint_set(ws)
+    before = requirement_hashes(ws, results0, cross0)
+    checks_before = set(self_check(ws))
+    ck = V._ckpt(ws, "SWE.1", task)
+    old_raw = ck.read_text()
+    rec = next(r for r in [r for _g, r in results] + [cross] if r["task"] == task)
+    old_obj = next(r for r in json.loads(old_raw)["doc"]["requirements"] if r["key"] == key)
+    rec = {**rec, "phase1_rework": [*(rec.get("phase1_rework") or []),
+                                    {"key": key, "at": utc_now(), "before": sha256_bytes(canonical_json(old_obj)),
+                                     "after": sha256_bytes(canonical_json(new))}]}
+    ck.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
+    results = [(g, rec if r["task"] == task else r) for g, r in results]
+    cross = rec if task == "requirements:crosscutting" else cross
+    amap = assemble(ws, inv, results, cross)
+    after = requirement_hashes(ws, results, cross)
+    others_changed = [k for k in before if k != (task, key) and before[k] != after.get(k)]
+    new_checks = sorted(set(self_check(ws)) - checks_before)
+    if others_changed or set(after) != set(before) or new_checks:
+        ck.write_text(old_raw)  # restore: the set is re-assembled exactly as it was
+        assemble(ws, inv, [(g, json.loads(old_raw) if r["task"] == task else r) for g, r in results],
+                 json.loads(old_raw) if task == "requirements:crosscutting" else cross)
+        raise ValueError("PHASE1_REFUSED_OTHER_CHANGED" if others_changed or set(after) != set(before)
+                         else "PHASE1_SELF_CHECK_WORSE:" + new_checks[0][:200])
+    return amap

@@ -1,0 +1,33 @@
+{
+  "schema": "forge-c/capa170-independent-source-review/1",
+  "at": "2026-11-04T23:53:04.184328+00:00",
+  "reviewer": "root Codex independent of source author and formal oracle owner",
+  "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "base": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "scope": "read-only final source review, no test rerun or runtime activation",
+  "file_hashes": {
+    "factory/python/forge_factory/afo/execution_lifecycle.py": "f806fa4907ac284e12e7d42bcf51be33457f96160f1b06759a093a4f3b3217bc",
+    "factory/python/forge_factory/afo/line_launcher.py": "53a2928651c62ce93ce5bdaa7dcd51435d8ac6b0bd623a8029a75b103615e164",
+    "factory/python/forge_factory/afo/line_recovery_product.py": "0c6e7d6e35927845db5df8dc0e31a7fc0683690c0d7e64672face0248fc1ccf3",
+    "factory/python/forge_factory/afo/line_stack_lifecycle.py": "55b2844341a390d4b4bce6f5d5a81f06c58e3904649c3540345d43e60ec7bde6",
+    "factory/python/forge_factory/lrtx/provider_process.py": "326f78fff7d7a90f2ea60e9642adaa4ce1c29cb65e411cbdfbdbd8be1a477cac",
+    "factory/python/forge_factory/lrtx/stack.py": "000103a00c0c75cf051318999a008a915a5855d19f01ab840cac9e6a6f6813fb",
+    "factory/python/forge_factory/workflow/builder.py": "44d9dd7c2d0e1f58e182c815b7dd02710761c7ae9498dbf5da8b62d9b9fb056c",
+    "factory/python/tests/test_line_recovery_product_bridge.py": "482e5b53e9d8f04506ccbeba31c2e9f15b3540b45c3cdd350d033f2ca760b564",
+    "factory/python/tests/test_line_stack_lifecycle.py": "8b0599bbe5edb0302ad8c6ffd46dc952fb34c0bb4e0591a4d2c369291d8c8c8c"
+  },
+  "blocking_findings": [],
+  "reviewed": [
+    "signed job, profile, native source, mission, nonce, current lease, intent and deadline binding",
+    "fresh authority before physical effects; existing global lifecycle admission remains separate",
+    "actual native API identity and early nonce-bound handoff",
+    "immutable actual worker proof and pidfd-directed signals",
+    "own failed startup monotonic cleanup, unknown provider hold committed before node failure",
+    "resource release requires hash-bound hold and fresh kernel provider quiescence"
+  ],
+  "limitations": [
+    "This review is not a model-role qualification or actual managed-launch success.",
+    "Unknown provider capture (None) deliberately cannot release capacity without further engineering proof.",
+    "Formal independent oracle, full gates and deployment acceptance remain separate."
+  ]
+}

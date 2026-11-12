@@ -1,0 +1,502 @@
+{
+  "actual_effects": {
+    "GPU_calls": 0,
+    "NTP_or_sudo_actions": 0,
+    "mission_or_canonical_DB_changes": 0,
+    "model_calls": 0,
+    "owner_keys_accessed": false,
+    "owner_signing_executed": false,
+    "service_changes": 0
+  },
+  "authority": {
+    "acceptance": "UNACCEPTED_QUALIFICATION_ONLY",
+    "directive": "for now go on without needing signatures",
+    "fixed_UTC_deadline": "2026-11-19T03:07:06Z",
+    "original_mission": "line-local-role-trial-20261104",
+    "production": "Signed ACT verification and production observer/feed unchanged; no production authority claim.",
+    "record_provenance": "External initial-usernamespace OS-owner guardian; protected existing Store row plus pinned actual socket live challenge; no MCP mint operation.",
+    "remaining_orders": "Original B/C/D only; initial1PRODUCTattempt+1048576charged_unknown retained; no extension/refill/reset performed.",
+    "ticket": "Issuance-only <=60s freshness; same-RPC BOOTTIME before MONOTONIC. Active authority checks original boot and conservative fixed BOTH deadlines; no NTP/skew requirement or recurring external time."
+  },
+  "evidence": [
+    {
+      "bytes": 468,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-mapped-host-kernel-control.json",
+      "sha256": "49cf12a4e5f85e5b3692ff4d96cc0254c83a53d363bb9dbd0fc4308093b6c620"
+    },
+    {
+      "bytes": 2585,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-kernel-diagnostic-r17.log",
+      "sha256": "e841a6834a0c42120df4f37e8e0685c30135093b2858899f271c3343e4459551"
+    },
+    {
+      "bytes": 7452,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r16.log",
+      "sha256": "a647e542a93d02f137c399dd2892f82785b5890f1083056e416e5698007723d4"
+    },
+    {
+      "bytes": 12410,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r16.xml",
+      "sha256": "ab8118aa3a83ee0437a824720fe8820c43af166a8c93d55420ea307d9f423106"
+    },
+    {
+      "bytes": 5999,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r18.log",
+      "sha256": "38d7a5d3574115d8fd62bbb8d68c63ad6858ba0a085e9e7ef8c63b10398e6d72"
+    },
+    {
+      "bytes": 9513,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r18.xml",
+      "sha256": "58d99d82227b11dedce10286991e5b3c9c5889cfddc5fe2dca5fbf8d26023d04"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r19.log",
+      "sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5"
+    },
+    {
+      "bytes": 1016,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-view-r19.xml",
+      "sha256": "8255b36145eccfeb8c77a84c049e5780fbec700390c29d0e6cfeecafe427d42d"
+    },
+    {
+      "bytes": 6732,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-affected-r22.log",
+      "sha256": "6f60f0e7e52992a3dd493cf74dd99a4c2dbbd602191b5b358c4443a7d428e137"
+    },
+    {
+      "bytes": 35746,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-affected-r22.xml",
+      "sha256": "57fa8a41194eb0d3a9e99cbb78b9d9171e74bb2ca6bd70f7f77403207f690576"
+    },
+    {
+      "bytes": 2137,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-affected-r23.log",
+      "sha256": "b344fd6575e61159ab5dd18acfebb19132e866fb56f74409d103ed26e338677c"
+    },
+    {
+      "bytes": 34982,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-affected-r23.xml",
+      "sha256": "dc6f1fef5cfb102a5b1efddb98db1fe4d1a83916b1030d7e79c975a320ea6102"
+    },
+    {
+      "bytes": 932,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-baseline-iwdg.log",
+      "sha256": "0464e5ec1037f9e2ab8d1557a05585f64d76419bf9e14a4a06420c24b1f5ce50"
+    },
+    {
+      "bytes": 985,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-baseline-iwdg.xml",
+      "sha256": "377ec4d01611270d43cf3cd3dcd17d3935c819d711bb02f3e6c4b6bf88e31b96"
+    },
+    {
+      "bytes": 1514,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-design.log",
+      "sha256": "b3be1f28882eed8d08280d3ded56907a93998f1f7e805cb59ee519ba8828e76b"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-envelope-r25.log",
+      "sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5"
+    },
+    {
+      "bytes": 1058,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-envelope-r25.xml",
+      "sha256": "0de8c598fb611aac330bcc9fc743bfd8eb10cd59e4ee90f9672ee8dce12bbc53"
+    },
+    {
+      "bytes": 1514,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-design.log",
+      "sha256": "55a0c52eead938da6eba4220bef5eb7833f0e241e23cd136103429a3279c8079"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-r24.log",
+      "sha256": "5952b218382e51f578768c0a348723d5418c12143cc6d5f49d527f1d1b978a79"
+    },
+    {
+      "bytes": 8150,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-r24.xml",
+      "sha256": "908d83aa5bd29cb13cef5c7560b6326b933afa687444495db075bb45096d057b"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-r26.log",
+      "sha256": "a5bad37fc2190bed21c8f7befa636dc4fbe8b2f6206048cff2d3378a016c4864"
+    },
+    {
+      "bytes": 9129,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-r26.xml",
+      "sha256": "fc0e687f7f8d9ccefd9cc81c24a3a4e7815bda390fb9e00d2568b7d8d99331a1"
+    },
+    {
+      "bytes": 19,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-final-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "bytes": 3654,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r10.xml",
+      "sha256": "70724ab0670119d6e76c56d71af0b99dbcc803e31eebae41097731dab2255329"
+    },
+    {
+      "bytes": 8136,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r11.xml",
+      "sha256": "0ce7dbf901bf2394e1bd1b988984b798431ec8294a5052500219498bffd5ad7e"
+    },
+    {
+      "bytes": 41095,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r12.xml",
+      "sha256": "0b0541cc8b7bc50ffa3a264397c8f02b6808067a247d9e4ea5be81bd6a46af5b"
+    },
+    {
+      "bytes": 42288,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r13.xml",
+      "sha256": "fdaa970a2ff5c1a07c6ff9852934cf39517cbed3cff5db3c54bc2802d515958c"
+    },
+    {
+      "bytes": 18768,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r14.xml",
+      "sha256": "a10a3c1a32b420a57eaf2277a0f850c0b96339f7c0bc2a65bcce2889f73e3fb5"
+    },
+    {
+      "bytes": 27614,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r15.xml",
+      "sha256": "5cb49ec5080ae418d4072e7235076839cf760cb19f18f5144505fad35c9edf3b"
+    },
+    {
+      "bytes": 6425,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r20.xml",
+      "sha256": "80020fd42708316d832d540a1976fe5d23deba1d4a0cd01bf21b46e707bdebab"
+    },
+    {
+      "bytes": 10040,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r21.xml",
+      "sha256": "7a66c563ca19bf28dfa657e5e2494a8c131b1a7647fc5de32daa84c3515a7661"
+    },
+    {
+      "bytes": 26021,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r8.xml",
+      "sha256": "bfa628d1db197e54f9bd3e6455cea0c220865d58568466ad2306a66f1fc70de6"
+    },
+    {
+      "bytes": 11125,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-focused-r9.xml",
+      "sha256": "4488b3b1683e990e163d236400e37bdfa4366231c75a849b1af8180dcc5f0836"
+    },
+    {
+      "bytes": 589,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r1.log",
+      "sha256": "2768931fd45cbfcb11f4eea4be1355657db511e55a8b53a4f5723b021fe72598"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r10.log",
+      "sha256": "e2289c230135b682d66e48107f8caab30f5b37878e8daf2e9fb92df9aebb1375"
+    },
+    {
+      "bytes": 4310,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r11.log",
+      "sha256": "09d8ee651f9ae01a8feaa7bdbbdb54a6d21921550a4de1996b90d09a2ac43679"
+    },
+    {
+      "bytes": 35213,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r12.log",
+      "sha256": "dcb0bfbfc43b0b2e4970b7c369fef906885c5662551fbb87f3955f6956386c34"
+    },
+    {
+      "bytes": 36390,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r13.log",
+      "sha256": "a3bd79b3eab8283c2a99f3bb9777f9e8115d511702b9729df017b3fe4fc895fd"
+    },
+    {
+      "bytes": 14288,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r14.log",
+      "sha256": "9a7fc43ebd86600fbe482bdc298938d3d74a873e748668c77d6b5a6cfca0f2bb"
+    },
+    {
+      "bytes": 14595,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r15.log",
+      "sha256": "c1b4b72d21d91d4e817e4197c6ebcf2ae942089286136e68e28f1c07886ba3ab"
+    },
+    {
+      "bytes": 52296,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r2.log",
+      "sha256": "b6dc9d7954e02cceeddb6bb67a7074653c8ad1c4143c9e68e2f781110a36e19b"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r20.log",
+      "sha256": "07c2eef926162e0090994bc913805aa08a8b2cbb5b21d2c933b937a10300713f"
+    },
+    {
+      "bytes": 1490,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r21.log",
+      "sha256": "3c66919820a0d869326f3b8a1334a637a45de59ce82b1aa2405c3a946cdf66d8"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r3.log",
+      "sha256": "511fb971caf59261241ec2a3919d9d10c7dcb9ec044ee07d50b2db465184f057"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r4.log",
+      "sha256": "511fb971caf59261241ec2a3919d9d10c7dcb9ec044ee07d50b2db465184f057"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r5.log",
+      "sha256": "511fb971caf59261241ec2a3919d9d10c7dcb9ec044ee07d50b2db465184f057"
+    },
+    {
+      "bytes": 10476,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r6.log",
+      "sha256": "2f0544a5aeeee4b07a4a13c51fbfe2531fb7a93e03d57d8253af4446afb2550d"
+    },
+    {
+      "bytes": 22773,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r7.log",
+      "sha256": "f822003208473c5a0e9843e6430a82c52802e3c0f59d3eb4f015dbab13aad296"
+    },
+    {
+      "bytes": 22773,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r8.log",
+      "sha256": "67565db89595f362e8bb1aa98ade8df4ccb8562b5754243089309a27cc12d4df"
+    },
+    {
+      "bytes": 7888,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-green-r9.log",
+      "sha256": "f9c1cd4713303b456f3695e05e9d1182be0c3e29a07abe7c4426a92e58ce667c"
+    },
+    {
+      "bytes": 2345,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-inputs-before-tests.json",
+      "sha256": "135f173da8e5850dc3a667fe9f060d94479cd672acd9628d586815e84681ab70"
+    },
+    {
+      "bytes": 1294,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-red.log",
+      "sha256": "ab3f4c5b2ac7a99b7903a78eb4bd1479163755b5fd45da7b3ada94e37cd60112"
+    },
+    {
+      "bytes": 19,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "bytes": 38284,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-source.bundle",
+      "sha256": "9d06bbfa34d142fd531ca2c7597368368cf443fbefd8ec4e260512169875d263"
+    }
+  ],
+  "history": {
+    "child_review": "Read-only child found suspend and provider-profile concerns; both addressed and independently re-reviewed without another unresolved scoped finding.",
+    "earlier_failures": "All matching immutable development logs/XML included, including measured nsfs unsupported binds and fixture errors.",
+    "r21": "47PASS/1ERROR: incorrect new fixture name; corrected to existing native_job, predicate unchanged.",
+    "r22": "175PASS/1ERROR: FORGE_DATA_ROOT absent for existing $FORGE_DATA_ROOT external ST-source expansion; normal environment restored.",
+    "r23": "201PASS/2FAIL: new suspend fence red control fixed; other failure reproduced exactly on baseline."
+  },
+  "limitations": [
+    "Normal CRE qualification is NOT_RUN here and belongs to root.",
+    "No remote namespace portability, actual models/GPU/native competence, live admission or deployment is claimed.",
+    "Private fixtures overlay source identity and physical-allocation evidence as TEST-only data; real Store/request/role protocols, kernel identity and executable confinement are exercised.",
+    "Host OS owner/root remains trusted; no guardian-issuance operation is exposed to agent MCP.",
+    "Actual legacy provider must pass fresh absent/compatible or normal exact-owner quiescent retirement before admission."
+  ],
+  "results": {
+    "affected_original": {
+      "ERROR": 0,
+      "FAIL": 2,
+      "PASS": 201,
+      "SKIP": 0,
+      "tests": 203,
+      "xml": "owner-supervised-development-affected-r23.xml"
+    },
+    "composite_by_exact_node_id": {
+      "counts": {
+        "FAIL": 1,
+        "PASS": 208
+      },
+      "description": "Latest focused results supersede same-node r23 results; no fresh full final-tree affected-suite claim.",
+      "distinct_cases": 209
+    },
+    "cpu_sessions": "ALL_CLOSED",
+    "final_focused": {
+      "ERROR": 0,
+      "FAIL": 0,
+      "PASS": 56,
+      "SKIP": 0,
+      "tests": 56,
+      "xml": "owner-supervised-development-final-r26.xml"
+    },
+    "private_namespace_controls": "Real mapped-host + nested private PID/user namespace, original proc/stat/uid_map+socket identity, Store binding, fake-view/socket/Store/UIDmap negatives, provider recreation; CPU-only.",
+    "remaining_failure": {
+      "baseline_xml": "owner-supervised-development-baseline-iwdg.xml",
+      "node": "factory/python/tests/test_peripheral_assurance.py::test_iwdg_unit_test_verifiers_run",
+      "observed": "NOT_RUN:no compile unit for code under test",
+      "same_on_qualified_baseline": true
+    },
+    "ruff": "PASS_ALL_CHANGED_AND_NEW_PYTHON_FILES",
+    "static_design": {
+      "PASS": 14,
+      "log": "owner-supervised-development-final-design.log"
+    }
+  },
+  "schema": "forge-c/owner-development-source-review/1",
+  "source": {
+    "baseline": "74e44a1f23b01f3200350436df1691249b441292",
+    "branch": "feat/owner-supervised-development-20261105",
+    "clean": true,
+    "commit": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+    "files": [
+      {
+        "bytes": 5014,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/docs/adr/ADR-DA-011-owner-supervised-development.md",
+        "sha256": "20bfabba75cdc2bf00e455bea5ea1e5bb1fd66b9147f79f83c94a730566a115f"
+      },
+      {
+        "bytes": 3847,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/authority.py",
+        "sha256": "e5186309c13d1aabffa640ef6eade5a2a7da8c5676518414a0d2c40b2fc81caf"
+      },
+      {
+        "bytes": 84482,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/line_orders.py",
+        "sha256": "0e9cfeecc9504566fa1f57a2d5c7b534af8e1e30ec163678c32d857f21deb3a6"
+      },
+      {
+        "bytes": 11990,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/line_recovery.py",
+        "sha256": "a04f38c8bf60efd998a12b0f5ab464a962ce924b0bfd87679408c20b17060a5c"
+      },
+      {
+        "bytes": 9630,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/line_recovery_control.py",
+        "sha256": "641a56afcc16e5d43b7091abf1f4901812f23d2eab372823e3532a8ac7d6a5a8"
+      },
+      {
+        "bytes": 51765,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/local_agent.py",
+        "sha256": "3160e8cd77f10f44514e23b990fac02f30d7bb5bbca8b9cde7b4dce58cbd8114"
+      },
+      {
+        "bytes": 10020,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/maintenance_binding.py",
+        "sha256": "975719a851e4e18e80cf43c5b21a1f8ad8f894ba1bae13aa84afcdb56d32617d"
+      },
+      {
+        "bytes": 13820,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/maintenance_rework.py",
+        "sha256": "19e116d99b59ef0c47ec3469edc658cdd48fa72cb36c9eaf82f21df39d059f23"
+      },
+      {
+        "bytes": 6553,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py",
+        "sha256": "80e5ad3c31f9e1993e924d4d02ceb4ef2d4b7d3f50f3c7b3e03d3710102b01c3"
+      },
+      {
+        "bytes": 38935,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py",
+        "sha256": "b9c60dae19b63d3778ac5cf482cff8d0079b0c1bd1cb9139c527bbb6e929646f"
+      },
+      {
+        "bytes": 5959,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/policy.py",
+        "sha256": "415784e95cc8344c51e278ca123189b195f717393a59914c2f78179650b6b37b"
+      },
+      {
+        "bytes": 11684,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/product_job.py",
+        "sha256": "6424047e7dab2744a58477fc281e724cf1c2e07192fe43ab4ec56dc6f995fb1a"
+      },
+      {
+        "bytes": 14302,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/product_role_trial.py",
+        "sha256": "bc7f75c28fe17de647cfd06d8422b4a8d96904ac2d37ba8d2574fe7387d5e6fb"
+      },
+      {
+        "bytes": 8612,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/assurance/corpus.py",
+        "sha256": "ca833c4111be5c35a740da12e607621357fb50e05f3d54d4eca84b4f0dea5c28"
+      },
+      {
+        "bytes": 6235,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/assurance/coverage.py",
+        "sha256": "330a1ee767816dec28d5ee35afd250decf46dca9257c07d5998a0d3a523c4ed1"
+      },
+      {
+        "bytes": 15151,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/assurance/mutation.py",
+        "sha256": "7c93505ee89b93e3fea5d40b6f6a0e332faefcf0b523077b284f5a9d3e47ef98"
+      },
+      {
+        "bytes": 26203,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/assurance/oracle_gen.py",
+        "sha256": "1154811cf210a717d42efc8f26390407162c0bac2ced765469b47bfd24f4ab5d"
+      },
+      {
+        "bytes": 5886,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/fabro/runconfig.py",
+        "sha256": "97e920b151b9c00fdebad399208ec273367680960bf9a80bcb24d7f1d5c2f5c0"
+      },
+      {
+        "bytes": 60162,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py",
+        "sha256": "ef84dbed339cb786a7760ab5876295b0b9c017805a8b565ac15ee32897a44a8c"
+      },
+      {
+        "bytes": 18935,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/mcp/sdk.py",
+        "sha256": "d5eb30b2d32c982cbb252ed0be9655ae0928187b1e31ddad8bcfd801597db83a"
+      },
+      {
+        "bytes": 11159,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/reliability/isolation.py",
+        "sha256": "3281c945b81a54d27edcc9eb908bcf0a869b3d4e982f44f2aaf50a5278ae91ca"
+      },
+      {
+        "bytes": 38890,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/workflow/builder.py",
+        "sha256": "a71e49d11a0239997fa6bff35d337d28f25d28d001f787200c6d00d1914f2eab"
+      },
+      {
+        "bytes": 70082,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/workorder.py",
+        "sha256": "ad1834d0497369c76b760441e9d64e52668111af263a4cabc560c710694fe23c"
+      },
+      {
+        "bytes": 2019,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/fixtures/owner-supervised-development/afo-policy.proposed.yaml",
+        "sha256": "1c9a1cde4bfa440c4d2b8302b0b011cc7fd79a71a5cb984481b7cf99d47b9875"
+      },
+      {
+        "bytes": 890,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/fixtures/owner-supervised-development/line-policy.proposed.yaml",
+        "sha256": "05e43e8935748390ebd7cb59c0adf37f5753669bdc762d9314f27a97ef9a2681"
+      },
+      {
+        "bytes": 2727,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/fixtures/owner-supervised-development/ornith-trial.json",
+        "sha256": "02d2f5b6fbd84d8c25541637f0cd35ee94f21682aae1738a0b5bbca6f8efda95"
+      },
+      {
+        "bytes": 1258,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/fixtures/owner-supervised-development/qwen-trial.json",
+        "sha256": "49622785cdb86bd50586a3dd0ffbd86400de0b17e39552fe6f78c4c1058f2d0e"
+      },
+      {
+        "bytes": 10346,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/test_owner_development_view.py",
+        "sha256": "89dbc2c8701228444dc5c2d78526e60c52d450869fafde8aa6b18c9e1dec519f"
+      },
+      {
+        "bytes": 31517,
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/test_owner_supervised_development.py",
+        "sha256": "0d1f633f8c44f2af1b2eed0e55d46ebe5bf814be4088c70e552c5aec5ec4481d"
+      }
+    ],
+    "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development"
+  },
+  "status": "SOURCE_FROZEN_NORMAL_CRE_NOT_RUN"
+}

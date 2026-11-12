@@ -1,0 +1,78 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 system window watchdog (WWDG) HAL driver (on the verified WWDG LL driver)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 60 (WWDG) + memory map p.181"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.60 WWDG register interface + memory map p.181 (WWDG secure base 0x50002C00)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the WWDG work orders"
+  },
+  "scope": [
+    "HAL: hal_status_t API with HAL_WWDG_ prefix and a const configuration pointer, built only on the PROVIDED LL_WWDG_ functions",
+    "Initialise the watchdog from a configuration (timer base prescaler WWDG_CFR.WDGTB 0..7, window value, counter value, early wake-up interrupt enable): write the prescaler and the window value; with the early wake-up interrupt enabled clear the early wake-up flag, then enable the interrupt (RM0486 60.5); then write the counter and activate the watchdog (the counter with T6 set before WWDG_CR.WDGA, RM0486 60.4.3, 60.4.4)",
+    "Refresh: write a counter value to WWDG_CR.T (the caller refreshes inside the window, RM0486 60.4.4)",
+    "Query the early wake-up flag (WWDG_SR.EWIF) and clear it (written 0, RM0486 60.6.3)",
+    "Parameter checks before any register write, returning HAL_ERROR: a NULL configuration or flag pointer, a prescaler above 7, a window or counter value outside 0x40..0x7F (RM0486 60.4.4, 60.4.5), an early wake-up interrupt selection other than 0 or 1",
+    "No HAL_WWDG_ function waits on a WWDG flag (activation, configuration and refresh are register writes; WWDG_SR holds only the early wake-up flag, RM0486 60.6)",
+    "Performance: each HAL_WWDG_ call completes within the simulation performance budget",
+    "The LL header is provided by a verified WWDG LL work order (--provided-from)",
+    "Out of scope: the watchdog reset generation and the early wake-up interrupt handler, the WWDG bus clock enable (RCC), the hardware watchdog option (WWDG_SW), the debug freeze (DBG), a disable or deinit (WWDG_CR.WDGA and WWDG_CFR.EWI are cleared only by a reset, RM0486 60.6.1, 60.6.2)"
+  ],
+  "system_names": [
+    "WWDG HAL driver",
+    "WWDG driver",
+    "STM32N6 WWDG HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets as the IWDG/CRC HAL orders (owner 2026-10-15 targets); simulation performance budget set 2026-11-03 under the owner's delegation of timing/CPU decisions (as 0009b/0014m)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "role": "reference_manual_wwdg_chapter"
+    },
+    {
+      "path": "../0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0016-wwdg-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "Owner 2026-11-03 ('go with other small HAL than RCC'): built on the PROVIDED LL header of a verified WWDG LL work order (0016c lineage, ST CubeN6 stm32n6xx_ll_wwdg.h, --provided-from); peripheral profile config/factory/peripherals/wwdg.yaml (HAL section: Init/Refresh/early wake-up flag query and clear, no wait)",
+  "peripheral": "wwdg",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

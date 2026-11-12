@@ -1,0 +1,8 @@
+{
+  "decision": "CLOSE_BLOCKED",
+  "evidence_refs": [
+    "case-evidence:inventory"
+  ],
+  "blocking_reason": "MISSING_AUTHORITATIVE_INPUT",
+  "explanation": "The required approved hardware input is absent from the case."
+}

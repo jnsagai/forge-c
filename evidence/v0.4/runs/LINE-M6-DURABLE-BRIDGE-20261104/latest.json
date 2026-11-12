@@ -1,0 +1,66 @@
+{
+  "schema": "forge-c/source-component-validation/1",
+  "component": "M6/M3 durable recovery and product continuation bridge",
+  "candidate": "a45f03e7ef5e2707d9001c4eb7629d50a9d6842c",
+  "baseline": "d151943933b609d701ad701fb64532761a57fb48",
+  "decision_id": "pd-d63e577d5cf8a15ce78a",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "tests": {
+    "targeted_before_final_history_increment": {
+      "passed": 300,
+      "skipped": 1
+    },
+    "final_affected_history_and_semantic_controls": {
+      "passed": 73
+    },
+    "static_design": 14,
+    "changed_python_lint": "PASS"
+  },
+  "scope": "EXECUTABLE_SOURCE_CONTROL_FIXTURES_NOT_LIVE_ROLE_QUALIFICATION",
+  "live_model_calls": 0,
+  "live_dispatch": "NOT_RUN",
+  "actual_role_qualification": "NOT_RUN",
+  "service_activation": "NOT_RUN",
+  "dependencies": [
+    {
+      "commit": "d151943933b609d701ad701fb64532761a57fb48",
+      "decision_id": "pd-074a3f63de967a611d1d"
+    },
+    {
+      "original_commit": "9730a0710027885355d768e94ae7fe6f6e43720b",
+      "patch_equivalent_commit": "deaff7f4b0faa8d55967e6d5c2e6b851101e636c",
+      "decision_id": "pd-16e1a911dcd5a23dd1a8"
+    }
+  ],
+  "independent_integration_dependencies": [
+    "Parent M7 coordinator + maintenance prepare branch",
+    "Parent qualified native transport validator c247d107c2a3 and actual final-source/profile measurement",
+    "Root compatible source fixes/campaign/source run revision; no intermediate deployment"
+  ],
+  "remaining_runtime_prerequisites": [
+    "Exact owner-signed finite control/grant/policy/profile review; source creates none",
+    "Actual separately qualified role capability receipts or explicitly signed finite role trial",
+    "Planner1048576 reservation exceeds current120000 order policy; no clamp",
+    "Maintainer131072 cannot fit measured131072 thinking+16384 wire cap plus actual input; owner profile review",
+    "Signed measured native_transport_ref + explicit operator opt-in + matching actual gateway startup scope/source/flag",
+    "Actual qualified dispatch + independent product verification; CONTROL mocks do not establish live qualification"
+  ],
+  "log_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-full-target-r1.log",
+      "sha256": "a0671580f59e4b7d4e86a7702411a0bd13f79fbc1fe62559a5638d0073588dbc"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-history-final.log",
+      "sha256": "d2e04e4417567574284107538fc23779126a13dd3a1fe04fb0b66eb6ddcd6725"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-full-design.log",
+      "sha256": "796df493338933760f3862277532eac765f868788a29aa7bd635555ce617fa7e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-full-change-gate.log",
+      "sha256": "1aca74df1cdbf6f8189e34180be6ff6f5ba40f498b00a72830135523a6f97fd4"
+    }
+  ]
+}

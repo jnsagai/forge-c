@@ -1,0 +1,24 @@
+{
+  "contract_sha256": "13d0f5d2a0ccf233569111254c5b1973dc87ac789787687053e68ca3994d6ecd",
+  "status": "PENDING_SEPARATE_ORACLE",
+  "controls": [
+    {
+      "line": "cloud",
+      "prefix": "WO-F014-CMP",
+      "code_accepts": true,
+      "schema_accepts": true
+    },
+    {
+      "line": "local",
+      "prefix": "WO-F014-CMP",
+      "code_accepts": false,
+      "schema_accepts": false
+    },
+    {
+      "line": "local",
+      "prefix": "WO-F014",
+      "code_accepts": true,
+      "schema_accepts": true
+    }
+  ]
+}

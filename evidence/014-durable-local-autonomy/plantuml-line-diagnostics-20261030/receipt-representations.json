@@ -1,0 +1,23 @@
+{
+  "reason": "Raw JUnit failure text contains trailing spaces rejected by git diff --check; exact raw receipts remain losslessly published as gzip and retained locally.",
+  "receipts": [
+    {
+      "readable_view": "before.xml",
+      "format": "TRAILING_WHITESPACE_NORMALIZED_JUNIT_VIEW",
+      "raw_gzip": "before.xml.gz",
+      "raw_sha256": "8b5317c734ccb6b13d5f21ece5dd3c7b04d78346a3482dbbcdd6585eee662ae3",
+      "gzip_sha256": "4a82d0bc808ee489ce6faaac9406af674868b8c23049397bb90d697612680ee8",
+      "view_sha256": "37d888715b7c77600ab005a6a1e0ed0c4c2a6148678183c8e3fb38cec644e7bf",
+      "test_counts_unchanged": true
+    },
+    {
+      "readable_view": "intermediate.xml",
+      "format": "TRAILING_WHITESPACE_NORMALIZED_JUNIT_VIEW",
+      "raw_gzip": "intermediate.xml.gz",
+      "raw_sha256": "d301fcdc36ba6b39662837c3cec46df0427004966731037f4109e81ee3bc7ebb",
+      "gzip_sha256": "e9296130d240b56b0c3ec2c317f0e3d54f1aa8a47c0dfd0aecce69063a13dc1f",
+      "view_sha256": "f424b45ba7c193a17cc1337517367b97fed33bc226d4df51ae6c98d97f77c503",
+      "test_counts_unchanged": true
+    }
+  ]
+}

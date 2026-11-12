@@ -1,0 +1,8 @@
+{
+  "status": "PASS_PATTERN_SCAN_AND_SELECTED_EXPORT",
+  "dispatch_nonces": "REDACTED",
+  "raw_hidden_reasoning": "NOT_EXPORTED",
+  "primary_documents": "NOT_EXPORTED",
+  "private_keys": "NOT_EXPORTED",
+  "limitations": "Pattern scan plus selected-export review, not absolute secret detection"
+}

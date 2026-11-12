@@ -1,0 +1,22 @@
+..............................................F                          [100%]
+=================================== FAILURES ===================================
+_____ test_real_cold_control_then_full_managed_nested_namespace_cpu_health _____
+
+managed_cpu = ({'ports': {'fabro': 32391, 'gateway': 32436, 'llama': 32437, 'ollama': 32435}, 'profile': {'_path': 'config/factory/p...FRESH_PRIVATE_GUARD', 'FRESH_PRIVATE_GUARD', 'FRESH_PRIVATE_GUARD', 'FRESH_PRIVATE_GUARD', 'FRESH_PRIVATE_GUARD', ...])
+
+    def test_real_cold_control_then_full_managed_nested_namespace_cpu_health(managed_cpu):
+        settings, guard, calls = managed_cpu
+        root = settings["root"]
+        with stack.line_effect_guard(guard):
+            control = stack._start(settings, recovery=True, control_only=True)
+            assert control["health"] == {"fabro": True}
+            result = stack._start(settings, recovery=True)
+>       assert all(result["health"].values()) and set(result["health"]) == {"fabro", "ollama", "gateway", "llama_server"}
+E       AssertionError: assert (False)
+E        +  where False = all(dict_values([True, True, False, True]))
+E        +    where dict_values([True, True, False, True]) = <built-in method values of dict object at 0x7d3c43a35c40>()
+E        +      where <built-in method values of dict object at 0x7d3c43a35c40> = {'fabro': True, 'gateway': False, 'llama_server': True, 'ollama': True}.values
+
+tests/test_owner_managed_namespace_start.py:121: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_owner_managed_namespace_start.py::test_real_cold_control_then_full_managed_nested_namespace_cpu_health

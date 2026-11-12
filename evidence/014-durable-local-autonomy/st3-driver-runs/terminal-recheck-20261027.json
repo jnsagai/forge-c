@@ -1,0 +1,129 @@
+{
+  "schema": "forge-c/014-st3-terminal-recheck/1",
+  "observed_at": 1793113304.7200918,
+  "host": "omniverse2",
+  "mode": "READ_ONLY_TERMINAL_ARTIFACTS_NOT_A_LIVE_PROGRESS_CAPTURE",
+  "new_model_requests": 0,
+  "job": "050-st3-9a88fbc.sh",
+  "status_text": "start 2026-10-27T08:13:13Z\nend 2026-10-27T08:19:24Z exit=0\n",
+  "status_sha256": "9f8917709a936e4b9f78b319b9528831cda25b9b41ed28138adada0e6ee08e46",
+  "source_summary_sha256": "79bb629e8f1492be24ef92f62edf419974164c82c01e128b71bb8d53e774d7c7",
+  "cases_sha256": "815a3198fe7077b6b29f1ecd6aeb4af4ba0965668962e50a1ab8aadd02162ffd",
+  "matching_running_artifacts": [],
+  "rows": [
+    {
+      "run": "WWDG-LL-st301",
+      "package_status": "BLOCKED",
+      "gap_count": 59,
+      "archive_sha256": "b52ae3fbb5fb1d033eceb0aef3c20404fb50d1f4b39f224a979c520430ddeac7",
+      "artifact_facts": {
+        ".forge-run/package.json": {
+          "exists": true,
+          "bytes": 3941,
+          "sha256": "1ca80c42936683414bf0a6831b8b9861cd01100d45b112bdceb6efd921b2952c"
+        },
+        ".forge-run/manifest.json": {
+          "exists": true,
+          "bytes": 26682,
+          "sha256": "59b903d93c4dc684c649e0424fbc5d3844e198676757119815102fe67ce8ba81"
+        },
+        ".forge-run/gates/gate-log.jsonl": {
+          "exists": true,
+          "bytes": 2073,
+          "sha256": "5eebea9aaaee77a65ec0f1a32e3828a6372cf0620b62dbd3c470c38eebc509a7"
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "traceability/requirements_to_tests.csv": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "run": "RNG-LL-st301",
+      "package_status": "BLOCKED",
+      "gap_count": 59,
+      "archive_sha256": "607d3ad5f0b248464c1a8d6435e8d7fc3fdcf707e2f8ba042c306d6b276690ba",
+      "artifact_facts": {
+        ".forge-run/package.json": {
+          "exists": true,
+          "bytes": 3938,
+          "sha256": "49683fd9ba3a238e55839424efe81657ee46a016f7f9d0b29053e11dc24c7ac5"
+        },
+        ".forge-run/manifest.json": {
+          "exists": true,
+          "bytes": 28096,
+          "sha256": "97ba18d583b99b383982bbd92f5ed09ead594002e82f7cb8df0386159aae2167"
+        },
+        ".forge-run/gates/gate-log.jsonl": {
+          "exists": true,
+          "bytes": 2073,
+          "sha256": "34569c302f0271d79f92707a0582fbed6241509996590765991c4c345efda357"
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "traceability/requirements_to_tests.csv": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "run": "LPTIM-LL-st301",
+      "package_status": "BLOCKED",
+      "gap_count": 59,
+      "archive_sha256": "031128a7e9d7263ffa2f80f8842e5d79804dcde9537fa7f83332631ac0599fa1",
+      "artifact_facts": {
+        ".forge-run/package.json": {
+          "exists": true,
+          "bytes": 3944,
+          "sha256": "a8849fde170cca30b895e15f64ba0f89652d1ee3c99c6f5c26f28a3a486b0d5b"
+        },
+        ".forge-run/manifest.json": {
+          "exists": true,
+          "bytes": 32266,
+          "sha256": "b8a1908dd0afa19a378a33c40011f60f878d5028e73653b52234aef067a389f1"
+        },
+        ".forge-run/gates/gate-log.jsonl": {
+          "exists": true,
+          "bytes": 2073,
+          "sha256": "6b305c3bea587e8f925f559698d064b83526d19022e481f27e8eb03f4513ec4c"
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        },
+        "traceability/requirements_to_tests.csv": {
+          "exists": false,
+          "bytes": null,
+          "sha256": null
+        }
+      }
+    }
+  ]
+}

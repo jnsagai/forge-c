@@ -1,4 +1,5 @@
 """SWE.6 Robot Framework requirement tests on the Renode STM32N6 model via forge-tests-mcp.run_robot."""
+import json
 import os
 
 import pytest
@@ -216,3 +217,43 @@ def test_undefined_check_id_never_passes_and_stack_bound_is_measured_r72(tmp_pat
     ok = run(tmp_path, monkeypatch, {"software/tests/software/test_rcc_requirements.robot": SUITE.replace(
         "Driver Flash Size Should Be At Most    4096", "Driver Stack Should Be At Most    1024")})
     assert ok["status"] == "PASS", ok
+
+
+def _crc_observation_ws(tmp_path, check):
+    ws = tmp_path / "ws"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"peripheral": "crc", "layer": "HAL"}))
+    vendor = ws / "inputs/vendor/include/stm32n657xx.h"
+    vendor.parent.mkdir(parents=True)
+    vendor.write_text("#define CRC_POL_POL_Msk            (0xFFFFFFFFUL << CRC_POL_POL_Pos)\n"
+                      "#define CRC_POL_POL                CRC_POL_POL_Msk\n")
+    tests = ws / "software/tests/software"
+    tests.mkdir(parents=True)
+    (tests / "scn_init.c").write_text("TCHECK(2, LL_CRC_GetPolynomialCoef(CRC) == 0x04C11DB7U);\n" + check)
+    suite = tests / "test_crc_requirements.robot"
+    suite.write_text("*** Settings ***\nLibrary    ForgeTarget\n\n*** Test Cases ***\nSWR-001\n    [Tags]    SWR-001\n"
+                     "    Run Target Scenario    scn_init.c\n    Target Check Should Pass    2\n"
+                     + ("    Target Check Should Pass    10\n" if check else ""))
+    reqs = {"SWR-001": "When the CRC initialisation is requested with a valid configuration, the CRC driver shall "
+                       "write the configured polynomial to CRC_POL.POL."}
+    return ws, suite, tests, reqs
+
+
+def test_capa183_unobserved_field_names_a_mask_the_headers_define(tmp_path):
+    """L90Z..L90AC stopped at 22/24: the issue named LL_CRC_POL_POL_MSK, which no header defines."""
+    from forge_factory.mcp.servers.robot_policy import unobserved_requirements
+
+    ws, suite, tests, reqs = _crc_observation_ws(tmp_path, "")
+    out = unobserved_requirements(suite, tests, reqs)
+    assert out[1] == "REQUIREMENT_NOT_OBSERVED:SWR-001:needs TCHECK on CRC_POL_POL in scn_init.c"
+    # where the LL mask exists it stays the named item
+    (ws / "software/inc").mkdir(parents=True)
+    (ws / "software/inc/ll_masks.h").write_text("#define LL_CRC_POL_POL_MSK  CRC_POL_POL\n")
+    assert unobserved_requirements(suite, tests, reqs)[1].endswith("needs TCHECK on LL_CRC_POL_POL_MSK in scn_init.c")
+
+
+def test_capa183_the_named_cmsis_mask_observes_the_requirement(tmp_path):
+    from forge_factory.mcp.servers.robot_policy import unobserved_requirements
+
+    _, suite, tests, reqs = _crc_observation_ws(tmp_path, "TCHECK(10, (CRC->POL & CRC_POL_POL) == 0x04C11DB7U);\n")
+    assert unobserved_requirements(suite, tests, reqs) == []

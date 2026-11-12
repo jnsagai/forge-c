@@ -1,0 +1,32 @@
+{
+  "command": "python -m pytest -q factory/python/tests/test_m7_governance_release.py (separate process; environment token override unset)",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/maintenance-followup",
+  "duration_s": 15.529,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-release/20261025T105456.xml",
+    "sha256": "c84de39341b5bad2678988139244100e38a506a3866f4ebefcad797d2c2abf9f"
+  },
+  "log": "evidence/v0.4/runs/DA014-release/20261025T105456.log",
+  "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 15.529,
+    "skipped": 0,
+    "tests": 13,
+    "timestamp": "2026-10-25T10:51:41.767718+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-release",
+  "ts_utc": "2026-10-25T10:54:56.673861+00:00"
+}

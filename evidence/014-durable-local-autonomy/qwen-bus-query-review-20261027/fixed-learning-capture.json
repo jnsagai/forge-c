@@ -1,0 +1,13 @@
+{
+  "experience_id": "experience-9e1fb470f02406821b6a9549",
+  "disposition": {
+    "at": "2026-10-27T12:38:41.903328Z",
+    "experience_id": "experience-9e1fb470f02406821b6a9549",
+    "inference_tokens": 0,
+    "pattern": null,
+    "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+    "state": "NO_NEW_LESSON"
+  },
+  "qualified_lessons_added": 0,
+  "benefit": "NOT_MEASURED"
+}

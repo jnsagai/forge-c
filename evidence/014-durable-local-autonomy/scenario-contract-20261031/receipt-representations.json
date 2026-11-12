@@ -1,0 +1,26 @@
+{
+  "scenario-contract-before": {
+    "raw_sha256": "f37f258c3953ebd3bb559b9b975e083a7f8494878d0a78322e4f22ac25232ec9",
+    "raw_gzip_sha256": "a7c10ec828329e06137ad117fdb662cd2d62eeb83bc7f61ace82da82483ba187",
+    "readable_view_sha256": "3278aba559588a9d01b647b3bd2af3d03b3fe8d6e270e15005234678b93c92c2",
+    "view_transformation": "TRAILING_WHITESPACE_NORMALIZATION_ONLY"
+  },
+  "scenario-contract-integration": {
+    "raw_sha256": "362dd1bd5e684980f0dae2a7177ccc430ac3fb759fe3d2ef4db1859e43db18ab",
+    "raw_gzip_sha256": "2fa667b7ff15a1e18b474b66a994b13720ae8e674ab07e850319f9deba2af557",
+    "readable_view_sha256": "3c9549341769aecc34ffb2a543ab0b73207b9d6cd7dcc373e0b02cb27920febe",
+    "view_transformation": "TRAILING_WHITESPACE_NORMALIZATION_ONLY"
+  },
+  "scenario-contract-regression": {
+    "raw_sha256": "01b616540ee7ab17a25cb50ff8ee59489bc458f5c6491419f24105f38054162a",
+    "raw_gzip_sha256": "fa89173648c3665c1d5d3b7459046b668d58dda7209fabfc51078e8c243b2d84",
+    "readable_view_sha256": "73e293267fb6a5309541ed465a960a5ed4a57276115bbeb9cb24c5fdaac27a40",
+    "view_transformation": "TRAILING_WHITESPACE_NORMALIZATION_ONLY"
+  },
+  "exact": {
+    "raw_sha256": "ed4f3b2bac3f113ec9dc7400f22ff15c5cf423690ab3649a4f68b9e349404d7d",
+    "raw_gzip_sha256": "33f58cf0e0b871dac18696266065d90b636bb15f30ffe30645b686c2dc9c075c",
+    "readable_view_sha256": "763f7b332d4e85f0ee72158ab5899353f9cf845aaf3029b875dc63bf9b4e54ad",
+    "view_transformation": "TRAILING_WHITESPACE_NORMALIZATION_ONLY"
+  }
+}

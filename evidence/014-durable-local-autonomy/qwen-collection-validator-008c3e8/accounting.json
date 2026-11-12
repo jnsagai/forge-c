@@ -1,0 +1,63 @@
+{
+  "schema": "forge-c/external-engineering-study/1",
+  "started_at": "2026-10-27T16:33:11.262544Z",
+  "source_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "authority": "owner remote Qwen engineering-work request 2026-10-27",
+  "scope": "READ_ONLY_NEW_COLLECTION_VALIDATOR_AUTHORING_NOT_REPAIR_OR_ROLE_QUALIFICATION",
+  "model": "qwen3.6:35b-a3b",
+  "max_calls": 1,
+  "calls_attempted": 1,
+  "output_reserve": 2048,
+  "input_plus_output_bound": 16000,
+  "query_wall_bound_seconds": 180,
+  "product_success": "NOT_MEASURED",
+  "max_upstream_attempts": 3,
+  "conservative_total_token_bound": 48000,
+  "learning_benefit": "NOT_MEASURED",
+  "deployment": "NOT_ACTIVATED",
+  "gateway_identity_observation": {
+    "namespace": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "start_ticks": "277955338",
+      "netns": "net:[4026533211]",
+      "uid": 0
+    },
+    "host_normalized": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "start_ticks": "277955338",
+      "netns": "net:[4026533211]",
+      "uid": 1000
+    },
+    "uid_map_sha256": "6a4f47f26e85c1eb08bdf31d899e731f8df6251083ec6458beb97c827a964c52"
+  },
+  "observed_gateway_retry_limit": 2,
+  "accounting": {
+    "serialized_chars": 3961,
+    "estimated_prompt_tokens": 1504,
+    "output_reserve": 2048,
+    "context_tokens": 24576,
+    "fits": true,
+    "complete_serialized_request": {
+      "sha256": "f1e777ef096f3e74efd1eadc995919eb7bb2e0b35894617cbda9c32fb4e6ba34",
+      "serialized_bytes": 4702,
+      "input_tokens": 4830,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false
+    }
+  },
+  "ended_at": "2026-10-27T16:33:18.797958Z",
+  "status": "PROPOSAL_ONLY",
+  "reference_check": "PASS",
+  "usage": {
+    "prompt_tokens": 996,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens": 579,
+    "total_tokens": 1575
+  },
+  "wall_ms": 7513.0,
+  "elapsed_seconds": 7.513,
+  "errors": [],
+  "correctness": "INDEPENDENT_CHECK_REQUIRED"
+}

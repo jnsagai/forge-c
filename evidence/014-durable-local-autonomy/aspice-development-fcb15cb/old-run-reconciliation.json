@@ -1,0 +1,20 @@
+{
+  "code": "ALREADY_RECONCILED",
+  "execution": {
+    "authorization_state": "REVOKED",
+    "cancellation_state": "QUIESCENCE_CONFIRMED",
+    "execution_liveness": "QUIESCENT",
+    "job_id": "afo-product-b8ba83de00a6225bee89f8e4",
+    "native_run_ids": [
+      "01M618R74R8KQFQR9AJ4VQXZ5Q"
+    ],
+    "quiescence_evidence_ref": "native-terminals:6d1a11c525a2c297bf102108efb33676e2f5ffeefd17a3531a7a7e379303b91b",
+    "resource_lease": "RELEASED",
+    "task_outcome": "BLOCKED",
+    "terminal_reason": "PRODUCT_ORDER_TERMINAL:BLOCKED"
+  },
+  "not_a_self_healing_success": true,
+  "original_run_deleted_or_rewritten": false,
+  "owner_requested_rescope": true,
+  "prior_conservative_charge_retained": 1400000
+}

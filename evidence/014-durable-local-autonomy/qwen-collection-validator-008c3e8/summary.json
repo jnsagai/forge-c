@@ -1,0 +1,68 @@
+{
+  "sdk_source_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "integration_base_revision": "008c3e8b1f48dea5ceb9871fd4e8b0a13fab50de",
+  "integrated_runtime_revision": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "scope": "EXTERNAL_PURE_VALIDATOR_AUTHORING_NOT_ROLE_QUALIFICATION_OR_SELF_HEALING",
+  "gpu_job": "081-collection-validator-008c3e8.sh",
+  "model": "qwen3.6:35b-a3b",
+  "client_calls_attempted": 1,
+  "upstream_attempts_observed": 1,
+  "input_tokens": 996,
+  "output_tokens": 579,
+  "wall_ms": 7513.0,
+  "complete_context_accounting": {
+    "serialized_chars": 3961,
+    "estimated_prompt_tokens": 1504,
+    "output_reserve": 2048,
+    "context_tokens": 24576,
+    "fits": true,
+    "complete_serialized_request": {
+      "sha256": "f1e777ef096f3e74efd1eadc995919eb7bb2e0b35894617cbda9c32fb4e6ba34",
+      "serialized_bytes": 4702,
+      "input_tokens": 4830,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false
+    }
+  },
+  "structural_candidate_check": "PASS_NOT_CORRECTNESS",
+  "raw_candidate_contract": "FAIL_STRICT_INTEGER_SUBCLASS",
+  "integration": "MANUALLY_ADAPTED; strict integer type and source-string checks corrected; independently tested",
+  "native_corrected_validator_and_collector": {
+    "tests": 194,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "passed": 194,
+    "seconds": 386.299
+  },
+  "learning_dispositions": [
+    "DEFERRED_BUDGET",
+    "DEFERRED_BUDGET"
+  ],
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "learning_overhead": "Independent capture_seconds retained; no comparable benefit cohort",
+  "budget_state": "SPENT_NO_REDISPATCH",
+  "prior_studies": "ST3, bus review, development-policy review remain SPENT",
+  "native_role_qualification": "NOT_CLAIMED",
+  "self_healing": "NOT_PROVEN",
+  "product_success": "NOT_RUN",
+  "operational_campaign": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "private_input_hashes": {
+    "packet.json": "dfc2497578316e3bbcd87787d2631f801695c18d8f86f2f92d980cb43c56a605",
+    "proposal.json": "7e44f3527bd4061b7c1786df32f0530fa5edd0403d6284d8c5133dc8f50e7fbb",
+    "input-coverage.json": "e86bf1f0e4a1889055272c40bd78e604c0409ca8a1e5298ad4888e13241d8175"
+  },
+  "artifacts": {
+    "081-collection-validator-008c3e8.sh.log": "572a1a1bf4b480904213118f2d520e7f4ea92933778307120d45c8865e929455",
+    "081-collection-validator-008c3e8.sh.status": "9ff92ed2d813bb0da113be979696fce78fe71f271fdab5deb48f0771c5202953",
+    "accounting.json": "61a40258784f7e916e3c55493a0ce77040a2219c32f386d7c40707b8b2d1f106",
+    "admission-after.json": "caa42a7dc8f31905068b341916e0158f4754270fc58d37c17efd5313094c8028",
+    "independent-check.json": "8ff6bda2d13ea8a559196a6652e38dca4117b908f237949b2b39d6e5ee94afd9",
+    "independent-learning-capture.json": "e002a421755388913ed4a414b22fa6f2d1f19069fc65af89fe5bcfd723fe822d",
+    "learning-capture.json": "30107fd1e30c2d5def4e967e6d04224c8ae39def7ed756ba316ba5ce34ade869",
+    "meter-observation.json": "2840dcd0538df256aebf54adc601b305fba5b8355611774cdfd876d0c9230027",
+    "reviewed-candidate.py": "aa8611f73023987d581547df7ca54368ecd11f138cd585fe91188b14b8726c7b"
+  }
+}

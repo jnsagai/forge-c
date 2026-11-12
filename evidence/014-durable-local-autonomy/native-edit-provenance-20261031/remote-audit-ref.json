@@ -1,0 +1,5 @@
+{
+  "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/source-provenance-audit-01M67R1HNE9TKPWCYJ2SVKEPJS-20261031-0145.json",
+  "sha256": "ca5c850abd20f6ad9ce12fa1ffee38b1ae069f0fda67649de2a78ea62e80e0f7",
+  "scope": "EXTERNAL_READ_ONLY_OBSERVATION; NOT_RUNTIME_MUTATION"
+}

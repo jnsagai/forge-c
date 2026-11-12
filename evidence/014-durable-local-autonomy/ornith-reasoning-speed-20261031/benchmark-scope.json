@@ -1,0 +1,59 @@
+{
+  "benchmark_deadline_host_epoch": 1793439005.19429,
+  "cases": [
+    [
+      "numeric",
+      "Return only one JSON object with decimal integer keys x,\nupdated and extracted. Compute the least nonnegative x with x%97=13, x%89=42,\nx%83=6. For unsigned 32-bit reg=0xA55A5AA5, mask=0x00FF0000 and bits=0x005C0000,\nupdated=(reg & ~mask) | (bits & mask), reduced to 32 bits. extracted is bits\n23:16 of updated. No explanation and no markdown.\n"
+    ],
+    [
+      "author_c",
+      "Implement two portable C11 functions. Output only C source; a\nsingle enclosing markdown C fence is allowed. Include stdint.h and stddef.h.\nDo not provide main or any other external functions.\n\nuint32_t replace_field(uint32_t original, unsigned lsb, unsigned width, uint32_t replacement);\nFor width 1..32, lsb 0..31 and lsb+width<=32, replace exactly those bits with the\nlow width bits of replacement, preserving all other bits. For every invalid\nwidth or lsb return original unchanged. Do not shift a 32-bit value by 32 or more.\n\nint poll_match(uint32_t (*read_word)(void *), void *ctx, uint32_t mask,\n               uint32_t expected, unsigned max_reads);\nA null callback returns -1 without a read. Otherwise make at most max_reads\ncallback invocations, stopping at the first word whose masked value equals the\nmasked expected value. Return 1 on match, 0 if the budget is exhausted. A zero\nbudget does not invoke the callback. Each iteration reads exactly once. ctx may\nbe null and is forwarded unchanged. No I/O, allocation, globals or hardware setup.\n"
+    ],
+    [
+      "review_c",
+      "Review the following independent portable C11 functions against\ntheir contracts. Return only JSON {\"defective\":[\"F1\",...]} with exactly the IDs\nthat violate the stated contract, in sorted order. Do not list valid functions.\nuint32_t is exactly 32 bits; all nonnull pointers are accessible; no concurrent\nwriters or interrupts. Do not infer extra requirements.\nF1: width is 1..32; return its low-bit mask.\nuint32_t f1(unsigned width) { return (1u << width) - 1u; }\nF2: width is 1..32; return its low-bit mask.\nuint32_t f2(unsigned width) { return width == 32 ? UINT32_MAX : ((UINT32_C(1) << width) - UINT32_C(1)); }\nF3: mask and bits are arbitrary uint32_t; replace only masked bits and preserve\nall other bits, taking replacement bits from bits.\nvoid f3(uint32_t *r, uint32_t mask, uint32_t bits) { *r = (*r & ~mask) | bits; }\nF4: width is 1..32, lsb is 0..31, lsb+width<=32; return that unsigned field.\nuint32_t f4(uint32_t r, unsigned lsb, unsigned width) { return (r >> lsb) & (width == 32 ? UINT32_MAX : ((UINT32_C(1) << width) - UINT32_C(1))); }\nF5: max_reads is 0..1000; return true if the accessible volatile register is 1\nwithin at most max_reads reads, otherwise false. Zero budget performs no read.\nint f5(volatile uint32_t *r, unsigned max_reads) { for (unsigned i=0; i<=max_reads; ++i) { if (*r == 1u) return 1; } return 0; }\nF6: same replacement contract as F3; r is an accessible volatile pointer.\nvoid f6(volatile uint32_t *r, uint32_t mask, uint32_t bits) { uint32_t old=*r; *r=(old & ~mask) | (bits & mask); }\n"
+    ]
+  ],
+  "common_request": {
+    "cache_prompt": false,
+    "max_tokens": 8192,
+    "min_p": 0.0,
+    "model": "ornith-1.5-35b-a3b-q8",
+    "repeat_penalty": 1.0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    },
+    "temperature": 0.6,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "configs": [
+    [
+      "off",
+      false,
+      0
+    ],
+    [
+      "budget512",
+      true,
+      512
+    ],
+    [
+      "budget2048",
+      true,
+      2048
+    ],
+    [
+      "default_on",
+      true,
+      -1
+    ]
+  ],
+  "factory_mission_untouched": true,
+  "maximum_completion_tokens_per_request": 8192,
+  "maximum_requests": 36,
+  "owner_request": "Test downloaded Ornith Q8 speed across reasoning configurations",
+  "request_date": "2026-10-31",
+  "source_script_sha256": "49b8c07374e5fe8db5735224ce3f13e31d06131be2f83c44cb380b1e76bab36c"
+}

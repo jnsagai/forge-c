@@ -1,0 +1,288 @@
+{
+  "bound_context": {
+    "acceptance": "NEW_NATIVE_GATES_AND_INDEPENDENT_INSPECTION_REQUIRED",
+    "authority": "UNTRUSTED_REFERENCE_DATA_ONLY",
+    "carried_upstream_baselines": {
+      "SWE.1": "4075783c97606b950c4a63c9d238f4db0f1d39bf9bda96cd1a8ffa7bafceaa85"
+    },
+    "failed_phase": "SWE.3",
+    "failed_phase_current_unit_sources": {
+      "software/hal/stm32n6xx_hal_wwdg.c": "ef247b68e7655de62ba69ce840c810e603449e86866d9b6b2d3363977659849f",
+      "software/hal/stm32n6xx_hal_wwdg.h": "fea2956260b23bf5885c450c79477c1e65e71c0a6dfa29098ed4d2251a39c4ba",
+      "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+    },
+    "gate_records": [
+      {
+        "issues": [
+          "DEFECT_NOT_ADDRESSED:DEF-001: no SWE.3 file changed since the defect was handed to you; fix it, or reject_defect with the reason it is not a defect"
+        ],
+        "phase": "SWE.3",
+        "result": "REJECTED",
+        "status": "INCOMPLETE",
+        "step": "author",
+        "ts": "2026-11-04T17:40:45.040675Z"
+      },
+      {
+        "gate": {
+          "decision": "UPSTREAM",
+          "phase": "SWE.3",
+          "reason": "open upstream defects: DEF-002->SWE.1"
+        },
+        "phase": "SWE.3",
+        "step": "route",
+        "ts": "2026-11-04T17:40:45.398138Z"
+      },
+      {
+        "issues": [
+          "DEFECT_NOT_ADDRESSED:DEF-001: no SWE.3 file changed since the defect was handed to you; fix it, or reject_defect with the reason it is not a defect"
+        ],
+        "phase": "SWE.3",
+        "result": "REJECTED",
+        "status": "INCOMPLETE",
+        "step": "author",
+        "ts": "2026-11-04T17:45:02.366104Z"
+      },
+      {
+        "gate": {
+          "decision": "PASS",
+          "phase": "SWE.3",
+          "reason": "INS-SWE.3-001"
+        },
+        "phase": "SWE.3",
+        "step": "route",
+        "ts": "2026-11-04T17:45:02.857668Z"
+      },
+      {
+        "phase": "SWE.3",
+        "result": "FROZEN",
+        "step": "author",
+        "ts": "2026-11-04T17:48:54.200624Z"
+      },
+      {
+        "phase": "SWE.3",
+        "step": "verify",
+        "ts": "2026-11-04T17:48:54.647906Z"
+      },
+      {
+        "gate": {
+          "decision": "REWORK",
+          "phase": "SWE.3",
+          "reason": "INS-SWE.3-002"
+        },
+        "phase": "SWE.3",
+        "step": "inspect",
+        "ts": "2026-11-04T17:52:16.459928Z"
+      },
+      {
+        "gate": {
+          "decision": "UPSTREAM",
+          "phase": "SWE.3",
+          "reason": "open upstream defects: DEF-005->SWE.2"
+        },
+        "phase": "SWE.3",
+        "step": "route",
+        "ts": "2026-11-04T17:52:16.955845Z"
+      }
+    ],
+    "inspection": null,
+    "inspection_state": "ABSENT",
+    "phase": "SWE.2",
+    "provided_headers": {
+      "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+    },
+    "schema": "forge-c/rework-context/2",
+    "source_factory_revision": {
+      "basis": "recorded_at_launch",
+      "branch": "run/cloud-gen27-qualified-unit-registers",
+      "commit": "89b2e2bae868ec9592a61f0d8581ea7b70e39899",
+      "dirty": false
+    },
+    "source_gate_sha256": "48f5364dc27eb00c506828e9c148ff7b452f392b56995180c087a8230ac5041d",
+    "source_inspection_sha256": "ABSENT",
+    "source_manifest_sha256": "588111e1044946e0808292439ae1aa5d24908c943fa422079623abd5872439b2",
+    "source_phase": "SWE.4",
+    "source_run_id": "01M6KSXC9K4AC1H4W8XJ2Y24X3",
+    "source_terminal_status": "SUCCEEDED",
+    "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G",
+    "upstream_routing": {
+      "defects": [
+        {
+          "path": ".forge-run/defects/DEF-005.json",
+          "record": {
+            "detected_phase": "SWE.3",
+            "evidence_refs": [
+              "workproducts/SWE.2/software_architecture.md:11",
+              "inputs/RM0486-rev4-ch60-wwdg.md:460",
+              "software/ll/stm32n6xx_ll_wwdg.h:272",
+              "workproducts/SWE.3/unit_specifications.md:44"
+            ],
+            "history": [
+              {
+                "status": "OPEN",
+                "ts": "2026-11-04T17:51:44.617333Z"
+              }
+            ],
+            "id": "DEF-005",
+            "kind": "ARCHITECTURE",
+            "reported_by": "swe3-inspector",
+            "requirement_ids": [
+              "SWR-034"
+            ],
+            "requirement_quote": "When writing a WWDG register, the WWDG driver shall preserve its reserved bits at their reset values.",
+            "schema": "forge-c/defect/0.5",
+            "status": "OPEN",
+            "summary": "Architecture line 11 assumes hardware ignores ones written to SR reserved bits. RM0486 p.3001 requires bits 31:1 kept at reset but does not establish that behavior. The provided LL clear writes ~WWDG_SR_EWIF; reserved-bit preservation remains unsupported independently of the plain-RAM UT-021 result.",
+            "target_phase": "SWE.2",
+            "test_files": {}
+          },
+          "sha256": "4f988fa56d974a2345bdc4de4b7f921976bce47f24df479dee5bddf6402bbce4"
+        }
+      ],
+      "failed_reviews": {
+        "SWE.3": {
+          "gate_records": [
+            {
+              "issues": [
+                "DEFECT_NOT_ADDRESSED:DEF-001: no SWE.3 file changed since the defect was handed to you; fix it, or reject_defect with the reason it is not a defect"
+              ],
+              "phase": "SWE.3",
+              "result": "REJECTED",
+              "status": "INCOMPLETE",
+              "step": "author",
+              "ts": "2026-11-04T17:40:45.040675Z"
+            },
+            {
+              "gate": {
+                "decision": "UPSTREAM",
+                "phase": "SWE.3",
+                "reason": "open upstream defects: DEF-002->SWE.1"
+              },
+              "phase": "SWE.3",
+              "step": "route",
+              "ts": "2026-11-04T17:40:45.398138Z"
+            },
+            {
+              "issues": [
+                "DEFECT_NOT_ADDRESSED:DEF-001: no SWE.3 file changed since the defect was handed to you; fix it, or reject_defect with the reason it is not a defect"
+              ],
+              "phase": "SWE.3",
+              "result": "REJECTED",
+              "status": "INCOMPLETE",
+              "step": "author",
+              "ts": "2026-11-04T17:45:02.366104Z"
+            },
+            {
+              "gate": {
+                "decision": "PASS",
+                "phase": "SWE.3",
+                "reason": "INS-SWE.3-001"
+              },
+              "phase": "SWE.3",
+              "step": "route",
+              "ts": "2026-11-04T17:45:02.857668Z"
+            },
+            {
+              "phase": "SWE.3",
+              "result": "FROZEN",
+              "step": "author",
+              "ts": "2026-11-04T17:48:54.200624Z"
+            },
+            {
+              "phase": "SWE.3",
+              "step": "verify",
+              "ts": "2026-11-04T17:48:54.647906Z"
+            },
+            {
+              "gate": {
+                "decision": "REWORK",
+                "phase": "SWE.3",
+                "reason": "INS-SWE.3-002"
+              },
+              "phase": "SWE.3",
+              "step": "inspect",
+              "ts": "2026-11-04T17:52:16.459928Z"
+            },
+            {
+              "gate": {
+                "decision": "UPSTREAM",
+                "phase": "SWE.3",
+                "reason": "open upstream defects: DEF-005->SWE.2"
+              },
+              "phase": "SWE.3",
+              "step": "route",
+              "ts": "2026-11-04T17:52:16.955845Z"
+            }
+          ],
+          "inspection": {
+            "author_role": "swe3-author",
+            "baseline_hash": "6d38ddabe3c68f2dedd85135dd32089d17d0ea25b0d5d8dfa223fcdc4a6ceb4a",
+            "baseline_id": "BL-SWE.3-001",
+            "failed_items": {
+              "SWE3-02": {
+                "evidence_refs": [
+                  "configuration/baselines/SWE.3/BL-SWE.3-001.json"
+                ],
+                "findings": [
+                  "Reserved-bit preservation is unsupported: software/ll/stm32n6xx_ll_wwdg.h:272 writes ones to SR bits 31:1. workproducts/SWE.2/software_architecture.md:11 assumes hardware retains their reset values, but inputs/RM0486-rev4-ch60-wwdg.md:460 requires preservation without establishing that behavior. Upstream architecture defect DEF-005 records the gap against SWR-034 and USPEC-HAL-04-03; plain-RAM UT-021 alone does not establish hardware behavior"
+                ],
+                "verdict": "FAIL"
+              }
+            },
+            "findings": [
+              {
+                "detail": "Reserved-bit preservation is unsupported: software/ll/stm32n6xx_ll_wwdg.h:272 writes ones to SR bits 31:1. workproducts/SWE.2/software_architecture.md:11 assumes hardware retains their reset values, b",
+                "id": "SWE3-02",
+                "severity": "major"
+              }
+            ],
+            "inspection_id": "INS-SWE.3-002",
+            "inspector_role": "swe3-inspector",
+            "phase": "SWE.3",
+            "recorded_at": "2026-11-04T17:52:05.858225Z",
+            "verdict": "FAIL"
+          },
+          "sha256": "054b5bf3cefac9c99fe0d9d6b3249f5e0b51baefb9248969f7286bdb35f8174d"
+        }
+      },
+      "source_phase": "SWE.4",
+      "target_phase": "SWE.2"
+    },
+    "upstream_sha256": "968f403ee7a5dc299bcea9b4cc4b09c91983638cb283c982836eb467539d51c2"
+  },
+  "model_calls": 0,
+  "production_mutations": false,
+  "receipt": {
+    "inspection_state": "ABSENT",
+    "path": "inputs/rework-context.json",
+    "phase": "SWE.2",
+    "receipt_path": ".forge-run/rework-context-receipt.json",
+    "receipt_sha256": "0ac2667a0d8e906d6f0bf1101c9fc472f7a77d76fd5bad2bdcc9f4d3c3ab9723",
+    "sha256": "dcd91ea031ea158a57271c63cffe5338d1aba000121db0ae09bcdab4127a2fb2",
+    "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G"
+  },
+  "remaining": [
+    "SWE.2",
+    "SWE.3",
+    "SWE.4",
+    "SWE.5",
+    "SWE.6"
+  ],
+  "request": {
+    "gate_log_sha256": "48f5364dc27eb00c506828e9c148ff7b452f392b56995180c087a8230ac5041d",
+    "inspection_sha256": "ABSENT",
+    "phase": "SWE.2",
+    "source_phase": "SWE.4",
+    "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G",
+    "upstream_sha256": "968f403ee7a5dc299bcea9b4cc4b09c91983638cb283c982836eb467539d51c2"
+  },
+  "scope": "ACTUAL_RETAINED_SOURCE_PRIVATE_NORMAL_RESUME_NO_MODEL_NO_SUBMIT",
+  "source_hashes": {
+    ".forge-run/defects/DEF-005.json": "4f988fa56d974a2345bdc4de4b7f921976bce47f24df479dee5bddf6402bbce4",
+    ".forge-run/gates/gate-log.jsonl": "48f5364dc27eb00c506828e9c148ff7b452f392b56995180c087a8230ac5041d",
+    ".forge-run/manifest.json": "588111e1044946e0808292439ae1aa5d24908c943fa422079623abd5872439b2",
+    "inspection/SWE.3/INS-SWE.3-002.json": "054b5bf3cefac9c99fe0d9d6b3249f5e0b51baefb9248969f7286bdb35f8174d",
+    "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+  },
+  "source_inputs_unchanged": true,
+  "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G"
+}

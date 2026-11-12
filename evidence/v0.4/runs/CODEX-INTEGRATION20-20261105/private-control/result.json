@@ -1,0 +1,25 @@
+{
+  "status": "PASS_PRIVATE_CPU_CONTROL",
+  "source": "03da05043307b02439061d3a92b3744d8337b39f",
+  "baseline": "18814617abb98491abb5c03adb0802553634f14f",
+  "actual_TEST_signature": true,
+  "actual_independent_FIX_decision": "pd-1e167101c7cbd725e15b",
+  "actual_next_CHANGE_decision": "pd-dd73694e039f4656834e",
+  "first_prevention": 174,
+  "next_prevention": 175,
+  "registered_staged_test": "AFO-REVIEW-CPU-CONTROL",
+  "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+  "capa_state": "EFFECTIVENESS_OBSERVING",
+  "lesson": {
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "lesson_id": "lesson-b558d6332f83",
+    "state": "VALIDATED",
+    "created": true
+  },
+  "mcp_delivery": "MATCHED_FUTURE_AUTHOR",
+  "original_review_and_bundle_unchanged": true,
+  "native_or_human_product_acceptance": false,
+  "model_calls": 0,
+  "owner_key_access": false,
+  "source_or_service_activation": false
+}

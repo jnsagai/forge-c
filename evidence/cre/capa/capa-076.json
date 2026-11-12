@@ -1,0 +1,101 @@
+{
+ "CAPA-076": {
+  "history": [
+   {
+    "at": "2026-10-31T17:28:39.818843Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[\"swe1-ornith-standalone-20261031-inspector-repair\"]",
+    "from_state": null,
+    "reason": "Standalone SWE.1 run on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-ornith-standalone-20261031, FINDINGS.md item 2): Qwen SWE1-01/SWE1-03 answered PASS with findings, validate_verdict rejected it and the localized repair returned a clean PASS; the stated findings were not recorde",
+    "seq": 579,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T17:28:39.911487Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 580,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T17:28:40.032448Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-075 assigned",
+    "seq": 581,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T17:28:44.066734Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[\"reproducer-run:rr-cc03f0bd2f5da4c7f694\", \"reproducer-run:rr-7b22e1c7861920a9766b\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 582,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T17:28:44.091376Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[\"git:d18e454a1059..51a9138d016e\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 51a9138d016e (patch 7501 bytes)",
+    "seq": 583,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T17:31:17.461717Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[\"reproducer-run:rr-00a266cc67483eba25fd\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-075 absent at 51a9138d016e",
+    "seq": 584,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T17:31:17.478808Z",
+    "capa_id": "CAPA-076",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 585,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-f4bdf49104bdb2c3af12bf8d9b6695cddacf6654",
+   "d18e454a1059acf38c061776d1b2010dd1506f60",
+   "51a9138d016ec1a11788eb57468d58bafb2b02e8",
+   "pd-5b09a4c8c20df6109845"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<51a9138d016e"
+   ],
+   "candidate_patch_sha256": "4464ce7bf1ecf6a22faa40849ea0abe0a6e0dba8607959174f734a221bb8e1b0",
+   "capa_id": "CAPA-076",
+   "created_at": "2026-10-31T17:28:39.818843Z",
+   "event_ids": [],
+   "incident_ids": [
+    "swe1-ornith-standalone-20261031-inspector-repair"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-075",
+   "reproducer_id": "RPR-075",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-cc03f0bd2f5da4c7f694",
+    "reproducer-run:rr-7b22e1c7861920a9766b"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "visit.run_task keeps only errors, usage and input_hash of a rejected attempt, so an inspector's rejected findings are lost when the repair withdraws them",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T17:31:17.478808Z"
+  }
+ }
+}

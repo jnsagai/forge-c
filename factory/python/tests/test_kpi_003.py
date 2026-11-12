@@ -258,6 +258,8 @@ def test_kpi_t012_observer_mcp_read_only_and_least_privilege(tmp_path, monkeypat
     monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
     monkeypatch.setenv("FORGE_MCP_TRUST", "env")
     monkeypatch.setenv("FORGE_WORKSPACE", str(tmp_path))
+    # The frozen events are dated October 14; wall-clock aging must not empty this fixture's window.
+    monkeypatch.setattr(S, "window", lambda days=7: (W0, W1))
     S.compute_and_store(order("O1", "O1", "2026-10-14T00:30:00Z", ALL_PASS))
     from forge_factory.mcp import sdk
     from forge_factory.mcp.servers import observer

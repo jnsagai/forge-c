@@ -1,0 +1,32 @@
+{
+  "not_covered": [],
+  "open_points": [
+    "Only RM0486 page 414 was provided; it documents RCC reset sources but does not directly specify the LL driver no-write-after-reset, no-wait ready-flag query, or write-only-named-field behaviour. These requirements are derived from the work-order scope and coverage rules, and page 414 is used as the nearest provided RCC page."
+  ],
+  "requirements": [
+    {
+      "effects": [],
+      "key": "reset_startup_no_write",
+      "source_page": 414,
+      "statement": "While no RCC LL function has been called after an RCC reset, the RCC LL driver shall not write any RCC register.",
+      "verification": "target_robot_test passes when an instrumented RCC register-block trace after reset and before the first RCC LL function call shows zero RCC register writes.",
+      "verified_by": "target_robot_test"
+    },
+    {
+      "effects": [],
+      "key": "ready_flag_query_no_wait",
+      "source_page": 414,
+      "statement": "When an RCC_SR ready flag query is requested, the RCC LL driver shall return 1U if the queried RCC_SR flag is set and 0U if the queried RCC_SR flag is clear without writing the flag or waiting for the flag to change.",
+      "verification": "host_unit_test passes when a ready flag query returns 1U for a set RCC_SR flag and 0U for a clear RCC_SR flag on the first read and the test does not need a delay or repeated read to obtain the result.",
+      "verified_by": "host_unit_test"
+    },
+    {
+      "effects": [],
+      "key": "write_only_named_field",
+      "source_page": 414,
+      "statement": "Where a function writes a named RCC field, the RCC LL driver shall change only that named field and preserve all other bits of the addressed register.",
+      "verification": "host_unit_test passes when each LL write function is called with a known register image and the post-call register image differs only in the named field targeted by that function.",
+      "verified_by": "host_unit_test"
+    }
+  ]
+}

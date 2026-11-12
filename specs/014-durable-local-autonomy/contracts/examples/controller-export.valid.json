@@ -1,0 +1,10 @@
+{
+  "schema": "forge-c/controller-export/1",
+  "case_id": "case-000000000000000000000000",
+  "classification": "CONTROLLER_FAILURE_UNDIAGNOSED",
+  "native_run": "NOT_RECORDED",
+  "case_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "report_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "stripped_keys": 2,
+  "redactions": 1
+}

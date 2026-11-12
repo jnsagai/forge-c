@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-30T12:55:43.598174+00:00",
+  "status": "ALL_HASHES_VERIFIED",
+  "files": 427,
+  "archive_sha256": "47f07637555bfcfffc3c534821cd50d613530d8d4174f0d7de3063b39382d667",
+  "complete": {
+    "none": true,
+    "medium": true,
+    "xhigh": true
+  },
+  "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/non-thinking-speed-pilot-v2"
+}

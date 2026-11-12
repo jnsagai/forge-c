@@ -1,0 +1,12 @@
+{
+  "accepted_gaps": [],
+  "approval_id": "OA-2026-10-27-02",
+  "assumption_confirmations": [],
+  "conflict_resolutions": [],
+  "decided_by": "jnsagai",
+  "decided_on": "2026-10-27",
+  "decision": "APPROVED",
+  "package_sha256": "dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523",
+  "schema": "forge-c/onboarding-approval/0.1",
+  "work_order": "0011e-st-cube-spi-hal-ob"
+}

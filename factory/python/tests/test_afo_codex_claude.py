@@ -29,14 +29,17 @@ def test_the_codex_claude_profile_launches_codex_authors_and_claude_inspectors(c
         runtime.launcher({"example": "examples/0014c-st-cube-crc", "model_profile": "deepseek-flash"}, "WO-x", {})
 
 
-def test_a_delivered_code_recovery_attempt_is_a_fresh_work_order(calls):
+def test_a_delivered_code_recovery_attempt_resumes_its_validated_phases(calls):
+    """F015 launched delivered-code recovery as a fresh work order because main refused brownfield resume. With
+    Feature 012's validated brownfield resume (merged with Feature 014), AFO recovery resumes like greenfield; the
+    resume validator in workorder.run decides which phases are reused (docs/VALIDATED-BROWNFIELD-RESUME.md)."""
     runtime.launcher({"example": "examples/0014c-st-cube-crc", "model_profile": "codex-claude",
                       "resume_from": "WO-AFO-x-a1", "resume_upto": "SWE.4"}, "WO-AFO-x-a2", {"afo_attempt": "A2"})
     runtime.launcher({"example": "examples/0002b-arm_55_rcc_hal", "model_profile": "codex-claude",
                       "resume_from": "WO-AFO-y-a1", "resume_upto": "SWE.3"}, "WO-AFO-y-a2", {})
     bf, green = calls
-    assert bf["resume"] is None and bf["resume_upto"] is None and bf["labels"]["afo_brownfield_fresh_attempt"] == "1"
-    assert green["resume"] == "WO-AFO-y-a1" and green["resume_upto"] == "SWE.3"  # greenfield resume unchanged
+    assert bf["resume"] == "WO-AFO-x-a1" and bf["resume_upto"] == "SWE.4" and "afo_brownfield_fresh_attempt" not in bf["labels"]
+    assert green["resume"] == "WO-AFO-y-a1" and green["resume_upto"] == "SWE.3"
 
 
 def test_benchmark_envelopes_pass_the_intake_schema_and_the_authorization_scope():
@@ -46,12 +49,16 @@ def test_benchmark_envelopes_pass_the_intake_schema_and_the_authorization_scope(
                      .read_text())
     for e in envs:
         assert contracts.errors("work-order", e) == []
-        assert e["driver_class"] in rec["scope"]["driver_classes"] and e["model_profile"] in rec["scope"]["models"]
+        if e["request_id"].endswith("-HAL"):  # F015-T065: ST HAL items are their own driver classes (a separate scope)
+            assert e["driver_class"] == f"STM32N6_{e['request_id'].split('-')[1]}_HAL_ST"
+        else:
+            assert e["driver_class"] in rec["scope"]["driver_classes"]
+        assert e["model_profile"] in rec["scope"]["models"]
         m = json.loads((afo_orders.REPO_ROOT / e["input_manifest_ref"]).read_text())
         assert m["model_profile"] == "codex-claude" and (afo_orders.REPO_ROOT / m["example"] / "workorder.json").is_file()
 
 
-def test_an_all_acp_profile_is_admitted_without_the_deepseek_gateway():
+def test_an_all_acp_profile_is_admitted_without_the_deepseek_gateway(tmp_path):
     """Owner 2026-10-25: "a codex - claude based AFO, without deepseek". The codex-claude profile routes no agent node
     through a model gateway, so admission does not probe the cloud (DeepSeek) gateway; a profile this module does not
     define keeps the gateway check."""
@@ -62,9 +69,10 @@ def test_an_all_acp_profile_is_admitted_without_the_deepseek_gateway():
             return {"engineering.allowed_model_profiles": ["codex-claude", "other"],
                     "budgets.max_order_attempts": 3}.get(k, d)
 
-    class Store:
-        def attempts(self, oid):
-            return []
+    from forge_factory.afo.queue import Store as Queue
+
+    def Store():  # an empty real queue: the orders have no attempts and no Feature 014 mission or intake binding
+        return Queue(tmp_path / "queue.sqlite3")
 
     probed = []
     probes = {"mount": lambda: True, "fabro": lambda: True, "mcp": lambda: True,

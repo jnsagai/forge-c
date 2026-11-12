@@ -1,0 +1,38 @@
+{
+  "all_own_handles_closed": true,
+  "apply": false,
+  "audit_exists": false,
+  "canonical_invariants": "Actual reviewed Runtime constructor+guard: native/ledger/wholeindependenttable/Intent/source/old642+214chain/processesFD/census/resource+OBSERVE exact; no effect branch entered",
+  "corrected_operator_environment": "R1 omitted existinguserbus ->safe readonlyfailure; R2 inherits only actual HOME/USER/LOGNAME/XDG_RUNTIME_DIR/DBUS_SESSION_BUS_ADDRESS plus reviewedfixedscope env; no busconfig/helper/source change",
+  "evidence": [
+    {
+      "bytes": 2517,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-actual-inspect-r1.stdout.log",
+      "sha256": "255e999ec28d293646ca2dadde79dc528a4fa7cf15f0d5b6f12fae20e122cf61"
+    },
+    {
+      "bytes": 0,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-actual-inspect-r1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5383,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-actual-inspect-r2.stdout.log",
+      "sha256": "da56f8e210a29cd7eec77e0d17e695f0c26bca7bfef9ccff8bc6825d1d2eb731"
+    },
+    {
+      "bytes": 0,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-actual-inspect-r2.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "expectation_sha256": "95ad72cc87510751a6f64304cfa809c2872001d2520b63f0abe9faf3ae1b3c6f",
+  "fresh_cleanup_evidence": "NOT_CREATED; Runtime initialization required targetabsent and inspection returns before writebranch",
+  "helper_sha256": "ed6c1cdb08c1fff6fe75f86763e6aac31fbe11cb55790bcaaf969bc064848c8f",
+  "known_partial_count": 5,
+  "new_issuer": false,
+  "remote_expectation": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105/owner-main-ops/exact-642-expectation-v2.json",
+  "remote_helper": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105/owner-main-ops/cleanup-exact-failed642-v3.py",
+  "schema": "forge-c/exact642-stop-only-readonly-inspection/1",
+  "status": "READONLY_READY_NOT_EXECUTED"
+}

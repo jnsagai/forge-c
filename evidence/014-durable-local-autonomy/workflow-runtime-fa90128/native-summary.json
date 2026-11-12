@@ -1,0 +1,24 @@
+{
+  "original_native_suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "1",
+    "skipped": "0",
+    "tests": "125",
+    "time": "290.246",
+    "timestamp": "2026-10-28T12:18:10.937492+00:00",
+    "hostname": "omniverse2"
+  },
+  "original_junit_sha256": "c4328bb91d1d81c09e6d8bbae3629eb70a4df9fc60a80755b89ecf6b74365021",
+  "corrected_native_suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "1",
+    "time": "3.215",
+    "timestamp": "2026-10-28T12:24:25.898187+00:00",
+    "hostname": "omniverse2"
+  },
+  "corrected_junit_sha256": "1e94c19c721b8df24495381d2edf55b19760524b8d9bf7991aa0a64a1cf02162"
+}

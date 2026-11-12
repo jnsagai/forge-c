@@ -1,0 +1,61 @@
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 9113.9}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 10711.1}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5068.4}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-01", "attempt": 0, "errors": 0, "wall_ms": 180622.1}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-02", "attempt": 0, "errors": 0, "wall_ms": 84050.9}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-03", "attempt": 0, "errors": 0, "wall_ms": 83555.3}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-04", "attempt": 0, "errors": 0, "wall_ms": 56413.5}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-05", "attempt": 0, "errors": 0, "wall_ms": 111088.8}
+{"lrtx_progress": "inspect:15b049bb4814ba27:SWE2-06", "attempt": 0, "errors": 0, "wall_ms": 80709.3}
+{"pilot": "IWDG-LL", "n": 1, "visit": "PASS", "gate": "FROZEN", "calls": 3, "wall_s": 26.0, "inspection": "FAIL"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 49408.2}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 13052.3}
+{"lrtx_progress": "design", "attempt": 0, "errors": 3, "wall_ms": 5446.3}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 5350.8}
+{"lrtx_progress": "design", "attempt": 2, "errors": 1, "wall_ms": 5410.6}
+{"pilot": "IWDG-LL", "n": 2, "visit": "FAILED", "gate": "NOT_RUN (visit FAILED)", "calls": 5, "wall_s": 78.7, "inspection": "NOT_RUN (not frozen)"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 1, "wall_ms": 10076.8}
+{"lrtx_progress": "interfaces", "attempt": 1, "errors": 0, "wall_ms": 11872.8}
+{"lrtx_progress": "design", "attempt": 0, "errors": 1, "wall_ms": 6514.5}
+{"lrtx_progress": "design", "attempt": 1, "errors": 0, "wall_ms": 6513.7}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-01", "attempt": 0, "errors": 0, "wall_ms": 149362.9}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-02", "attempt": 0, "errors": 0, "wall_ms": 111987.5}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-03", "attempt": 0, "errors": 0, "wall_ms": 57470.2}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-04", "attempt": 0, "errors": 0, "wall_ms": 54134.0}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-05", "attempt": 0, "errors": 0, "wall_ms": 101197.2}
+{"lrtx_progress": "inspect:323635f04a3bfac0:SWE2-06", "attempt": 0, "errors": 0, "wall_ms": 53541.6}
+{"pilot": "IWDG-LL", "n": 3, "visit": "PASS", "gate": "FROZEN", "calls": 4, "wall_s": 35.5, "inspection": "FAIL"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 24584.5}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 4637.5}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-01", "attempt": 0, "errors": 0, "wall_ms": 134763.4}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-02", "attempt": 0, "errors": 1, "wall_ms": 68677.4}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-02", "attempt": 1, "errors": 0, "wall_ms": 56028.2}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-03", "attempt": 0, "errors": 0, "wall_ms": 62822.1}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-04", "attempt": 0, "errors": 0, "wall_ms": 70216.0}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-05", "attempt": 0, "errors": 0, "wall_ms": 40222.5}
+{"lrtx_progress": "inspect:c7118dabf0235013:SWE2-06", "attempt": 0, "errors": 0, "wall_ms": 92284.1}
+{"pilot": "RCC-LL", "n": 1, "visit": "PASS", "gate": "FROZEN", "calls": 2, "wall_s": 29.7, "inspection": "PASS"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 18471.8}
+{"lrtx_progress": "design", "attempt": 0, "errors": 2, "wall_ms": 5248.0}
+{"lrtx_progress": "design", "attempt": 1, "errors": 1, "wall_ms": 5464.5}
+{"lrtx_progress": "design", "attempt": 2, "errors": 0, "wall_ms": 5361.8}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-01", "attempt": 0, "errors": 0, "wall_ms": 73078.2}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-02", "attempt": 0, "errors": 1, "wall_ms": 74468.0}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-02", "attempt": 1, "errors": 0, "wall_ms": 80783.1}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-03", "attempt": 0, "errors": 0, "wall_ms": 69471.6}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-04", "attempt": 0, "errors": 0, "wall_ms": 48897.1}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-05", "attempt": 0, "errors": 0, "wall_ms": 64200.2}
+{"lrtx_progress": "inspect:651edb77e2f7a648:SWE2-06", "attempt": 0, "errors": 0, "wall_ms": 68783.0}
+{"pilot": "RCC-LL", "n": 2, "visit": "PASS", "gate": "FROZEN", "calls": 4, "wall_s": 35.1, "inspection": "FAIL"}
+{"lrtx_progress": "interfaces", "attempt": 0, "errors": 0, "wall_ms": 18579.2}
+{"lrtx_progress": "design", "attempt": 0, "errors": 0, "wall_ms": 5467.6}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-01", "attempt": 0, "errors": 0, "wall_ms": 62061.3}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-02", "attempt": 0, "errors": 1, "wall_ms": 59960.8}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-02", "attempt": 1, "errors": 0, "wall_ms": 94137.1}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-03", "attempt": 0, "errors": 0, "wall_ms": 67121.3}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-04", "attempt": 0, "errors": 0, "wall_ms": 69562.0}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-05", "attempt": 0, "errors": 0, "wall_ms": 54114.2}
+{"lrtx_progress": "inspect:5beb6326124b1299:SWE2-06", "attempt": 0, "errors": 0, "wall_ms": 83432.4}
+{"pilot": "RCC-LL", "n": 3, "visit": "PASS", "gate": "FROZEN", "calls": 2, "wall_s": 24.6, "inspection": "PASS"}
+
+--- stderr ---

@@ -1,0 +1,21 @@
+{
+  "git_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-regress-7e1abb2",
+  "start_tracked_diff": "",
+  "untracked_scope": "prepared evidence only; no production/test source changes",
+  "command": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_brownfield_resume.py",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/brownfield-7e1abb2",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/brownfield-7e1abb2.xml"
+  ],
+  "started_at": 1793105111.967424,
+  "verified_input_documents": 22,
+  "exit_code": 0,
+  "ended_at": 1793105193.8447018,
+  "end_head": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "end_tracked_diff": ""
+}

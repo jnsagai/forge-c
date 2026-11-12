@@ -1,0 +1,6 @@
+PASS gpio-st-hal-ob: manifest, owner-only inputs, signed authorization AUTH_OK
+PASS spi-st-hal-ob: manifest, owner-only inputs, signed authorization AUTH_OK
+PASS usart-st-hal-ob: manifest, owner-only inputs, signed authorization AUTH_OK
+PASS tim-st-hal-ob: manifest, owner-only inputs, signed authorization AUTH_OK
+
+--- stderr ---

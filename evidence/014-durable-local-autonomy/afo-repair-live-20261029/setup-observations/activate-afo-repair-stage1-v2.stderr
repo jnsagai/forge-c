@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v1/activate-afo-repair-stage1-v2.py", line 120, in <module>
+    assert all(health['health'].get(k) is True for k in ('fabro','gateway','ollama','llama_server')),health['health']
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'fabro': True, 'gateway': True, 'llama_server': False, 'ollama': True}

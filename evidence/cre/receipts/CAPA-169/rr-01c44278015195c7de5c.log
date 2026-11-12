@@ -1,0 +1,3 @@
+SYMPTOM_PRESENT:standalone host watchdog recovery cannot load its normal policy dependencies
+
+--- stderr ---

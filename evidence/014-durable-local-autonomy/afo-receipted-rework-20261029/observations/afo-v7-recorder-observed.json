@@ -1,0 +1,47 @@
+{
+  "status": [
+    "ExecMainStatus=0",
+    "ActiveState=active"
+  ],
+  "local_head": "f0a845154d7e40b919c3369db7ac0f299845c951",
+  "remote_head": "f0a845154d7e40b919c3369db7ac0f299845c951",
+  "latest_commit_published": true,
+  "progress_branch": "overnight/2026-10-29-local-qwen-afo",
+  "progress": {
+    "captured_utc": "2026-10-29T23:19:13.141313Z",
+    "deadline_epoch": 1793328024,
+    "source_revision": "f9e7f54b1838be2560d00117c1725f8d1d74d4c8",
+    "intent": {
+      "mode": "RUNNING",
+      "epoch": 48
+    },
+    "orders": [
+      {
+        "order_id": "afo-dba0cf206b8b0f2b",
+        "state": "WAITING_EXTERNAL_CHANGE",
+        "attempts": [
+          {
+            "attempt_id": "afo-dba0cf206b8b0f2b-a1",
+            "seq": 1,
+            "state": "CANCELLED"
+          }
+        ]
+      }
+    ],
+    "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
+    "requests": 491,
+    "native_ownership": [
+      {
+        "resource": "inference",
+        "holder": "afo-agent-64eb264a0be0ab8584ea42da",
+        "epoch": 41
+      },
+      {
+        "resource": "generation",
+        "holder": "native-request-1bec847be0d24374b10740c8fcbe8ff4",
+        "epoch": 981
+      }
+    ]
+  },
+  "raw_config_exported": false
+}

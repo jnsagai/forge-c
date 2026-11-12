@@ -1,0 +1,98 @@
+{
+  "expected_native_nodes": [
+    "swe2_author",
+    "swe2_inspector",
+    "swe3_author",
+    "swe3_inspector",
+    "swe3_fix_author",
+    "swe4_author",
+    "swe4_inspector",
+    "swe4_test_author",
+    "swe5_author",
+    "swe5_inspector",
+    "swe5_target_author",
+    "swe6_author",
+    "swe6_inspector",
+    "swe6_test_author",
+    "swe1_triage",
+    "swe2_triage",
+    "swe3_triage",
+    "release_manager"
+  ],
+  "halt": [],
+  "model_generation_requests": 0,
+  "native_nodes": 18,
+  "native_run_id": "01M63HWEM096KEHPQ04KR7D8ZJ",
+  "production_policy_or_mission_changed": false,
+  "scripted_provider": "use_skill read-only then typed rejection; preflight only, no product verdict",
+  "source_revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
+  "status": "SUCCEEDED",
+  "captures": 72,
+  "roles": [
+    "release-manager",
+    "swe1-author",
+    "swe2-author",
+    "swe2-inspector",
+    "swe3-author",
+    "swe3-inspector",
+    "swe4-author",
+    "swe4-inspector",
+    "swe5-author",
+    "swe5-inspector",
+    "swe6-author",
+    "swe6-inspector"
+  ],
+  "max_conservative_reservation": 76308,
+  "per_role": {
+    "release-manager": {
+      "requests": 4,
+      "max": 65062
+    },
+    "swe1-author": {
+      "requests": 4,
+      "max": 67709
+    },
+    "swe2-author": {
+      "requests": 8,
+      "max": 72985
+    },
+    "swe2-inspector": {
+      "requests": 4,
+      "max": 68380
+    },
+    "swe3-author": {
+      "requests": 12,
+      "max": 75094
+    },
+    "swe3-inspector": {
+      "requests": 4,
+      "max": 70371
+    },
+    "swe4-author": {
+      "requests": 8,
+      "max": 74335
+    },
+    "swe4-inspector": {
+      "requests": 4,
+      "max": 70040
+    },
+    "swe5-author": {
+      "requests": 8,
+      "max": 75561
+    },
+    "swe5-inspector": {
+      "requests": 4,
+      "max": 70136
+    },
+    "swe6-author": {
+      "requests": 8,
+      "max": 76308
+    },
+    "swe6-inspector": {
+      "requests": 4,
+      "max": 70502
+    }
+  },
+  "structured_inspection_requests": 6,
+  "capture_sha256": "f22a8d9ccc06e5b545719c19f3b6e8352a38805998a55c3d6e4e2d39ae3fc311"
+}

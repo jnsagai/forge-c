@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="49" time="17.706" timestamp="2026-10-27T15:24:20.392224+00:00" hostname="omniverse2"><testcase classname="factory.python.tests.test_development_safety_policy" name="test_development_defers_exactly_ssa_taa_and_records_unapproved_status" time="0.010" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[failed-phase]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[unfinished]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[open-finding]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_engineering_failures_still_block_development_packages[missing-safety-requirements]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[purpose-only]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[formal]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_only_a_bound_development_decision_can_select_the_exception[legacy]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[hash]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[purpose]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[decision]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_changed_or_revoked_bindings_are_blocking_even_with_both_documents[revoked]" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_prepare_binds_the_owner_policy_without_signing_or_reclassifying_asil[DEVELOPMENT]" time="0.237" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_prepare_binds_the_owner_policy_without_signing_or_reclassifying_asil[FORMAL_REVIEW]" time="0.210" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_assurance_defers_documents_without_claiming_qm_or_waiving_hsi" time="0.004" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_unknown_purpose_is_refused" time="0.000" /><testcase classname="factory.python.tests.test_development_safety_policy" name="test_finalizer_seals_development_deferrals_and_retains_formal_signature_gaps" time="0.596"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">package = (PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_finalizer_seals_developm...54fe167cd4a601350e8e5c9da62094908'}, 'quality_report': 'quality/final-gates.json', 'require_completed_run': True, ...})
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_finalizer_seals_developme0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x70c868ff1130&gt;
+
+    def test_finalizer_seals_development_deferrals_and_retains_formal_signature_gaps(package, tmp_path, monkeypatch):
+        from test_m7_governance_release import complete_workspace
+    
+        _, _, manifest, _ = package
+        ws = tmp_path / "finalizer-ws"
+        ws.mkdir()
+        monkeypatch.setenv("FORGE_ARCHIVE_DIR", str(tmp_path / "archives"))
+&gt;       complete_workspace(ws)  # Existing synthetic six-phase evidence fixture.
+        ^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_development_safety_policy.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_finalizer_seals_developme0/finalizer-ws')
+
+    def complete_workspace(ws: Path) -&gt; None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+&gt;           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_signed_documents_with_matching_hash_and_basis_count" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED0]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED1]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_NOT_SIGNED2]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_HASH_MISMATCH]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_BASIS_CHANGED]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_PATH_INVALID0]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_anything_but_an_intact_owner_signature_is_left_out[&lt;lambda&gt;-SAFETY_DOC_PATH_INVALID1]" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_a_signed_file_that_still_says_draft_is_not_used" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_unregistered_documents_are_issues" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_committed_rcc_register_is_either_an_unsigned_draft_or_an_intact_signature" time="0.010" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_prepare_copies_only_signed_documents_read_only" time="0.400" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_package_keeps_only_the_signed_version" time="0.001" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_work_orders_without_the_register_are_unchanged" time="0.000" /><testcase classname="factory.python.tests.test_owner_safety_documents" name="test_assurance_scope_counts_only_signed_documents" time="0.001" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_turn_budget_blocks_and_resets_per_visit" time="0.357" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_inspector_last_calls_reserved_for_recording_the_inspection" time="0.185" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_hook_returns_turn_budget_exhausted" time="0.651" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_token_exhaustion_cancels_and_blocks_never_false_pass" time="0.150" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t043_5mb_tool_log_small_payload_full_log_hashed" time="0.395" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence" time="3.994"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'fabro'">env = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t044_interrupted_stage_re0')
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t044_interrupted_stage_re0')
+
+    def test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence(env, tmp_path):
+        ws = tmp_path / "ws"
+        (ws / "workproducts/SWE.1").mkdir(parents=True)
+        (ws / "workproducts/SWE.1/software_requirements.md").write_text("- **SWR-001** The RCC driver shall reset.\n")
+        s = Store(ws)
+        b1 = s.freeze("SWE.1", "swe1-author")
+        first = (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes()
+        b2 = s.freeze("SWE.1", "swe1-author")  # "resumed" stage re-runs the same freeze
+        assert b2["baseline_id"] == b1["baseline_id"] and len(s.baselines("SWE.1")) == 1
+        assert (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes() == first
+        out = env / "archives/WO-T044"
+        F.finalize(ws, "WO-T044")
+        h = F.verify_archive(next(out.glob("*.zip")))
+        again = F.finalize(ws, "WO-T044")  # replayed finalizer must not rewrite a released archive
+        assert "write-once" in again["note"] and F.verify_archive(next(out.glob("*.zip"))) == h
+&gt;       r = subprocess.run([os.environ.get("FORGE_FABRO_BIN", "fabro"), "resume", "--help"], capture_output=True, text=True,
+                           env={**os.environ, "HOME": os.environ.get("FORGE_FABRO_HOME", str(Path.home()))})
+
+factory/python/tests/test_m7_governance_release.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: 255 args: ['fabro', 'resume', '--help']&gt;
+args = ['fabro', 'resume', '--help'], executable = b'fabro', preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None
+env = {'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'FORGE_ARCHIVE_DIR': '/mnt/data/forge-c/inspector-014-b30.../forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t044_interrupted_stage_re0/state/events', ...}
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 12, c2pwrite = 13, errread = 14, errwrite = 15
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread &gt; 2)
+                and (c2pwrite == -1 or c2pwrite &gt; 2)
+                and (errwrite == -1 or errwrite &gt; 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask &lt; 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write &lt; 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn, _USE_VFORK)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) &gt; 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+&gt;                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'fabro'
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:1991: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_v04_policy_superset_and_operational_inventory_hashed" time="0.377"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">env = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_v04_policy_superset_0')
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_v04_policy_superset_0')
+
+    def test_t045_v04_policy_superset_and_operational_inventory_hashed(env, tmp_path):
+        v3 = json.loads((REPO_ROOT / "factory/release-manager/policies/release-package-policy.json").read_text())
+        v4 = json.loads(F.POLICY_V04.read_text())
+        assert set(v3["required_files"]) &lt;= set(v4["required_files"]) and set(v3["required_sections"]) &lt;= set(v4["required_sections"])
+        assert v4["required_quality_checks"] == v3["required_quality_checks"] and v4["require_no_open_findings"]
+        import hashlib
+        assert v4["extends"]["sha256"] == hashlib.sha256(
+            (REPO_ROOT / "factory/release-manager/policies/release-package-policy.json").read_bytes()).hexdigest()
+        ws = tmp_path / "ws"
+        ws.mkdir()
+&gt;       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_v04_policy_superset_0/ws')
+
+    def complete_workspace(ws: Path) -&gt; None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+&gt;           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_ready_requires_every_check_and_tamper_detected" time="0.367"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">env = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_ready_requires_every0')
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_ready_requires_every0')
+
+    def test_t045_ready_requires_every_check_and_tamper_detected(env, tmp_path):
+        ws = tmp_path / "ws"
+        ws.mkdir()
+&gt;       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t045_ready_requires_every0/ws')
+
+    def complete_workspace(ws: Path) -&gt; None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+&gt;           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_failing_swe3_static_check_blocked_archive_no_human" time="0.404"><failure message="AssertionError: assert 'FAIL' == 'PASS'&#10;  &#10;  - PASS&#10;  + FAIL">env = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t046_failing_swe3_static_0')
+tmp_path = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t046_failing_swe3_static_0')
+
+    def test_t046_failing_swe3_static_check_blocked_archive_no_human(env, tmp_path):
+        ws = tmp_path / "ws"
+        ws.mkdir()
+&gt;       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:242: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests/test_t046_failing_swe3_static_0/ws')
+
+    def complete_workspace(ws: Path) -&gt; None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+&gt;           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_packages_crashed_run" time="3.663" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_asks_the_server_that_holds_the_run" time="3.866" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t047_product_defect_loops_swe_infra_defect_routes_repair" time="1.024" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t049_forged_ai_pass_cannot_pass_gate" time="0.546" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_owner_decision_becomes_a_scope_record" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_agent_or_profile_derived_asil_is_refused[agent:swe-author-approved:x-NOT_HUMAN_APPROVED]" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_agent_or_profile_derived_asil_is_refused[Jefferson Nascimento-profile:HIGH_ASSURANCE-SCOPE_DECISION_INVALID]" time="0.001" /><testcase classname="factory.python.tests.test_easa_scope_decision" name="test_asil_b_scope_blocks_without_safety_evidence_and_travels_with_the_package" time="0.001" /></testsuite></testsuites>

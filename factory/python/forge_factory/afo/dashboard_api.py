@@ -7,12 +7,14 @@ the operator POST endpoints (bearer operator token, reason required) and audited
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import secrets
 import sqlite3
 from contextlib import contextmanager
+from pathlib import Path
 
 from ..common import state_dir, utc_now
 from .queue import Store, default_path
@@ -149,11 +151,17 @@ def operations(auditor: bool) -> dict:
             "operator_actions_visible": auditor}
 
 
-def control(action: str, actor: str, reason: str) -> dict:
+def control(action: str, actor: str, reason: str, *, authentication=None) -> dict:
     """Operator pause / drain / resume (same semantics and audit as the CLI)."""
-    if action not in ("pause", "drain", "resume") or not reason.strip():
+    if action not in ("pause", "drain", "resume", "shutdown") or not reason.strip():
         raise ValueError("action must be pause|drain|resume with a reason")
     s = Store()
+    from .operations import configured, synchronize
+    if configured():
+        synchronize(s, action, actor, reason, authentication=authentication)
+        return s.control()
+    if action == 'shutdown':
+        raise ValueError('durable operations intent required')
     if action == "pause":
         s.set_control("paused", "1", actor, reason)
     elif action == "drain":
@@ -189,6 +197,21 @@ def issue_operator_token() -> str:
 
 
 def operator_ok(authorization: str | None) -> bool:
+    return operator_authentication(authorization) is not None
+
+
+def operator_authentication(authorization: str | None) -> dict | None:
+    """Bind the existing bearer decision to the same bytes, without storing a token."""
     p = operator_token_path()
     tok = (authorization or "").removeprefix("Bearer ").strip()
-    return bool(tok) and p.is_file() and secrets.compare_digest(tok, p.read_text().strip())
+    if not tok or not p.is_file():
+        return None
+    stored = p.read_text().strip()
+    if not secrets.compare_digest(tok, stored):
+        return None
+    try:
+        source_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    except OSError:
+        source_sha = None
+    return {"method": "DASHBOARD_OPERATOR_BEARER", "credential_sha256": hashlib.sha256(stored.encode()).hexdigest(),
+            "source_sha256": source_sha}

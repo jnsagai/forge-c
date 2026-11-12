@@ -1,0 +1,25 @@
+{
+  "status": "ALL_FIVE_REMOTE_ARTIFACT_HASHES_VERIFIED",
+  "files": {
+    "qualification-product-stepwise-a32d87a3-epoch99-v1/provenance.json": {
+      "sha256": "ea818ccbf960f0c64e857f8f3c1ea49a93a5e15e381f5258cd748f2f9cb159f9",
+      "bytes": 3245
+    },
+    "qualification-product-stepwise-a32d87a3-epoch99-v1/receipts/pytest.xml": {
+      "sha256": "42b24553e4d469755dc65918ac1275d3a6637037a7d9bfdc5017e2c43e53d4f7",
+      "bytes": 57291
+    },
+    "qualification-product-stepwise-a32d87a3-epoch99-v1/pytest.log": {
+      "sha256": "9d1719fd303dcf9a28b910dffa5aeb2d33fd55706981d0590ddce01b89de7b10",
+      "bytes": 48988
+    },
+    "product-stepwise-qualification-window-epoch98-v1/result.json": {
+      "sha256": "6495af7be3bd6065401d5047b797c225c1c2cefa100e17aae525047e57086cd1",
+      "bytes": 223
+    },
+    "q38-stepwise-protocol-20261030-v1/medium/driver.log": {
+      "sha256": "d1ecf6937eaf7c5a487ba0c1d008e0b13798856be1a899da6a87346a1e2b04df",
+      "bytes": 2177
+    }
+  }
+}

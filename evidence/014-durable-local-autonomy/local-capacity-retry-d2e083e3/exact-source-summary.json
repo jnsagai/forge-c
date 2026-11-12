@@ -1,0 +1,34 @@
+{
+  "source_revision": "d2e083e322aeb3286e6d94bd0d51e532f7d66fb7",
+  "test_paths": [
+    "factory/python/tests/test_afo_m2_queue.py",
+    "factory/python/tests/test_da014_integration.py",
+    "factory/python/tests/test_mission_capacity.py",
+    "factory/python/tests/test_da014_workflow_capacity.py",
+    "factory/python/tests/test_da014_product_outcomes.py",
+    "factory/python/tests/test_da014_overnight_stall.py"
+  ],
+  "pytest_arguments": [
+    "-q",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/capacity-exact-d2e083e3-tmp",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/capacity-exact-d2e083e3.xml"
+  ],
+  "environment_prefix": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "117",
+    "time": "14.112",
+    "timestamp": "2026-10-31T05:08:17.588381+00:00",
+    "hostname": "master"
+  },
+  "runtime_activation": "NOT_ACTIVATED; cohort producer remains0e",
+  "scope": "SYNTHETIC_FRAMEWORK_REGRESSIONS_NOT_NATIVE_QWEN_AVAILABILITY",
+  "failed_before": {
+    "setup_error_first_attempt": "2FAIL EXECUTION_RESERVATION_REQUIRED, fixture corrected by reserving historical expenditure",
+    "corrected_fixture_old_source": "1FAIL: expected15s,actual3600s; mixed dependency1PASS"
+  },
+  "native_case_basis": "fresh06 terminal delay, existing Store administrative wake07; disclosed separately"
+}

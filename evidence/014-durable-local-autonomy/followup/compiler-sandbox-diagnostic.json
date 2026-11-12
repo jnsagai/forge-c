@@ -1,0 +1,6 @@
+{
+  "backend": "podman",
+  "exit_code": 0,
+  "stdout": "{\"compiler\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin/clang\", \"returncode\": 1, \"stderr\": \"clang: error: unable to make temporary file: Read-only file system\\n\", \"cwd\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/014-compiler-probe-406f180f1d\", \"TMPDIR\": \"/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp\"}\n",
+  "stderr": ""
+}

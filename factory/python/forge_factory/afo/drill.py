@@ -10,6 +10,7 @@ serving runs and share the host with other projects. Steps, each with observed s
   5 crash loop -> stops after StartLimitBurst restarts and stays failed (no restart storm)
 The unit file is removed afterwards. Output: a JSON record of every step.
 """
+
 from __future__ import annotations
 
 import json
@@ -27,8 +28,12 @@ from .services import UNIT_DIR, values
 
 
 def _show(unit: str) -> dict:
-    r = subprocess.run(["systemctl", "--user", "show", unit, "--property=ActiveState,SubState,Result,NRestarts,MainPID,"
-                        "ExecMainStatus"], capture_output=True, text=True, timeout=20)
+    r = subprocess.run(
+        ["systemctl", "--user", "show", unit, "--property=ActiveState,SubState,Result,NRestarts,MainPID,ExecMainStatus"],
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
     return dict(x.split("=", 1) for x in r.stdout.splitlines() if "=" in x)
 
 
@@ -53,7 +58,7 @@ StartLimitBurst={burst}
 [Service]
 Type=notify
 NotifyAccess=main
-ExecStart={v['@VENV@']}/bin/python -m forge_factory.afo.conductor --interval 1
+ExecStart={v["@VENV@"]}/bin/python -m forge_factory.afo.conductor --interval 1
 WatchdogSec={watchdog}
 Restart=on-failure
 RestartSec=1
@@ -109,9 +114,14 @@ def run() -> dict:
             s = _wait(name, lambda s: s.get("ActiveState") == "failed", 20)
             time.sleep(6)  # stays down: no further restart after the limit
             later = _show(name)
-            step("5_crash_loop_bounded", s.get("ActiveState") == "failed" and later.get("ActiveState") == "failed"
-                 and int(later.get("NRestarts", 99)) <= 3 and later.get("NRestarts") == s.get("NRestarts"),
-                 {**later, "restarts_limit": 3})
+            step(
+                "5_crash_loop_bounded",
+                s.get("ActiveState") == "failed"
+                and later.get("ActiveState") == "failed"
+                and int(later.get("NRestarts", 99)) <= 3
+                and later.get("NRestarts") == s.get("NRestarts"),
+                {**later, "restarts_limit": 3},
+            )
         except Exception as exc:  # noqa: BLE001 - the record says what broke; cleanup always runs
             step("error", False, {"error": f"{type(exc).__name__}: {exc}"[:300]})
         finally:
@@ -119,11 +129,27 @@ def run() -> dict:
             subprocess.run(["systemctl", "--user", "reset-failed", name], check=False)
             unit.unlink(missing_ok=True)
             subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
-    return {"schema": "forge-c/afo-restart-drill/0.1", "unit": name, "ok": ok, "steps": steps,
-            "scope": "throwaway copy of the Conductor unit; live Forge-C services and other projects untouched"}
+    return {
+        "schema": "forge-c/afo-restart-drill/0.1",
+        "unit": name,
+        "ok": ok,
+        "steps": steps,
+        "scope": "throwaway copy of the Conductor unit; live Forge-C services and other projects untouched",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--continuous-out", type=Path, help="Isolated 014 clean/crash/hang/start-limit semantics")
+    a = ap.parse_args(argv)
+    if a.continuous_out:
+        from .systemd_qualification import run as continuous_run
+
+        result = continuous_run(a.continuous_out)
+        print(json.dumps(result, indent=1))
+        return 0 if result["status"] == "PASS" else 1
     r = run()
     print(json.dumps(r, indent=1))
     return 0 if r["ok"] else 1

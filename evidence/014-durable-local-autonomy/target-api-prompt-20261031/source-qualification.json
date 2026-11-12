@@ -1,0 +1,37 @@
+{
+  "tested_revision": "d0090099c2961c71aa28623b53eda03e790e3ea2",
+  "runtime_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "activation": "NOT_ACTIVATED; LIVE_AND_FRESH_COHORT_STAY_PINNED",
+  "before_command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_delivery_first_scenario_contract.py::test_target_author_uses_declared_api_instead_of_unprovided_array --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-before.xml",
+  "focused_command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_delivery_first_scenario_contract.py::test_target_author_uses_declared_api_instead_of_unprovided_array factory/python/tests/test_delivery_first_scenario_contract.py::test_robot_author_has_no_unprovided_register_array_instructions --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-focused.xml",
+  "exact_command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_delivery_first_scenario_contract.py factory/python/tests/test_delivery_first.py factory/python/tests/test_delivery_first_package_order.py factory/python/tests/test_delivery_first_edit_provenance.py factory/python/tests/test_release_test_history.py factory/python/tests/test_m7_governance_release.py factory/python/tests/test_pipeline_demonstration.py factory/python/tests/test_da014_product_outcomes.py factory/release-manager/tests/test_packager.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-exact.xml",
+  "results": {
+    "before": {
+      "tests": 1,
+      "failures": 1
+    },
+    "focused": {
+      "tests": 2,
+      "passed": 2
+    },
+    "exact": {
+      "tests": 95,
+      "passed": 95,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "overlap": "Cohorts overlap; do not add counts",
+  "lint": "Initial B905 zip strict flag finding corrected; final ruff PASS",
+  "specification_validation": {
+    "result": "PASS",
+    "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+    "requirements": 58,
+    "tasks": 58,
+    "acceptance_tests": 58,
+    "schemas": 6,
+    "fixtures": 38
+  },
+  "known_inherited_failure": "Feature009 RCC graph golden remains open; all five actual strict graphs unchanged by this increment"
+}

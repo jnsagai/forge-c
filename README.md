@@ -121,6 +121,13 @@ and failures go back to the author.
 
 ## Reading the result
 
+Existing-code work orders can [resume from validated accepted phases](docs/VALIDATED-BROWNFIELD-RESUME.md)
+using `--resume-from <terminal-work-order>`. Resume preserves delivery provenance and shares finite attempt/time
+budgets across the lineage; incompatible or unversioned sources are refused.
+
+[Local autonomous recovery](docs/afo/LOCAL-SELF-HEALING.md) runs through the signed AFO Conductor:
+bounded diagnosis, validated author rework and isolated factory repair proposals.
+
 A finished work order leaves a write-once archive in `$FORGE_ARCHIVE_DIR`, with one of two statuses:
 
 - **`READY_FOR_OFFLINE_REVIEW`**: every gate passed. The package is ready for human review. This is still **not** an

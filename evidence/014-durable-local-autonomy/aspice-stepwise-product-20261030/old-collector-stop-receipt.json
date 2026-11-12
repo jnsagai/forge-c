@@ -1,0 +1,7 @@
+{
+  "status": "OLD_READONLY_COLLECTOR_STOPPED_AFTER_BOTH_ARCHIVES_HASH_AND_INVENTORY_VERIFIED",
+  "pids": [
+    350163
+  ],
+  "remote_or_model_effects": false
+}

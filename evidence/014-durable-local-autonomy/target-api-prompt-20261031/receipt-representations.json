@@ -1,0 +1,38 @@
+{
+  "before": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-before.xml",
+    "raw_sha256": "b2ca4d218e01be7c1440112f9ba74eb2d73e6f5ede3d6e55af8295b53fba9292",
+    "view_sha256": "7ef0a0d05c5bde3cf98c1ca257b014bf5a695005ec390acbaf67abae3dc05694",
+    "results": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 0
+    }
+  },
+  "focused": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-focused.xml",
+    "raw_sha256": "db37f1d79c94a8172214f7ac3008eca92445d45b559377a88c9bbeae44435129",
+    "view_sha256": "eb151ae0e914b7202623a3a45c2c75ac4008ecad3a61ec3b98f4db404b03f6a1",
+    "results": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2
+    }
+  },
+  "exact": {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/target-prompt-exact.xml",
+    "raw_sha256": "a5fbcfd758a2066025dc1d276e14a61489ec47df2cd212864cb762c455bc2b96",
+    "view_sha256": "095e5c5d145f5079da71e054c323e616a748d0d6e9f7b2018cb33c3376a92b63",
+    "results": {
+      "tests": 95,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 95
+    }
+  }
+}

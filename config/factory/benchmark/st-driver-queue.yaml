@@ -1,7 +1,8 @@
 # Feature 015 (owner 2026-10-25): STM32N6 driver benchmark queue for the production line (Codex authors, Claude
 # inspectors) on loop10, one work order at a time. Use case: ST's existing STM32CubeN6 v1.4.0 code is delivered FROZEN
 # and the factory produces the ASPICE SWE.1-SWE.6 work products for it (no code generation). An item whose example does
-# not exist yet (peripheral not onboarded) is skipped, never failed. ST HAL items follow later ("LL first, HAL later").
+# not exist yet (peripheral not onboarded) is skipped, never failed. ST HAL items follow the LL items ("LL first, HAL later";
+# owner 2026-10-27 "do the same work done for LL, do it now for HAL"): ST's classic HAL, delivered FROZEN, needing no LL.
 schema: forge-c/benchmark-queue/0.1
 id: st-drivers-stm32n6
 target: STM32N6 (RM0486 Rev 4, DS14791 Rev 9)
@@ -13,3 +14,8 @@ items:
   - {id: usart-st, example: examples/0012c-st-cube-usart, layer: LL}
   - {id: gpio-st,  example: examples/0010c-st-cube-gpio,  layer: LL}
   - {id: tim-st,   example: examples/0013c-st-cube-tim,   layer: LL}
+  - {id: crc-st-hal,   example: examples/0014d-st-cube-crc-hal, layer: HAL}
+  - {id: spi-st-hal,   example: examples/0011d-st-cube-spi-hal, layer: HAL}
+  - {id: usart-st-hal, example: examples/0012d-st-cube-usart-hal, layer: HAL}
+  - {id: gpio-st-hal,  example: examples/0010d-st-cube-gpio-hal, layer: HAL}
+  - {id: tim-st-hal,   example: examples/0013d-st-cube-tim-hal, layer: HAL}

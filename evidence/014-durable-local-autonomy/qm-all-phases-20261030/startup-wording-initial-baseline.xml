@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="14" time="1.493" timestamp="2026-10-30T06:34:00.221014+00:00" hostname="master"><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[reset]" time="0.006" /><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[a reset]" time="0.001"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'a reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[the reset]" time="0.001"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after the reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'the reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after the reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[an RCC reset]" time="0.001"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an RCC reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'an RCC reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an RCC reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[an IWDG reset]" time="0.001"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an IWDG reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'an IWDG reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an IWDG reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[a power-on reset]" time="0.000"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a power-on reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'a power-on reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a power-on reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[a TIMER7 domain reset]" time="0.000"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a TIMER7 domain reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'a TIMER7 domain reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after a TIMER7 domain reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_existing_startup_classifiers_agree_for_qualified_reset_events[an STM32 peripheral domain reset]" time="0.000"><failure message="AssertionError: assert None&#10; +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an STM32 peripheral domain reset, the driver shall not write any register.')&#10; +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match&#10; +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP">event = 'an STM32 peripheral domain reset'
+
+    @pytest.mark.parametrize("event", ["reset", "a reset", "the reset", "an RCC reset", "an IWDG reset",
+                                      "a power-on reset", "a TIMER7 domain reset", "an STM32 peripheral domain reset"])
+    def test_existing_startup_classifiers_agree_for_qualified_reset_events(event):
+        statement = f"While no LL function has been called after {event}, the driver shall not write any register."
+&gt;       assert swe1.STARTUP.match(statement)
+E       AssertionError: assert None
+E        +  where None = &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt;('While no LL function has been called after an STM32 peripheral domain reset, the driver shall not write any register.')
+E        +    where &lt;built-in method match of re.Pattern object at 0x75e7fd165700&gt; = re.compile('^\\s*While no .*after reset', re.IGNORECASE).match
+E        +      where re.compile('^\\s*While no .*after reset', re.IGNORECASE) = swe1.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_register_names_or_operations_are_not_startup_reset_events[before reset]" time="0.000" /><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_register_names_or_operations_are_not_startup_reset_events[after a reset-control bit write]" time="0.000"><failure message="AssertionError: assert not &lt;re.Match object; span=(0, 50), match='While no LL function has been called after a rese&gt;&#10; +  where &lt;re.Match object; span=(0, 50), match='While no LL function has been called after a rese&gt; = &lt;built-in method search of re.Pattern object at 0x75e7fd977de0&gt;('While no LL function has been called after a reset-control bit write, the driver shall not write any register.')&#10; +    where &lt;built-in method search of re.Pattern object at 0x75e7fd977de0&gt; = re.compile('\\bWhile\\b[^.]*\\bafter (?:a |the )?reset\\b', re.IGNORECASE).search&#10; +      where re.compile('\\bWhile\\b[^.]*\\bafter (?:a |the )?reset\\b', re.IGNORECASE) = mapping.STARTUP">event = 'after a reset-control bit write'
+
+    @pytest.mark.parametrize("event", ["before reset", "after a reset-control bit write", "after a reset_code update",
+                                      "after a resettable field update"])
+    def test_register_names_or_operations_are_not_startup_reset_events(event):
+        statement = f"While no LL function has been called {event}, the driver shall not write any register."
+        assert not swe1.STARTUP.match(statement)
+&gt;       assert not mapping.STARTUP.search(statement)
+E       AssertionError: assert not &lt;re.Match object; span=(0, 50), match='While no LL function has been called after a rese&gt;
+E        +  where &lt;re.Match object; span=(0, 50), match='While no LL function has been called after a rese&gt; = &lt;built-in method search of re.Pattern object at 0x75e7fd977de0&gt;('While no LL function has been called after a reset-control bit write, the driver shall not write any register.')
+E        +    where &lt;built-in method search of re.Pattern object at 0x75e7fd977de0&gt; = re.compile('\\bWhile\\b[^.]*\\bafter (?:a |the )?reset\\b', re.IGNORECASE).search
+E        +      where re.compile('\\bWhile\\b[^.]*\\bafter (?:a |the )?reset\\b', re.IGNORECASE) = mapping.STARTUP
+
+factory/python/tests/test_startup_requirement_language.py:26: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_register_names_or_operations_are_not_startup_reset_events[after a reset_code update]" time="0.000" /><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_register_names_or_operations_are_not_startup_reset_events[after a resettable field update]" time="0.000" /><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_full_original_qwen_packet_passes_the_unchanged_remaining_validators" time="0.588"><failure message="TypeError: validate_group() missing 2 required positional arguments: 'sysname' and 'idx'">replay = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu..., the RCC LL driver shall change only that named field and preserve all other bits of the addressed register.', ...}]})
+
+    def test_full_original_qwen_packet_passes_the_unchanged_remaining_validators(replay):
+        ws, doc = replay
+&gt;       assert swe1.validate_group(ws, None, doc) == []
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: validate_group() missing 2 required positional arguments: 'sysname' and 'idx'
+
+factory/python/tests/test_startup_requirement_language.py:42: TypeError</failure></testcase><testcase classname="factory.python.tests.test_startup_requirement_language" name="test_qualified_startup_still_requires_target_verification" time="0.460"><failure message="TypeError: validate_group() missing 2 required positional arguments: 'sysname' and 'idx'">replay = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu..., the RCC LL driver shall change only that named field and preserve all other bits of the addressed register.', ...}]})
+
+    def test_qualified_startup_still_requires_target_verification(replay):
+        ws, doc = replay
+        doc["requirements"][0]["verified_by"] = "host_unit_test"
+&gt;       assert any("target_robot_test" in error for error in swe1.validate_group(ws, None, doc))
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: validate_group() missing 2 required positional arguments: 'sysname' and 'idx'
+
+factory/python/tests/test_startup_requirement_language.py:48: TypeError</failure></testcase></testsuite></testsuites>

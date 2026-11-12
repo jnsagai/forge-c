@@ -1,0 +1,15 @@
+{
+  "status": "PRODUCTION_SOURCE_CONNECTED",
+  "source_id": "forge-c-omniverse2-production",
+  "source_name": "Forge-C \u00b7 Omniverse production \u00b7 Qwen3.8 Q8 xhigh",
+  "native_run_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+  "native_status": "running",
+  "dashboard_url": "http://localhost:8787",
+  "previous_sources_preserved": 10,
+  "configuration_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028/dashboard-omniverse-production/config.local.json",
+  "configuration_sha256": "b2d4f3ac2ebc217f14108d5e7a911ee99546c59c881ddb4ebf8c5e1177931dc8",
+  "remote_workers_restarted": 0,
+  "model_requests_created": 0,
+  "credentials_in_browser": false,
+  "retained_first_failure": "Cross-device rename refused before changing original dashboard config; corrected with same-directory atomic symlink replacement and existing byte-identical loop10 backup."
+}

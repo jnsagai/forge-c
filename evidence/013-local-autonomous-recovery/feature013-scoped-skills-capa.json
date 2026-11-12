@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<36ed0fc70bd8"
+  ],
+  "candidate_patch_sha256": null,
+  "capa_id": "CAPA-071",
+  "created_at": "2026-10-24T21:12:31.737813Z",
+  "event_ids": [],
+  "incident_ids": [
+    "cre-obs-omni-q36-planner-unrelated-skills"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": null,
+  "reproducer_id": "AFO-operator-scoped-skills",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-b51abecbe6cc3c44c19f",
+    "reproducer-run:rr-1fb0d716d6e730c49e15"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Single-role job creation copies every product SKILL, expanding unrelated discovery context. Include only the same locked role SKILL before the workspace input baseline; keep role instructions, tools, evidence and token/turn limits unchanged.",
+  "schema_version": "1.0",
+  "state": "CAUSE_VERIFIED",
+  "updated_at": "2026-10-24T21:15:09.159624Z"
+}

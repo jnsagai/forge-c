@@ -1,0 +1,25 @@
+{
+  "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/cohort/afo-7f71565db57f0a76/62631d06bedb52313143e059370693ec0c84b57acb9a0a8869424d979390e041.json",
+  "sha256": "62631d06bedb52313143e059370693ec0c84b57acb9a0a8869424d979390e041",
+  "order": {
+    "order_id": "afo-7f71565db57f0a76",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "attempts": [
+    {
+      "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+      "native_status": "RUNNING",
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+      },
+      "archive_integrity": null,
+      "archived_final_receipt_present": null
+    }
+  ],
+  "model_calls_by_observer": 0,
+  "candidate_execution_by_observer": false,
+  "milestone": "REQUIRES_EXTERNAL_AUDIT_NOT_INFERRED",
+  "observer_revision": "e5cdc45ff5983486a32c452ff226d6404245307c",
+  "observer_source_sha256": "c5bf3b9cb7eb4c2a4f7890696da67d746779cbebc70a10005701e489b703ffbd"
+}

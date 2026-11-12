@@ -1,0 +1,934 @@
+{
+  "captured_utc": "2026-10-29T15:07:03.016484Z",
+  "order_id": "afo-774900b297bdde37",
+  "order_state": "RUNNING",
+  "terminal_reason": null,
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "native": [
+    {
+      "run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+      "status": "RUNNING",
+      "labels_match_job_and_nonce": true,
+      "event_count_observed": 731,
+      "latest_node_events": [
+        {
+          "seq": 720,
+          "ts": "2026-10-29T15:05:59.716298592Z",
+          "event": "agent.tool.started",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 721,
+          "ts": "2026-10-29T15:05:59.717359750Z",
+          "event": "agent.tool.started",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 722,
+          "ts": "2026-10-29T15:05:59.944926932Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 723,
+          "ts": "2026-10-29T15:06:00.019059729Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 724,
+          "ts": "2026-10-29T15:06:00.263045860Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 725,
+          "ts": "2026-10-29T15:06:00.266067859Z",
+          "event": "agent.llm.started",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 726,
+          "ts": "2026-10-29T15:06:08.050051732Z",
+          "event": "agent.llm.first_output",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 727,
+          "ts": "2026-10-29T15:06:08.053015675Z",
+          "event": "agent.warning",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 728,
+          "ts": "2026-10-29T15:06:08.054766082Z",
+          "event": "agent.message",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 729,
+          "ts": "2026-10-29T15:06:08.055967662Z",
+          "event": "agent.tool.started",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 730,
+          "ts": "2026-10-29T15:06:08.285596686Z",
+          "event": "agent.tool.completed",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        },
+        {
+          "seq": 731,
+          "ts": "2026-10-29T15:06:08.289089432Z",
+          "event": "agent.llm.started",
+          "node_id": "swe4_test_author",
+          "node_label": "swe4_test_author"
+        }
+      ],
+      "event_types": [
+        "agent.input",
+        "agent.llm.first_output",
+        "agent.llm.started",
+        "agent.mcp.server.ready",
+        "agent.memory.loaded",
+        "agent.message",
+        "agent.processing.end",
+        "agent.session.activated",
+        "agent.session.deactivated",
+        "agent.session.ended",
+        "agent.session.started",
+        "agent.skill.activated",
+        "agent.skills.discovered",
+        "agent.tool.completed",
+        "agent.tool.started",
+        "agent.tools.available",
+        "agent.warning",
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "prompt.completed",
+        "run.created",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "stage.completed",
+        "stage.failed",
+        "stage.prompt",
+        "stage.started"
+      ],
+      "event_shapes": [
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "session_id": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "tool_call_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        },
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "session_id": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-b715f920180f440b708e55a0",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-774900b297bdde37-a1/workspace",
+      "execution": {
+        "native_run_ids": [
+          "01M63ZTJ5QM1R96484Y2KN97H6"
+        ],
+        "execution_liveness": "LIVE",
+        "resource_lease": "HELD",
+        "task_outcome": "ACTIVE",
+        "identity_state": "CONFIRMED",
+        "last_reconciled_at": "2026-10-29T15:06:48.446554Z"
+      },
+      "requests": [
+        {
+          "request_id": "structured-request-69a4760f2dff4058bd2bc278b49336f5",
+          "state": "QUIESCENT",
+          "charge": 8891,
+          "reported_tokens": 8891
+        },
+        {
+          "request_id": "structured-request-6b55ddc2a3424bc3a35897c2be0edcee",
+          "state": "QUIESCENT",
+          "charge": 20991,
+          "reported_tokens": 20991
+        },
+        {
+          "request_id": "structured-request-3aa112ef266b45729d96f0738d53b143",
+          "state": "QUIESCENT",
+          "charge": 7725,
+          "reported_tokens": 7725
+        },
+        {
+          "request_id": "structured-request-73dc7cde5589403b98326ef0e4d77e07",
+          "state": "QUIESCENT",
+          "charge": 10653,
+          "reported_tokens": 10653
+        },
+        {
+          "request_id": "structured-request-c7048e6007d5449a9e6cfbbe4db67a2f",
+          "state": "QUIESCENT",
+          "charge": 8867,
+          "reported_tokens": 8867
+        },
+        {
+          "request_id": "structured-request-f2771ef9c5334aabbcabe4444349be41",
+          "state": "QUIESCENT",
+          "charge": 6655,
+          "reported_tokens": 6655
+        },
+        {
+          "request_id": "native-request-c19b32d73ec24ba9971bfecff06bec50",
+          "state": "QUIESCENT",
+          "charge": 7322,
+          "reported_tokens": 7322
+        },
+        {
+          "request_id": "native-request-c8b1558ce69347f8adf5e8d46f05bace",
+          "state": "QUIESCENT",
+          "charge": 8030,
+          "reported_tokens": 8030
+        },
+        {
+          "request_id": "native-request-e449b772f70f41c88e9f57755cf34f88",
+          "state": "QUIESCENT",
+          "charge": 26099,
+          "reported_tokens": 26099
+        },
+        {
+          "request_id": "native-request-8a9fa3606d8a4dcea57b6c8cd710cf20",
+          "state": "QUIESCENT",
+          "charge": 26255,
+          "reported_tokens": 26255
+        },
+        {
+          "request_id": "native-request-138efe5652d2489692856a9f19cc903f",
+          "state": "QUIESCENT",
+          "charge": 26364,
+          "reported_tokens": 26364
+        },
+        {
+          "request_id": "native-request-f1e1e96655e146169ab4d8c19ddc83cf",
+          "state": "QUIESCENT",
+          "charge": 27860,
+          "reported_tokens": 27860
+        },
+        {
+          "request_id": "native-request-41d765e36a8947eba5499dcd6f99b680",
+          "state": "QUIESCENT",
+          "charge": 36994,
+          "reported_tokens": 36994
+        },
+        {
+          "request_id": "native-request-51a47698e21946a1890d0b71d74bbe21",
+          "state": "QUIESCENT",
+          "charge": 36896,
+          "reported_tokens": 36896
+        },
+        {
+          "request_id": "native-request-940df7acb05542c8afc4741d39606bc6",
+          "state": "QUIESCENT",
+          "charge": 36933,
+          "reported_tokens": 36933
+        },
+        {
+          "request_id": "native-request-f1559231942640db9a86fb17437b9522",
+          "state": "QUIESCENT",
+          "charge": 37473,
+          "reported_tokens": 37473
+        },
+        {
+          "request_id": "native-request-4422817ab04745908db0cb0324998c52",
+          "state": "QUIESCENT",
+          "charge": 40533,
+          "reported_tokens": 40533
+        },
+        {
+          "request_id": "native-request-d0810f474e2747f7a8cf8a0a59d5e7f2",
+          "state": "QUIESCENT",
+          "charge": 40921,
+          "reported_tokens": 40921
+        },
+        {
+          "request_id": "native-request-e2a12872b6ce4175aeb8243e1a4ab84a",
+          "state": "QUIESCENT",
+          "charge": 50099,
+          "reported_tokens": 50099
+        },
+        {
+          "request_id": "native-request-b86cfd3c180d4bfa90154679d0316ae5",
+          "state": "QUIESCENT",
+          "charge": 46232,
+          "reported_tokens": 46232
+        },
+        {
+          "request_id": "native-request-fd7e013d6c1e41b4b2cf617c004caae2",
+          "state": "QUIESCENT",
+          "charge": 56233,
+          "reported_tokens": 56233
+        },
+        {
+          "request_id": "native-request-516e71c87f704e8aa63a01777635af77",
+          "state": "QUIESCENT",
+          "charge": 50532,
+          "reported_tokens": 50532
+        },
+        {
+          "request_id": "native-request-fe0229d47ae34fb78fdb9dfec12f3b1e",
+          "state": "QUIESCENT",
+          "charge": 60469,
+          "reported_tokens": 60469
+        },
+        {
+          "request_id": "native-request-7297190e3e3d4320b25cef1bb6857deb",
+          "state": "QUIESCENT",
+          "charge": 51012,
+          "reported_tokens": 51012
+        },
+        {
+          "request_id": "native-request-2f50e6d72dea4361926222fb032b9251",
+          "state": "QUIESCENT",
+          "charge": 51590,
+          "reported_tokens": 51590
+        },
+        {
+          "request_id": "native-request-bbcbc997d5b046b689ff68a2d2544058",
+          "state": "QUIESCENT",
+          "charge": 51927,
+          "reported_tokens": 51927
+        },
+        {
+          "request_id": "native-request-56e369af39d747318a9c76a0ce7d7539",
+          "state": "QUIESCENT",
+          "charge": 52070,
+          "reported_tokens": 52070
+        },
+        {
+          "request_id": "native-request-75f4523221d64d82abc4718210518f31",
+          "state": "QUIESCENT",
+          "charge": 52566,
+          "reported_tokens": 52566
+        },
+        {
+          "request_id": "native-request-ac6f332552a14894800e135e05e64ca4",
+          "state": "QUIESCENT",
+          "charge": 52764,
+          "reported_tokens": 52764
+        },
+        {
+          "request_id": "native-request-5beaef76992f47949fe13c7ffedb27b0",
+          "state": "QUIESCENT",
+          "charge": 7047,
+          "reported_tokens": 7047
+        },
+        {
+          "request_id": "native-request-3bb53f4485674e3487d8034f191ec228",
+          "state": "QUIESCENT",
+          "charge": 7852,
+          "reported_tokens": 7852
+        },
+        {
+          "request_id": "native-request-e5cc642375bd443f9dc5886cb3d8cd76",
+          "state": "QUIESCENT",
+          "charge": 10779,
+          "reported_tokens": 10779
+        },
+        {
+          "request_id": "native-request-5b5d4ead87bf4cf6b9e5302ae1557166",
+          "state": "QUIESCENT",
+          "charge": 14291,
+          "reported_tokens": 14291
+        },
+        {
+          "request_id": "native-request-5987fdaa955c452f91497311be703cef",
+          "state": "QUIESCENT",
+          "charge": 15124,
+          "reported_tokens": 15124
+        },
+        {
+          "request_id": "native-request-3d322a00b1c643119743a35f348e6915",
+          "state": "QUIESCENT",
+          "charge": 16814,
+          "reported_tokens": 16814
+        },
+        {
+          "request_id": "native-request-2d1b6108a0164a73bf8b843b6b555023",
+          "state": "QUIESCENT",
+          "charge": 24418,
+          "reported_tokens": 24418
+        },
+        {
+          "request_id": "native-request-a30f5fa9d12c4c6c8107d249bd63ee94",
+          "state": "QUIESCENT",
+          "charge": 30102,
+          "reported_tokens": 30102
+        },
+        {
+          "request_id": "native-request-490dd45c16904ce4ad37e055f9bf2794",
+          "state": "QUIESCENT",
+          "charge": 26321,
+          "reported_tokens": 26321
+        },
+        {
+          "request_id": "native-request-9b960cbd5d8747bd903155e44d044892",
+          "state": "QUIESCENT",
+          "charge": 8827,
+          "reported_tokens": 8827
+        },
+        {
+          "request_id": "native-request-de926767d075483090d6e7ea290db6c9",
+          "state": "QUIESCENT",
+          "charge": 10121,
+          "reported_tokens": 10121
+        },
+        {
+          "request_id": "native-request-e3b375d786924abdaeca129a45d67195",
+          "state": "QUIESCENT",
+          "charge": 29073,
+          "reported_tokens": 29073
+        },
+        {
+          "request_id": "native-request-d4a1c57cdc89453d84402d07840727e8",
+          "state": "QUIESCENT",
+          "charge": 30416,
+          "reported_tokens": 30416
+        },
+        {
+          "request_id": "native-request-e88834eed76c4797ae404bdb50e08510",
+          "state": "QUIESCENT",
+          "charge": 42211,
+          "reported_tokens": 42211
+        },
+        {
+          "request_id": "native-request-fdad117567ca4b7494740ae57c012d4c",
+          "state": "QUIESCENT",
+          "charge": 50131,
+          "reported_tokens": 50131
+        },
+        {
+          "request_id": "native-request-7966f9dcfe5e41439d6e5ed435a86405",
+          "state": "QUIESCENT",
+          "charge": 47052,
+          "reported_tokens": 47052
+        },
+        {
+          "request_id": "native-request-b11f5af88e8348b0975f872a64602d2c",
+          "state": "QUIESCENT",
+          "charge": 47176,
+          "reported_tokens": 47176
+        },
+        {
+          "request_id": "native-request-72416cb6066b49428b114ffb8e201563",
+          "state": "QUIESCENT",
+          "charge": 47316,
+          "reported_tokens": 47316
+        },
+        {
+          "request_id": "native-request-1dcb68345c844e1597143b5ca69dd601",
+          "state": "QUIESCENT",
+          "charge": 47396,
+          "reported_tokens": 47396
+        },
+        {
+          "request_id": "native-request-59208f6b26c24ebcbc3fd19aab488628",
+          "state": "QUIESCENT",
+          "charge": 47827,
+          "reported_tokens": 47827
+        },
+        {
+          "request_id": "native-request-4a4890c6ea9f458da1fb42aeba9f471e",
+          "state": "QUIESCENT",
+          "charge": 63656,
+          "reported_tokens": 63656
+        },
+        {
+          "request_id": "native-request-11691bb5ba62428cba644d2736c3d04d",
+          "state": "QUIESCENT",
+          "charge": 49334,
+          "reported_tokens": 49334
+        },
+        {
+          "request_id": "native-request-785a219981704a189a9315023f2b6086",
+          "state": "QUIESCENT",
+          "charge": 59261,
+          "reported_tokens": 59261
+        },
+        {
+          "request_id": "native-request-53f261b742a94ca6af61eb1f6b1e24c8",
+          "state": "QUIESCENT",
+          "charge": 58331,
+          "reported_tokens": 58331
+        },
+        {
+          "request_id": "native-request-201ef4235d5c43029e34e8268bf6ae72",
+          "state": "QUIESCENT",
+          "charge": 61574,
+          "reported_tokens": 61574
+        },
+        {
+          "request_id": "native-request-d07ce9cd2da040d591e30851a1a965a9",
+          "state": "QUIESCENT",
+          "charge": 57679,
+          "reported_tokens": 57679
+        },
+        {
+          "request_id": "native-request-164180a60c99432faff784249d690d38",
+          "state": "QUIESCENT",
+          "charge": 58646,
+          "reported_tokens": 58646
+        },
+        {
+          "request_id": "native-request-65714499049948848927bc5e474ba670",
+          "state": "QUIESCENT",
+          "charge": 9095,
+          "reported_tokens": 9095
+        },
+        {
+          "request_id": "native-request-e615b8df085047c5adc00579be360bde",
+          "state": "QUIESCENT",
+          "charge": 9957,
+          "reported_tokens": 9957
+        },
+        {
+          "request_id": "native-request-f159736c10514b33b5b0bdb5abbe8ca4",
+          "state": "QUIESCENT",
+          "charge": 16775,
+          "reported_tokens": 16775
+        },
+        {
+          "request_id": "native-request-d86882791ce34257a094e0beb7285687",
+          "state": "QUIESCENT",
+          "charge": 15420,
+          "reported_tokens": 15420
+        },
+        {
+          "request_id": "native-request-6b53aa54194d42c88a88a278fa51b82b",
+          "state": "QUIESCENT",
+          "charge": 20533,
+          "reported_tokens": 20533
+        },
+        {
+          "request_id": "native-request-6aedc45e566846afb0b3984c695688eb",
+          "state": "QUIESCENT",
+          "charge": 28452,
+          "reported_tokens": 28452
+        },
+        {
+          "request_id": "native-request-4df095bcd2b94e8ea43d1f366b9e48f9",
+          "state": "QUIESCENT",
+          "charge": 27152,
+          "reported_tokens": 27152
+        },
+        {
+          "request_id": "native-request-aa60a9b68b23465db5c04aa837253a5c",
+          "state": "QUIESCENT",
+          "charge": 20379,
+          "reported_tokens": 20379
+        },
+        {
+          "request_id": "native-request-1f33b2d449cc4b75a9be57fd4c7e9115",
+          "state": "QUIESCENT",
+          "charge": 20819,
+          "reported_tokens": 20819
+        },
+        {
+          "request_id": "native-request-9cc71cc465124381a656416f6c105929",
+          "state": "QUIESCENT",
+          "charge": 23194,
+          "reported_tokens": 23194
+        },
+        {
+          "request_id": "native-request-786c77363d6949ac9d0e33710508b48f",
+          "state": "QUIESCENT",
+          "charge": 21861,
+          "reported_tokens": 21861
+        },
+        {
+          "request_id": "native-request-e1b3a00c70294719aabeea395e8bdc9e",
+          "state": "QUIESCENT",
+          "charge": 22362,
+          "reported_tokens": 22362
+        },
+        {
+          "request_id": "native-request-cf56a0f2834f4befa43143e29e8cf478",
+          "state": "QUIESCENT",
+          "charge": 10475,
+          "reported_tokens": 10475
+        },
+        {
+          "request_id": "native-request-659e8630249c40d39dcb4274411b724a",
+          "state": "QUIESCENT",
+          "charge": 11424,
+          "reported_tokens": 11424
+        },
+        {
+          "request_id": "native-request-7989c07142544a32a4bbb56cb8283852",
+          "state": "QUIESCENT",
+          "charge": 30953,
+          "reported_tokens": 30953
+        },
+        {
+          "request_id": "native-request-9922f4135abc4ef5a1cb16d19d8eef4f",
+          "state": "QUIESCENT",
+          "charge": 34197,
+          "reported_tokens": 34197
+        },
+        {
+          "request_id": "native-request-6f8b758e647b48dd99a213a2008baf85",
+          "state": "QUIESCENT",
+          "charge": 38332,
+          "reported_tokens": 38332
+        },
+        {
+          "request_id": "native-request-9d6e3a5a1b32440db465890ea0a73063",
+          "state": "QUIESCENT",
+          "charge": 39297,
+          "reported_tokens": 39297
+        },
+        {
+          "request_id": "native-request-f98a88cbaed54cd9b5a1a70fc7fbb79b",
+          "state": "QUIESCENT",
+          "charge": 42582,
+          "reported_tokens": 42582
+        },
+        {
+          "request_id": "native-request-44d17605c5714a2ca80941a661bcba9b",
+          "state": "QUIESCENT",
+          "charge": 42683,
+          "reported_tokens": 42683
+        },
+        {
+          "request_id": "native-request-b3f55e4326774a7c953bb5b8dfbc35a8",
+          "state": "QUIESCENT",
+          "charge": 42984,
+          "reported_tokens": 42984
+        },
+        {
+          "request_id": "native-request-377b8b17b70c4c65b89bad7e4a893aa6",
+          "state": "QUIESCENT",
+          "charge": 48035,
+          "reported_tokens": 48035
+        },
+        {
+          "request_id": "native-request-6f1db58948db4bd8ba913873b69c2909",
+          "state": "QUIESCENT",
+          "charge": 52065,
+          "reported_tokens": 52065
+        },
+        {
+          "request_id": "native-request-6dd225b03ded40e7bdf8bdfab978ae96",
+          "state": "QUIESCENT",
+          "charge": 58588,
+          "reported_tokens": 58588
+        },
+        {
+          "request_id": "native-request-93b31c30deb249198304820d71bb890f",
+          "state": "QUIESCENT",
+          "charge": 53142,
+          "reported_tokens": 53142
+        },
+        {
+          "request_id": "native-request-bb2c3d2ecca64194b2c3fbd29b0d08a1",
+          "state": "QUIESCENT",
+          "charge": 54979,
+          "reported_tokens": 54979
+        },
+        {
+          "request_id": "native-request-cea98efbee4846f98651aa6322fcbc6e",
+          "state": "QUIESCENT",
+          "charge": 56710,
+          "reported_tokens": 56710
+        },
+        {
+          "request_id": "native-request-b30ee2c4dcd94a148bf7e6324867d713",
+          "state": "SENT",
+          "charge": 218684,
+          "reported_tokens": null
+        }
+      ],
+      "workproducts": [
+        {
+          "path": "workproducts/SWE.1/register_effects.json",
+          "bytes": 365,
+          "sha256": "70b6df9f9dd3b9dc0b49dc3103e6fc21edb4bd85fc4560f861da3b1d7f82be13"
+        },
+        {
+          "path": "workproducts/SWE.1/software_requirements.md",
+          "bytes": 5367,
+          "sha256": "287490ae983cb098a9f2424b5c77a84cbe18589efab9fec4ced6f39521a8cec2"
+        },
+        {
+          "path": "workproducts/SWE.1/software_requirements.reqif",
+          "bytes": 21662,
+          "sha256": "1e872026357bc180ff56c731b66eb2c883878a7844a9796ef3ab4882a2937357"
+        },
+        {
+          "path": "workproducts/SWE.2/api_calls.json",
+          "bytes": 240,
+          "sha256": "dbcc801aa390285e8b13a27120d6fbab311703aa04404fc188d3bd8ab20f0e5b"
+        },
+        {
+          "path": "workproducts/SWE.2/architecture_dynamic.puml",
+          "bytes": 488,
+          "sha256": "0234af58db60b7ee4e9321310d14f41851b27a844edc38d31b02db5377a3615d"
+        },
+        {
+          "path": "workproducts/SWE.2/architecture_dynamic.svg",
+          "bytes": 7017,
+          "sha256": "df284b213562989243a2c31fa22a4394abe7366e896d9a1a19964398ccb3bb4e"
+        },
+        {
+          "path": "workproducts/SWE.2/architecture_static.puml",
+          "bytes": 659,
+          "sha256": "8ab1ceb9fdb54f6ee9dd8d1c1a2d3105de693cedad30120c977583765362bc31"
+        },
+        {
+          "path": "workproducts/SWE.2/architecture_static.svg",
+          "bytes": 6515,
+          "sha256": "d1630dad649b006153cf5478ca6597381a85daa2a5a8d25d1b71fa1495f95e10"
+        },
+        {
+          "path": "workproducts/SWE.2/software_architecture.md",
+          "bytes": 8882,
+          "sha256": "5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e"
+        },
+        {
+          "path": "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv",
+          "bytes": 240,
+          "sha256": "f98a3043b20b5006a81e7161b0dc88687fbbeb13edddef059e5aa13601fba803"
+        },
+        {
+          "path": "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.md",
+          "bytes": 539,
+          "sha256": "5f7a236a327c29b7f91eb40b10c7de05546679cc9c38b2b55615313ac28326bc"
+        },
+        {
+          "path": "workproducts/SWE.3/code_trace_map.json",
+          "bytes": 790,
+          "sha256": "c9ccf25dff92b34409409ec4b31cc95c7b759b96dec955c8c0e4c70f82fb4bc6"
+        },
+        {
+          "path": "workproducts/SWE.3/code_trace_map.seed.json",
+          "bytes": 579,
+          "sha256": "ab2d18b92dabe95ef5efed8346f13716fa91bed42d91d8cdcbdc919f99ed574c"
+        },
+        {
+          "path": "workproducts/SWE.3/delivered_code_facts.json",
+          "bytes": 802,
+          "sha256": "abd982a9e23af07dbb8b010addd525b657c3e30d1c80f8d549b0f854759e064a"
+        },
+        {
+          "path": "workproducts/SWE.3/detailed_design/SWU-LL-01.puml",
+          "bytes": 770,
+          "sha256": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba"
+        },
+        {
+          "path": "workproducts/SWE.3/detailed_design/SWU-LL-02.puml",
+          "bytes": 691,
+          "sha256": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599"
+        },
+        {
+          "path": "workproducts/SWE.3/detailed_design.md",
+          "bytes": 5811,
+          "sha256": "bd9aa216f0964cfc6b1c950b90f0e51ef5deb37abd5096c0749f4d22d23f2034"
+        },
+        {
+          "path": "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.csv",
+          "bytes": 604,
+          "sha256": "54dabb3871127976b72ca4272b612530d36ea14e1fb4db48175eb58a28b3fcf7"
+        },
+        {
+          "path": "workproducts/SWE.3/traceability/matrix_2_unitspec_to_swr.md",
+          "bytes": 1007,
+          "sha256": "ceb2e344374b9c5d07b054926f6ef4ded24d7be3bb3e3d33917d1de43af80f0f"
+        },
+        {
+          "path": "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.csv",
+          "bytes": 827,
+          "sha256": "73659445b54397456b87c0c0ae63352888781d38215d8175a3189f3c7710e8eb"
+        },
+        {
+          "path": "workproducts/SWE.3/traceability/matrix_3_code_to_unitspec.md",
+          "bytes": 1183,
+          "sha256": "caaa91c1eedd45fb81c481768896108e323cf642f2a72e9252574df29d2e0172"
+        },
+        {
+          "path": "workproducts/SWE.3/unit_specifications/SWU-LL-01.reqif",
+          "bytes": 14761,
+          "sha256": "afe9156dbe7e12cdb30d260911673bcbf39d4a90473105ea2ed2b3a0d2ca9fa1"
+        },
+        {
+          "path": "workproducts/SWE.3/unit_specifications/SWU-LL-02.reqif",
+          "bytes": 14680,
+          "sha256": "88b99c7bde121515437b00a4b898c47913cdbd236826513885e35f4548037f4e"
+        },
+        {
+          "path": "workproducts/SWE.3/unit_specifications.md",
+          "bytes": 3315,
+          "sha256": "9c057a7863e673a13f7e62f30cf189a228bebed9de9451237a5437bf5a5a150a"
+        }
+      ],
+      "inspections": {
+        "SWE.1": {
+          "count": 1,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.1-001",
+              "recorded_at": "2026-10-29T14:17:44.822406Z",
+              "verdict": "PASS",
+              "findings": [],
+              "baseline_hash": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.2": {
+          "count": 1,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.2-001",
+              "recorded_at": "2026-10-29T14:32:20.122477Z",
+              "verdict": "PASS",
+              "findings": [],
+              "baseline_hash": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.3": {
+          "count": 2,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.3-001",
+              "recorded_at": "2026-10-29T14:55:32.179188Z",
+              "verdict": "FAIL",
+              "findings": [
+                {
+                  "detail": "UNIT:DESIGN_RENDER_FAILED:SWU-LL-01:PLANTUML_NOT_AVAILABLE; UNIT:DESIGN_RENDER_FAILED:SWU-LL-02:PLANTUML_NOT_AVAILABLE",
+                  "id": "SWE3-10",
+                  "severity": "major"
+                }
+              ],
+              "baseline_hash": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+              "stale_reason": null
+            },
+            {
+              "inspection_id": "INS-SWE.3-002",
+              "recorded_at": "2026-10-29T14:56:30.293370Z",
+              "verdict": "FAIL",
+              "findings": [
+                {
+                  "detail": "UNIT:DESIGN_RENDER_FAILED:SWU-LL-01:PLANTUML_NOT_AVAILABLE; UNIT:DESIGN_RENDER_FAILED:SWU-LL-02:PLANTUML_NOT_AVAILABLE",
+                  "id": "SWE3-10",
+                  "severity": "major"
+                }
+              ],
+              "baseline_hash": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.4": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.5": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.6": {
+          "count": 0,
+          "latest": []
+        }
+      },
+      "structured_result_files": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 0,
+    "requests": 153,
+    "tools": 320,
+    "corrections": 0,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "unique_executions": 4,
+    "unbounded_historical_usage": false
+  },
+  "read_only_snapshot": true,
+  "request_or_restart_performed": false
+}

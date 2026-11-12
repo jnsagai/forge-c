@@ -1,0 +1,129 @@
+{
+  "at": "2026-11-04T17:00:24.742661+00:00",
+  "integration_source": "796d662a450b243843f7637c15bba29b57adf2f1",
+  "authority": "Root requested evidence-only pending-oracle copy; no source/schema/manifest edits.",
+  "claim_limit": "Qualification and binding/full-read controls; not a driver PASS or autonomous ACT authorization.",
+  "files": [
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-exports/evidence/cre/decisions/pd-5b91d4aee25ac98c54ef.json",
+      "target": "evidence/cre/decisions/pd-5b91d4aee25ac98c54ef.json",
+      "sha256": "92ff83f9dc5b67068f4eafaea6ea59d0640a3b039570b6412bff16c308a36254",
+      "bytes": 10250
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-exports/evidence/cre/protected-receipt-index.json",
+      "target": "evidence/cre/rework-context/source949/protected-receipt-index.json",
+      "sha256": "e369ff79417b0e13cfb149e2ff75d544b394ff3d65442761bcadb794b4749cb1",
+      "bytes": 59346
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-v2-exports/evidence/cre/decisions/pd-c62dac664fd9282aaab6.json",
+      "target": "evidence/cre/decisions/pd-c62dac664fd9282aaab6.json",
+      "sha256": "8b5ec0f888d11f0bb38d2abd69aac18003a115155d93d1e4e120b8569eb8c8c4",
+      "bytes": 10250
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-v2-exports/evidence/cre/protected-receipt-index.json",
+      "target": "evidence/cre/rework-context/sourceefc/protected-receipt-index.json",
+      "sha256": "cb9e3955c81cae2542362bf8b3ef78a5ffd582c63dd603710ece623a46fdf3cf",
+      "bytes": 59346
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/cloud-gen25-exports/evidence/cre/decisions/pd-123a51483d88deb74d0f.json",
+      "target": "evidence/cre/decisions/pd-123a51483d88deb74d0f.json",
+      "sha256": "3883e18fc759ab7b4272948b5b1b020fbbf4d947e3d0ce71f10ceef314432912",
+      "bytes": 10250
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/cloud-gen25-exports/evidence/cre/protected-receipt-index.json",
+      "target": "evidence/cre/rework-context/runtimeG25/protected-receipt-index.json",
+      "sha256": "1f3b4958ac4acda8bf840d1e99027177822c1b6ccd5d8bd3abfedcfb6b52e9da",
+      "bytes": 59346
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification/actual-source-controls.json",
+      "target": "evidence/cre/rework-context/actual-source949/actual-source-controls.json",
+      "sha256": "3aa5d735e5b0f98aa56ef3314b4ea4e53d8f911c0e0ced039d47b4a895ee311f",
+      "bytes": 1884
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification/CRCHAL-prepared-data.json",
+      "target": "evidence/cre/rework-context/actual-source949/CRCHAL-prepared-data.json",
+      "sha256": "b0c0efbb7cde3b852689c96056bcb87214a24fbe47eb841119ea95b16764cc05",
+      "bytes": 5626
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification/WWDGHAL-prepared-data.json",
+      "target": "evidence/cre/rework-context/actual-source949/WWDGHAL-prepared-data.json",
+      "sha256": "b235ac52d22ad541bff75b2c5d04bdfcc9e7aeac46ab2e61b209acf6493495b6",
+      "bytes": 7106
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification-v2/actual-source-controls.json",
+      "target": "evidence/cre/rework-context/actual-sourceefc/actual-source-controls.json",
+      "sha256": "6b42105869d4ac99bdda15a25d765db8908b98378bbcf34b723af3f5e0aa78c3",
+      "bytes": 2073
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification-v2/CRCHAL-prepared-data.json",
+      "target": "evidence/cre/rework-context/actual-sourceefc/CRCHAL-prepared-data.json",
+      "sha256": "b0c0efbb7cde3b852689c96056bcb87214a24fbe47eb841119ea95b16764cc05",
+      "bytes": 5626
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification-v2/WWDGHAL-prepared-data.json",
+      "target": "evidence/cre/rework-context/actual-sourceefc/WWDGHAL-prepared-data.json",
+      "sha256": "b235ac52d22ad541bff75b2c5d04bdfcc9e7aeac46ab2e61b209acf6493495b6",
+      "bytes": 7106
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification/native-role-file-control.json",
+      "target": "evidence/cre/rework-context/native-role-file-control.json",
+      "sha256": "17c63e78e398c29ac5fdcfa61c612b346e12c062234885941fef7425fd9c7787",
+      "bytes": 216
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-cloud-T1F-actual-launch-proof.json",
+      "target": "evidence/cre/rework-context/actual-native/codex-cloud-T1F-actual-launch-proof.json",
+      "sha256": "520095c889e952c7687209e11a42447cae42b2e27ef3079d4c00634ea69d350a",
+      "bytes": 5323
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-cloud-T1F-live-proof-20261104.json",
+      "target": "evidence/cre/rework-context/actual-native/codex-cloud-T1F-live-proof-20261104.json",
+      "sha256": "000719dce71cd0c447401e32aa0caa017355ea5154cecbfeaf736c16e376d7e9",
+      "bytes": 2081
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-cloud-gen25-profile-preflight.json",
+      "target": "evidence/cre/rework-context/actual-native/codex-cloud-gen25-profile-preflight.json",
+      "sha256": "d9a43f41528d1a76d463ffec987602542aca1a865346f7a3c62e61a9d1e3c4d8",
+      "bytes": 793
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-cloud-gen25-all-pinned-inputs.json",
+      "target": "evidence/cre/rework-context/actual-native/codex-cloud-gen25-all-pinned-inputs.json",
+      "sha256": "1c1ba35542869049ef81207f9dcff2a3f0c8367fb6a785249558029da535c5d5",
+      "bytes": 3424
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-cloud-gen25-input-restart-active.json",
+      "target": "evidence/cre/rework-context/actual-native/codex-cloud-gen25-input-restart-active.json",
+      "sha256": "d8cbb7b57d6f976ad9be7415a0e7b0b7adc1167c19203492ad6f344b4c48598d",
+      "bytes": 244
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework_context_actual_controls.py",
+      "target": "evidence/cre/rework-context/actual-native/rework_context_actual_controls.py",
+      "sha256": "3e82fa868120657c0f7cf17da68e0a890b594d5cde258b1cf5996bb83dd48a12",
+      "bytes": 2507
+    },
+    {
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-v2-focused.xml",
+      "target": "evidence/cre/rework-context/actual-native/rework-context-v2-focused.xml",
+      "sha256": "b4eac7986e40e19d0d27539a7bb6aae6e5044093d8b7afd1554e4d7af53e4afa",
+      "bytes": 24107
+    }
+  ],
+  "count": 20
+}

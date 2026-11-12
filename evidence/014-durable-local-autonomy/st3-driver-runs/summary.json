@@ -1,0 +1,349 @@
+{
+  "blocked": 3,
+  "blocked_by_phase": {
+    "SWE.1": 3
+  },
+  "campaign_sha256": "442102a28202ebbeb563ef951b3311d28e13154acb658b2e45a90ace3a0e12f6",
+  "cases_planned": 3,
+  "cases_run": 3,
+  "ended_utc": "2026-10-27T08:19:24Z",
+  "execution_host": "omniverse2",
+  "gpu_job": "050-st3-9a88fbc.sh",
+  "learning_benefit": "NOT_DEMONSTRATED",
+  "operational_campaign_qualification": "NOT_RUN",
+  "output_tokens": 51810,
+  "package_facts_sha256": "c8b8392c25bc2195fef12490eff27a7a088157605888024ee7c71934714f6c7a",
+  "prompt_tokens": 324810,
+  "ready": 0,
+  "requests": 76,
+  "rows": [
+    {
+      "artifact_facts": {
+        ".forge-run/gates/gate-log.jsonl": {
+          "bytes": 2073,
+          "exists": true,
+          "sha256": "5eebea9aaaee77a65ec0f1a32e3828a6372cf0620b62dbd3c470c38eebc509a7"
+        },
+        ".forge-run/manifest.json": {
+          "bytes": 26682,
+          "exists": true,
+          "sha256": "59b903d93c4dc684c649e0424fbc5d3844e198676757119815102fe67ce8ba81"
+        },
+        ".forge-run/package.json": {
+          "bytes": 3941,
+          "exists": true,
+          "sha256": "1ca80c42936683414bf0a6831b8b9861cd01100d45b112bdceb6efd921b2952c"
+        },
+        "traceability/requirements_to_tests.csv": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        }
+      },
+      "case": "WWDG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.cs); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+        "dirty": false
+      },
+      "gap_count": 59,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 15,
+          "decode_ms": 29047.100000000002,
+          "decode_tokens_per_s_median": 232.52,
+          "first_delta_ms": 6084.9,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 6700,
+          "prefill_ms": 6084.9,
+          "prefill_tokens_per_s_median": 7184.5,
+          "prompt_tokens": {
+            "max": 3474,
+            "median": 2910,
+            "p95": 3474,
+            "sum": 43438
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 1.1
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 9549.5,
+          "gpu_board_wh": 2.653,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-27T08:13:23.671712Z",
+          "to": "2026-10-27T08:14:09.792968Z",
+          "wall_s": 47.1
+        }
+      },
+      "native_run_id": "01M5Y6QMDE6VQA43KHGHHWDEG9",
+      "package": {
+        "archive_sha256": "b52ae3fbb5fb1d033eceb0aef3c20404fb50d1f4b39f224a979c520430ddeac7",
+        "finalized_at": "2026-10-27T08:14:09.140010Z",
+        "gap_count": 59,
+        "package_status": "BLOCKED"
+      },
+      "package_status": "BLOCKED",
+      "run": "WWDG-LL-st301",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 55.0
+    },
+    {
+      "artifact_facts": {
+        ".forge-run/gates/gate-log.jsonl": {
+          "bytes": 2073,
+          "exists": true,
+          "sha256": "34569c302f0271d79f92707a0582fbed6241509996590765991c4c345efda357"
+        },
+        ".forge-run/manifest.json": {
+          "bytes": 28096,
+          "exists": true,
+          "sha256": "97ba18d583b99b383982bbd92f5ed09ead594002e82f7cb8df0386159aae2167"
+        },
+        ".forge-run/package.json": {
+          "bytes": 3938,
+          "exists": true,
+          "sha256": "49683fd9ba3a238e55839424efe81657ee46a016f7f9d0b29053e11dc24c7ac5"
+        },
+        "traceability/requirements_to_tests.csv": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        }
+      },
+      "case": "RNG-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.cs); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+        "dirty": false
+      },
+      "gap_count": 59,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 20,
+          "decode_ms": 100785.4,
+          "decode_tokens_per_s_median": 227.24,
+          "first_delta_ms": 12721.7,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 22711,
+          "prefill_ms": 12721.7,
+          "prefill_tokens_per_s_median": 7295.4,
+          "prompt_tokens": {
+            "max": 6380,
+            "median": 4936.5,
+            "p95": 6380,
+            "sum": 95793
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 1.1
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 29531.6,
+          "gpu_board_wh": 8.203,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-27T08:14:17.603938Z",
+          "to": "2026-10-27T08:16:24.833362Z",
+          "wall_s": 128.2
+        }
+      },
+      "native_run_id": "01M5Y6S97B2ADPMQJT9Q4S7GMT",
+      "package": {
+        "archive_sha256": "607d3ad5f0b248464c1a8d6435e8d7fc3fdcf707e2f8ba042c306d6b276690ba",
+        "finalized_at": "2026-10-27T08:16:24.189786Z",
+        "gap_count": 59,
+        "package_status": "BLOCKED"
+      },
+      "package_status": "BLOCKED",
+      "run": "RNG-LL-st301",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 133.1
+    },
+    {
+      "artifact_facts": {
+        ".forge-run/gates/gate-log.jsonl": {
+          "bytes": 2073,
+          "exists": true,
+          "sha256": "6b305c3bea587e8f925f559698d064b83526d19022e481f27e8eb03f4513ec4c"
+        },
+        ".forge-run/manifest.json": {
+          "bytes": 32266,
+          "exists": true,
+          "sha256": "b8a1908dd0afa19a378a33c40011f60f878d5028e73653b52234aef067a389f1"
+        },
+        ".forge-run/package.json": {
+          "bytes": 3944,
+          "exists": true,
+          "sha256": "a8849fde170cca30b895e15f64ba0f89652d1ee3c99c6f5c26f28a3a486b0d5b"
+        },
+        "traceability/requirements_to_tests.csv": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/register_effects.json": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        },
+        "workproducts/SWE.1/software_requirements.md": {
+          "bytes": null,
+          "exists": false,
+          "sha256": null
+        }
+      },
+      "case": "LPTIM-LL",
+      "classification": {
+        "blocked_phase": "SWE.1",
+        "kind": "QUALITY_OR_FACTORY (triage per case)",
+        "reason": "STUCK: identical deterministic rejection twice (CONTRACT_MISSING:workproducts/SWE.1/register_effects.json, MISSING_REQUIRED_OUTPUT:traceability/requirements_to_tests.cs); stopped early"
+      },
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+        "dirty": false
+      },
+      "gap_count": 59,
+      "metrics": {
+        "calls": {
+          "basis": "admission gateway meter",
+          "count": 41,
+          "decode_ms": 102323.3,
+          "decode_tokens_per_s_median": 224.03,
+          "first_delta_ms": 24076.6,
+          "load_ms": 0,
+          "model_loads": 0,
+          "output_tokens": 22399,
+          "prefill_ms": 24076.6,
+          "prefill_tokens_per_s_median": 9373.2,
+          "prompt_tokens": {
+            "max": 6486,
+            "median": 4527,
+            "p95": 5896,
+            "sum": 185579
+          },
+          "queue_wait_ms": {
+            "max": 0.1,
+            "sum": 2.7
+          },
+          "refused_or_cancelled": 0,
+          "split_unobservable": 0
+        },
+        "energy": {
+          "basis": "GPU board power reported by nvidia-smi, trapezoid over periodic samples; implausible readings excluded",
+          "coverage": 1.0,
+          "gpu_board_j": 35238.0,
+          "gpu_board_wh": 9.788,
+          "wall": "UNKNOWN (no wall-power meter on this host)"
+        },
+        "window": {
+          "from": "2026-10-27T08:16:32.247753Z",
+          "to": "2026-10-27T08:19:22.311832Z",
+          "wall_s": 171.1
+        }
+      },
+      "native_run_id": "01M5Y6XCQ0SH7HR6XY3B1V6T8W",
+      "package": {
+        "archive_sha256": "031128a7e9d7263ffa2f80f8842e5d79804dcde9537fa7f83332631ac0599fa1",
+        "finalized_at": "2026-10-27T08:19:21.788982Z",
+        "gap_count": 59,
+        "package_status": "BLOCKED"
+      },
+      "package_status": "BLOCKED",
+      "run": "LPTIM-LL-st301",
+      "verification": {
+        "checks": {
+          "acp_rejected": true,
+          "admission_metrics": true,
+          "fabro_providers_local": true,
+          "model_digest_match": true,
+          "network_denied_observed": true,
+          "package_sealed": true,
+          "profile_selected": true,
+          "roots_isolated": true
+        },
+        "status": "PASS"
+      },
+      "wall_s": 176.1
+    }
+  ],
+  "runtime_verification_is_product_acceptance": false,
+  "schema": "forge-c/014-st3-driver-results/1",
+  "source_summary_sha256": "79bb629e8f1492be24ef92f62edf419974164c82c01e128b71bb8d53e774d7c7",
+  "started_utc": "2026-10-27T08:13:13Z"
+}

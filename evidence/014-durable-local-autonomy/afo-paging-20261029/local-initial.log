@@ -1,0 +1,29 @@
+..........................................F............................. [ 46%]
+............................s........................................... [ 93%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_real_skill_mcp_preflight_and_native_workflow_validation _________
+
+local = (<forge_factory.afo.queue.Store object at 0x73cb68fb7cb0>, {'admitted_utc': '2026-10-29T20:24:23.294829Z', 'authorizat...1-followup-20261029/pytest-of-jefferson/pytest-58/test_real_skill_mcp_preflight_0/state/afo/cases/afo-fb-1/case.json'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x73cb6a83a7b0>
+
+    def test_real_skill_mcp_preflight_and_native_workflow_validation(local, monkeypatch):
+        from forge_factory.lrtx import profile
+
+        job = prepare(local)
+        real_run = subprocess.run
+>       real_fabro = os.environ["FORGE_FABRO_BIN"]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_local_autonomy.py:300:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = environ({'SHELL': '/bin/bash', 'ROS_VERSION': '2', 'SESSION_MANAGER': 'local/master:@/tmp/.ICE-unix/3766,unix/master:/...ions/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-58/test_real_skill_mcp_preflight_0/state'})
+key = 'FORGE_FABRO_BIN'
+
+>   ???
+E   KeyError: 'FORGE_FABRO_BIN'
+
+<frozen os>:717: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_local_autonomy.py::test_real_skill_mcp_preflight_and_native_workflow_validation

@@ -1,0 +1,61 @@
+{
+  "schema": "forge-c/local-shared-tool-accounting-evidence/1",
+  "source_revision": "c8daeb18d3b6afba51219d23562448ef17a56855",
+  "checkout_clean_at_test_launch": true,
+  "result": "PASS",
+  "passed": 109,
+  "skipped": 1,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 147.421,
+  "skip": {
+    "test": "test_live_fabro_native_bypass_denied",
+    "reason": "live Fabro test disabled; Qwen belongs on Omniverse2"
+  },
+  "source_files_sha256": {
+    "factory/python/forge_factory/afo/tool_accounting.py": "a238a5caf35f113ef6d18934cd5e3d9e570e8d44c59280851dc0fc503690d19a",
+    "factory/python/forge_factory/lrtx/review.py": "2c9f7edb0ca1c74d002120f9c2ae0a2693cd1ad79626f023f12eb938c29b30f9",
+    "factory/python/forge_factory/lrtx/review_semantic.py": "3ccce6684250ef75e1efc110fe4fe83a9b3cec3b7650f688f74227e9ce9f71de",
+    "factory/python/forge_factory/lrtx/tools.py": "fa89672b06e583f08cbc66dd334d4d3f773bb0760f621f6f7fb095f70c6d91bd",
+    "factory/python/forge_factory/policy/fabro_hook.py": "8060e42fdc74a668280b6dee9413311317ebcc760e0cbbee0bcad97201cf9b01",
+    "factory/python/tests/test_lrtx_inspection_accounting.py": "7e3e1a73a126112c5e4662b96abab1c36c396c8214e7553bec5012bb01e2b8f4",
+    "factory/python/tests/test_lrtx_tool_accounting.py": "2476d91d20b817552fc481389080924583c12e5d4640cfff0f7b841409035db6"
+  },
+  "model_requests": 0,
+  "live_qwen_qualification": "NOT_RUN",
+  "native_candidate_qualification": "NOT_RUN",
+  "runtime_deployment": "NOT_ACTIVATED",
+  "host_availability": "OFFLINE_OWNER_CONFIRMED",
+  "execution_authority": "EXPIRED_2026-10-29T05:00:00Z_NO_RENEWAL",
+  "M1_product": "HISTORICAL_EXECUTED_BLOCKED_SWE1; CANDIDATE_NOT_RUN",
+  "learning_benefit": "NOT_MEASURED",
+  "operational_availability": "NOT_QUALIFIED",
+  "historical_tool_accounting": "MAY_OMIT_DIRECT_STRUCTURED_CALLS; NOT_BACKFILLED; UNCERTAINTY_PRESERVED",
+  "formal_tasks": "30/58_UNCHANGED",
+  "new_task_checkboxes": [],
+  "IE_T004": "PARTIAL; NO_POSITIVE_INDEPENDENT_PROVISIONAL_CONTINUATION_QUALIFIED",
+  "implementation_commits": [
+    "bee02a7bf6ade5db7640098cc440bb83a63f06ed",
+    "c817ae96f027fbfd97ee4ed45d314fe490a3736e",
+    "c8daeb18d3b6afba51219d23562448ef17a56855"
+  ],
+  "test_substitutions": [
+    "Synthetic mission authority and prototype driver",
+    "Model verdict fixtures for inspection plumbing, no independent model correctness claim",
+    "SDK environment authorization fixture only, not a production configuration"
+  ],
+  "corrected_failure": "New phase-limit test initially called keyword-only aspice.binding positionally; corrected fixture.",
+  "prior_overlapping_cohorts_not_added": {
+    "first_mission_boundary": "9PASS",
+    "expanded": "11PASS",
+    "both_inspection_paths": "4PASS",
+    "pre-inspection-routing_regression": "101PASS/1SKIP_c817ae9"
+  },
+  "claims_excluded": [
+    "M1 acceptance",
+    "Qwen competence",
+    "physical hardware timing",
+    "learning benefit",
+    "24/7 operation"
+  ]
+}

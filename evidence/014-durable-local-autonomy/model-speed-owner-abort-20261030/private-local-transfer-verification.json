@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "archive_sha256": "651d7ffe666ea7615d6295dca01e5dc6970caf686cedc03dada5558b0b289f9c",
+  "archive_bytes": 1722841,
+  "member_count": 835,
+  "all_member_hashes_verified": true,
+  "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/owner-aborted-full-engineering",
+  "product_accepted": false
+}

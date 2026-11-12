@@ -62,6 +62,23 @@ def parse_section(text: str, prefix: str = "RCC") -> dict | None:
             for y in range(n):
                 fields.setdefault(f"{m.group(3)}{y0 + y}", {"msb": lsb + (y + 1) * width - 1, "lsb": lsb + y * width,
                                                             "access": set()})
+    # Repeated single-bit fields can list strided positions rather than a contiguous range. The GPIO advanced
+    # configuration tables wrap the low four positions onto the following line (RETy: 31,27,...,7,3).
+    for m in re.finditer(r"^[ \t]*Bits?[ \t]+((?:\d+[ \t]*,[ \t]*)+\d+[ \t]*,?)[ \t]+"
+                         r"([A-Z][A-Z0-9_]*?)y[ \t]*:[^\n]*?\(y\s*=\s*(\d+)\s+to\s+(\d+)\)", text, re.M):
+        positions = [int(bit) for bit in re.findall(r"\d+", m.group(1))]
+        first, last = int(m.group(3)), int(m.group(4))
+        count = abs(first - last) + 1
+        end = text.find("\n", m.end())
+        if len(positions) < count and end >= 0:
+            continuation = re.match(r"[ \t]*(\d+(?:[ \t]*,[ \t]*\d+)+)\b", text[end + 1:])
+            if continuation:
+                positions += [int(bit) for bit in re.findall(r"\d+", continuation.group(1))]
+        if len(positions) != count or len(set(positions)) != count or any(bit > 31 for bit in positions):
+            continue  # incomplete/ambiguous declarations remain unknown; never fill a guessed stride
+        step = 1 if last >= first else -1
+        for pin, bit in zip(range(first, last + step, step), positions, strict=True):
+            fields.setdefault(f"{m.group(2)}{pin}", {"msb": bit, "lsb": bit, "access": set()})
     access_by_bit: dict[int, str] = {}
     lines = text.splitlines()
     cols = None
@@ -141,6 +158,24 @@ def define_rx(prefix: str = "RCC") -> re.Pattern:
 def write_rx(block: str = "ll_rcc_regs") -> re.Pattern:
     """Writes through the LL register-block array (ADR-0009), e.g. ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = ..."""
     return re.compile(rf"{re.escape(block)}\s*\[\s*([^\]]+?)\s*\]\s*(\|=|&=|=)(?!=)\s*([^;]+);")
+
+
+def instance_view(code: str, inst: dict | None, idx: dict[str, dict], block: str) -> str:
+    """Instance mode: `<parameter>-><MEMBER>` rewritten as `<block>[<word>U]` through the declared typed members and
+    their RM offsets, so the register-write and concurrency scans of the register-block array read typed instance
+    code. A member the declaration does not map stays unresolved (UNRESOLVED_REGISTER_INDEX of those scans).
+    Identity without an instance declaration."""
+    if inst is None:
+        return code
+    reg_of = {m: r for r, m in inst["members"].items()}
+
+    def word(m: re.Match) -> str:
+        reg = reg_of.get(m.group(1))
+        if reg is None or reg not in idx:
+            return f"{block}[{inst['parameter']}_UNDECLARED_MEMBER_{m.group(1)}]"
+        return f"{block}[{idx[reg]['offset'] // 4}U]"
+
+    return re.sub(rf"\b{re.escape(inst['parameter'])}\s*->\s*([A-Za-z_]\w*)", word, code)
 
 
 def block_of(prefix: str) -> str:

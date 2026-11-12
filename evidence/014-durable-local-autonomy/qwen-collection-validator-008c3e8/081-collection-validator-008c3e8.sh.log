@@ -1,0 +1,1 @@
+{"status": "PROPOSAL_ONLY", "calls_attempted": 1, "reference_check": "PASS", "usage": {"prompt_tokens": 996, "prompt_tokens_details": {"cached_tokens": 0}, "completion_tokens": 579, "total_tokens": 1575}, "wall_ms": 7513.0}

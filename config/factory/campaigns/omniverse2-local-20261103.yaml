@@ -1,0 +1,104 @@
+# Production campaign of the Omniverse2 local line, 2026-11-03 (autonomous line M3, owner decision 3).
+# Owner 2026-11-03: CAPA-133 + the SWE2-08 revisions record keep the ST CRC LL L24 verified (no L30 rerun).
+# The owner approves it by commit; the Line Conductor loads it only when it is committed and unmodified, binds every
+# order to its sha256 and chains inside it: SWE.n PASS -> SWE.n+1 (resume from the passed order, same revision) and
+# LL SWE.6 PASS -> HAL SWE.1 (depends_on; the HAL gets --provided-from the LL's SWE.6 order). A new lineage or
+# example is a new campaign entry. Revisions are run-branch revisions only (decision 4); null = waiting for one.
+# Quality (decision 15): the orders on run/gen11 carry the owner defaults (that revision's work-order CLI has no
+# --quality yet), stated here explicitly; a lower minimum needs a revision with the M3 --quality flag.
+schema: forge-c/line-campaign/1
+campaign_id: CMP-OMNI2-LOCAL-20261103
+line: local
+wo_prefix: WO-F014
+lineages:
+  - id: iwdg-hal
+    status: DONE                       # IWDG HAL 0009b: SWE.1-4 L19, SWE.5 L22, SWE.6 L24 passed on dcfec5b0
+    completed_by: WO-F014-SWE6-IWDGHAL-20261103-L24
+    example: 0009b-iwdg-hal
+    tag: IWDGHAL
+    series: 20261103-L24
+    driver_class: STM32N6_IWDG_HAL
+    factory_revision: dcfec5b0
+    profile: &profile local-rtx-v2-omniverse2-ornith-think-author-q38-inspector
+    run_model: &orn hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    provided_from: WO-F014-SWE6-IWDG-20261101-L6
+    priority: 0
+
+  - id: wwdg-ll
+    status: DONE                       # WWDG LL from ST code (FROZEN brownfield): SWE.1-6 of L29 passed on 82fabdb9
+    completed_by: WO-F014-SWE6-WWDGL-20261103-L29
+    example: 0016c-st-cube-wwdg
+    tag: WWDGL
+    series: 20261103-L29
+    driver_class: STM32N6_WWDG_LL_ST
+    factory_revision: 82fabdb9         # run/gen11 = a88b61a5 + run-branch examples + WWDG profile
+    profile: *profile
+    run_model: *orn
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    priority: 60
+    quality: &defaults
+      structural_coverage: {line: {target: 100, minimum: 100}, branch: {target: 100, minimum: 100}}
+      requirements_coverage: {uspec_tested: {target: 100, minimum: 100}, swr_verified_swe6: {target: 100, minimum: 100}}
+      misra: {open_violations_max: 0, undeviated_rules_max: 0, deviation_owner_approval: true}
+
+  - id: crc-ll
+    status: DONE                       # ST CRC LL 0014l verified by L24; stays verified under CAPA-133 + the owner's
+    completed_by: WO-F014-SWE6-CRCL-20261103-L24   # SWE2-08 revisions record (unchanged_for LL): the L30 rerun is cancelled
+    example: 0014l-st-cube-crc-swe1-gen
+    tag: CRCL
+    series: 20261103-L24
+    driver_class: STM32N6_CRC_LL_ST
+    factory_revision: 9a4f8755
+    profile: *profile
+    run_model: *orn
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    priority: 0
+
+  # CAPA-149: the old frozen SWE.2 architectures mandated fictional register arrays. Preserve their history;
+  # new series regenerate SWE.2 onward with the provided-CMSIS mapping, from the last valid SWE.1 checkpoints.
+  - id: crc-hal
+    example: 0014m-crc-hal             # CRC HAL on verified ST CRC LL L24; continue after its passed SWE.4
+    tag: CRCHAL
+    series: 20261104-L34
+    driver_class: STM32N6_CRC_HAL
+    factory_revision: 6cc0abca4e65240e02cdf29630815c32ec030ae2 # run/gen17: CAPA-142/143 + the frozen run examples
+    profile: *profile
+    run_model: *orn
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    start: {resume_from: WO-F014-SWE1-CRCHAL-20261103-L27, at: SWE.2}
+    provided_from: WO-F014-SWE6-CRCL-20261103-L24
+    priority: 40
+    quality: *defaults
+
+  - id: wwdg-hal
+    example: 0016m-wwdg-hal            # WWDG HAL on the verified WWDG LL; also needs CAPA-128 (HAL on an ST LL)
+    tag: WWDGHAL
+    series: 20261104-L35
+    driver_class: STM32N6_WWDG_HAL
+    factory_revision: 6cc0abca4e65240e02cdf29630815c32ec030ae2 # run/gen20: CAPA-149; regenerate SWE.2 from valid SWE.1
+    profile: *profile
+    run_model: *orn
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    start: {resume_from: WO-F014-SWE1-WWDGHAL-20261103-L32C, at: SWE.2}
+    depends_on: {lineage: wwdg-ll, phase: SWE.6, verdict: PASS}
+    priority: 30
+    quality: *defaults
+
+  - id: rcc-ll
+    status: ON_HOLD                    # RCC LL 0002h: on hold (L16 SWE.2 cancelled 2026-11-02)
+    example: 0002h-arm_55_rcc_ll-swe1-aspice-high
+    tag: RCC
+    series: 20261103-L33
+    driver_class: STM32N6_RCC_LL
+    factory_revision: 82fabdb9
+    profile: *profile
+    run_model: *orn
+    purpose: ASPICE_ONLY
+    phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    priority: 10

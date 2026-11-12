@@ -1,0 +1,2 @@
+SYMPTOM_PRESENT:SWE.1 author told to remove a requirement that implements a declared owner obligation
+exit 1

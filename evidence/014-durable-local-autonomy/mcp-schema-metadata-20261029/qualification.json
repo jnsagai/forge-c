@@ -1,0 +1,24 @@
+{
+  "source_revision": "6cd238088b84ec67df3b59e88a22b6576e0d9412",
+  "local": {
+    "passed": 73,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "skip_reason": "test_t018_live_fabro_calls_forge_mcp_through_ticket_gate: live Fabro disabled"
+  },
+  "baseline_regressions": {
+    "tests": 3,
+    "failures": 3,
+    "errors": 0
+  },
+  "fixed_focused": {
+    "passed": 3,
+    "failures": 0
+  },
+  "native_before": "ACTUAL_NATIVE_SCHEMA_MISSING_MIN_MAX_LENGTH",
+  "native_fixed": "NOT_RUN_WHILE_QWEN_INFERENCE_OR_CRE_VERIFIER_LIVE",
+  "production_activation": "NOT_DEPLOYED",
+  "runtime_still": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "Qwen_repair_success": "NOT_ESTABLISHED_BY_THIS_SDK_CHANGE"
+}

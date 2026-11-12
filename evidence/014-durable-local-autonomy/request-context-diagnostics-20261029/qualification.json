@@ -1,0 +1,31 @@
+{
+  "source_revision": "a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0",
+  "baseline_revision": "453dde2d75f03058ae03bb68355a9b8e6a39045d",
+  "local": {
+    "passed": 89,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 30.989
+  },
+  "baseline_counterexample": {
+    "failed": 3,
+    "scope": "old production-equivalent request_admission and role_capability loaded explicitly; new focused tests"
+  },
+  "native_fixture_qualification": "NOT_RUN_CURRENT_REMOTE_MISSION_HAS_EXCLUSIVE_PRIORITY",
+  "live_qwen_calls_for_this_source": 0,
+  "deployed": false,
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_integration.py",
+    "factory/python/tests/test_da014_maintenance.py",
+    "factory/python/tests/test_da014_role_envelopes.py",
+    "factory/python/tests/test_da014_product_role_trial.py"
+  ],
+  "runtime_changed": false,
+  "mission_or_authority_changed": false
+}

@@ -1,0 +1,34 @@
+2026-10-31T13:39:15Z PREFLIGHT PASS (measured 2026-10-31T13:35:35Z): gpu 936MiB used, 0 compute procs; afo intent STOPPED epoch 7; production-local-014 intent PAUSED epoch 111; gpuq pending/running empty, no STOP; no own llama-server
+2026-10-31T13:39:15Z CHECKOUT READY: fresh clone at /mnt/data/forge-c/operations/swe1-ornith-20261031/repo HEAD 31231e0c081084e7c78b54ec7f66e211000717f2
+2026-10-31T13:41:53Z START WORKSPACE CHOSEN: /mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace
+2026-10-31T13:42:55Z SERVER STARTING pid 2550827 port 18592
+2026-10-31T13:43:01Z SERVER STARTED pid 2550827: health ok after 6.32s; VRAM now 38102 MiB (baseline 936)
+2026-10-31T13:43:02Z MODELCMP STARTING (repeat 2, SWE.1, model alias ornith-1.5-35b-a3b-q8)
+2026-10-31T13:43:07Z ATTEMPT STARTED ornith-1.5-35b-a3b-q8-01
+2026-10-31T13:43:07Z CHECKPOINTS ornith-1.5-35b-a3b-q8-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T13:43:22Z ATTEMPT STARTED ornith-1.5-35b-a3b-q8-02
+2026-10-31T13:43:22Z ATTEMPT FINISHED ornith-1.5-35b-a3b-q8-01: visit PASS, gate FROZEN, calls 3, wall 15.1 s
+2026-10-31T13:43:32Z ATTEMPT FINISHED ornith-1.5-35b-a3b-q8-02: visit PASS, gate FROZEN, calls 3, wall 9.7 s
+2026-10-31T13:43:37Z CHECKPOINTS ornith-1.5-35b-a3b-q8-02: 2 task checkpoints; latest requirements:crosscutting VALID (2 calls)
+2026-10-31T13:43:42Z MODELCMP FINISHED rc 0 ({"rc":0,"wall_s":29.8,"at":"2026-10-31T13:43:31Z"})
+2026-10-31T13:43:43Z SERVER STOPPED (STOP_REQUESTED) pid 2550827 signal TERM exit 0; process_gone=yes; GPU after 936 MiB, compute apps []; port 18592 open=no; VRAM peak 38152 MiB
+2026-10-31T13:46:34Z CLEANUP VERIFIED (checked 13:43:59Z): pid 2550827 gone, no own llama-server, GPU 936 MiB 0 compute apps, port 18592 closed, guard OK, runner 2742646 and conductor 3699940 still running and never signalled, gpuq empty, no STOP file
+2026-10-31T13:46:34Z DEVIATION: factory code rewrote source workspace .forge-run/lrtx/SWE.1/development-execution.json at 13:43:31.57Z with identical bytes (mtime changed) via copy binding.json absolute workspace path; content hash of source files unchanged
+2026-10-31T13:48:45Z STEP2 INSPECTION START (owner 2026-10-31: run the Qwen inspection on the produced baseline); preflight: gpu 936 MiB, guard OK
+2026-10-31T13:53:20Z STEP2 INSPECT-WS READY: /mnt/data/forge-c/operations/swe1-ornith-20261031/inspect-ws (copy of attempt-1 workspace); isolation: binding.json+workflow.toml workspace path -> copy, durable-binding.json moved out (see inspect-work/isolation-edits.json)
+2026-10-31T13:54:42Z STEP2 SERVER STARTING qwen3.8:27b-q8_0 pid 2565329 port 18593 (factory llama_server_spec argv)
+2026-10-31T13:54:47Z STEP2 SERVER UP pid 2565329: health ok after 4.85s; VRAM 46558 MiB; n_ctx: n_ctx_slot = 262144
+2026-10-31T13:54:48Z STEP2 GATEWAY UP pid 2565552 port 18594 -> llama 18593 (profile reasoning: effort medium, extra_output_tokens 8192, role_efforts {})
+2026-10-31T13:54:49Z STEP2 RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T13:54:49Z STEP2 CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T13:55:19Z STEP2 CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (2 calls)
+2026-10-31T13:55:49Z STEP2 CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (2 calls)
+2026-10-31T13:56:19Z STEP2 CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T13:56:50Z STEP2 CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (2 calls)
+2026-10-31T13:57:20Z STEP2 CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (2 calls)
+2026-10-31T13:57:50Z STEP2 CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (2 calls)
+2026-10-31T13:58:15Z STEP2 RUNNER PASS 1 FINISHED rc 0 status PASS calls 9 wall {"pass":1,"rc":0,"status":"PASS","calls":"9","wall_s":206.1,"at":"2026-10-31T13:58:15Z"}
+2026-10-31T13:58:17Z STEP2 SERVER+GATEWAY STOPPED (STOP_REQUESTED) server 2565329 signal TERM exit 0 gone=yes; gateway 2565552 gone=yes; GPU after 936 MiB apps []; ports 18593 open=no 18594 open=no; VRAM peak 46590 MiB
+2026-10-31T13:58:18Z STEP2 INSPECT GATE rc 0: {"phase": "SWE.1", "decision": "PASS", "reason": "INS-SWE.1-001", "failed_inspections": 0, "max_rework_cycles": 3} 
+2026-10-31T13:58:56Z STEP2 CLEANUP VERIFIED (13:58:27Z): server 2565329 and gateway 2565552 gone, no own llama-server/gateway/scripts, GPU 936 MiB 0 compute apps, ports 18593/18594/18595 closed, guard OK, runner 2742646 + conductor 3699940 untouched, gpuq empty, no STOP; read-only proof: trial-06 source, attempt-1, attempt-2 identical (path/size/mtime/sha256/mode)
+2026-10-31T14:01:43Z STEP2 DONE: evidence copied to loop10 swe1-ornith-standalone-20261031/inspection/ (uncommitted)

@@ -1,0 +1,1 @@
+{"candidate": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be", "decision_id": "pd-6ac385a2a8dec0c41a14", "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW", "gates": {"protected_files": "PASS", "policy_integrity": "PASS", "reproducer": "PASS", "prevention": "PASS", "quality_process": "PASS", "golden_benchmark": "PASS", "holdout": "PASS"}}

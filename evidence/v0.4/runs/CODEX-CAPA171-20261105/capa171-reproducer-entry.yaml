@@ -1,0 +1,23 @@
+id: RPR-171
+script: rpr171_wwdg_host_timing_false_credit.py
+sha256: 8822d13a60663c91dafc4b8e54f1e729e8e303c21cf59081ed27d0123fbb2184
+symptom_signature: WWDG frozen target instruction and virtual-time requirement receives
+  host-only verified credit
+observed_in: Actual G31 WWDG4J frozen plan UT011/016/020/025 requires per-call 2000
+  target instructions and1000virtualus at100MIPS; normal SDK host-only HAL_Clear clock
+  test UT025/USPEC0405 receives PASS and Matrix4 VERIFIED with no target metrics on
+  qualified169/170. Actual4J terminal with noSWE4baseline/inspection, history retained.
+baseline_revision: edff27525b8331af7ce943de0490172c9fc180c5
+error_codes:
+- WWDG_TARGET_TIMING_HOST_FALSE_CREDIT
+operations:
+- forge-tests-mcp.run_unit
+- inspection.swtrace.Matrix4
+- workflow.unit_target_wwdg_timing
+root_cause: Existing public unit and Matrix4 path accepts host PASS annotations for
+  frozen WWDG target timing requirements while the only real per-call timing producer
+  supports CRC; omission of target declaration permits false host timing credit.
+remedy: Recognize exact frozen approved WWDG obligations and require sealed real Renode
+  entry/caller-return metrics bound to compiled source/effective LL/arguments/scenario/current
+  budgets, even if declaration omitted. Preserve CRC/O semantics and simulation-only
+  scope; no plan/requirements weakening or hardware claim.

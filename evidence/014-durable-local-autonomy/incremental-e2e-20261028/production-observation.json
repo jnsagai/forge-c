@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-28T19:52:12.214352Z",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 22
+  },
+  "units": {
+    "forge-conductor-local-omniverse2.service": "active",
+    "forge-afo-watchdog-014-omniverse2.timer": "active",
+    "forge-qwen-golive-20261028.service": "inactive",
+    "forge-aspice-expiry-20261028.timer": "active"
+  },
+  "resources": "814 MiB, 0 %",
+  "current_policy": {
+    "authorization_ref": "AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2",
+    "sha256": "83e78088c66df61e6513c466b9221e85f54ba34adbcddf0dcae48b69d91a96ad",
+    "mode": "PILOT",
+    "issues": []
+  }
+}

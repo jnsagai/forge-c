@@ -1,0 +1,97 @@
+{
+  "at": "2026-11-05T05:44:57.665978+00:00",
+  "base": "a856b521fccab43309ee4bfe1cded42c2eb37938",
+  "changed_files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_recovery_product.py",
+      "sha256": "7698ce47f664d965c557554d066eac18dea261d44e4fc78207aec6ace7b2e05c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_intake.py",
+      "sha256": "1fb8deca5e0d6f59d16d4558130e028e465a1a5e022c7d701c7061ab636ac304"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_prerequisites.py",
+      "sha256": "904d83ec10d195c96b10ec8505bceed07900ac8f4b04befa6bd1dd85fdabc6ff"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_mission_renewal.py",
+      "sha256": "45daa5d415742e7ad753295d2fbef9c0503cec74cbb6a13d9e3ca504fcd4e70c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_soak_mission_renewal.py",
+      "sha256": "346296d4788be83964c5dece46a4048e603ea08432cab9a7bf3f3155e8248bd6"
+    }
+  ],
+  "checked_invariants": [
+    {
+      "refs": [
+        "line_recovery_product.py:36-94"
+      ],
+      "result": "Existing mission base is read by actual mission_id in same store; initial authority is raw base.authorization_ref. No caller-supplied initial_authorization_ref is accepted. Effective snapshot exact mission_id/lineage/limits required before linking and checked after link."
+    },
+    {
+      "refs": [
+        "line_recovery_product.py:41-60",
+        "line_recovery_product.py:61-63"
+      ],
+      "result": "Old durable-control continuation equality and mission identity checks preserved. Fresh unlinked order with prior nativeRID or historical state still refuses before creating mission link; existing foreign mission link refuses."
+    },
+    {
+      "refs": [
+        "line_recovery_product.py:95-105",
+        "line_soak_prerequisites.py:225-233",
+        "line_soak_prerequisites.py:379-389",
+        "line_soak_intake.py:178-193"
+      ],
+      "result": "Production manifest and each M9 entry retain current C.configuration signature/policy/source/profile/signed-control checks before internal bound_mission. New helper is validation-only and its documentation does not confer authority independently."
+    },
+    {
+      "refs": [
+        "line_soak_prerequisites.py:176-195"
+      ],
+      "result": "bound_mission snapshots effective amendments and raw base from one transaction; compares raw initial authority plus exact effective missionID/lineage/limits. Does not trust caller projection. Unknown mission fails in normal _snapshot before raw-row fetch."
+    },
+    {
+      "refs": [
+        "mission_ledger.py:72-124",
+        "mission_deadline.py:38-52",
+        "mission_capacity.py:43-59"
+      ],
+      "result": "Ledger and deadline/capacity replay modules byte-identical to baseline. Accepted receipt hashes/base digest/chain continuity still determine effective limits. Historical token/attempt/uncertainty counters unchanged; code only adds normal mission_order link for fresh order."
+    },
+    {
+      "refs": [
+        "product_job.py:42-43",
+        "local_agent.py:207-210"
+      ],
+      "result": "Both modules byte-identical baseline. Runtime policy remains86400, so actual fresh product job deadline=min(created+86400,effective mission deadline). Recovery jobs also intersect3600. Separate operator1209600 policy is not a runtime policy and must never be inherited into conductor/native/scheduler."
+    }
+  ],
+  "existing_new_test_source_review": {
+    "LRP": "test_line_mission_renewal.py:53-103 covers normal cumulative link/dispatch, authority/lineage/cap/deadline/history/amendment-integrity refusals and existing-link authority refusal; dispatch positive asserts runtime600 fixture ceiling despite extension1200.",
+    "M9": "test_line_soak_mission_renewal.py:99-170 covers current signed control both queued/unsubmitted, public check/admission_boundary no DB mutation, base authority/deadline chain/caps/current-signature negatives and composed capacity+time chain tamper refusal.",
+    "not_independently_run": "No tests, CRE or gates run during this review. Component owners report27 relatedPASS and140 M9PASS; that report is not substituted for formal root qualification."
+  },
+  "findings": [],
+  "limits": [
+    "No claim of atomic new-link plus amendment operation: pre/post snapshot checks remain separate transactions; later normal job preparation rechecks and reserves cumulative budget. This review found no new effect authority bypass in that structure.",
+    "No runtime native admission, new job, policy load, actual signature, amendment or renewal executed. All actual5grant bytes, source/run variants, receipt inputs and live history still need coherent root/M0 qualification.",
+    "No extension of job wall by operator-only policy is claimed. If that policy enters runtime environment, the earlier generic ceiling impact applies."
+  ],
+  "ordered_changes": [
+    "33c2626d6b133d1a10ea09afe90982102abeb112",
+    "b2e69e2c7e3a1d46c162e8105654e1863f3496d0",
+    "6d69dfb65a6336e3a554641c75e430eca3c5f82e (cherry child1d37a301)"
+  ],
+  "prior_audit": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/mission-renewal-audit-20261105/index-v2.json",
+    "sha256": "9657e16fb4fd6eec16f999daf5aa4de32a49369cd3f192627f119bdb63eff18f"
+  },
+  "reviewer": "/root/local_driver_operations",
+  "schema": "forge-c/independent-source-review/1",
+  "source": "6d69dfb65a6336e3a554641c75e430eca3c5f82e",
+  "status": "NO_BLOCKING_FINDING_IN_SCOPED_READ_ONLY_REVIEW",
+  "tracked_clean": true,
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal"
+}

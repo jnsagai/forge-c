@@ -1,0 +1,50 @@
+{
+  "revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "scope": "STATIC_CHECKS_NOT_RUNTIME_QUALIFICATION",
+  "results": [
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/validate_spec.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/contracts/validate_contracts.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "tests/spec/validate_design.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "evidence/014-durable-local-autonomy/verify_handoff.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "factory/python/forge_factory/release/development.py",
+        "factory/python/forge_factory/release/finalize.py",
+        "factory/python/forge_factory/workorder.py",
+        "factory/python/forge_factory/brownfield/resume.py",
+        "factory/python/forge_factory/assurance/package.py",
+        "factory/python/tests/test_development_safety_policy.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "log_sha256": "95ce06cf1dd5959a16b8317ef524eb050171c96532409bd47f3afc3c6e6de252"
+}

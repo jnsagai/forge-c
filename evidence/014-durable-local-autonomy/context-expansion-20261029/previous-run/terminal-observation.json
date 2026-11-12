@@ -1,0 +1,851 @@
+{
+  "captured_utc": "2026-10-29T13:15:38.200109Z",
+  "order_id": "afo-d9ddb6d7a1c4e025",
+  "order_state": "BLOCKED",
+  "terminal_reason": "package BLOCKED / BLOCKED, 46 gaps",
+  "source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+  "native": [
+    {
+      "run_id": "01M63V3YA87ENXA7052M8HS62X",
+      "status": "SUCCEEDED",
+      "labels_match_job_and_nonce": true,
+      "event_count_observed": 926,
+      "errors": [
+        {
+          "node_id": "swe2_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe2_inspector",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe3_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe3_inspector",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe4_test_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe4_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe4_inspector",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe5_target_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe5_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe5_inspector",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe6_test_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe6_author",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "swe6_inspector",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "node_id": "release_manager",
+          "event_value_type": "dict",
+          "event_keys": [
+            "Error"
+          ],
+          "visible_error": {
+            "Error": {
+              "error": {
+                "kind": "llm",
+                "message": "calling the model: provider ollama returned HTTP status 429",
+                "llm_kind": "rate_limit",
+                "retry": {
+                  "type": "safe"
+                },
+                "provider": "ollama",
+                "status": 429,
+                "provider_code": "CAPABILITY_LIMIT",
+                "source_chain": [
+                  "provider ollama returned HTTP status 429"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "event_types": [
+        "agent.error",
+        "agent.input",
+        "agent.llm.first_output",
+        "agent.llm.started",
+        "agent.mcp.server.ready",
+        "agent.memory.loaded",
+        "agent.message",
+        "agent.processing.end",
+        "agent.session.activated",
+        "agent.session.deactivated",
+        "agent.session.ended",
+        "agent.session.started",
+        "agent.skill.activated",
+        "agent.skills.discovered",
+        "agent.tool.completed",
+        "agent.tool.started",
+        "agent.tools.available",
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "run.completed",
+        "run.created",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "sandbox.stop.completed",
+        "sandbox.stop.started",
+        "stage.completed",
+        "stage.failed",
+        "stage.prompt",
+        "stage.started"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-7be7e1ce209aafb7a169c2c2",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-d9ddb6d7a1c4e025-a1/workspace",
+      "execution": {
+        "native_run_ids": [
+          "01M63V3YA87ENXA7052M8HS62X"
+        ],
+        "execution_liveness": "QUIESCENT",
+        "resource_lease": "RELEASED",
+        "task_outcome": "BLOCKED",
+        "identity_state": "CONFIRMED",
+        "last_reconciled_at": "2026-10-29T13:12:15.327307Z"
+      },
+      "requests": [
+        {
+          "request_id": "structured-request-88e729e2b77c4b62a10957512c672c6b",
+          "state": "QUIESCENT",
+          "charge": 9849,
+          "reported_tokens": 9849
+        },
+        {
+          "request_id": "structured-request-8882ab3c11c74be1af6ad234ff977658",
+          "state": "QUIESCENT",
+          "charge": 21221,
+          "reported_tokens": 21221
+        },
+        {
+          "request_id": "structured-request-f3bcd4d71f7946ecb758130af631f071",
+          "state": "QUIESCENT",
+          "charge": 7766,
+          "reported_tokens": 7766
+        },
+        {
+          "request_id": "structured-request-144363a21c3b497b9ebb9c20ffbf1be1",
+          "state": "QUIESCENT",
+          "charge": 7899,
+          "reported_tokens": 7899
+        },
+        {
+          "request_id": "structured-request-08c9db10d6bd41a29c815284ade9e754",
+          "state": "QUIESCENT",
+          "charge": 9193,
+          "reported_tokens": 9193
+        },
+        {
+          "request_id": "structured-request-57d315ed92124eb5a3065fe74ff863f1",
+          "state": "QUIESCENT",
+          "charge": 7585,
+          "reported_tokens": 7585
+        },
+        {
+          "request_id": "native-request-390c4868334b4c2e897d3fedd6819088",
+          "state": "QUIESCENT",
+          "charge": 7322,
+          "reported_tokens": 7322
+        },
+        {
+          "request_id": "native-request-5053254f8cc0421b9182d2a6ec8e9361",
+          "state": "QUIESCENT",
+          "charge": 8334,
+          "reported_tokens": 8334
+        },
+        {
+          "request_id": "native-request-8d952ca7445246a9a49cfe8b6e8a4a42",
+          "state": "QUIESCENT",
+          "charge": 26331,
+          "reported_tokens": 26331
+        },
+        {
+          "request_id": "native-request-af19851297694ac09ac20a93f2945a49",
+          "state": "QUIESCENT",
+          "charge": 28407,
+          "reported_tokens": 28407
+        },
+        {
+          "request_id": "native-request-f91d1effe843485899b17052feedf873",
+          "state": "QUIESCENT",
+          "charge": 6741,
+          "reported_tokens": 6741
+        },
+        {
+          "request_id": "native-request-749a0cd2fffd4c7592e0d4963b6b0833",
+          "state": "QUIESCENT",
+          "charge": 7379,
+          "reported_tokens": 7379
+        },
+        {
+          "request_id": "native-request-094565d3d05641f6a961ff7de8da6d3c",
+          "state": "QUIESCENT",
+          "charge": 9510,
+          "reported_tokens": 9510
+        },
+        {
+          "request_id": "native-request-b261a1d35a5f4482b00643c0758589af",
+          "state": "QUIESCENT",
+          "charge": 9591,
+          "reported_tokens": 9591
+        },
+        {
+          "request_id": "native-request-28dab51df5814cfab04341eb016f9393",
+          "state": "QUIESCENT",
+          "charge": 10594,
+          "reported_tokens": 10594
+        },
+        {
+          "request_id": "native-request-8b849f6b697546c6aabaf9c6e9694b1f",
+          "state": "QUIESCENT",
+          "charge": 11887,
+          "reported_tokens": 11887
+        },
+        {
+          "request_id": "native-request-1863c17ee9714358893ac82b1e08be2d",
+          "state": "QUIESCENT",
+          "charge": 22602,
+          "reported_tokens": 22602
+        },
+        {
+          "request_id": "native-request-6f5d350bb3964a648de9f15d6b4f3623",
+          "state": "QUIESCENT",
+          "charge": 27468,
+          "reported_tokens": 27468
+        },
+        {
+          "request_id": "native-request-bfcfe32f749e4f9caf850cf324717361",
+          "state": "QUIESCENT",
+          "charge": 8349,
+          "reported_tokens": 8349
+        },
+        {
+          "request_id": "native-request-8e438ad637d04fd5bf2cacc38f638bae",
+          "state": "QUIESCENT",
+          "charge": 9915,
+          "reported_tokens": 9915
+        },
+        {
+          "request_id": "native-request-6ac5724ec0bd451ab0aad93a6774441b",
+          "state": "QUIESCENT",
+          "charge": 7982,
+          "reported_tokens": 7982
+        },
+        {
+          "request_id": "native-request-0a228ba2795447eeba30aa96de8a0d3f",
+          "state": "QUIESCENT",
+          "charge": 8917,
+          "reported_tokens": 8917
+        },
+        {
+          "request_id": "native-request-677a455a710b41f69c387d0c47a1f5bc",
+          "state": "QUIESCENT",
+          "charge": 11239,
+          "reported_tokens": 11239
+        },
+        {
+          "request_id": "native-request-e68863ea05e248448b03da61508c1354",
+          "state": "QUIESCENT",
+          "charge": 11638,
+          "reported_tokens": 11638
+        },
+        {
+          "request_id": "native-request-b8f995698e44435fba930f3d72492171",
+          "state": "QUIESCENT",
+          "charge": 33710,
+          "reported_tokens": 33710
+        },
+        {
+          "request_id": "native-request-c45cf1bb26d545ce9ea040a3756da528",
+          "state": "QUIESCENT",
+          "charge": 9352,
+          "reported_tokens": 9352
+        },
+        {
+          "request_id": "native-request-a423615a72724eeb836a2afa825efdf0",
+          "state": "QUIESCENT",
+          "charge": 10371,
+          "reported_tokens": 10371
+        },
+        {
+          "request_id": "native-request-dec1b7d805f94decbcd50692ab45552a",
+          "state": "QUIESCENT",
+          "charge": 30113,
+          "reported_tokens": 30113
+        },
+        {
+          "request_id": "native-request-5b361a191eee478196444388c58fdb48",
+          "state": "QUIESCENT",
+          "charge": 9361,
+          "reported_tokens": 9361
+        },
+        {
+          "request_id": "native-request-6f9ce82e24fb4d9dbbc1db431bf00b3e",
+          "state": "QUIESCENT",
+          "charge": 10285,
+          "reported_tokens": 10285
+        },
+        {
+          "request_id": "native-request-0b695d6b75e94ad6b3fe62669e069ef6",
+          "state": "QUIESCENT",
+          "charge": 11017,
+          "reported_tokens": 11017
+        },
+        {
+          "request_id": "native-request-c33811f020e743229a1fc0e594407f49",
+          "state": "QUIESCENT",
+          "charge": 8647,
+          "reported_tokens": 8647
+        },
+        {
+          "request_id": "native-request-da6bbe4ca2114b54b7f7ae4a0ec9fa23",
+          "state": "QUIESCENT",
+          "charge": 9646,
+          "reported_tokens": 9646
+        },
+        {
+          "request_id": "native-request-6f2cb0a4ca3c4bc59c7b062b9d07e487",
+          "state": "QUIESCENT",
+          "charge": 29223,
+          "reported_tokens": 29223
+        },
+        {
+          "request_id": "native-request-57816162296c4972a8eaca03288beb80",
+          "state": "QUIESCENT",
+          "charge": 32310,
+          "reported_tokens": 32310
+        },
+        {
+          "request_id": "native-request-b530d5d99f5848d79c10829010e281ca",
+          "state": "QUIESCENT",
+          "charge": 11189,
+          "reported_tokens": 11189
+        },
+        {
+          "request_id": "native-request-6abcb6c9889d4c54946927ee03b850c0",
+          "state": "QUIESCENT",
+          "charge": 11865,
+          "reported_tokens": 11865
+        },
+        {
+          "request_id": "native-request-70b4da798d024bf596c6eb4c0eea8eb2",
+          "state": "QUIESCENT",
+          "charge": 19425,
+          "reported_tokens": 19425
+        },
+        {
+          "request_id": "native-request-fc9b96ea0372468283d0c35b6b689604",
+          "state": "QUIESCENT",
+          "charge": 22253,
+          "reported_tokens": 22253
+        },
+        {
+          "request_id": "native-request-4b0653427a2243cda4503cedba37e17a",
+          "state": "QUIESCENT",
+          "charge": 24445,
+          "reported_tokens": 24445
+        },
+        {
+          "request_id": "native-request-ebd0f67ee5c54f1c96dfe7b982251930",
+          "state": "QUIESCENT",
+          "charge": 10190,
+          "reported_tokens": 10190
+        },
+        {
+          "request_id": "native-request-cf7bb062e6a74ea3af237fcf03e64663",
+          "state": "QUIESCENT",
+          "charge": 11162,
+          "reported_tokens": 11162
+        },
+        {
+          "request_id": "native-request-827d1ef17f8e4a6d9bc8c655e026fc8b",
+          "state": "QUIESCENT",
+          "charge": 29052,
+          "reported_tokens": 29052
+        },
+        {
+          "request_id": "native-request-09809db89b604053b2da94ad370d8f4d",
+          "state": "QUIESCENT",
+          "charge": 9488,
+          "reported_tokens": 9488
+        },
+        {
+          "request_id": "native-request-8936c7b35ddf4f82a4b16c3b5e9140fc",
+          "state": "QUIESCENT",
+          "charge": 10129,
+          "reported_tokens": 10129
+        },
+        {
+          "request_id": "native-request-01367b79a9f64f5190dc3ff17318dc21",
+          "state": "QUIESCENT",
+          "charge": 30343,
+          "reported_tokens": 30343
+        },
+        {
+          "request_id": "native-request-3579cc55128a45978895dcb596e7450b",
+          "state": "QUIESCENT",
+          "charge": 11126,
+          "reported_tokens": 11126
+        },
+        {
+          "request_id": "native-request-68a1d98eff62403396054427a06d3071",
+          "state": "QUIESCENT",
+          "charge": 11931,
+          "reported_tokens": 11931
+        },
+        {
+          "request_id": "native-request-8c6c222e30a44f31913cc4669309e06e",
+          "state": "QUIESCENT",
+          "charge": 30834,
+          "reported_tokens": 30834
+        },
+        {
+          "request_id": "native-request-d2c774aeee764851b4b9398ab20530c6",
+          "state": "QUIESCENT",
+          "charge": 11114,
+          "reported_tokens": 11114
+        },
+        {
+          "request_id": "native-request-35cd3ac94bff417c98113ff0b7a30124",
+          "state": "QUIESCENT",
+          "charge": 10611,
+          "reported_tokens": 10611
+        },
+        {
+          "request_id": "native-request-c929449326124140bb06b57ad1203c9d",
+          "state": "QUIESCENT",
+          "charge": 8743,
+          "reported_tokens": 8743
+        },
+        {
+          "request_id": "native-request-85183b66a2e041959c2fbcb9eb33d512",
+          "state": "QUIESCENT",
+          "charge": 9746,
+          "reported_tokens": 9746
+        },
+        {
+          "request_id": "native-request-e09de04e5c034acf97728954701bfae5",
+          "state": "QUIESCENT",
+          "charge": 12900,
+          "reported_tokens": 12900
+        },
+        {
+          "request_id": "native-request-821b7d5d779a4e66a3a2e1458b3901d8",
+          "state": "QUIESCENT",
+          "charge": 14838,
+          "reported_tokens": 14838
+        },
+        {
+          "request_id": "native-request-40a7654a8a554b4abded4ea0dd2b87ab",
+          "state": "QUIESCENT",
+          "charge": 19639,
+          "reported_tokens": 19639
+        },
+        {
+          "request_id": "native-request-84b651b023684925bf1b082eb394ba1f",
+          "state": "QUIESCENT",
+          "charge": 21118,
+          "reported_tokens": 21118
+        }
+      ],
+      "inspections": {
+        "SWE.1": {
+          "count": 1,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.1-001",
+              "recorded_at": "2026-10-29T12:55:24.530335Z",
+              "verdict": "PASS",
+              "findings": [],
+              "baseline_hash": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.2": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.3": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.4": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.5": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.6": {
+          "count": 0,
+          "latest": []
+        }
+      },
+      "structured_result_files": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 3,
+    "jobs": 0,
+    "requests": 69,
+    "tools": 193,
+    "corrections": 0,
+    "charged_tokens": 300000000,
+    "usage_unknown": true,
+    "unique_executions": 3,
+    "unbounded_historical_usage": false
+  },
+  "read_only_snapshot": true,
+  "request_or_restart_performed": false
+}

@@ -1,0 +1,85 @@
+{
+  "scope": "CONTROLLED_NATIVE_REPLY_FIXTURES_AND_LIBDBUS_EXAMPLES_NOT_PRODUCT_OR_COMPLETE_AUDIT",
+  "source_revision": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "source_sha256": "9f9bcb37558f2f70467700c60a169a9ddee50cb8b3b368db27bf39c823b33edf",
+  "primary_contract": "https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-names-bus",
+  "checks": [
+    {
+      "case": "numeric",
+      "normative_expected_acceptance": true,
+      "native_libdbus_accepts": true,
+      "result": {
+        "returncode": 0,
+        "destination": ":1.3",
+        "serial": 3,
+        "reply_serial": 2,
+        "value": ":1.2",
+        "reply_sha256": "16d4a4688eee04b0c659b0cfbfc4f6a56d82c1a5662956c24728fe3843ed88f9"
+      },
+      "pass": true
+    },
+    {
+      "case": "uppercase",
+      "normative_expected_acceptance": true,
+      "native_libdbus_accepts": true,
+      "result": {
+        "returncode": 0,
+        "destination": ":1.3",
+        "serial": 3,
+        "reply_serial": 2,
+        "value": ":1.ABC",
+        "reply_sha256": "602224108e07a2fcf2fc315f2a04961b923687003029df302d5cbd590c8b01eb"
+      },
+      "pass": true
+    },
+    {
+      "case": "mixed",
+      "normative_expected_acceptance": true,
+      "native_libdbus_accepts": true,
+      "result": {
+        "returncode": 0,
+        "destination": ":1.3",
+        "serial": 3,
+        "reply_serial": 2,
+        "value": ":Upper_case.part-two",
+        "reply_sha256": "ec5b305cb15c453ef1b49779323ae3f66339c0740e77888fb4c9f5aa06ba3455"
+      },
+      "pass": true
+    },
+    {
+      "case": "empty-element",
+      "normative_expected_acceptance": false,
+      "native_libdbus_accepts": false,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_VALUE_UNKNOWN"
+      },
+      "pass": true
+    },
+    {
+      "case": "no-period",
+      "normative_expected_acceptance": false,
+      "native_libdbus_accepts": true,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_VALUE_UNKNOWN"
+      },
+      "pass": true
+    },
+    {
+      "case": "colon-only",
+      "normative_expected_acceptance": false,
+      "native_libdbus_accepts": true,
+      "result": {
+        "returncode": 0,
+        "error": "BUS_QUERY_VALUE_UNKNOWN"
+      },
+      "pass": true
+    }
+  ],
+  "status": "PASS",
+  "oracle_limit": "libdbus 1.12 overaccepts degenerate unique names; explicit normative element/period rules remain enforced",
+  "new_model_calls": 0,
+  "product_success": "NOT_MEASURED",
+  "learning_benefit": "NOT_MEASURED"
+}

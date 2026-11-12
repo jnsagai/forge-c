@@ -1,0 +1,26 @@
+{
+  "functional_requirements_changed": false,
+  "historical_runs_rewritten": false,
+  "new_full_functional_review_claimed": false,
+  "new_payload_sha256": "76226b5a1f79c02ae21214e61e3d00df3a0c918aefd7522ca3897dc9e55550c7",
+  "new_scope_sha256": "b913a8c37a91d35371c585e23934044719b545129897700cbac4569e534a6b11",
+  "original_payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+  "original_review": {
+    "payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+    "record_ref": "evidence/014-durable-local-autonomy/m1-owner-review-simulation-20261029.json",
+    "reviewed_at": "2026-10-29T07:30:49.470801Z",
+    "reviewed_by": "Jefferson Nascimento",
+    "status": "REVIEWED"
+  },
+  "original_scope_sha256": "af97e1a7cb52da64b20727ddda76835ee4d59ec11f9af6a3d55905e97e87d223",
+  "owner_answer": "Forget about safety now!!! implement as QM",
+  "payload_changes": [
+    "scope_sha256"
+  ],
+  "policy_ref": "config/factory/qm-development-policy.yaml",
+  "recorded_date": "2026-10-29",
+  "review_kind": "Existing reviewed functional payload plus explicit new owner QM classification",
+  "schema": "forge-c/owner-qm-reclassification/1",
+  "simulation_limits_changed": false,
+  "sources_changed": false
+}

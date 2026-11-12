@@ -1,0 +1,10 @@
+[
+  {
+    "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+    "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+  },
+  {
+    "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+    "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+  }
+]

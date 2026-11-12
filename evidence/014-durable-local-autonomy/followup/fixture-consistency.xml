@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="38" time="37.545" timestamp="2026-10-25T11:06:22.162010+00:00" hostname="master"><testcase classname="factory.python.tests.test_easa_m2" name="test_at016_expected_values_from_generated_code_are_contaminated" time="0.123" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at041_expected_value_copied_from_implementation_is_tainted" time="0.002" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at076_independent_agents_sharing_poisoned_oracle_not_independent" time="0.007" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at018_same_identity_and_common_cause_model" time="0.002" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at017_forged_pass_stale_digest_and_nonexistent_result_rejected" time="0.043" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at023_prompt_injected_and_contradicted_logs" time="0.020" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at019_contradictory_result_makes_claim_contested_and_blocks" time="0.020" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at057_all_pass_without_hashes_is_unsupported_and_tree_rolls_up" time="0.002" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at058_self_signed_safety_conclusion_refused" time="0.001" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at020_ai_inspector_pass_text_alone_blocks" time="0.001" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at022_controlled_review_needs_human_and_kpis_cannot_trade" time="0.002" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at082_author_role_denied_and_audited" time="0.031" /><testcase classname="factory.python.tests.test_easa_m2" name="test_at046_holdout_unreadable_by_owner_os_identity_and_tamper_checked" time="1.125" /><testcase classname="factory.python.tests.test_easa_m2" name="test_t022_observe_records_without_changing_002_decision" time="0.364" /><testcase classname="factory.python.tests.test_easa_m2" name="test_t021_requirement_change_invalidates_prior_inspection_and_claim" time="0.075" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t001_catalog_frozen_and_example_valid" time="0.006" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t004_policy_non_negotiables" time="0.006" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t002_t003_conversion_from_real_records" time="0.092" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k02_initial_inspection_immutable_and_ac_k03_attempts" time="0.022" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t005_t017_replay_duplicates_order_and_crash_parity" time="0.079" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t010_snapshot_schema_and_checksum_ready" time="0.032" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k01_all_pass_ready_low_sample_no_approval" time="0.016" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k04_blocked_only_throughput_zero_tokens_na" time="0.013" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k06_misra_unchecked_rules_reported" time="0.223" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k07_targets_not_silently_merged" time="0.041" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k05_missing_evidence_lowers_k09_and_cannot_override_gate" time="0.021" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k09_no_planned_work_availability_na" time="0.039" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k08_k15_sfoee_not_computable_and_never_masks_gate" time="0.022" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k12_unknown_usage_not_zero_and_ac_k14_recurrence" time="0.062" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t008_supervisor_model_free" time="0.049" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k11_ai_text_pass_not_trusted_and_k20_hard_violation" time="0.043" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_ac_k17_formula_version_labelled" time="0.049" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t014_cardinality_and_latency" time="0.262" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t019_calibration_measurement_only" time="0.009" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t012_observer_mcp_read_only_and_least_privilege" time="0.304" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t015_t016_ready_and_blocked_archives_carry_consistent_snapshots" time="5.642" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t011_t013_dashboard_kpis_drilldown_and_display_isolation" time="0.720" /><testcase classname="factory.python.tests.test_kpi_003" name="test_kpi_t020_pilot_reconciles_with_raw_evidence" time="27.300"><failure message="assert 4 == 1">@pytest.mark.skipif(not (Path(__import__("os").environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders").is_dir(),
+                        reason="no live work orders")
+    def test_kpi_t020_pilot_reconciles_with_raw_evidence():
+        import os
+    
+        from forge_factory.kpi.sources import collect_all
+        from forge_factory.release.finalize import archive_root
+        from forge_factory.supervisor.store import IncidentStore
+        evs = collect_all()
+        snap = E.snapshot(evs, "2026-10-01T00:00:00Z", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        assert E.schema_errors_kpi(snap) == []
+        # packages on disk vs package.sealed events (attempt level)
+        root = Path(os.environ["FORGE_STATE_DIR"]) / "workorders"
+        def local(ws):
+            prof = ws / ".forge-run/model-profile.json"
+            return not prof.is_file() or json.loads(prof.read_text()).get("local_only", True)
+    
+        sealed_ws = {ws.parent.name for ws in root.glob("*/workspace")
+                     if (ws / ".forge-run/package.json").is_file() and local(ws)}
+        assert sealed_ws == {e["attempt_id"] for e in evs if e["type"] == "package.sealed"}
+        import hashlib
+        for ws in root.glob("*/workspace"):  # every recorded package exists on disk with the recorded SHA-256
+            pj = ws / ".forge-run/package.json"
+            if pj.is_file():
+                p = json.loads(pj.read_text())
+                assert hashlib.sha256(Path(p["archive"]).read_bytes()).hexdigest() == p["archive_sha256"]
+        assert archive_root().is_dir()
+        # incidents ledger vs K16 denominator
+        inc = [i for i in IncidentStore().all(1000) if i["recoverable"] and i["state"] in ("RESOLVED", "REQUIRES_OFFLINE_ATTENTION")]
+        assert get(snap, "K16")["denominator"] == len(inc)
+        # initial inspections vs inspection files
+        first = {}
+        for ws in filter(local, root.glob("*/workspace")):
+            for f in sorted(ws.glob("inspection/SWE.*/INS-*.json")):
+                first.setdefault(f.parent.name, f)
+        for p in ("SWE.1", "SWE.2"):
+&gt;           assert get(snap, "K02", phase=p)["denominator"] == (1 if p in first else 0)
+E           assert 4 == 1
+
+factory/python/tests/test_kpi_003.py:367: AssertionError</failure></testcase></testsuite></testsuites>

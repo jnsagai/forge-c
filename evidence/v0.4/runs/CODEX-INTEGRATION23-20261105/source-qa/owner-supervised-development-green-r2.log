@@ -1,0 +1,689 @@
+.EEEEEEEEEEEEEE                                                          [100%]
+==================================== ERRORS ====================================
+___ ERROR at setup of test_explicit_owner_context_is_unaccepted_not_auth_ok ____
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_explicit_owner_context_is0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70306245b950>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883649.8842554, 'authentication': {'method': 'PRIVATE_INTEN...d04359916d95e9bf90081a8a7'}, 'control_sha256': '439017fbaa2d85d08a718a0bacbe0c1c7769899d04359916d95e9bf90081a8a7', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_ ERROR at setup of test_empty_old_foreign_and_fifth_scope_refused[scope_request0] _
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_empty_old_foreign_and_fif0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703062259370>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883650.1817827, 'authentication': {'method': 'PRIVATE_INTEN...d8e22b21a59d85107f2fd006d'}, 'control_sha256': 'ec51b658ddaf3ba2a86c819755763b0b669099ed8e22b21a59d85107f2fd006d', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_ ERROR at setup of test_empty_old_foreign_and_fifth_scope_refused[scope_request1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_empty_old_foreign_and_fif1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061ad6cf0>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883650.3914337, 'authentication': {'method': 'PRIVATE_INTEN...c921e9896b964efdaca6b863f'}, 'control_sha256': 'cc3c93a35c6d9c1d7d86ad16dccfd89be5605ffc921e9896b964efdaca6b863f', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_ ERROR at setup of test_empty_old_foreign_and_fifth_scope_refused[scope_request2] _
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_empty_old_foreign_and_fif2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061ad7570>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883650.5994742, 'authentication': {'method': 'PRIVATE_INTEN...529bb61f3b04347ae0012e5d6'}, 'control_sha256': 'd154f293dc053b2efc0954abe84a99e12eb84e9529bb61f3b04347ae0012e5d6', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_ ERROR at setup of test_empty_old_foreign_and_fifth_scope_refused[scope_request3] _
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_empty_old_foreign_and_fif3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061987450>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883650.8031886, 'authentication': {'method': 'PRIVATE_INTEN...14f68e5c043af607d53dd524a'}, 'control_sha256': '2167c0a72552b948bffbdff56b1c65851f0af1014f68e5c043af607d53dd524a', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+____________ ERROR at setup of test_forbidden_action_never_admitted ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forbidden_action_never_ad0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70306234e950>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883651.0032313, 'authentication': {'method': 'PRIVATE_INTEN...30665ac644487fd2decf69ed5'}, 'control_sha256': '19c058cd76211a968030bdaefe05f4d8b081e7030665ac644487fd2decf69ed5', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+______ ERROR at setup of test_forged_stale_rebound_context_refuses[hash] _______
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forged_stale_rebound_cont0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061acf2f0>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883651.2042596, 'authentication': {'method': 'PRIVATE_INTEN...0bfceca499f72b4a52ed06777'}, 'control_sha256': '53783ac6b16d05fad6721f9fcdb235fc7d13ad50bfceca499f72b4a52ed06777', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_____ ERROR at setup of test_forged_stale_rebound_context_refuses[source] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forged_stale_rebound_cont1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061ace300>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883651.4071832, 'authentication': {'method': 'PRIVATE_INTEN...882e3d786cbda7645e1abe63c'}, 'control_sha256': '26667287e8839284de922ace65db3810c5239c6882e3d786cbda7645e1abe63c', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+______ ERROR at setup of test_forged_stale_rebound_context_refuses[epoch] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forged_stale_rebound_cont2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061a32eb0>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883651.6151397, 'authentication': {'method': 'PRIVATE_INTEN...3138898126d00fc8c1d946ddf'}, 'control_sha256': '0508f0b1df19b9d16a610e2c8586288381709143138898126d00fc8c1d946ddf', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+____ ERROR at setup of test_forged_stale_rebound_context_refuses[guardian] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forged_stale_rebound_cont3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061a317f0>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883651.8175678, 'authentication': {'method': 'PRIVATE_INTEN...2528e71f62ff4b2840919d600'}, 'control_sha256': '234f935672484016a32f1cfe4dc8414573d5ef72528e71f62ff4b2840919d600', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+__ ERROR at setup of test_forged_stale_rebound_context_refuses[private_mode] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_forged_stale_rebound_cont4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061b75710>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883652.0210214, 'authentication': {'method': 'PRIVATE_INTEN...f634482cc3e649f359eb22036'}, 'control_sha256': '4d047f9aeaf00774d5ca7ea39d9f4f44530f2e9f634482cc3e649f359eb22036', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+_______ ERROR at setup of test_retry_and_restart_never_reset_accounting ________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_retry_and_restart_never_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061ae6690>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883652.223392, 'authentication': {'method': 'PRIVATE_INTENT...66663e81690a3cb8382097c4f'}, 'control_sha256': '7cf1daf204b7d6e5098c35d0ef6ddbf9a7a1d1866663e81690a3cb8382097c4f', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+________ ERROR at setup of test_control_binding_requires_exact_document ________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_control_binding_requires_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061ae7dd0>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883652.4292495, 'authentication': {'method': 'PRIVATE_INTEN...58fbd3888d807cb99d63a5575'}, 'control_sha256': 'db17f78ecfc5893fda18dccaedb43c97f65425258fbd3888d807cb99d63a5575', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+___________ ERROR at setup of test_agent_context_cannot_issue_record ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-106/test_agent_context_cannot_issu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x703061a4b540>
+
+    @pytest.fixture
+    def supervised(tmp_path, monkeypatch):
+        from forge_factory.afo import line_recovery_control as C
+        from forge_factory.lrtx.profile import load
+        private = tmp_path / 'private-owner'; private.mkdir(mode=0o700)
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(private / 'intent.json'))
+        monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+        monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+        operations.Intent().set('RUNNING', actor='PRIVATE-TEST-OWNER', reason='Private control', initialize=True)
+        store = Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+        limits = dict(max_attempts=4,max_jobs=4,max_requests=32,max_tokens=8388608,max_tools=256,max_corrections=4,deadline=time.time()+300)
+        MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
+        MissionLedger(store).execution(D.MISSION, 'original-product-attempt', 'PRODUCT', reserved_tokens=1048576)
+        from forge_factory.common import REPO_ROOT, load_yaml
+        pol=load_yaml(REPO_ROOT/'config/factory/afo-policy.yaml')
+        pol['mode']='PILOT';pol['authorization_ref']=D.INITIAL_AUTHORITY
+        runtime=tmp_path/'runtime.yaml'
+        import yaml
+        runtime.write_text(yaml.safe_dump(pol))
+        monkeypatch.setenv('FORGE_AFO_POLICY', str(runtime))
+        line=tmp_path/'line.yaml';line.write_bytes((REPO_ROOT/'config/factory/line-policy.yaml').read_bytes())
+        prof=load('local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104')
+        control=dict(schema=C.SCHEMA,source_revision='a'*40,policy_sha256=__import__('hashlib').sha256(canonical_json(pol)).hexdigest(),authorization_ref=D.INITIAL_AUTHORITY,profile=prof['id'],profile_sha256=prof['_sha256'],operations_intent=str(private/'intent.json'),mission=dict(mission_id=D.MISSION,lineage=D.LINEAGE,limits=limits),role_capabilities={},product_role_trial=None,product_role_trials={})
+        path=tmp_path/'control.json';immutable_json(path,control);ref=dict(path=str(path),sha256=sha256_file(path))
+        monkeypatch.setattr(C,'revision',lambda:dict(commit='a'*40,dirty=False))
+>       record=D.create(store,control_ref=ref,runtime_policy=runtime,line_policy=line,directive=D.DIRECTIVE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:226: in create
+    _serve_guardian(record)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'acceptance': 'UNACCEPTED', 'control_context': {'at': 1793883652.6345813, 'authentication': {'method': 'PRIVATE_INTEN...40854223f3dfe88d4d1164daf'}, 'control_sha256': 'ce2f1ab2ebdc3dce8e38b61b50ef81ce0ca1e6140854223f3dfe88d4d1164daf', ...}
+
+    def _serve_guardian(record):
+        server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+>       server.bind(record['guardian_socket']);os.chmod(record['guardian_socket'],0o600)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       OSError: AF_UNIX path too long
+
+factory/python/forge_factory/afo/owner_supervised_development.py:84: OSError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_owner_supervised_development.py::test_explicit_owner_context_is_unaccepted_not_auth_ok
+ERROR factory/python/tests/test_owner_supervised_development.py::test_empty_old_foreign_and_fifth_scope_refused[scope_request0]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_empty_old_foreign_and_fifth_scope_refused[scope_request1]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_empty_old_foreign_and_fifth_scope_refused[scope_request2]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_empty_old_foreign_and_fifth_scope_refused[scope_request3]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forbidden_action_never_admitted
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forged_stale_rebound_context_refuses[hash]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forged_stale_rebound_context_refuses[source]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forged_stale_rebound_context_refuses[epoch]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forged_stale_rebound_context_refuses[guardian]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_forged_stale_rebound_context_refuses[private_mode]
+ERROR factory/python/tests/test_owner_supervised_development.py::test_retry_and_restart_never_reset_accounting
+ERROR factory/python/tests/test_owner_supervised_development.py::test_control_binding_requires_exact_document
+ERROR factory/python/tests/test_owner_supervised_development.py::test_agent_context_cannot_issue_record

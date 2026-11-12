@@ -1,0 +1,256 @@
+{
+  "schema": "forge-c/capa171-component-source-index/1",
+  "status": "TESTED_SOURCE_PENDING_INDEPENDENT_NORMAL_FIX_QUALIFICATION_NOT_DEPLOYED",
+  "CAPA": "CAPA-171",
+  "candidate": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+  "baseline": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "baseline_qualification": "pd-2ce04b53dfb0f82027c2",
+  "source_increment": [
+    "12dbbed2d67484dc0271f0352ae4f01e0a9c372e"
+  ],
+  "audit_pre170": "8e7f6a74d274507e28c699b960a60e81bdddff76",
+  "audit_branch": "audit/capa171-pre170-8e7f6a74",
+  "branch": "change/wwdg-unit-timing-20261104",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-wwdg-unit-timing",
+  "tracked_clean": true,
+  "source_files": [
+    {
+      "path": "factory/python/forge_factory/inspection/swtrace.py",
+      "sha256": "9f53b354e22d3d64169a2cc6a457c6f9f1ee5c8a377e625d6be0ecd5c7ea9952"
+    },
+    {
+      "path": "factory/python/forge_factory/mcp/servers/evidence.py",
+      "sha256": "d2a6728a6b522cd70925613435cf02a98caf1f8755902b52d25d16b8ac1fe61f"
+    },
+    {
+      "path": "factory/python/forge_factory/mcp/servers/tests.py",
+      "sha256": "5bd22193f1df233a750fd793b0ee4c9061977e0f585756eec16c420cf7d8cbfa"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/prompts.py",
+      "sha256": "f16c5355baff57a755ca97f4c7a609d0c0cb6df45e617e27316cc9415c0b5a2b"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/unit_target_carry.py",
+      "sha256": "c01081d458f9a8a486602c65d20c06af22f640302704e3129fde1eecd6be7ea6"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/unit_target_wwdg_timing.py",
+      "sha256": "cae63de8811b2a622e606626fd4cbb5140b9c449a5b9ca0e8911575aaf2137d5"
+    },
+    {
+      "path": "factory/python/tests/test_unit_target_wwdg_timing.py",
+      "sha256": "e40564d8538e6563d3a85a91c74b8e7931095c58d579d9aaed8479cb7eeb11c8"
+    }
+  ],
+  "historical_producers_and_observers_byte_unchanged": [
+    {
+      "path": "factory/python/forge_factory/workflow/unit_target_timing.py",
+      "sha256": "22395389e6fce3f03985d0a7556f0a489cea33f068928d56e96951163f2f36a0"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/unit_target_observation.py",
+      "sha256": "c250c9c5cd70a518448bda9a69eb8cc7adeb56c8d1f1dd6d16f8ab4ebbd2df36"
+    },
+    {
+      "path": "factory/python/forge_factory/simulation_performance.py",
+      "sha256": "3f8a843a8a73e778d780e387faa2e0a1833cf2d917916c3003c60f0abd39e216"
+    },
+    {
+      "path": "factory/python/forge_factory/mcp/servers/sim.py",
+      "sha256": "2a0a24e7c29eb1afa74466a40671f6488277f4982dd07c59e239523f6abbc221"
+    }
+  ],
+  "validation": {
+    "focused_tests": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "129",
+      "time": "98.354",
+      "timestamp": "2026-11-04T23:56:54.316641+00:00",
+      "hostname": "master"
+    },
+    "design_static_tests": "14PASS",
+    "ruff": "PASS",
+    "normal_resume": "Real CPU/public unit4\u21925\u21926 plus synthetic CONTROL independent inspections; original creator preserved; missing/tampered receipt and changed source refused. Not live role qualification.",
+    "baseline_public_contract": "Qualified169405 normal public SDK honest host clock test PASS and Matrix4 UT025/USPEC0405 VERIFIED without target metrics.",
+    "candidate_public_contract": "Exact coherent source public SDK host-only test FAIL with missing declaration; both normal Matrix4 UT025 rows UNVERIFIED.",
+    "actual_retained_input_positive": {
+      "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-actual-target-1793836750144740223",
+      "frozen_plan_sha256": "1e021a845aecfd3fc9270d8296521be2b47a5449830dabd8b19d8bc0042c7aac",
+      "frozen_uspec_sha256": "871e9978c007846806b5738ddef76e7c6f494b679c38e1da9cb5a9a160fbbd5a",
+      "approved_effective_LL_sha256": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4",
+      "HAL_sha256": "53afabb4c0bc042047a8437702746c78e436bf5d456328334abd0fa6d625589b",
+      "measurements": [
+        {
+          "id": "UT-011",
+          "uspec": "USPEC-HAL-01-11",
+          "function": "HAL_WWDG_Init",
+          "expected_status": "HAL_OK",
+          "observed_status_matches": true,
+          "status": "PASS",
+          "samples": [
+            {
+              "instructions": 40,
+              "virtual_nanoseconds": 400
+            }
+          ]
+        },
+        {
+          "id": "UT-016",
+          "uspec": "USPEC-HAL-02-05",
+          "function": "HAL_WWDG_Refresh",
+          "expected_status": "HAL_OK",
+          "observed_status_matches": true,
+          "status": "PASS",
+          "samples": [
+            {
+              "instructions": 12,
+              "virtual_nanoseconds": 120
+            }
+          ]
+        },
+        {
+          "id": "UT-020",
+          "uspec": "USPEC-HAL-03-04",
+          "function": "HAL_WWDG_GetEarlyWakeupFlag",
+          "expected_status": "HAL_OK",
+          "observed_status_matches": true,
+          "status": "PASS",
+          "samples": [
+            {
+              "instructions": 7,
+              "virtual_nanoseconds": 70
+            }
+          ]
+        },
+        {
+          "id": "UT-025",
+          "uspec": "USPEC-HAL-04-05",
+          "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+          "expected_status": "HAL_OK",
+          "observed_status_matches": true,
+          "status": "PASS",
+          "samples": [
+            {
+              "instructions": 4,
+              "virtual_nanoseconds": 40
+            }
+          ]
+        }
+      ],
+      "limits": "Four explicit calls only; other host obligations not run; not full phase PASS, silicon timing, hardware WCET or model/role qualification."
+    }
+  },
+  "API": {
+    "module": "forge_factory.workflow.unit_target_wwdg_timing",
+    "declaration": "software/tests/unit/target_wwdg_timing.json",
+    "schema": "forge-c/swe4-wwdg-target-timing/1",
+    "proof_schema": "forge-c/swe4-wwdg-target-timing-proof/1",
+    "metric": "unit_target_wwdg_timing_report",
+    "entry_points": [
+      "selected",
+      "required_rows",
+      "expected_tests",
+      "declaration",
+      "run",
+      "verify",
+      "trace"
+    ],
+    "arguments": "config{prescaler,window,counter,ewi_enable};refresh_counter;query_initial;scenario=wwdg-declared-per-call-v1;cases exactly four frozen ut/uspec/function/expected_status=HAL_OK. All numeric arguments must match typed frozen api_calls literals.",
+    "existing_observer": "Unmodified simulation_performance prepare/plan/report/verify_result + sim.build_image/run_image; existing Renode direct entry/caller-return hooks.",
+    "missing_declaration": "Recognized frozen WWDG timing USPECs force target validation regardless of opt-in/author plan mutation. Host-only status cannot credit them.",
+    "integration": "Public unit merges real metrics/artifacts/raw outputs + integrity/progress; normal swtrace/planned-unit + normal source-attested carry dispatch new adapter. Legacy CRC/O behavior unchanged."
+  },
+  "bundle": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-source.bundle",
+  "bundle_sha256": "f43e5ee5526e8ad94d98dd0d3320204223e8aa759f320182cbafdf29e8adb854",
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent170-focused.xml",
+      "sha256": "95dc98ae62cccce641a6f1d7cb7538caf8c77f07c53cdb8a56228871394f9c28",
+      "bytes": 20431
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent170-focused.log",
+      "sha256": "6bf6cdab6a888925333ea50c0037f96bf4b127e39d814d2966bd301a9d66fa81",
+      "bytes": 160
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent-design.log",
+      "sha256": "b3be1f28882eed8d08280d3ded56907a93998f1f7e805cb59ee519ba8828e76b",
+      "bytes": 1514
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-input-index.json",
+      "sha256": "7be619adaa6236480db7a83135e9ccf511272a69080fb1ccb72d0ceec53ea5a5",
+      "bytes": 4883
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent-host-negative.log",
+      "sha256": "88c0bdfa5f19d61a5c8c0c3e4ad65e86e097f3744a13975fc05dff840689a62c",
+      "bytes": 530
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-coherent-target-positive.log",
+      "sha256": "d59343fffa43e41f79f270fdd89c4aac699fa6393089dbf50fcf0c6245cedd4b",
+      "bytes": 1676
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793836748133242656/measurement.json",
+      "sha256": "57e5ade61d75387c8754afefe07423d365da7a49a70ac609f5f9df6d75e6297c",
+      "bytes": 5505
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793836748133242656/public-unit-result.json",
+      "sha256": "8a5d0d03eecdfde6897cafeca47795cc676dd0d5df0a1b56b6f83306e93eaebf",
+      "bytes": 921
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793836748133242656/normal-trace.json",
+      "sha256": "e7919ca2d6025491210d239b6a057e550f9457e8b4dfeb9a086759cf39beed19",
+      "bytes": 4273
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-actual-target-1793836750144740223/measurement.json",
+      "sha256": "45e6d4e64c0a587a61bfef89dd36d8dc5e592f56b516b4f6163039f1a8f69065",
+      "bytes": 7325
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-actual-target-1793836750144740223/public-unit-result.json",
+      "sha256": "fdb1deac6c743921dd4c6c9878b8d27c1abcb79a1ea0b10c7e50ab00a9692aaf",
+      "bytes": 2102
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-actual-target-1793836750144740223/normal-trace.json",
+      "sha256": "3f0d490e07e40a62d94261d05b555fb22263255e046bfece5852c70e704b6eaa",
+      "bytes": 3705
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793835411739084098/measurement.json",
+      "sha256": "6a93f78d1046937a12891a5fd749fae6a8dd0850a304e2336fb8ee9b4c7a1732",
+      "bytes": 5111
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793835411739084098/public-unit-result.json",
+      "sha256": "eaa946bb05dea69cfb3ebc2b50a9fc403f27de98c57a669bbea1d5c4b77713e3",
+      "bytes": 672
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793835411739084098/normal-trace.json",
+      "sha256": "f1389f40d7ded50e2150423e680f3bac3499cd4f7a8ff3175f005daf1bddcf54",
+      "bytes": 4289
+    }
+  ],
+  "remaining": [
+    "Parent owns candidate-independent RPR171/registry/full normal FIX qualification against qualified170 and all170 resolved rows; no gate or protected oracle edits by child.",
+    "Source-only future runs; no main merge, service/model/GPU/queue/grant/policy or production-workspace change.",
+    "Not deployed. Actual productive phase4 must rerun on exact qualified future source; private CONTROL measurements do not grant live qualification."
+  ]
+}

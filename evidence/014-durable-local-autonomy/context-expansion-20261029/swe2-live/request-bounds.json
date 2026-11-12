@@ -1,0 +1,92 @@
+{
+  "accepted_requests": 22,
+  "max": 187774,
+  "min": 54553,
+  "largest": [
+    {
+      "request_id": "native-request-516e71c87f704e8aa63a01777635af77",
+      "role": null,
+      "input_tokens": 138622,
+      "output_cap": 49152,
+      "total": 187774
+    },
+    {
+      "request_id": "native-request-fd7e013d6c1e41b4b2cf617c004caae2",
+      "role": null,
+      "input_tokens": 137864,
+      "output_cap": 49152,
+      "total": 187016
+    },
+    {
+      "request_id": "native-request-b86cfd3c180d4bfa90154679d0316ae5",
+      "role": null,
+      "input_tokens": 133680,
+      "output_cap": 49152,
+      "total": 182832
+    },
+    {
+      "request_id": "native-request-e2a12872b6ce4175aeb8243e1a4ab84a",
+      "role": null,
+      "input_tokens": 126948,
+      "output_cap": 49152,
+      "total": 176100
+    },
+    {
+      "request_id": "native-request-d0810f474e2747f7a8cf8a0a59d5e7f2",
+      "role": null,
+      "input_tokens": 117845,
+      "output_cap": 49152,
+      "total": 166997
+    },
+    {
+      "request_id": "native-request-4422817ab04745908db0cb0324998c52",
+      "role": null,
+      "input_tokens": 116693,
+      "output_cap": 49152,
+      "total": 165845
+    },
+    {
+      "request_id": "native-request-f1559231942640db9a86fb17437b9522",
+      "role": null,
+      "input_tokens": 107628,
+      "output_cap": 49152,
+      "total": 156780
+    },
+    {
+      "request_id": "native-request-940df7acb05542c8afc4741d39606bc6",
+      "role": null,
+      "input_tokens": 106456,
+      "output_cap": 49152,
+      "total": 155608
+    },
+    {
+      "request_id": "native-request-51a47698e21946a1890d0b71d74bbe21",
+      "role": null,
+      "input_tokens": 106035,
+      "output_cap": 49152,
+      "total": 155187
+    },
+    {
+      "request_id": "native-request-41d765e36a8947eba5499dcd6f99b680",
+      "role": null,
+      "input_tokens": 104750,
+      "output_cap": 49152,
+      "total": 153902
+    },
+    {
+      "request_id": "native-request-f1e1e96655e146169ab4d8c19ddc83cf",
+      "role": null,
+      "input_tokens": 78778,
+      "output_cap": 49152,
+      "total": 127930
+    },
+    {
+      "request_id": "native-request-138efe5652d2489692856a9f19cc903f",
+      "role": null,
+      "input_tokens": 72793,
+      "output_cap": 49152,
+      "total": 121945
+    }
+  ],
+  "gateway_refusals": []
+}

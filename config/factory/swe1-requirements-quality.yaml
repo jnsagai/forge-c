@@ -1,0 +1,112 @@
+# Feature 018: derived from the pinned guideline (tests re-derive it); never edit the criteria by hand.
+schema: forge-c/swe1-quality-checklist/1
+guideline:
+  path: docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md
+  version: '1.0'
+  sha256: b78fc1e536f394b7c4fee31d185d14ffb1caaed8be36d47a987a9ff02ca64367
+owner_decision: '2026-11-09: two-phase SWE.1 inspection (per requirement IQ-01..IQ-12, then the set: SWE1-01..08 gate + SQ-01..SQ-10);
+  phase-1 findings carried to the set phase'
+severities:
+- BLOCKING
+- CORRECTABLE
+- EDITORIAL
+- N/A
+rework_severities:
+- BLOCKING
+- CORRECTABLE
+phase1:
+  rounds: 3
+phase2:
+  sq_rework_cycles: 2
+individual:
+- id: IQ-01
+  property: Necessary
+  criterion: The obligation answers a real allocated need, applicable interface constraint, or justified derived need; its
+    purpose is identifiable.
+- id: IQ-02
+  property: Correct / source-faithful
+  criterion: Behavior, conditions, terminology, and constraints agree with approved input evidence; any derivation has an
+    explicit rationale.
+- id: IQ-03
+  property: Unambiguous
+  criterion: A competent author, implementer, and verifier can reach one intended interpretation; actors, states, signals,
+    conditions, and units are defined.
+- id: IQ-04
+  property: Complete within its scope
+  criterion: The statement contains enough trigger/precondition, required response, and observable outcome to be understood
+    without guessing; it may reference a controlled definition.
+- id: IQ-05
+  property: Atomic / singular
+  criterion: It contains one independently judgeable obligation. Split requirements when one behavior can pass while another
+    fails.
+- id: IQ-06
+  property: Objectively verifiable
+  criterion: A verifier can determine pass/fail by test, analysis, inspection, or demonstration using stated conditions and
+    observable criteria. Values/tolerances are explicit when needed and source-justified.
+- id: IQ-07
+  property: Technically feasible
+  criterion: No identified platform, resource, timing, safety, or interface constraint makes the requirement impossible; uncertainty
+    is recorded for analysis.
+- id: IQ-08
+  property: Design-independent unless justified
+  criterion: Describes required behavior, not an arbitrary algorithm, register sequence, data structure, task split, or coding
+    technique. A required design constraint is permitted when explicitly allocated and sourced.
+- id: IQ-09
+  property: Consistent
+  criterion: Does not contradict relevant upstream constraints, peer requirements, interface contracts, or defined modes.
+- id: IQ-10
+  property: Appropriate SWE.1 abstraction
+  criterion: States software-level externally relevant obligations, constraints, and interfaces; leaves unnecessary decomposition
+    to SWE.2/SWE.3.
+- id: IQ-11
+  property: Clear and conforming
+  criterion: Uses controlled vocabulary, consistent naming/units, a mandatory verb (typically "shall"), and the approved project
+    writing pattern.
+- id: IQ-12
+  property: Identifiable and attributable
+  criterion: Has a stable unique ID and source/derivation references; required project metadata is available without bloating
+    the statement.
+set:
+- id: SQ-01
+  property: Source coverage and justified derivation
+  criterion: Applicable upstream system requirements, system-architecture allocations, HSI obligations, and approved constraints
+    are addressed; uncovered sources and derived requirements are identified and dispositioned. Coverage is semantic, not
+    merely link-count based.
+- id: SQ-02
+  property: Behavioral completeness
+  criterion: For *applicable* functions and modes, capture initialization/startup, configured operation, boundary cases, invalid
+    requests, fault detection/response, recovery/reset, shutdown/deinitialization, and relevant state transitions. Explicitly
+    justify N/A scenarios; do not insert boilerplate for irrelevant modes.
+- id: SQ-03
+  property: Non-functional and interface completeness
+  criterion: Include justified timing, resource, concurrency, data integrity, safety, diagnostics, robustness, and external-interface
+    obligations when allocated. Do not invent budgets simply to fill a category.
+- id: SQ-04
+  property: Coherent structure and priorities
+  criterion: Organize by function/interface/mode/variant; give stable identifiers and applicable priorities or release scopes
+    so requirements can be understood and maintained.
+- id: SQ-05
+  property: Internal consistency and controlled redundancy
+  criterion: No incompatible obligations or contradictory terms; duplicates and overlapping statements are removed or explicitly
+    justified.
+- id: SQ-06
+  property: Bidirectional traceability with consistency
+  criterion: Establish relevant links to system requirements and system architecture (or approved stakeholder/context inputs
+    for software-only development), with evidence that linked meanings agree. No gratuitous duplicate trace paths.
+- id: SQ-07
+  property: Interdependency and feasibility analysis
+  criterion: Identify dependencies, assumptions, parameter relationships, and constraints; assess feasibility and record unresolved
+    conflicts and decisions.
+- id: SQ-08
+  property: Operating-environment impact analyzed
+  criterion: Evaluate effects on hardware, other software, interfaces, startup/reset behavior, timing/resource use, and interactions
+    with surrounding systems, as applicable.
+- id: SQ-09
+  property: Agreement, configuration, and communication
+  criterion: The approved baseline, revisions, open issues, affected parties, and communication/approval status are identifiable.
+    An LLM-generated file is not an approved baseline by itself.
+- id: SQ-10
+  property: Verification readiness
+  criterion: Required outcomes can be linked to prospective verification measures; verification intent and unresolved verification
+    ambiguities are recorded. Actual verification results belong to downstream verification processes, not SWE.1.
+

@@ -1,0 +1,28 @@
+{
+  "git_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "start_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "start_dirty": "",
+  "started_at": 1793107841.7467086,
+  "command": [
+    "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_control_observation.py",
+    "factory/python/tests/test_da014_control_context.py",
+    "factory/python/tests/test_da014_fault_observer.py",
+    "--basetemp=/mnt/data/forge-c/inspector-014-b309039/control-ingestion-2246a58/tmp/tests",
+    "--junitxml=/mnt/data/forge-c/inspector-014-b309039/control-ingestion-2246a58/tests.xml"
+  ],
+  "scope": "ISOLATED_DETERMINISTIC_SOURCE_TESTS_NOT_NATIVE_HOST_AUDIT",
+  "new_model_requests": 0,
+  "factory_deployment": "NOT_ACTIVATED",
+  "exit_code": 0,
+  "end_head": "2246a58b0a36ed4627e44462e4ca3b9fb0bb8097",
+  "end_dirty": "",
+  "ended_at": 1793107964.9962,
+  "artifacts": {
+    "tests.xml": "846701a4fe0298d2b8323c9bbffcf0c89fcf96fb7e17540dd46e3ebd4e86661a",
+    "tests.log": "3f384efc38ce43974978e9aced983f1fdf98684d494c5d09e5a1df12f4658741"
+  }
+}

@@ -1,0 +1,50 @@
+EEE                                                                      [100%]
+==================================== ERRORS ====================================
+__ ERROR at setup of test_rework_of_frozen_code_and_style_outputs_is_refused ___
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_rework_of_tests_that_reproduce_escalated_frozen_defects_is_refused _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+___ ERROR at setup of test_fix_allowed_closing_and_greenfield_are_unaffected ___
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/r'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_afo_planner_frozen.py::test_rework_of_frozen_code_and_style_outputs_is_refused
+ERROR factory/python/tests/test_afo_planner_frozen.py::test_rework_of_tests_that_reproduce_escalated_frozen_defects_is_refused
+ERROR factory/python/tests/test_afo_planner_frozen.py::test_fix_allowed_closing_and_greenfield_are_unaffected
+
+--- stderr ---

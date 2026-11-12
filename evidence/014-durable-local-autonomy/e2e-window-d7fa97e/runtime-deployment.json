@@ -1,0 +1,15 @@
+{
+  "status": "PRODUCT_TRIAL_ROLE_COVERAGE_DEPLOYED",
+  "source_revision": "d7fa97e41f6e265e55737478379052db8d6bd859",
+  "operator_epoch": 13,
+  "provider_signals": 0,
+  "generation_requests_created": 0,
+  "provider_instance_unchanged": true,
+  "historical_missions_unchanged": true,
+  "ordinary_capability_guard_unchanged": true,
+  "release_role_readonly": true,
+  "qualification_grant_required": true,
+  "previous_progress_commit": "2b8f4cfea50f9ba3f33fe53916834cbf16852453",
+  "engineering_intervention": true,
+  "original_recorder_deadline": 1793196391.0
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "forge-c/swe1-oracle/1",
+  "driver": "crc-idr",
+  "source_hashes": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "reviewer": "owner",
+  "review_utc": "2026-10-31T12:00:00Z",
+  "obligations": []
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "forge-c/f0-root-bridge-private-controls/1",
+  "helper_sha256": "2810cc9ac430676f72e0b7634bd63497193838bd1a601b86d08ca4cc16e8d667",
+  "PASS": 17,
+  "FAIL": 0,
+  "results": [
+    {
+      "name": "public_entry_refuses_FORGE_AGENT_ROLE",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_WORKSPACE",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_POLICY_BINDING",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_OWNER_DEVELOPMENT_RECORD",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_OWNER_DEVELOPMENT_SHA256",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_LINE_STACK_PAYLOAD",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_LINE_STACK_PAYLOAD_SHA256",
+      "PASS": true
+    },
+    {
+      "name": "public_entry_refuses_FORGE_STACK_LOCK_FD",
+      "PASS": true
+    },
+    {
+      "name": "actual_default_PLAN_ONLY",
+      "PASS": true
+    },
+    {
+      "name": "clean_public_entry_wrong_location_refuses_before_marker",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_actualpinnedfiles_env_userbus_cleanup_then_start_markers_and_no_replay",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_metadata",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_ticket_before",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_ticket_after_marker",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_cleanup_failed",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_timeout_cleanup",
+      "PASS": true
+    },
+    {
+      "name": "private_sequence_refuses_start_failed",
+      "PASS": true
+    }
+  ],
+  "scope": "Actual public entries/defaults plus wholebridge in private filesystem with explicitly substituted expiry-ticket validation, historicalaudit digest and subprocess effect leaves; no real authority, cleanup, systemd, remote or ticket issuance.",
+  "actual_remote_effects": false,
+  "all_private_handles_closed": true
+}

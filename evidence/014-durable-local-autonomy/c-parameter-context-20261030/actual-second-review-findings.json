@@ -1,0 +1,52 @@
+{
+  "SWE1-02": {
+    "task": "inspect:e1df47dbf49cb165:SWE1-02",
+    "status": "VALID",
+    "doc": {
+      "evidence_checked": [
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [
+        "SWR-026 in workproducts/SWE.1/software_requirements.md is not objectively verifiable because its pass condition says only the target bit differs from 0xFFFFFFFF after every write function, but for set functions the target bit is already 1U and remains 1U, so the condition is impossible or ambiguous for those functions.",
+        "SWR-025 in workproducts/SWE.1/software_requirements.md is not atomic because one requirement combines reading the RCC_SR flag, returning the correct 1U/0U value, avoiding polling, avoiding waiting, and avoiding writes to any RCC register.",
+        "The scope section of workproducts/SWE.1/software_requirements.md is inconsistent with SWR-005 through SWR-013, SWR-016, and SWR-019: the scope describes the LL functions as '(void) functions', while those requirements require query or is-enabled functions to return 1U or 0U."
+      ],
+      "verdict": "FAIL"
+    },
+    "errors": [],
+    "attempt_errors": [
+      [
+        "finding says SWR-025 lacks verification, but the document gives: 'Host unit test: for each of the nine ready-flag query functions (PLL1RDY, PLL2RDY, PLL3RDY, PLL4RDY,' - re-judge"
+      ],
+      []
+    ]
+  },
+  "SWE1-04": {
+    "task": "inspect:e1df47dbf49cb165:SWE1-04",
+    "status": "VALID",
+    "doc": {
+      "evidence_checked": [
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/upstream_gaps.md",
+        "traceability/requirements_to_tests.csv"
+      ],
+      "findings": [
+        "workproducts/SWE.1/software_requirements.md provides measurable flash, static RAM, and stack constraints in SWR-027, SWR-028, and SWR-029, but contains no explicit measurable CPU, cycle, or timing constraint for the RCC LL public API.",
+        ".forge-run/manifest.json#scope-target-budgets budgets object defines flash_bytes, stack_bytes, and static_ram_bytes only, while upstream.issues lists placeholders for budgets.max_wait_polling_iterations and budgets.api_cycle_limits.clock_enable, so no CPU/timing constraint is explicit and measurable.",
+        "workproducts/SWE.1/software_requirements.md open point OP-18cdd08b32e99e57 records that no explicit measurable CPU/cycle constraint is present and defers the constraint to the factory from the owner's work-order budgets, which does not satisfy the frozen criterion."
+      ],
+      "verdict": "FAIL"
+    },
+    "errors": [],
+    "attempt_errors": [
+      []
+    ]
+  }
+}

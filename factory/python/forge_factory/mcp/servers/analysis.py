@@ -10,6 +10,7 @@ import json
 import re
 import shutil
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 from .build import INCLUDE_DIRS, SOURCE_DIRS
@@ -35,11 +36,19 @@ def srcs(ctx: ToolContext) -> list[str]:
     return out
 
 
-def incs(ctx: ToolContext) -> list[str]:
+def incs(ctx: ToolContext, cppcheck: bool = False) -> list[str]:
     from ...brownfield.cmsis import host_flags
+    from ...layer import instance_flags
 
+    # instance mode: the pinned device/API headers are system headers for the clang tools; cppcheck reads them for the
+    # types and reports nothing located in them (pinned inputs, not authored code). [] for every other work order.
+    inst = instance_flags(ctx.workspace, host=False)
+    if inst and cppcheck:
+        inst = ["-I", inst[1], f"--suppress=*:{inst[1]}/*"]
     # feature 008 (ST pilot): a CMSIS delivery is analysed on the host device map (the core headers are Arm-only)
-    return host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
+    # CAPA-128: cppcheck takes no -include (it would check the host mapping header as a source file)
+    return host_flags(ctx.workspace, force_include=not cppcheck) + inst + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS
+                                               if (ctx.workspace / d).is_dir()]
 
 
 def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
@@ -50,9 +59,11 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
         return result(ctx, "BLOCKED", "no sources", issues=["NO_SOURCES"], tool="cppcheck")
     # No --inline-suppr: a suppression comment written by an AI agent is a self-granted MISRA deviation and is ignored.
     argv = ["cppcheck", "--xml", "--xml-version=2", "--enable=warning,style,performance,portability",
-            "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx), *files]
+            "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx, cppcheck=True), *files]
     r = run_argv(argv, ctx.workspace, 170, ALLOW, mem_mb=4096)
     issues, misra_hits, general = [], set(), 0
+    frozen, frozen_found = frozen_paths(ctx.workspace), []
+    ws_root = str(ctx.workspace.resolve()) + "/"
     try:
         root = ET.fromstring(r.stderr.decode(errors="replace"))  # noqa: S314 - local cppcheck output, not external input
         for err in root.iter("error"):
@@ -60,6 +71,16 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
             loc = err.find("location")
             where = f"{(loc.get('file') or '').split('/')[-1]}:{loc.get('line')}" if loc is not None else "-"
             m = re.match(r"misra-c2012-(\d+\.\d+)", eid)
+            lf = Path(loc.get("file") or "") if loc is not None else Path()
+            rel = str((lf if lf.is_absolute() else ctx.workspace / lf).resolve()).removeprefix(ws_root) if loc is not None else ""
+            if frozen and rel in frozen and eid not in ("missingIncludeSystem", "missingInclude",
+                                                        "unmatchedSuppression", "checkersReport"):
+                # owner 2026-11-01: a finding located in FROZEN delivered code is never repaired; it is a
+                # DELIVERED_CODE finding for the owner (a package gap unless the owner dispositions it)
+                fid = f"{'MISRA-' + m.group(1) if m else 'CPPCHECK:' + eid}:{rel}:{loc.get('line')}"
+                if fid not in frozen_found:
+                    frozen_found.append(fid)
+                continue
             if m:
                 misra_hits.add(m.group(1))
                 issues.append(f"MISRA-{m.group(1)}:{where}")
@@ -70,8 +91,15 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
         issues.append("CPPCHECK_OUTPUT_UNPARSEABLE")
     ref = ctx.store(r.stdout + r.stderr, "xml")
     findings = len(issues)
+    if frozen:  # the full list for the package; rewritten on every run
+        out = ctx.workspace / DELIVERED_CPPCHECK
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps({"schema": "forge-c/delivered-cppcheck/0.1", "tool": tool_version("cppcheck"),
+                                   "findings": frozen_found}, indent=1) + "\n")
     return result(ctx, "PASS" if findings == 0 and r.exit_code == 0 else "FAIL",
-                  f"cppcheck: {general} general, {len(misra_hits)} MISRA rules hit (subset only)", [ref], issues,
+                  f"cppcheck: {general} general, {len(misra_hits)} MISRA rules hit (subset only)" +
+                  (f", {len(frozen_found)} in the FROZEN delivered code (delivered-code findings, never repaired)"
+                   if frozen_found else ""), [ref], [f"DELIVERED_CODE:{x}" for x in frozen_found] + issues,
                   {"general_findings": general, "misra_rules_violated": len(misra_hits),
                    "misra_rules_in_standard_body": len(MISRA_RULES), "misra_compliance": "NOT_CLAIMED",
                    "misra_coverage_note": "addon subset; undecidable/manual rules require human review"},
@@ -79,18 +107,30 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
 
 
 DELIVERED_STATIC = "verification/static/delivered_static_analysis.json"
+DELIVERED_CPPCHECK = "verification/static/delivered_cppcheck.json"
+
+
+def frozen_paths(ws) -> set[str]:
+    """Owner 2026-11-01 ("frozen case, never repair, otherwise we repair"): delivered files of a FROZEN delivery."""
+    from ...brownfield import code_mode, delivered_paths, manifest_of, provided_frozen_paths
+
+    m = manifest_of(ws)
+    # CAPA-130: a HAL's provided FROZEN LL (ST code) is classed like the LL work order classes it
+    return (set(delivered_paths(m)) if delivered_paths(m) and code_mode(m) == "FROZEN" else set()) | set(
+        provided_frozen_paths(m))
 DIAG = re.compile(r"^(?P<file>[^:\s][^:]*):(?P<line>\d+):\d+: (?P<kind>warning|error): .*?(?:\[(?P<checker>[\w.-]+)\])?$")
 
 
 def vendor_paths(ws) -> set[str]:
     """Delivered files whose analyzer warnings are vendor findings (FROZEN or vendor-style delivery), else empty."""
-    from ...brownfield import code_mode, delivered_paths, manifest_of
+    from ...brownfield import code_mode, delivered_paths, manifest_of, provided_frozen_paths
     from ...brownfield.checks import style_of
 
     m = manifest_of(ws)
+    provided = set(provided_frozen_paths(m))  # CAPA-130: the provided FROZEN LL inlined into the HAL's units
     if not delivered_paths(m) or not (code_mode(m) == "FROZEN" or style_of(m) != "forge"):
-        return set()
-    return set(delivered_paths(m))
+        return provided
+    return set(delivered_paths(m)) | provided
 
 
 def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
@@ -110,8 +150,11 @@ def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
                       "-analyzer-output=text", "-o", "/dev/null", f], ctx.workspace, 120, ALLOW)
         ms += r.duration_ms
         log += r.stdout + r.stderr
-        for line in r.stderr.decode(errors="replace").splitlines():
-            if ": warning:" in line or ": error:" in line:
+        lines = r.stderr.decode(errors="replace").splitlines()
+        if r.exit_code != 0 and not any(": error:" in x or ": fatal error:" in x for x in lines):
+            issues.append(f"ANALYZE_FAILED:{Path(f).name}:exit {r.exit_code}")  # CAPA-132: never a silent PASS
+        for line in lines:
+            if ": warning:" in line or ": error:" in line or ": fatal error:" in line:  # CAPA-132: fatal too
                 d = DIAG.match(line)
                 rel = d.group("file").removeprefix(root) if d else ""
                 if d and d.group("kind") == "warning" and rel in vendor:

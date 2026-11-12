@@ -1,0 +1,11 @@
+{
+  "continuation_kind": "REWORK_EXACT_RECEIPTED_QWEN_CANDIDATE",
+  "previous_candidate": "2ae98542928369aca3cfb8cc05cb5374fc3ce6bf",
+  "independent_result": "V6 frozen checker1PASS1FAIL; default isolated MCP/hook context passes. Original two real diagrams failed on unchanged baseline and both render on V6. No operator repair code.",
+  "remaining_hook_finding": "With explicit FORGE_DATA_ROOT override, strict TOML now parses and isolated MCP child resolves the override correctly, but executing the generated policy hook resolves the default factory data instead. The hook contains the override assignment before a later default assignment for the same variable, so the default shadows the declared override.",
+  "cre_binding_finding": "Baseline standalone reproducer exits1 and prints SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED as its final stdout line. But submit_candidate registered the entire line including SYMPTOM_PRESENT: as symptom_signature. CRE compares only text AFTER that marker, so verdictERROR is a metadata mismatch.",
+  "signature_suffix_observed": "SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED",
+  "submission_contract": "The symptom_signature argument is the exact suffix after SYMPTOM_PRESENT:, without the marker itself. Preserve the standalone baseline failure/candidate absence protocol. Compact summary10..300; plain relative.py path10..200.",
+  "scope_boundary": "Original full SWE.3 replay also has two CODE:TRACE_MAP_FUNCTION_NOT_IN_SCOPE findings for LL_CRC_Write_IDR and LL_CRC_Read_IDR on both baseline and candidate. They are independent product findings; this maintenance case edits runconfig and candidate-owned tests only. Do not expand task scope.",
+  "oracle_visibility": "Only independently observed failure facts are provided. Frozen checker and reference repair source are withheld. Keep the repaired default child/hook path and declared MCP overrides working."
+}

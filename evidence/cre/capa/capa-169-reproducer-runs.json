@@ -1,0 +1,90 @@
+[
+  {
+    "at": "2026-11-04T22:58:59.895516Z",
+    "exit_code": 1,
+    "log_sha256": "290815088bfda6c9c96499575f4240b1df36fe95d9f19a402047bb4058ec07ac",
+    "reproducer_id": "RPR-169",
+    "revision": "27eef6a010f239b302d96c55609da02fe345982d",
+    "role": "BASELINE",
+    "run_id": "rr-d09fd0d20c41528334ba",
+    "signature": "standalone host watchdog recovery cannot load its normal policy dependencies",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:02:26.793178Z",
+    "exit_code": 2,
+    "log_sha256": "d657f56b19e51f7a0993f07802c33c8c7dfd6fd2779df685a96fd8b8e1804e36",
+    "reproducer_id": "RPR-169",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "CANDIDATE",
+    "run_id": "rr-9c06409684c144f59d39",
+    "signature": "REPRODUCER_ERROR:CalledProcessError:Command '['git', 'show', '6644dad0fc0a22c3b73502fd0ee2901f4d01d146:requirements/forge-factory.lock']' returned non-zero exit status 128.",
+    "verdict": "ERROR"
+  },
+  {
+    "at": "2026-11-04T23:04:55.590808Z",
+    "exit_code": 1,
+    "log_sha256": "290815088bfda6c9c96499575f4240b1df36fe95d9f19a402047bb4058ec07ac",
+    "reproducer_id": "RPR-169",
+    "revision": "27eef6a010f239b302d96c55609da02fe345982d",
+    "role": "BASELINE",
+    "run_id": "rr-01c44278015195c7de5c",
+    "signature": "standalone host watchdog recovery cannot load its normal policy dependencies",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:04:57.236987Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-169",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "CANDIDATE",
+    "run_id": "rr-14ca08e6230e628843f0",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:04:58.336509Z",
+    "exit_code": 1,
+    "log_sha256": "290815088bfda6c9c96499575f4240b1df36fe95d9f19a402047bb4058ec07ac",
+    "reproducer_id": "RPR-169",
+    "revision": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+    "role": "BASELINE",
+    "run_id": "rr-a6be6a2e31136a27144f",
+    "signature": "standalone host watchdog recovery cannot load its normal policy dependencies",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:06:10.276872Z",
+    "exit_code": 1,
+    "log_sha256": "290815088bfda6c9c96499575f4240b1df36fe95d9f19a402047bb4058ec07ac",
+    "reproducer_id": "RPR-169",
+    "revision": "27eef6a010f239b302d96c55609da02fe345982d",
+    "role": "BASELINE",
+    "run_id": "rr-fd7cf6f847649a2fba63",
+    "signature": "standalone host watchdog recovery cannot load its normal policy dependencies",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:06:11.622299Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-169",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "CANDIDATE",
+    "run_id": "rr-b4cbd9800c8abb211e88",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:07:28.711696Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-169",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "PREVENTION",
+    "run_id": "rr-0b499e3050ee75874d36",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  }
+]

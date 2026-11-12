@@ -1,0 +1,8 @@
+{
+  "raw_gzip": "before.xml.gz",
+  "raw_sha256": "ee26910a93a77a2b77434f75f9b1d68cb42fb30036cf617294327a56efccfa7d",
+  "gzip_sha256": "bad10619d0d4597c42e5e71bfefd18f663736d13ea45e5422ba623428d4f1166",
+  "readable_view": "before.xml",
+  "view_sha256": "3277d47ba2eb77cbbdf57b3bf6617564954ee37515bcb7c86bfad7709cd7b8b9",
+  "normalization": "TRAILING_WHITESPACE_ONLY; RAW_FAILED_RESULTS_PRESERVED"
+}

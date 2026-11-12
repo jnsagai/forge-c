@@ -1,0 +1,29 @@
+{
+  "status": "FAIL",
+  "summary": "unit: 1 passed, 1 failed (HOST); Renode wwdg_timing UT: 0 passed, 0 failed",
+  "artifact_refs": [
+    "artifact:sha256:1a2eaa6149d74f3d491ea83b6c165c2a74017dfb085c87ed374aec9c126583bb"
+  ],
+  "issues": [
+    "WWDG_TARGET_TIMING_DECLARATION_REQUIRED"
+  ],
+  "provenance": {
+    "tool": "clang+self-checking tests",
+    "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+    "invocation_id": "inv-877dde8774394045",
+    "output_sha256": "1a2eaa6149d74f3d491ea83b6c165c2a74017dfb085c87ed374aec9c126583bb",
+    "exit_code": 1,
+    "duration_ms": 3.4
+  },
+  "metrics": {
+    "passed": 1,
+    "failed": 1,
+    "executables": 1,
+    "environment": "host",
+    "target_evidence": false,
+    "wwdg_timing_environment": "Renode simulated Cortex-M55",
+    "wwdg_timing_ut_passed": 0,
+    "wwdg_timing_ut_failed": 0,
+    "silicon_verified": false
+  }
+}

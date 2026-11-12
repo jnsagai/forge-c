@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-04T23:48:20.199184Z",
+  "exit_code": 1,
+  "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+  "reproducer_id": "RPR-170",
+  "revision": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+  "role": "BASELINE",
+  "run_id": "rr-e14f1226e79d5865acdc",
+  "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+  "verdict": "SYMPTOM_PRESENT"
+}

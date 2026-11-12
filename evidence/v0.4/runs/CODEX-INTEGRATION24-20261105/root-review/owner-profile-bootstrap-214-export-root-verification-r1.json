@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/root-reviewed-prospective-export/1",
+  "source": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "archive_sha256": "99d5c69ad70970c2f3185dd08460186aa8fd3f9bae392e8ea2ce4ff8ef392cf8",
+  "index_sha256": "60bcac57e2fa21612cf4fdf944df2a09bf0768c9fb8973574b733bdcda9c0db1",
+  "all_7_member_hashes_verified": true,
+  "affected_cases": 149,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "proof_scope": "PRIVATE_CPU_KERNEL_TRANSPORT_STUB_ONLY_NO_REAL_ROLE_COMPETENCE",
+  "qualification_only": true,
+  "actual214_cold_start_failure_remains_preserved": true,
+  "no_role_competence_claim": true
+}

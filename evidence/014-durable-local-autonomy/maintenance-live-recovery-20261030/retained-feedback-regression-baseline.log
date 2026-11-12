@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_retained_independent_feedback_reaches_the_actual_paged_maintainer_tool __
+
+local = (<forge_factory.afo.queue.Store object at 0x75e29154dfd0>, {'admitted_utc': '2026-10-30T02:29:41.414599Z', 'authorizat...1-followup-20261029/pytest-of-jefferson/pytest-93/test_retained_independent_feed0/state/afo/cases/afo-fb-1/case.json'))
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-93/test_retained_independent_feed0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75e2928f1810>
+
+    def test_retained_independent_feedback_reaches_the_actual_paged_maintainer_tool(local, factory, monkeypatch):
+        from forge_factory.mcp.sdk import ToolContext
+        from forge_factory.mcp.servers import maintainer as server
+    
+        p = setup_parent(local, factory, monkeypatch)
+        reject(p)
+        reference = R.prepare_next(p.store, p.job, p.eff, verification_fence=lambda: True)
+        path = M.case_dir(reference['proposal_id']) / 'case.json'
+        child = json.loads(path.read_text())
+        monkeypatch.setenv('FORGE_AFO_MAINT_CASE', str(path))
+        monkeypatch.delenv('FORGE_LRTX_PROFILE', raising=False)
+        ctx = ToolContext('forge-maintainer-mcp', 'read_case', 'afo-factory-maintainer', None, Path(child['src']), 'fixture')
+        offset, parts = 0, []
+        while offset is not None:
+            output = server.read_case(ctx, server.NoIn(offset=offset))
+            assert output['status'] == 'PASS'
+            parts.append(output['metrics']['data'])
+            offset = output['metrics']['next_offset']
+            assert len(parts) <= 20
+>       delivered = json.loads(''.join(parts))['retained_rework']
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'retained_rework'
+
+factory/python/tests/test_afo_maintenance_rework.py:363: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_maintenance_rework.py::test_retained_independent_feedback_reaches_the_actual_paged_maintainer_tool

@@ -1,0 +1,22 @@
+{
+  "authorization_ref": "AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2",
+  "context_tokens": 65536,
+  "engineering_intervention": true,
+  "expires_utc": "2026-10-29T05:00:00Z",
+  "extra_output_tokens": 32768,
+  "generation_requests": 0,
+  "health": {
+    "fabro": true,
+    "gateway": true,
+    "ollama": true
+  },
+  "historical_allowances_and_costs_preserved": true,
+  "model": "qwen3.8:27b-q8_0",
+  "operator_epoch": 5,
+  "profile": "local-rtx-v2-omniverse2-q38-quality",
+  "reasoning_effort": "xhigh",
+  "render_proof": "xhigh-native-render-proof.json",
+  "revision": "a7490b45e25a399c87e274f60c3f2fcaba1080c2",
+  "role_qualification": "PENDING_SEPARATE_MEASUREMENTS",
+  "status": "OFFICIAL_QWEN38_Q8_XHIGH_SWITCH_RUNNING"
+}

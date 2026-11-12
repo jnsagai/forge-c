@@ -1,0 +1,16 @@
+{
+  "schema": "forge-c/prepared-input-variant-index/1",
+  "revision": "38acc88c549e3713665542474385999822cdd3d4",
+  "base": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "prepared": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-prepared.json",
+    "sha256": "65bcfce8ab63604a41c8572752590e63f18a5b02d6021b9e3cb5b1b48de3c67c",
+    "bytes": 20429
+  },
+  "bundle": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-source.bundle",
+    "sha256": "6127e76252fb27acf4b34171f36d359830d3008d99eb85e4b070d3cf8e535b45",
+    "bytes": 11084
+  },
+  "status": "PREPARED_CPU_PASS_PENDING_ROOT_CRE_NO_ACTIVATION"
+}

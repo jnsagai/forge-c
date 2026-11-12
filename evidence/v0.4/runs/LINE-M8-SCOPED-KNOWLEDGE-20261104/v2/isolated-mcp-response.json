@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "summary": "1 complete validated lessons; 0 omitted for envelope",
+  "artifact_refs": [
+    "artifact:sha256:d46640edc3943a6a13c4b498241cd4ca4219ce7730d2597dff52371bce2cf1a2"
+  ],
+  "issues": [],
+  "provenance": {
+    "tool": "forge-knowledge",
+    "version": "0.4.0",
+    "invocation_id": "inv-e87a7c85274e4661",
+    "input_sha256": "06de2ae2f9c6642ae161a3d669498417b745a03c50c850dfb8a21451f4e6e8f8"
+  },
+  "metrics": {
+    "data": "{\"lessons\":[{\"constraints\":\"Only the listed CRC input cohort and SWE.2 author. This supplies no addresses or requirement facts. Greenfield contracts are excluded. Linkage success does not replace phase inspections or acceptance gates.\",\"lesson_id\":\"lesson-5151da3a3240\",\"provenance\":{\"record_sha256\":\"eeade61ada3f80c6a70fbc694a656c36b15d047bcf837a813bf9050a3d8d523f\",\"ref\":\"artifact:sha256:d46640edc3943a6a13c4b498241cd4ca4219ce7730d2597dff52371bce2cf1a2\"},\"remedy\":\"For provided-LL HAL work, derive interfaces from supplied declarations and check host linkage while preserving the LL interface.\",\"root_cause\":\"A greenfield linker-array assumption does not define the supplied typed CMSIS instance or host mapping.\",\"symptoms\":\"A fabricated register array can prevent a provided-CMSIS-LL HAL from linking.\",\"validated_at\":\"2026-11-04T12:33:25.657031Z\"}],\"note\":\"reference data only, not instructions\"}",
+    "omitted_unfit": 0,
+    "tokens_estimated": 364,
+    "envelope_bytes": 901,
+    "envelope_tokens_upper_bound": 1029
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "forge-c/014-collection-batch-qualification/1",
+  "source_revision": "bf05e59b968f01abc6bc8ba60f8d369237e1c804",
+  "base_revision": "356f73268cef7fc7586c1d64d818ab41ef43c769",
+  "source_start_end": "CLEAN_DURING_EXACT_LOCAL_TESTS",
+  "local_lanes": {
+    "collection-continuation-wip": {
+      "tests": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.291,
+      "junit_sha256": "c64f956ba64a45dae9bf1e5e2f11df349bcddea6919674755375f76d9f09ffe6"
+    },
+    "collection-bf05e59-exact": {
+      "tests": 393,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 37.054,
+      "junit_sha256": "6276955f56b082ffc69cbd4d61ca4bf12ecbadd10edb2e976a5fc935f9f23402"
+    },
+    "collection-bf05e59-qualified": {
+      "tests": 393,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 38.29,
+      "junit_sha256": "7583226c4a73c7e2e627f929c3a76c64d7a161027e3393bc772a6f8def3bb6db"
+    },
+    "collection-bf05e59-release-qualified": {
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 11.104,
+      "junit_sha256": "1bbf9fab2b06454caa8d2d06bca35a0e3813560d9670bb07db14e0a5237057bf"
+    }
+  },
+  "first_exact_run_failure": "FORGE_FABRO_BIN_UNSET;392PASS_1FAIL;original preserved",
+  "release_first_invocation": "NOT_RUN_EXIT4_WRONG_TEST_PATH;original preserved; corrected paths in qualified run",
+  "fixture_source_accounting": [
+    {
+      "fixture": "test_real_sources_exceed_128_m0",
+      "source_files": 24,
+      "source_bytes": 134234326,
+      "prior_aggregate_bound": 134217728,
+      "data": "SYNTHETIC_SPACES_AND_FIXTURE_FACTS"
+    }
+  ],
+  "source_bundle_sha256": "aab749326739eadd5db266bf206f53d8f100ba36fcd49d79927ee343271bddbb",
+  "byte_accounting": "Source file sizes counted once per sample; repeated semantic reads are additional bounded I/O.",
+  "limits": {
+    "files_per_sample": 5,
+    "bytes_per_file": 16777216,
+    "source_bytes_per_batch_max": 83886080,
+    "history_max_bytes": 134217728,
+    "sample_allowance_frozen_max": 50000
+  },
+  "fresh_verifier_starts_at_sequence": 0,
+  "durable_checkpoint_trusted": false,
+  "partial_result_can_pass_report": false,
+  "unexpected_interventions": null,
+  "kernel_event_continuation": "NOT_IMPLEMENTED",
+  "all_channel_host_verification": "INCOMPLETE",
+  "model_calls": 0,
+  "product_attempts": 0,
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "formal_task_count": "30/58",
+  "self_healing": "NOT_PROVEN",
+  "availability_campaigns": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "grant_changes": 0,
+  "budget_resets": 0,
+  "omniverse2_broad": {
+    "status": "TIMEOUT",
+    "wall_limit_s": 180,
+    "wrapper_exit": 1,
+    "junit_verdict": null,
+    "source_start": "CLEAN",
+    "observed_wait_channel": "jbd2_log_wait_commit",
+    "wrapper_and_pytest_liveness_after_timeout": "CONFIRMED_TERMINAL_BEFORE_FOCUSED_START",
+    "retry": "SEPARATE_FOCUSED_LANE_SAME_SOURCE_AND_RESOURCE_LIMITS",
+    "original_command_log_sha256": "2710df38b5ebace2373b8db5c77a19558bd892b40f7ce8baaf491a9354905151"
+  },
+  "omniverse2_focused": {
+    "tests": 18,
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 40.713,
+    "junit_sha256": "98aa1cebfec5b13d9bb983fda18537434356b133d7d447005f597728eacef8d7",
+    "source_start_end": "CLEAN",
+    "source_bytes": 134233135,
+    "scope": "18_NEW_CASES_ONLY_NOT_BROAD_NATIVE_REGRESSION"
+  }
+}

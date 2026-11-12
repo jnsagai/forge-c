@@ -1,0 +1,79 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "708d84e13803af9681a09989c32a27fb60e7ac1f",
+  "baseline_sha256": "aa6ee090a03da80b95f479f6683e604498021429b5ecf660afa6d952f1aba753",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "10cd4ec3f6d236beb74ed3820ede7e83534c491b",
+  "candidate_sha256": "649c29269f47525fac2524d23c69390bec6d28c0c5cc1bd1a69729d6aa61b200",
+  "decision": "REJECTED",
+  "decision_id": "pd-1274b60f539073dd4ad0",
+  "evaluated_at": "2026-11-01T09:57:05.451531Z",
+  "evaluator_id": "cre-promotion-runner@10cd4ec3f6d2",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:708d84e13803..10cd4ec3f6d2"
+      ],
+      "name": "protected_files",
+      "reason_code": "PROTECTED_PATH_CHANGE",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:policy_integrity"
+      ],
+      "name": "policy_integrity",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "name": "prevention",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "protected paths changed: A:evidence/014-durable-local-autonomy/capa-087/README.md, A:evidence/014-durable-local-autonomy/capa-087/promotion-gate.txt, A:evidence/cre/capa/capa-087.json, A:evidence/cre/decisions/pd-2d58f7421f5daf07c3c2.json, M:tests/reliability/reproducers/manifest.yaml",
+    "sandbox: 15804 protected paths read-only (OS) in the candidate/baseline worktrees"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

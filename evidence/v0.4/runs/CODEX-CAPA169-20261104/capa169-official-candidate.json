@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-9c06409684c144f59d39",
+  "reproducer_id": "RPR-169",
+  "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "role": "CANDIDATE",
+  "exit_code": 2,
+  "verdict": "ERROR",
+  "signature": "REPRODUCER_ERROR:CalledProcessError:Command '['git', 'show', '6644dad0fc0a22c3b73502fd0ee2901f4d01d146:requirements/forge-factory.lock']' returned non-zero exit status 128.",
+  "log_sha256": "d657f56b19e51f7a0993f07802c33c8c7dfd6fd2779df685a96fd8b8e1804e36",
+  "at": "2026-11-04T23:02:26.793178Z"
+}

@@ -1,0 +1,20 @@
+{
+  "scope": "READ_ONLY_ACTUAL_ISSUED_REQUEST_HASH_REPLAY_NO_RAW_PROMPT_OR_REASONING",
+  "source_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "trial_id": "late-finding:0",
+  "job_id": "afo-agent-20edab9505f670f5d9908977",
+  "request_id": "request-f64aa35b7a9de7c8c867541e",
+  "actual_request_body_sha256": "fa3ea7422cbbb6363ba0b2cf507ef42dd96d57ddef44787398fdc25ed2305269",
+  "reconstructed_effective_body_sha256": "fa3ea7422cbbb6363ba0b2cf507ef42dd96d57ddef44787398fdc25ed2305269",
+  "hashes_match": true,
+  "contract_source_refs": ["A1", "A3"],
+  "contract_text_sha256": "a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2",
+  "both_sources_contain_SWR_001": true,
+  "both_sources_contain_normative_reg_enable_operation": true,
+  "both_sources_contain_expected_mask_UINT32_C_1": true,
+  "known_missing_evidence": [],
+  "declared_scope": "DECLARED_SYNTHETIC_CONTRACT_FIXTURE",
+  "authority_inferred": false,
+  "observation": "The requirement text is present in the exact issued request. This does not establish source authority or useful model diagnosis.",
+  "model_requests": 0
+}

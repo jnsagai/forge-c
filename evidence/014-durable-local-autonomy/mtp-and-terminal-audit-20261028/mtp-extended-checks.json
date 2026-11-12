@@ -1,0 +1,53 @@
+{
+  "scope": "Independent bounded functional fixtures, no inference; not driver/product qualification",
+  "checks": {
+    "baseline-crc8-0": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 66792,
+      "test_exit": 0
+    },
+    "baseline-crc8-1": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 66792,
+      "test_exit": 0
+    },
+    "baseline-popcount-0": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 100002,
+      "test_exit": 0
+    },
+    "baseline-popcount-1": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 100002,
+      "test_exit": 0
+    },
+    "mtp-crc8-0": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 66792,
+      "test_exit": 0
+    },
+    "mtp-crc8-1": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 66792,
+      "test_exit": 0
+    },
+    "mtp-popcount-0": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 100002,
+      "test_exit": 0
+    },
+    "mtp-popcount-1": {
+      "compiled": true,
+      "compiler_error": "",
+      "comparison_count": 100002,
+      "test_exit": 0
+    }
+  }
+}

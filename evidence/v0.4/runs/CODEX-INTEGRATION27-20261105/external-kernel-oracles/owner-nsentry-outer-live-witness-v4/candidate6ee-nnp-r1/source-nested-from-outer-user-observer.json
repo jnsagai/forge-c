@@ -1,0 +1,114 @@
+{
+  "observer": {
+    "namespaces": {
+      "user": "user:[4026533247]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026531841]",
+      "pid": "pid:[4026531836]"
+    },
+    "uid_map": "         0       1000          1\n",
+    "identity": {
+      "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+      "start_ticks": "8119570",
+      "state": "R",
+      "uid": 0,
+      "pid_namespace": "pid:[4026531836]",
+      "namespace_pid": 848210
+    },
+    "owner_view": {
+      "user_namespace": "user:[4026533247]",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ],
+      "observer_user_namespace": "user:[4026533247]",
+      "observer_uid": 0
+    }
+  },
+  "holder": {
+    "namespaces": {
+      "user": "user:[4026533247]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026531841]",
+      "pid": "pid:[4026531836]"
+    },
+    "uid_map": "         0       1000          1\n",
+    "identity": {
+      "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+      "start_ticks": "8119519",
+      "state": "S",
+      "uid": 0,
+      "pid_namespace": "pid:[4026531836]",
+      "namespace_pid": 848191
+    },
+    "owner_view": {
+      "user_namespace": "user:[4026533247]",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ],
+      "observer_user_namespace": "user:[4026533247]",
+      "observer_uid": 0
+    }
+  },
+  "init": {
+    "namespaces": {
+      "user": "user:[4026534083]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026534084]",
+      "pid": "pid:[4026534085]"
+    },
+    "uid_map": "         0          0          1\n",
+    "identity": {
+      "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+      "start_ticks": "8119521",
+      "state": "S",
+      "uid": 0,
+      "pid_namespace": "pid:[4026534085]",
+      "namespace_pid": 1
+    },
+    "owner_view": {
+      "user_namespace": "user:[4026534083]",
+      "uid_map": [
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "observer_user_namespace": "user:[4026533247]",
+      "observer_uid": 0
+    }
+  },
+  "captured_init": {
+    "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+    "start_ticks": "8119521",
+    "uid": 1000,
+    "pid_namespace": "pid:[4026534085]",
+    "namespace_pid": 1
+  },
+  "captured_owner_view": {
+    "user_namespace": "user:[4026534083]",
+    "uid_map": [
+      [
+        0,
+        1000,
+        1
+      ]
+    ],
+    "observer_user_namespace": "user:[4026531837]",
+    "observer_uid": 1000
+  },
+  "require_live_instance": {
+    "result": "REFUSED",
+    "error_type": "Refused",
+    "error": "PROVIDER_OWNER_VIEW_UNPROVEN:"
+  },
+  "no_new_privs": "1"
+}

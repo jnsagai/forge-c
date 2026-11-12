@@ -1,11 +1,5 @@
 # Forge-C: three-day engineering review for offline Astra analysis
 
-Published on `main` as a report-only snapshot. Feature 014 implementation remains
-on its feature branch and is not merged by this publication. Historical evidence
-links pin the original feature commit; fetch that branch for a complete offline
-source/evidence review. The bundled original `publication-checks.json` describes
-the feature-branch report; `main-publication.json` binds this main-branch copy.
-
 **Window:** 28–30 October 2026, through the read-only snapshots at approximately
 18:33 UTC on 30 October. This covers three calendar work days, not a measured
 72-hour availability campaign. Branch: `feat/014-durable-local-autonomy`; draft
@@ -119,10 +113,10 @@ restart, deploy, change budgets or launch another inference campaign.
    and a host administrative context rather than the inference network namespace.
    The model inference boundary remained separate.
 
-Evidence: [MTP and terminal audit](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md),
-[incremental delivery](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md),
-[high allowances and actual M1 failure](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md),
-[resume compatibility](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md).
+Evidence: [MTP and terminal audit](../../evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md),
+[incremental delivery](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md),
+[high allowances and actual M1 failure](../../evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md),
+[resume compatibility](../../evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md).
 
 ## 29 October: later phases, tool integration and real maintenance attempts
 
@@ -172,14 +166,14 @@ Evidence: [MTP and terminal audit](https://github.com/jnsagai/forge-c/blob/51a65
     separately. Some trials never submitted a candidate; others wrote real partial
     source/tests and were independently rejected.
 
-Evidence: [host/recheck record](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md),
-[frozen SWE.2](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md),
-[SWE.4](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md),
-[SWE.5/performance](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md),
-[owner stop](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/owner-stop-20261029/README.md),
-[paging census](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-paging-20261029/README.md),
-[maximum context](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-max-context-20261029/README.md),
-[brownfield attempts](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md).
+Evidence: [host/recheck record](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md),
+[frozen SWE.2](../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md),
+[SWE.4](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md),
+[SWE.5/performance](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md),
+[owner stop](../../evidence/014-durable-local-autonomy/owner-stop-20261029/README.md),
+[paging census](../../evidence/014-durable-local-autonomy/afo-paging-20261029/README.md),
+[maximum context](../../evidence/014-durable-local-autonomy/afo-max-context-20261029/README.md),
+[brownfield attempts](../../evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md).
 
 ## 30 October: accepted repair evidence, speed studies and broader scope
 
@@ -214,10 +208,10 @@ that run for a role experiment; that stop is not a model failure. A broad extern
 supersession filter also misclassified the already-finished diagnosis lifecycle;
 an explicit erratum preserves its unchanged successful job/receipt and history.
 
-Evidence: [maintenance recovery](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/maintenance-live-recovery-20261030/README.md),
-[independent CRE and signature binding](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/maintenance-signature-binding-20261030/README.md),
-[integrated live context repair](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md),
-[unattended scoped product repair and erratum](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/aspice-stepwise-product-20261030/README.md).
+Evidence: [maintenance recovery](../../evidence/014-durable-local-autonomy/maintenance-live-recovery-20261030/README.md),
+[independent CRE and signature binding](../../evidence/014-durable-local-autonomy/maintenance-signature-binding-20261030/README.md),
+[integrated live context repair](../../evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md),
+[unattended scoped product repair and erratum](../../evidence/014-durable-local-autonomy/aspice-stepwise-product-20261030/README.md).
 
 ### Correctness and workflow defects fixed
 
@@ -241,9 +235,9 @@ Evidence: [maintenance recovery](https://github.com/jnsagai/forge-c/blob/51a656f
 
 These changes extend existing AFO/Fabro/MCP/governor/store mechanisms. They do not
 establish generic support for every compiler, MCU, driver or embedded C application.
-[Complete feedback defects](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/structured-inspection-feedback-20261030/README.md),
-[scope audit](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/scope-inventory-20261030/README.md),
-[watchdog/context](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/request-context-20261030/README.md),
+[Complete feedback defects](../../evidence/014-durable-local-autonomy/structured-inspection-feedback-20261030/README.md),
+[scope audit](../../evidence/014-durable-local-autonomy/scope-inventory-20261030/README.md),
+[watchdog/context](../../evidence/014-durable-local-autonomy/request-context-20261030/README.md),
 [shared fixes and failed native checks](../../evidence/014-durable-local-autonomy/matched-controls-20261030/README.md),
 [generic embedded C boundary](GENERIC-EMBEDDED-C.md).
 
@@ -269,11 +263,11 @@ and fewer writes, preserving FULL commits. This is a local storage result, not
 measured whole-host or complete-pipeline acceleration. The original diagnosis
 coordinator also hit a SQLite lock timeout and needed an external driver resume.
 
-Evidence: [reasoning](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/SPEED-REPORT.md),
-[MTP](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mtp-speed-20261030/SPEED-REPORT.md),
-[thinking off](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/non-thinking-speed-20261030/v2/final/SPEED-REPORT.md),
-[stepwise diagnosis](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/stepwise-diagnosis-20261030/final/SPEED-REPORT.md),
-[WAL investigation](https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md).
+Evidence: [reasoning](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/SPEED-REPORT.md),
+[MTP](../../evidence/014-durable-local-autonomy/mtp-speed-20261030/SPEED-REPORT.md),
+[thinking off](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/v2/final/SPEED-REPORT.md),
+[stepwise diagnosis](../../evidence/014-durable-local-autonomy/stepwise-diagnosis-20261030/final/SPEED-REPORT.md),
+[WAL investigation](../../evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md).
 
 ### Native Codex/Claude diagnostic controls
 

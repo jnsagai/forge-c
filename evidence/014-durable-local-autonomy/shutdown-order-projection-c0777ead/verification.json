@@ -1,0 +1,62 @@
+{
+  "command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_shutdown_order_projection.py factory/python/tests/test_da014_product_outcomes.py factory/python/tests/test_da014_protocol.py factory/python/tests/test_da014_integration.py factory/python/tests/test_da014_provider_recovery.py factory/python/tests/test_da014_control_context.py factory/python/tests/test_da014_operational_facts.py factory/python/tests/test_afo_m1_services.py factory/python/tests/test_afo_m6_operations.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/shutdown-order-projection-exact.xml",
+  "fixture_error_not_product_baseline": "initial-fixture-error.xml.gz",
+  "generation_performed": false,
+  "receipt_representations": {
+    "corrected-before.xml.gz": {
+      "decoded_sha256": "8bc5058c2452eebb2f262da1f12763fd1bfeac94e54dbe43a814f7f34f9a86e3",
+      "encoding": "gzip",
+      "stored_sha256": "1d041ffcea032203b49237173893bcc35d7cdfef0622ad80fd5ff36529a4c75a"
+    },
+    "initial-fixture-error.xml.gz": {
+      "decoded_sha256": "add5630a35438d7a5c56a8ed0ed694dabf83263d0e0729da501da33656e570ae",
+      "encoding": "gzip",
+      "stored_sha256": "e0d8cabd228e35571c0e3aba52c3d1bb9eebed3b851533fb1b6256f0db7d5e35"
+    }
+  },
+  "runtime_activation": "NOT_RUN",
+  "schema": "forge-c/local-regression-evidence/1",
+  "source_sha256": {
+    "factory/python/forge_factory/afo/operations.py": "d2b332ed7256296def9377624f7e04fa58b8bbdfe0d6ec47dbd80a8fbeaf66c4",
+    "factory/python/tests/test_shutdown_order_projection.py": "aa39975be14fc93685f8f89b2f8679257d76a9946fdbf55d8407340de9688e2e"
+  },
+  "summaries": {
+    "corrected-before.xml.gz": [
+      {
+        "errors": "0",
+        "failures": "4",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "6",
+        "time": "1.535",
+        "timestamp": "2026-10-31T08:32:37.735436+00:00"
+      }
+    ],
+    "exact-c0777ead.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "152",
+        "time": "21.929",
+        "timestamp": "2026-10-31T08:34:51.072815+00:00"
+      }
+    ],
+    "initial-fixture-error.xml.gz": [
+      {
+        "errors": "0",
+        "failures": "6",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "6",
+        "time": "1.218",
+        "timestamp": "2026-10-31T08:32:25.358849+00:00"
+      }
+    ]
+  },
+  "tested_revision": "c0777eadb595e25ac993ff2fa5f4b10e27299636"
+}

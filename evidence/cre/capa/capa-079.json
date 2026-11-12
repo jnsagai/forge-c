@@ -1,0 +1,101 @@
+{
+ "CAPA-079": {
+  "history": [
+   {
+    "at": "2026-10-31T21:13:43.885634Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[\"fabro-swe1-obl-20261031-03-preserve-blocked\"]",
+    "from_state": null,
+    "reason": "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-03 (01M69V139JKG14HMVVTT8GWNAH) on Omniverse2 2026-10-31: critical OBL-preserve-other-registers stayed uncovered; repair refused DEVELOPMENT_PHASE_REPAIR_EXHAUSTED; SWE.1 BLOCKED",
+    "seq": 600,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T21:13:43.926904Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 601,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T21:13:44.017626Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-078 assigned",
+    "seq": 602,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T21:13:48.591580Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[\"reproducer-run:rr-14722017cebc3ee4a717\", \"reproducer-run:rr-301a71626aa0e53ad724\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 603,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T21:13:48.617783Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[\"git:b4b84933f8f8..003913e093ef\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 003913e093ef (patch 15334 bytes)",
+    "seq": 604,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T21:37:47.122279Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[\"reproducer-run:rr-5ab5bdbcf9f99c7f0685\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-078 absent at 003913e093ef",
+    "seq": 605,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T21:37:47.172908Z",
+    "capa_id": "CAPA-079",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 606,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-132be997fcbd72a733412441cd65f094112d4f8e",
+   "b4b84933f8f8a130407edd20d98eac863a1537a8",
+   "003913e093ef924ba4e75725f5d6d1cff326e58a",
+   "pd-526a6b7ea5b2cdf2046b"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<003913e093ef"
+   ],
+   "candidate_patch_sha256": "fb73e6815d454631501ef81190ac5c8c44d69b447fe42022965708c17e26634e",
+   "capa_id": "CAPA-079",
+   "created_at": "2026-10-31T21:13:43.885634Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-20261031-03-preserve-blocked"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-078",
+   "reproducer_id": "RPR-078",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-14722017cebc3ee4a717",
+    "reproducer-run:rr-301a71626aa0e53ad724"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Cross-cutting validator says 'remove requirement' for a preservation requirement naming the task register, contradicting the obligation; coverage only post-assembly so its repair needs a second pass",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T21:37:47.172908Z"
+  }
+ }
+}

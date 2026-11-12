@@ -1,0 +1,61 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_isolated_mcp_and_hook_resolve_the_same_pinned_tool_root[True] ______
+
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v6/independent-candidate-check/scratch/pytest-of-unknown/pytest-0/test_isolated_mcp_and_hook_res1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x72fe4dd59a70>
+override = True
+
+    @pytest.mark.parametrize("override", [False, True])
+    def test_isolated_mcp_and_hook_resolve_the_same_pinned_tool_root(tmp_path, monkeypatch, override):
+        root = tmp_path / "factory data"
+        selected = tmp_path / "explicit server data" if override else root
+        state = selected / "state"
+        jar = selected / "toolchains/plantuml/plantuml-asl-1.2026.8.jar"
+        jar.parent.mkdir(parents=True)
+        jar.write_bytes(b"location-only fixture; never executed as a renderer")
+        monkeypatch.setenv("FORGE_DATA_ROOT", str(root))
+        monkeypatch.setenv("FORGE_STATE_DIR", str(state))
+        monkeypatch.setenv("UNRELATED_TEST_CREDENTIAL", "must-not-inherit")
+        explicit = {"FORGE_DATA_ROOT": str(selected)} if override else {}
+        config = tomllib.loads(render_run_toml(
+            "workflow.fabro", "portable tool context", tmp_path / "binding file.json",
+            {"forge-evidence-mcp": {"module": "forge_factory.mcp.servers.evidence", "env": explicit}},
+            binding_id="context-fixture", hook_env=explicit,
+        ))
+        server = config["run"]["agent"]["mcps"]["forge_evidence_mcp"]
+        code = (
+            "import json,os; from forge_factory.common import data_root; "
+            "from forge_factory.inspection import swtrace,views; "
+            "print(json.dumps({'root':str(data_root()),'units':str(swtrace._plantuml_jar()),"
+            "'views':str(views.plantuml_jar()),'ambient':os.environ.get('UNRELATED_TEST_CREDENTIAL')}))"
+        )
+        # Fabro supplies the TOML environment to isolated MCP children. Exercise that
+        # exact map rather than inheriting the test runner's FORGE_DATA_ROOT.
+        child = subprocess.run(
+            [server["command"][0], "-c", code], env=server["env"], capture_output=True,
+            text=True, check=True, timeout=10,
+        )
+        expected = {"root": str(selected), "units": str(jar), "views": str(jar), "ambient": None}
+        assert json.loads(child.stdout) == expected
+        assert server["env"]["FORGE_BINDING_ID"] == "context-fixture"
+        for hook in config["run"]["hooks"]:
+            prefix, _ = hook["script"].split(" -m forge_factory.policy.fabro_hook ", 1)
+            observed = subprocess.run(
+                ["/bin/sh", "-c", prefix + " -c " + shlex.quote(code)], env={"PATH": os.environ["PATH"]},
+                capture_output=True, text=True, check=True, timeout=10,
+            )
+>           assert json.loads(observed.stdout) == expected
+E           AssertionError: assert {'ambient': N...1.2026.8.jar'} == {'ambient': N...1.2026.8.jar'}
+E             
+E             Omitting 2 identical items, use -vv to show
+E             Differing items:
+E             {'root': '/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v6/independent-candidate-check/scratch/pytest-of-unknown/pytest-0/test_isolated_mcp_and_hook_res1/factory data'} != {'root': '/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v6/independent-candidate-check/scratch/pytest-of-unknown/pytest-0/test_isolated_mcp_and_hook_res1/explicit server data'}
+E             {'units': 'None'} != {'units': '/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v6/i...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+../../../afo-repair-trial-20261029-v2/verifier/test_tool_context.py:52: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../afo-repair-trial-20261029-v2/verifier/test_tool_context.py::test_isolated_mcp_and_hook_resolve_the_same_pinned_tool_root[True]
+1 failed, 1 passed in 0.27s

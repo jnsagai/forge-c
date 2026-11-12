@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_m7_governance_release.py",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-17e6cbd-release",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-17e6cbd-release.xml"
+  ],
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-boot-followup",
+  "duration_s": 15.087,
+  "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
+  "exit_code": 0,
+  "fixture_provenance": "evidence/014-durable-local-autonomy/followup/provider-fixture-provenance.json",
+  "git_dirty": false,
+  "git_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "invocation_provenance": "evidence/014-durable-local-autonomy/followup/provider-final-invocation.json",
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-release/20261025T125927.xml",
+    "sha256": "53adf2666dbdd78698bacb63ac6ebab2b88be76dc4902ba63ea743332685bf2e"
+  },
+  "log": "evidence/v0.4/runs/DA014-release/20261025T125927.log",
+  "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 15.087,
+    "skipped": 0,
+    "tests": 13,
+    "timestamp": "2026-10-25T12:58:47.030603+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-release",
+  "ts_utc": "2026-10-25T12:59:27.587791+00:00",
+  "umask": "0022"
+}

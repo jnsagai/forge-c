@@ -1,0 +1,62 @@
+{
+  "revision": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+  "reference": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23",
+  "items": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "source": "reference",
+      "status": "COPY"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8",
+      "from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen23/examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "source": "reference",
+      "status": "COPY"
+    }
+  ]
+}

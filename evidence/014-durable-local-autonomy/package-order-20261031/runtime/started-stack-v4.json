@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-31T01:03:04.095697Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "health": {
+    "fabro": true,
+    "gateway": true,
+    "llama_server": true,
+    "ollama": true
+  },
+  "model_pid": 2564482,
+  "new_model_requests": 0,
+  "operations_epoch": 6,
+  "scope_sha256": "83c919dcc947cf003db192a2936dd093c19021ce0fa80c3702f8cfe68a2f1a34",
+  "serving_instance": {
+    "captured_at": "2026-10-31T01:02:53.739731Z",
+    "init": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "namespace_pid": 1,
+      "pid_namespace": "pid:[4026533792]",
+      "start_ticks": "316015772",
+      "uid": 1000
+    },
+    "init_pid": 2564278,
+    "observer_user_namespace": "user:[4026531837]",
+    "parent": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "namespace_pid": 2564277,
+      "pid_namespace": "pid:[4026531836]",
+      "start_ticks": "316015772",
+      "uid": 1000
+    },
+    "parent_pid": 2564277,
+    "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+    "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+    "root": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1",
+    "schema": "forge-c/managed-provider-instance/1"
+  },
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

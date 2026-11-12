@@ -1,0 +1,148 @@
+[
+  {
+    "at": "2026-10-31T01:27:07.702574Z",
+    "op": "validate_artifact",
+    "status": "FAIL",
+    "summary": "SWE.2 architecture: 1 findings",
+    "issues": [
+      "SWE2:REGISTER_OFFSET_NOT_NUMERIC:CRC_IDR"
+    ],
+    "metrics": {
+      "registers": 1,
+      "registers_checked_against_rm": 0,
+      "swr_allocated": 12,
+      "swr_known": 12
+    }
+  },
+  {
+    "at": "2026-10-31T01:29:57.365176Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "SWE.2 architecture: 0 findings",
+    "issues": [],
+    "metrics": {
+      "registers": 1,
+      "registers_checked_against_rm": 1,
+      "swr_allocated": 12,
+      "swr_known": 12
+    }
+  },
+  {
+    "at": "2026-10-31T01:30:57.917443Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "Canonical architecture views (static + dynamic): 0 findings",
+    "issues": [],
+    "metrics": {
+      "allocated_apis": 2,
+      "apis_in_dynamic_view": 2,
+      "checked_dynamic": "workproducts/SWE.2/architecture_dynamic.puml",
+      "checked_static": "workproducts/SWE.2/architecture_static.puml",
+      "requested_path": "workproducts/SWE.2/architecture_static.puml",
+      "syntax": "PASS",
+      "syntax_dynamic": "PASS",
+      "syntax_static": "PASS",
+      "validation_scope": "CANONICAL_ARCHITECTURE_VIEWS"
+    }
+  },
+  {
+    "at": "2026-10-31T01:30:58.554252Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "Canonical architecture views (static + dynamic): 0 findings",
+    "issues": [],
+    "metrics": {
+      "allocated_apis": 2,
+      "apis_in_dynamic_view": 2,
+      "checked_dynamic": "workproducts/SWE.2/architecture_dynamic.puml",
+      "checked_static": "workproducts/SWE.2/architecture_static.puml",
+      "requested_path": "workproducts/SWE.2/architecture_dynamic.puml",
+      "syntax": "PASS",
+      "syntax_dynamic": "PASS",
+      "syntax_static": "PASS",
+      "validation_scope": "CANONICAL_ARCHITECTURE_VIEWS"
+    }
+  },
+  {
+    "at": "2026-10-31T01:31:52.064520Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "json: 0 issues",
+    "issues": [],
+    "metrics": {
+      "bytes": 526
+    }
+  },
+  {
+    "at": "2026-10-31T01:36:29.441906Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "SWE.2 architecture: 0 findings",
+    "issues": [],
+    "metrics": {
+      "registers": 1,
+      "registers_checked_against_rm": 1,
+      "swr_allocated": 12,
+      "swr_known": 12
+    }
+  },
+  {
+    "at": "2026-10-31T01:36:29.979359Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "Canonical architecture views (static + dynamic): 0 findings",
+    "issues": [],
+    "metrics": {
+      "allocated_apis": 2,
+      "apis_in_dynamic_view": 2,
+      "checked_dynamic": "workproducts/SWE.2/architecture_dynamic.puml",
+      "checked_static": "workproducts/SWE.2/architecture_static.puml",
+      "requested_path": "workproducts/SWE.2/architecture_static.puml",
+      "syntax": "PASS",
+      "syntax_dynamic": "PASS",
+      "syntax_static": "PASS",
+      "validation_scope": "CANONICAL_ARCHITECTURE_VIEWS"
+    }
+  },
+  {
+    "at": "2026-10-31T01:36:30.401824Z",
+    "op": "validate_artifact",
+    "status": "PASS",
+    "summary": "Canonical architecture views (static + dynamic): 0 findings",
+    "issues": [],
+    "metrics": {
+      "allocated_apis": 2,
+      "apis_in_dynamic_view": 2,
+      "checked_dynamic": "workproducts/SWE.2/architecture_dynamic.puml",
+      "checked_static": "workproducts/SWE.2/architecture_static.puml",
+      "requested_path": "workproducts/SWE.2/architecture_dynamic.puml",
+      "syntax": "PASS",
+      "syntax_dynamic": "PASS",
+      "syntax_static": "PASS",
+      "validation_scope": "CANONICAL_ARCHITECTURE_VIEWS"
+    }
+  },
+  {
+    "at": "2026-10-31T01:42:29.228417Z",
+    "op": "check_inspection",
+    "status": "PASS",
+    "summary": "INS-SWE.2-001 PASS (0 findings)",
+    "issues": [],
+    "metrics": {
+      "stale": false
+    }
+  },
+  {
+    "at": "2026-10-31T01:45:10.942554Z",
+    "op": "check_inspection",
+    "status": "FAIL",
+    "summary": "INS-SWE.2-002 FAIL (2 findings)",
+    "issues": [
+      "SWE2-02:major",
+      "SWE2-06:major"
+    ],
+    "metrics": {
+      "stale": false
+    }
+  }
+]

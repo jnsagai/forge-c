@@ -1,0 +1,134 @@
+# Peripheral profile (feature 014 operation-24 campaign, owner 2026-10-27 "RNG, LPTIM, WWDG"): low-power timer, RM0486
+# Rev 4 chapter 58 (pp. 2928-2978); instance LPTIM1 (full feature set, RM0486 58.3), secure base 0x50002400, 1 KB
+# (RM0486 p.181, Table 3).
+schema: forge-c/peripheral-profile/0.1
+id: lptim
+name: Low-power timer (LPTIM)
+register_prefix: LPTIM
+base_address: "0x50002400"
+mm_page: 181
+window_bytes: 1024
+system_name: LPTIM LL driver
+rm:
+  doc: RM0486
+  chapter: 58
+  key_sections: ["58.7.2", "58.7.5", "58.7.8", "58.7.10", "58.7.11", "58.7.13", "58.7.14"]
+ll:
+  header: stm32n6xx_ll_lptim.h
+  compile_unit: stm32n6xx_ll_lptim.c
+  function_prefix: LL_LPTIM_
+  register_block: ll_lptim_regs
+  register_count: 256
+  void_signatures: false   # LL_LPTIM_SetAutoReload(LPTIM_TypeDef *, uint32_t), LL_LPTIM_StartCounter(LPTIM_TypeDef *, uint32_t)
+hal:
+  header: stm32n6xx_hal_lptim.h
+  source: stm32n6xx_hal_lptim.c
+  function_prefix: HAL_LPTIM_
+sim:
+  model: lptim_model.py
+  platform: stm32n6_lptim.repl
+# Prompt texts that replace the RCC domain content of the generic LL prompts (feature 009 mechanism). They describe the
+# LPTIM work-order scope; hardware facts stay in the RM0486 chapter 58 inputs (cite RM0486 p.N).
+prompt:
+  swe1_cover: >-
+    Cover (only what the LPTIM scope names) for LPTIM1 (name the registers LPTIM_CR, LPTIM_ISR, ... as the RM0486
+    LPTIMx_ registers of the instance; for LPTIM1 the ISR, ICR and DIER descriptions are the "(x = 1 to 3)" output
+    compare ones, RM0486 58.7.2, 58.7.5, 58.7.8): enabling and disabling the timer (set/clear LPTIM_CR.ENABLE) and the
+    enable query (return 1U when LPTIM_CR.ENABLE is set, else 0U); starting the counter in Continuous mode (set
+    LPTIM_CR.CNTSTRT) or in Single mode (set LPTIM_CR.SNGSTRT) - one operating-mode value selects which bit is written,
+    the other start bit is written 0 -; the synchronous counter reset (set LPTIM_CR.COUNTRST); the register update mode
+    (LPTIM_CFGR.PRELOAD: 0 immediate, 1 at the end of the current period) and its query; the clock prescaler (write the
+    requested encoding to LPTIM_CFGR.PRESC) and its query, each preserving the other LPTIM_CFGR fields; the auto-reload
+    value (write the requested value to LPTIM_ARR.ARR) and its query; reading the counter (return LPTIM_CNT.CNT); the
+    auto-reload match flag query (return 1U when LPTIM_ISR.ARRM is set, else 0U) and its clear (write 1 to
+    LPTIM_ICR.ARRMCF); enabling, disabling and querying the auto-reload match interrupt (LPTIM_DIER.ARRMIE); the
+    auto-reload update OK flag (LPTIM_ISR.ARROK, clear by writing 1 to LPTIM_ICR.ARROKCF) and the interrupt enable
+    register update OK flag (LPTIM_ISR.DIEROK, clear by writing 1 to LPTIM_ICR.DIEROKCF) and their queries; one
+    requirement per function and value, naming the register field (e.g. LPTIM_CFGR.PRESC); then a reset/startup
+    requirement (e.g. '- **SWR-0nn** While no LL function has been called after reset, the LPTIM LL driver shall not
+    write any LPTIM register.').
+    Write constraints stated by RM0486 (the driver writes what it is called with; the caller orders the calls): LPTIM_CFGR
+    must only be modified while the LPTIM is disabled (58.7.10, 58.4.13); LPTIM_ARR and LPTIM_DIER must only be modified
+    while it is enabled (58.7.13, 58.7.8), and a new write to them only after ARROK / DIEROK is set (58.4.11); CNTSTRT,
+    SNGSTRT and COUNTRST can be set only while the LPTIM is enabled and are cleared by hardware; COUNTRST must be 0
+    before it is set again (58.7.11). LPTIM_ICR is write-only (access w): it reads 0, its reset value (RM0486 1.2,
+    register conventions input), so a requirement on it states the bit written. When the LPTIM is running, two equal
+    consecutive reads of LPTIM_CNT give a reliable value (58.7.14); the driver returns one read.
+    The capture/compare channels (LPTIM_CCR1/2, LPTIM_CCMR1, CC flags), PWM/waveform output, encoder mode, the external
+    clock and Input1/Input2 selection (CKSEL, COUNTMODE, LPTIM_CFGR2), the external trigger and timeout, the repetition
+    counter (LPTIM_RCR, REPOK), the update event flag and its interrupt/DMA, the asynchronous reset after read (RSTARE),
+    the direction-change flags, DMA, the other LPTIM instances, the LPTIM kernel clock selection (RCC) and the LL
+    init/deinit functions of stm32n6xx_ll_lptim.c are out of scope.
+  swe1_effect_example: '{"case":"SET_ARR_1000","swr":"SWR-009","register":"LPTIM_ARR","field":"ARR","op":"write","value":1000}'
+  swe1_effect_rule: >-
+    Use op "set"/"clear" for single bits (ENABLE, COUNTRST, PRELOAD, ARRMIE) and op "write" with "value" (an integer or
+    "0x..." string) for multi-bit fields (PRESC, ARR); a function that writes a caller-supplied value gets one entry with
+    a representative value and the api_calls args pass that value; the start function gets one entry per start bit (the
+    selected one op "set", the other op "clear", from one operating-mode value); a flag clear gets op "set" on its
+    LPTIM_ICR clear bit (ARRMCF, ARROKCF, DIEROKCF). Queries and the counter read get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the LPTIM_TypeDef instance pointer first): LL_LPTIM_Enable,
+    LL_LPTIM_Disable, LL_LPTIM_IsEnabled, LL_LPTIM_StartCounter (CNTSTRT/SNGSTRT), LL_LPTIM_ResetCounter,
+    LL_LPTIM_SetUpdateMode, LL_LPTIM_GetUpdateMode, LL_LPTIM_SetPrescaler, LL_LPTIM_GetPrescaler,
+    LL_LPTIM_SetAutoReload, LL_LPTIM_GetAutoReload, LL_LPTIM_GetCounter, LL_LPTIM_IsActiveFlag_ARRM,
+    LL_LPTIM_ClearFlag_ARRM, LL_LPTIM_EnableIT_ARRM, LL_LPTIM_DisableIT_ARRM, LL_LPTIM_IsEnabledIT_ARRM,
+    LL_LPTIM_IsActiveFlag_ARROK, LL_LPTIM_ClearFlag_ARROK, LL_LPTIM_IsActiveFlag_DIEROK and LL_LPTIM_ClearFlag_DIEROK;
+    list in Interfaces exactly the functions of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_lptim (LL, header-only) and the LPTIM1 register block (0x50002400, RM0486
+    p.181) and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_lptim, LPTIM1, showing the configuration while disabled (prescaler, update mode),
+    the timer enabled, the auto-reload match interrupt enabled with the caller waiting for DIEROK and clearing it, the
+    auto-reload value written with the caller waiting for ARROK and clearing it, the counter started in Continuous mode,
+    the caller polling the auto-reload match flag (the caller bounds the loop), the flag cleared and the timer disabled,
+    using the allocated LL_LPTIM_ function names
+  ut_example: |-
+    static void ut_lptim_prescaler(void)
+    {
+        ut_reset_regs();
+        forge_host_lptim.CFGR = LPTIM_CFGR_PRELOAD;
+        LL_LPTIM_SetPrescaler(LPTIM, LL_LPTIM_PRESCALER_DIV8);
+        CHECK("UT-001", (forge_host_lptim.CFGR & LPTIM_CFGR_PRESC) == LL_LPTIM_PRESCALER_DIV8);
+        CHECK("UT-002", (forge_host_lptim.CFGR & LPTIM_CFGR_PRELOAD) == LPTIM_CFGR_PRELOAD);
+        forge_host_lptim.ISR = LPTIM_ISR_ARRM;
+        CHECK("UT-003", LL_LPTIM_IsActiveFlag_ARRM(LPTIM) == 1U);
+        forge_host_lptim.ISR = 0U;
+        CHECK("UT-004", LL_LPTIM_IsActiveFlag_ARRM(LPTIM) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests preset the write-only register LPTIM_ICR to its reset value 0 before the call (on the device a read
+    returns the reset value, RM0486 1.2), never an arbitrary RAM value.
+    Host unit tests pass the generated host instance LPTIM (forge_host_device.h maps it to the RAM struct
+    forge_host_lptim; LPTIM1 is the device address and is used on the target only). Set/clear and value functions check the
+    written field (the start function: the selected start bit set and the other clear) and that a preset unrelated field
+    of the same register is preserved (LPTIM_CR.ENABLE across a start or counter reset; LPTIM_CFGR.PRELOAD across a
+    prescaler write); a flag clear checks that its LPTIM_ICR clear bit is written 1; queries get a set and a clear case.
+  target_model: >-
+    The simulated LPTIM1 (factory/sim/stm32n6/lptim_model.py) is behavioural with polled time: while counting, time
+    advances by one kernel clock on every read of LPTIM_CNT or LPTIM_ISR (deterministic polling); the counter steps every
+    2^PRESC clocks from 0 up to LPTIM_ARR, sets LPTIM_ISR.ARRM when it reaches LPTIM_ARR and at the next step wraps to 0
+    with an update event (LPTIM_ISR.UE set, a preloaded LPTIM_ARR loaded); in Single mode the counter stops at that wrap.
+    LPTIM_CR.CNTSTRT/SNGSTRT/COUNTRST take effect only while ENABLE is set and read back 0; COUNTRST clears the counter at
+    once (the 3-clock synchronisation is not modelled). A write to LPTIM_ARR or LPTIM_DIER while ENABLE is set is
+    accepted and sets ARROK or DIEROK at once (the APB-to-kernel latency is not modelled; LPTIM_ARR loads at once unless
+    PRELOAD is set and the counter is running); while disabled such a write is ignored. A write to LPTIM_CFGR while ENABLE
+    is set is ignored. LPTIM_ICR is write-only (reads 0): each bit written 1 clears the LPTIM_ISR bit of the same
+    position. Disabling stops the counter, which keeps its value. LPTIM_ARR resets to 1, the others to 0; capture/compare,
+    external clock, triggers, encoder and the repetition counter are storage, not modelled. Expected values in target
+    checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_lptim_target.c (with the prescaler and update mode configured while disabled, the
+    timer enabled and the auto-reload value 3 written: ARROK sets and its clear makes the query return 0U; started in
+    Continuous mode, polling the counter reaches 3, the auto-reload match flag sets and its clear makes the query return
+    0U; the counter wraps to 0 and keeps counting) and software/tests/target/test_lptim_target_single.c (started in Single
+    mode with auto-reload 2: after the match the counter returns to 0 and stays there; the counter reset clears a running
+    counter; disabling stops the counter)
+  field_mask_example: LPTIM_CFGR_PRESC
+  query_example: LL_LPTIM_GetCounter(LPTIM1)
+  integration: >-
+    a configuration of the prescaler and update mode while disabled, the timer enabled, the auto-reload match interrupt
+    enabled and the auto-reload value written (each waited for through its OK flag and that flag cleared), the counter
+    started in Continuous mode, the auto-reload match flag queried and cleared and the timer disabled (on the host the
+    registers keep the written values; there is no counting and the OK flags are preset by the test)
+  requirement_example: When LL_LPTIM_SetAutoReload is called with an auto-reload value, the LPTIM LL driver shall write the auto-reload value to LPTIM_ARR.ARR.

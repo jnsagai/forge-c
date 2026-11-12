@@ -1,0 +1,8 @@
+reproducers:
+- baseline_revision: a477a6d8676f7dc1f75bfef7b04be6eda280d860
+  id: AFO-operator-typed-plan
+  observed_in: 01M5QVAH97WCR7E9W0VPTSMK8Q
+  script: reproducer.py
+  sha256: 18b2a352f92aea0f8eb84b836ec647e4d45712fbd89d5187553de806acc8b4b1
+  symptom_signature: planner receives opaque JSON text instead of its authoritative
+    plan schema

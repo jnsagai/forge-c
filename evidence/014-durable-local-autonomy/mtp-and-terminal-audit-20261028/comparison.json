@@ -1,0 +1,25 @@
+{
+  "baseline": {
+    "requests": 4,
+    "output_tokens": 368,
+    "decode_seconds": 12.723848,
+    "decode_tokens_per_second": 28.607697922829633,
+    "request_wall_seconds": 13.60789537196979
+  },
+  "mtp": {
+    "requests": 4,
+    "output_tokens": 380,
+    "decode_seconds": 4.530031,
+    "decode_tokens_per_second": 83.00163950312923,
+    "request_wall_seconds": 5.493902045302093
+  },
+  "decode_speed_ratio": 2.9013742988698126,
+  "request_wall_speed_ratio": 2.4769089910523756,
+  "draft_acceptance": {
+    "accepted": 284,
+    "generated": 294
+  },
+  "byte_equal_pairs": 2,
+  "pairs": 4,
+  "limit": "Short no-thinking raw-decode fixtures; no xhigh role, 64K occupancy, quality noninferiority, product or operational qualification"
+}

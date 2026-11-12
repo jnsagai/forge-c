@@ -1,0 +1,14 @@
+{
+  "experience_id": "experience-6271df4bc08d9b2199aa7fa3",
+  "disposition": {
+    "at": "2026-10-27T17:10:20.213596Z",
+    "experience_id": "experience-6271df4bc08d9b2199aa7fa3",
+    "inference_tokens": 0,
+    "pattern": null,
+    "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+    "state": "DEFERRED_BUDGET"
+  },
+  "new_model_requests": 0,
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED"
+}

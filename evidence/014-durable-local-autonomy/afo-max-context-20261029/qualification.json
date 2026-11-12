@@ -1,0 +1,28 @@
+{
+  "runtime_source": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "context_tokens": 262144,
+  "native_model_max_context_tokens": 262144,
+  "allocation": "PASS_ALLOCATION_ONLY",
+  "profile_sha256": "530a562a11187f147031a08f817b866a63fb2f4d086c0b3f520eb2d62290adbf",
+  "local": {
+    "passed": 37,
+    "failed": 0,
+    "errors": 0
+  },
+  "native": {
+    "passed": 36,
+    "failed": 0,
+    "setup_errors": 1,
+    "unrun_case": "test_preflight_cli_persists_missing_review_without_launching",
+    "blocker": "arm-none-eabi-gcc unavailable in native qualification environment; inherited product-preparation setup, not context admission"
+  },
+  "live_trial": "RUNNING",
+  "native_run_id": "01M64RG1FV5Y0B7M0VGN213D42",
+  "order_id": "afo-77ab6ea67e02ba0a",
+  "candidate": "NOT_YET_SUBMITTED",
+  "self_healing": "UNPROVEN",
+  "model_capability": "NOT_QUALIFIED",
+  "deadline_utc": "2026-10-29T22:25:58Z",
+  "mission_history_reset": false,
+  "scope": "Context capacity increase and owner-authorized historical failure replay. No product, learning-benefit or availability acceptance."
+}

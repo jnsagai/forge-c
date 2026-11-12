@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/independent-archive-inventory-qualification/1",
+  "source_revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
+  "baseline_revision": "25a93b694134cd10cdbf7ca7dca72618b236bf15",
+  "baseline_counterexample": "Removing an indexed evidence member incorrectly returned integrity PASS; test failed as expected",
+  "tests": {
+    "local": {
+      "passed": 24,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 13.477
+    },
+    "omniverse2": {
+      "passed": 24,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "duration_seconds": 50.327
+    }
+  },
+  "model_requests": 0,
+  "production_mutated": false,
+  "grants_created_or_renewed": false,
+  "same_qm_activation_scope": "f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d",
+  "qm_runtime_candidate": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
+  "qm_activation": "PREPARED_UNSIGNED_NOT_ACTIVE",
+  "historical_archive_integrity": "PASS_UNDER_STRONGER_CHECK",
+  "product_acceptance": "BLOCKED_UNCHANGED",
+  "learning_benefit": "NOT_MEASURED",
+  "operational_availability": "NOT_QUALIFIED",
+  "setup_failures": {
+    "local": "23PASS/1FAIL: Fabro --help executable missing from environment; set existing FORGE_FABRO_BIN",
+    "native": "21PASS/3FAIL: isolated data root lacked existing PlantUML mapping; bind pinned toolchain and PATH; no code/test changes"
+  }
+}

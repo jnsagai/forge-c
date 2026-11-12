@@ -24,9 +24,33 @@ def static_findings(ws: Path) -> list[str]:
 
     p = Path(ws) / DELIVERED_STATIC
     try:
-        return list(json.loads(p.read_text()).get("findings") or []) if p.is_file() else []
+        out = list(json.loads(p.read_text()).get("findings") or []) if p.is_file() else []
     except ValueError:
-        return ["STATIC_ANALYSIS:REPORT_UNREADABLE"]
+        out = ["STATIC_ANALYSIS:REPORT_UNREADABLE"]
+    from ..mcp.servers.analysis import DELIVERED_CPPCHECK
+
+    c = Path(ws) / DELIVERED_CPPCHECK  # owner 2026-11-01: cppcheck findings in FROZEN code go to the owner, never repaired
+    try:
+        out += [f"STATIC_ANALYSIS:{x}" for x in json.loads(c.read_text()).get("findings") or []] if c.is_file() else []
+    except ValueError:
+        out.append("STATIC_ANALYSIS:CPPCHECK_REPORT_UNREADABLE")
+    return out
+
+
+def provided_guideline_findings(ws: Path) -> list[str]:
+    """CAPA-141: Cube2-guideline violations located in a HAL's provided FROZEN LL (ST code), one entry per rule and
+    file (vendor style repeats per function); delivered-code observations for the owner, never the HAL author's."""
+    from ..inspection.guideline import check_workspace
+
+    try:
+        rep = check_workspace(Path(ws))
+    except (OSError, ValueError, KeyError):
+        return ["GUIDELINE:PROVIDED_CHECK_FAILED"]
+    count: dict[tuple[str, str], int] = {}
+    for v in rep.get("provided_frozen_violations") or []:
+        count[(v["rule"], v["file"])] = count.get((v["rule"], v["file"]), 0) + 1
+    return [f"GUIDELINE:{rule}:{file} ({n} occurrence{'s' if n != 1 else ''})"
+            for (rule, file), n in sorted(count.items())]
 
 
 def _vendor_findings(ws: Path) -> list[str]:
@@ -38,7 +62,17 @@ def findings(ws: Path) -> list[dict]:
     ws = Path(ws)
     m = manifest_of(ws)
     if not is_brownfield(m):
-        return []
+        from . import provided_frozen_paths
+
+        if not provided_frozen_paths(m):
+            return []
+        # CAPA-130: static-analysis findings in a HAL's provided FROZEN LL (ST code) stay owner gaps, as in the LL
+        # work order, unless an owner disposition settles them; the HAL author never repairs them
+        src = ", ".join(sorted({p.get("source_work_order") or "-" for p in m.get("provided") or []
+                                if p.get("delivered_code_mode") == "FROZEN"}))
+        return [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
+                 "detail": f"provided FROZEN delivered LL (source work order {src})"}
+                for x in static_findings(ws) + provided_guideline_findings(ws) if disposition_of(ws, x) is None]
     from .verify import verify
 
     out = []
@@ -108,6 +142,13 @@ def stage(ws: Path, stage_dir: Path) -> list[str]:
     out = stage_dir / "configuration"
     out.mkdir(parents=True, exist_ok=True)
     (out / "delivery.json").write_text(pretty_json(rec))
+    validation = ws / ".forge-run/resume/validation.json"
+    if m.get("resumed_from") and validation.is_file():
+        (out / "resume-validation.json").write_bytes(validation.read_bytes())
+        (out / "resume-lineage.json").write_text(pretty_json(m.get("resume_lineage") or {}))
+        source = ws / ".forge-run/resume/source-manifest.json"
+        if source.is_file():
+            (out / "resume-source-manifest.json").write_bytes(source.read_bytes())
     for name in ("intake.json", "scope.json", "injection.json", "conformance.json", "code_findings.json",
                  "change_report.json", "verification-package.json"):
         src = ws / DELIVERY_DIR / name

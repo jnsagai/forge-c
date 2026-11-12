@@ -1,0 +1,384 @@
+{
+  "accounting_note": "Elapsed wall includes queue delay and context repartition. Original accounting.wall_seconds is the second invocation only; it is not the cumulative wall denominator.",
+  "authority": "owner request 2026-10-27: run remote Qwen to advance work",
+  "elapsed_wall_seconds": 144.122,
+  "ended_at": "2026-10-27T09:36:18.999569Z",
+  "harness_events": [
+    {
+      "at": "2026-10-27T09:36:05.739591Z",
+      "event": "CONTEXT_PREFLIGHT_REFUSAL_REPARTITIONED_NO_MODEL_CALL",
+      "prior_calls_retained": 1
+    }
+  ],
+  "host": "Omniverse2",
+  "independent_checks": {
+    "checks": [
+      {
+        "admissible": false,
+        "case": "activation-write-field",
+        "check_ids": [
+          "RIO-ACCESS-UNSUPPORTED"
+        ],
+        "domain_sha256": "c16d033114a973f1030d2d999e182089ef7960753b36bfb820628447e2d00088",
+        "issues": [],
+        "original_request_ref": {
+          "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/request.json",
+          "sha256": "26537bd9568c89996b6f11d2f5c463f0d12e0d0ed732d0353fa1fdb7d53d70ac"
+        },
+        "status": "UNSUPPORTED",
+        "work_order": "WWDG-LL-st301"
+      },
+      {
+        "admissible": false,
+        "case": "counter-write-field",
+        "check_ids": [
+          "RIO-RMW-SIDE-EFFECT"
+        ],
+        "domain_sha256": "c16d033114a973f1030d2d999e182089ef7960753b36bfb820628447e2d00088",
+        "issues": [],
+        "original_request_ref": {
+          "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/request.json",
+          "sha256": "26537bd9568c89996b6f11d2f5c463f0d12e0d0ed732d0353fa1fdb7d53d70ac"
+        },
+        "status": "UNSUPPORTED",
+        "work_order": "WWDG-LL-st301"
+      },
+      {
+        "admissible": false,
+        "case": "conditioning-value-width-only",
+        "check_ids": [
+          "RIO-RMW-SIDE-EFFECT"
+        ],
+        "domain_sha256": "a82e8a8e846aecb3101569fe1f290194e7d4c2286637d36f544bc05e17ada0c0",
+        "issues": [],
+        "original_request_ref": {
+          "path": "lrtx/state/workorders/RNG-LL-st301/workspace/.forge-run/safec/2026-10-27T081435.402734Z-0001-requirements_RNG_CR_1/request.json",
+          "sha256": "57d718f94a372cadf64e5b7fa64eff9a45ef56535a591cd55ca1037d77e24720"
+        },
+        "status": "UNSUPPORTED",
+        "work_order": "RNG-LL-st301"
+      },
+      {
+        "admissible": true,
+        "case": "status-read-only",
+        "check_ids": [],
+        "domain_sha256": "a876a96b344bd40c101f8544f796b95304f1cd4f742fbf8d5065612ddb95b8cb",
+        "issues": [],
+        "original_request_ref": {
+          "path": "lrtx/state/workorders/LPTIM-LL-st301/workspace/.forge-run/safec/2026-10-27T081637.169322Z-0001-requirements_LPTIM_ISR_1/request.json",
+          "sha256": "51088f5de52c394057cdcb5c05762b1e279851558738ddf29f6ede338b8e1b14"
+        },
+        "status": "PASS",
+        "work_order": "LPTIM-LL-st301"
+      }
+    ],
+    "engine": {
+      "binary_sha256": "5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f",
+      "semantic_profile": "register-io-0.1",
+      "source_commit_sha": "cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2"
+    },
+    "model_calls": 0,
+    "product_success": "NOT_DEMONSTRATED",
+    "qualified_lessons": 0,
+    "scope": "SELECTED_SUGGESTIONS_ONLY_NOT_PRODUCT_VERIFICATION",
+    "self_healing": "NOT_DEMONSTRATED"
+  },
+  "inspector_development": "FROZEN_UNCHANGED",
+  "learning": {
+    "dispositions": [
+      {
+        "at": "2026-10-27T09:40:33.181363Z",
+        "experience_id": "experience-55a51508b2e2695fb99eef9d",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181461Z",
+        "experience_id": "experience-1d163d783ce7425b438bfa94",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181504Z",
+        "experience_id": "experience-97d1d56f68efaffe276c1191",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181534Z",
+        "experience_id": "experience-6f8b6add267ee6a8ab875862",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181559Z",
+        "experience_id": "experience-5dd15d2ad87276d253a8fe78",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181580Z",
+        "experience_id": "experience-5ecac3c0bc9e1f02960efcd5",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181601Z",
+        "experience_id": "experience-d8dfc8effedf18acad938080",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "state": "NO_NEW_LESSON"
+      },
+      {
+        "at": "2026-10-27T09:40:33.181622Z",
+        "experience_id": "experience-70d58e2e8919a0bf8388f7f0",
+        "inference_tokens": 0,
+        "pattern": null,
+        "reason": "SEPARATE_ADMITTED_CONSOLIDATION_REQUIRED",
+        "state": "DEFERRED_BUDGET"
+      }
+    ],
+    "experience_ids": [
+      "experience-55a51508b2e2695fb99eef9d",
+      "experience-1d163d783ce7425b438bfa94",
+      "experience-97d1d56f68efaffe276c1191",
+      "experience-6f8b6add267ee6a8ab875862",
+      "experience-5dd15d2ad87276d253a8fe78",
+      "experience-5ecac3c0bc9e1f02960efcd5",
+      "experience-d8dfc8effedf18acad938080",
+      "experience-70d58e2e8919a0bf8388f7f0"
+    ],
+    "model_calls": 0,
+    "qualified_lessons_added": 0,
+    "scope": "FACTUAL_CAPTURE_ONLY_NO_REPAIR_INCIDENTS_NO_LESSON_PROMOTION",
+    "summary": {
+      "applications": 0,
+      "benefit_status": "UNKNOWN",
+      "dispositions": {
+        "DEFERRED_BUDGET": 7,
+        "NO_NEW_LESSON": 1
+      },
+      "exposures": 0,
+      "measured_benefits": 0,
+      "unique_experiences": 8
+    }
+  },
+  "learning_benefit": "NOT_MEASURED",
+  "max_requests": 3,
+  "max_wall_seconds": 600,
+  "model": "qwen3.6:35b-a3b",
+  "model_requests": 3,
+  "new_tasks_checked": [],
+  "output_reserve_per_request": 2048,
+  "output_tokens": 3498,
+  "private_artifact_hashes": {
+    "060-st3-diagnosis.sh": "abcd08313e2fc6a16a28440d6c76e1510c410968cc051439eb38417a991ac7c5",
+    "061-st3-diagnosis-resume.sh": "c961e2d1bbb71305c28b37e15f1249cd38ad9eada392b35052414627e13cb192",
+    "LPTIM-LL-st301-packet.json": "a8bdfcb0f2aa025351a80d2e214450a47348a7b012396afc09399ba092254123",
+    "LPTIM-LL-st301-proposal.json": "52303e45b4ed24575471bb617397a68c416aebb7067fb0bd5b7d707cba18cf47",
+    "RNG-LL-st301-packet.json": "8fe642710e7ddb31f052d7570a87ebccde8b9eee0a204310fa297d6cca83eba6",
+    "RNG-LL-st301-proposal.json": "5e36e6c19cd9d6a0be748c847536e781cafe873140a51ad6a8934d3b9744ccc0",
+    "WWDG-LL-st301-packet.json": "1da1fee2668fb4b51ca58a85830f94a957b1fb2d676ea044c6e5e1587cd7f1f0",
+    "WWDG-LL-st301-proposal.json": "b0174a863bc54d6a465b03d6890b65de347bae3418801724f9400dd5f1c6585b",
+    "accounting.json": "88facea8ca2097eb8d4c62882c7a4d9fdcf0622fb6dd20a37a2c246a14d36989",
+    "activation-write-field-engine-outcome.json": "ff662d5e4ab7002b10100c736bc0d06b0d119d2c13db2bb0e005fbf30053d828",
+    "capture_experience.py": "36abb863b8263a62cdcfb75f28b0d882aabd3c17cb12016991a2927dbc8e4f57",
+    "check_proposals.py": "7df68e436987995be7a164963e3a1ecad9519976167e03b3249588b1b5ace489",
+    "conditioning-value-width-only-engine-outcome.json": "a8cc1f70119037ee317e0c6d024fc330af692dcfb12d4e2b74585e7b5d4341f9",
+    "counter-write-field-engine-outcome.json": "4bc7d14aad02457db2cc892a3fd9113ae7c45634c7f6c7e80802ec9380b8d8ff",
+    "diagnose-v1.py": "61c3d6b1765a8eacde43fcbcb4b221ef4abbd0391384d2f52152737ad0e91369",
+    "diagnose.py": "30fee7400ec5f52c770099c4a1f0cd440c38fa2e30ae7d280791ce42aa52031d",
+    "independent-checks.json": "e6ba18b5b87627b65b97914db296a44bb73957ad8124d8f6826e30bfeb046db1",
+    "learning-capture.json": "e63bedc24f76d92a858b8a041030170cbce5a764fe241f7f91b28644846ca2b7",
+    "status-read-only-engine-outcome.json": "0b9f1493beacf601761324fdf15ced6d9e4618de8f81aecda0a0a83cb37a09f9"
+  },
+  "product_success": "NOT_DEMONSTRATED",
+  "prompt_tokens": 15803,
+  "queue_invocations": [
+    {
+      "exit_code": 1,
+      "job": "060-st3-diagnosis.sh",
+      "reason": "Complete-context refusal after first call; expenditure retained"
+    },
+    {
+      "exit_code": 0,
+      "job": "061-st3-diagnosis-resume.sh",
+      "reason": "Repartitioned coherent register inputs; remaining two calls only"
+    }
+  ],
+  "request_wall_seconds": 24.004,
+  "rows": [
+    {
+      "context_accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 21916,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 21788,
+          "sha256": "4a7c1ce078d012a2d84c76c050bd94b79239dad5b4073fcf9f6c3ff72722a31f"
+        },
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 7017,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19121
+      },
+      "errors": [],
+      "input_refs": [
+        {
+          "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/domain.json",
+          "sha256": "c16d033114a973f1030d2d999e182089ef7960753b36bfb820628447e2d00088"
+        },
+        {
+          "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/request.json",
+          "sha256": "26537bd9568c89996b6f11d2f5c463f0d12e0d0ed732d0353fa1fdb7d53d70ac"
+        },
+        {
+          "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/result.json",
+          "sha256": "3fdc051e9ce8e266fa1865acd8873e20757c5beaa4414f3479db88ddf540b94e"
+        },
+        {
+          "path": "repo-b309039/factory/python/forge_factory/safec_bridge/domain.py",
+          "sha256": "2df4828a3bd5e8eb9ee5c1dede6c6f3945060538bd2f1f47116ed153127f3174"
+        }
+      ],
+      "packet_metadata_sha256": "1da1fee2668fb4b51ca58a85830f94a957b1fb2d676ea044c6e5e1587cd7f1f0",
+      "proposal_sha256": "b0174a863bc54d6a465b03d6890b65de347bae3418801724f9400dd5f1c6585b",
+      "reference_check": "PASS",
+      "reference_check_is_correctness_evidence": false,
+      "role_skill": {
+        "path": ".fabro/skills/swe1-author/SKILL.md",
+        "sha256": "30ee693393b01d137ccb267bf3a142b821352035de7ab22e693b62b488ef238f"
+      },
+      "status": "PROPOSAL_ONLY",
+      "usage": {
+        "completion_tokens": 1057,
+        "prompt_tokens": 6259,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 7316
+      },
+      "wall_ms": 10749.7,
+      "work_order": "WWDG-LL-st301"
+    },
+    {
+      "context_accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 17913,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 17785,
+          "sha256": "3fd54b12d113ed487c45dcff23127c527078e397c8b09aacd5404854ad65847b"
+        },
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 5546,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 15077
+      },
+      "errors": [],
+      "input_refs": [
+        {
+          "path": "lrtx/state/workorders/RNG-LL-st301/workspace/.forge-run/safec/2026-10-27T081435.402734Z-0001-requirements_RNG_CR_1/domain.json#complete-requested-registers",
+          "sha256": "f7961aff8cb370fb2eecd3499ebd50566979514e37d1090680aea901666460c2"
+        },
+        {
+          "path": "lrtx/state/workorders/RNG-LL-st301/workspace/.forge-run/safec/2026-10-27T081435.402734Z-0001-requirements_RNG_CR_1/request.json",
+          "sha256": "57d718f94a372cadf64e5b7fa64eff9a45ef56535a591cd55ca1037d77e24720"
+        },
+        {
+          "path": "lrtx/state/workorders/RNG-LL-st301/workspace/.forge-run/safec/2026-10-27T081435.402734Z-0001-requirements_RNG_CR_1/result.json",
+          "sha256": "dc6ad9457c889f6e09a3a4a03b35901da3a6bdd2a4b8dbe59b12271bde18d52d"
+        }
+      ],
+      "packet_metadata_sha256": "8fe642710e7ddb31f052d7570a87ebccde8b9eee0a204310fa297d6cca83eba6",
+      "proposal_sha256": "5e36e6c19cd9d6a0be748c847536e781cafe873140a51ad6a8934d3b9744ccc0",
+      "reference_check": "PASS",
+      "reference_check_is_correctness_evidence": false,
+      "role_skill": {
+        "path": ".fabro/skills/swe1-author/SKILL.md",
+        "sha256": "30ee693393b01d137ccb267bf3a142b821352035de7ab22e693b62b488ef238f"
+      },
+      "status": "PROPOSAL_ONLY",
+      "usage": {
+        "completion_tokens": 1336,
+        "prompt_tokens": 4986,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 6322
+      },
+      "wall_ms": 7060.5,
+      "work_order": "RNG-LL-st301"
+    },
+    {
+      "context_accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 14006,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 13878,
+          "sha256": "fa86bc99daf013abc859b442c929256d959bfc3bc2650168283fd9ae8b0f8bf1"
+        },
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 4306,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 11668
+      },
+      "errors": [],
+      "input_refs": [
+        {
+          "path": "lrtx/state/workorders/LPTIM-LL-st301/workspace/.forge-run/safec/2026-10-27T081637.169322Z-0001-requirements_LPTIM_ISR_1/domain.json#complete-requested-registers",
+          "sha256": "4cb28fb0401d4fca487e570afc6fef01373704c200bb798c51ffbc4293a51e05"
+        },
+        {
+          "path": "lrtx/state/workorders/LPTIM-LL-st301/workspace/.forge-run/safec/2026-10-27T081637.169322Z-0001-requirements_LPTIM_ISR_1/request.json",
+          "sha256": "51088f5de52c394057cdcb5c05762b1e279851558738ddf29f6ede338b8e1b14"
+        },
+        {
+          "path": "lrtx/state/workorders/LPTIM-LL-st301/workspace/.forge-run/safec/2026-10-27T081637.169322Z-0001-requirements_LPTIM_ISR_1/result.json",
+          "sha256": "fb90d491ca7fcb22eb2751639cf4bb50faee11b471082c2da8905e6a23633b5d"
+        }
+      ],
+      "packet_metadata_sha256": "a8bdfcb0f2aa025351a80d2e214450a47348a7b012396afc09399ba092254123",
+      "proposal_sha256": "52303e45b4ed24575471bb617397a68c416aebb7067fb0bd5b7d707cba18cf47",
+      "reference_check": "FAIL",
+      "reference_check_is_correctness_evidence": false,
+      "role_skill": {
+        "path": ".fabro/skills/swe1-author/SKILL.md",
+        "sha256": "30ee693393b01d137ccb267bf3a142b821352035de7ab22e693b62b488ef238f"
+      },
+      "status": "INVALID_OR_BLOCKED_PROPOSAL",
+      "usage": {
+        "completion_tokens": 1105,
+        "prompt_tokens": 4558,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 5663
+      },
+      "wall_ms": 6193.4,
+      "work_order": "LPTIM-LL-st301"
+    }
+  ],
+  "schema": "forge-c/014-external-diagnostic-study/1",
+  "scope": "ST3_READ_ONLY_DIAGNOSTIC_PROPOSALS_NOT_AUTONOMOUS_RECOVERY_OR_QUALIFICATION",
+  "self_healing": "NOT_DEMONSTRATED",
+  "source_revision": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+  "started_at": "2026-10-27T09:33:54.877295Z"
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-097": {
+  "history": [
+   {
+    "at": "2026-11-01T22:19:09.036992Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[\"fabro-swe3-iwdg-l1-design-pass-hides-code-fail\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE3-IWDG-20261101-L1: SWE.3 froze with open cppcheck MISRA-10.6/12.1; SWE.4 failed SWE4-04",
+    "seq": 729,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T22:19:09.130206Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 730,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T22:19:09.258346Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-097 assigned",
+    "seq": 731,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T22:19:13.956762Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[\"reproducer-run:rr-fbcee3f1cbff914f356c\", \"reproducer-run:rr-74468cdf5d728ac2d5df\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 732,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T22:19:13.974978Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[\"git:ded15e35e552..d1b86d4f0998\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix d1b86d4f0998 (patch 4886 bytes)",
+    "seq": 733,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T22:22:02.232562Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[\"reproducer-run:rr-4076e822f74ada894c76\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-097 absent at d1b86d4f0998",
+    "seq": 734,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T22:22:02.249481Z",
+    "capa_id": "CAPA-097",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 735,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-b7c8e6ffdff34b970e736972a7343e30da3a966c",
+   "ded15e35e552bc5dbf2ac462bb30a573f9af221a",
+   "d1b86d4f099826e1aa3c8fe95fccf33880d1fccb",
+   "pd-c9fbd52aeebde6c52257"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<d1b86d4f0998"
+   ],
+   "candidate_patch_sha256": "3fe295eb2c50e671458192e18d2658b321e3d48893b156a39535132177fd460b",
+   "capa_id": "CAPA-097",
+   "created_at": "2026-11-01T22:19:09.036992Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe3-iwdg-l1-design-pass-hides-code-fail"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-097",
+   "reproducer_id": "RPR-097",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-fbcee3f1cbff914f356c",
+    "reproducer-run:rr-74468cdf5d728ac2d5df"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The design node's PASS replaces the code node's FAILED reply",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T22:22:02.249481Z"
+  }
+ }
+}

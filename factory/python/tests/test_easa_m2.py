@@ -194,7 +194,9 @@ def test_at022_controlled_review_needs_human_and_kpis_cannot_trade():
 
 # ---- T016 / T046 / AT-082 / AT-046: holdout custody ---------------------------------------------------------------
 def test_at082_author_role_denied_and_audited(tmp_path, monkeypatch):
-    monkeypatch.setattr(isolation, "available", lambda: False)
+    # Exercise the policy-only fallback consistently; custody handover uses backend(), too.
+    monkeypatch.setenv(isolation.MODE_ENV, "none")
+    assert not isolation.available()
     monkeypatch.setattr(oracle, "emit", lambda *a, **k: None)
     s = AssuranceStore(tmp_path / "db.sqlite3")
     v = oracle.HoldoutVault(tmp_path / "vault", store=s)

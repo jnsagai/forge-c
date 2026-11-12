@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<740858e65117"
+  ],
+  "candidate_patch_sha256": "1a962145110aa0f91c84eb7b02ea4251878391fb93507ab85bc5ecaf641ce4b6",
+  "capa_id": "CAPA-176",
+  "created_at": "2026-11-05T11:47:02.842599Z",
+  "event_ids": [],
+  "incident_ids": [
+    "AUDIT-DEPENDENT-OBJECTIVE-BEFORE-PREREQUISITE"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-176",
+  "reproducer_id": "RPR-176",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-561413511ddee9fdf399",
+    "reproducer-run:rr-7644ba5ec296a8b0e86e"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Preparation and request serialization choose lexical IDs instead of validated ready objectives; pending broker admission trusts that scope. Validate the entire graph and choose one dependency-free unresolved objective at every boundary without changing global evidence, mission identity or allowances.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T11:50:32.881660Z"
+}

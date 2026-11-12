@@ -1,0 +1,76 @@
+{
+  "scope": "metadata only; no reference exposure",
+  "sources": [
+    {
+      "work_order": "WO-AFO-efc1871950537b1a-a1",
+      "peripheral": "crc",
+      "recorded_archive_sha256": "b94d8296b15574a261f7df0b30fa2d1f92028b8768b180344c4e9de995fcf6a5",
+      "classification": "EXCLUDED_HISTORICAL_HOLDOUT",
+      "historical_holdout_reports": [
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-t2-runs.json",
+          "sha256": "d14f932d7382d3473a04fde7057b5e252b8f5bdc53e314d612e7a5d6059c4436"
+        },
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-e0c020d.json",
+          "sha256": "a52e00a67c90ed5c59c7c168bc4f03c7c3f7e1adb9cfbf26e8cfbd59c7ec9de3"
+        }
+      ]
+    },
+    {
+      "work_order": "WO-AFO-125b96c419d7bc90-a1",
+      "peripheral": "spi",
+      "recorded_archive_sha256": "ebfd17e8e4de709b22e3c56b3a0872f6c2c1b57b76a2a0550ef33cfc8b77e717",
+      "classification": "EXCLUDED_HISTORICAL_HOLDOUT",
+      "historical_holdout_reports": [
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-9300475.json",
+          "sha256": "c61463d98306b71955e9765e51e1d31ab31e0f8c5da96a19e7227501fcae47a7"
+        },
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-e0c020d.json",
+          "sha256": "a52e00a67c90ed5c59c7c168bc4f03c7c3f7e1adb9cfbf26e8cfbd59c7ec9de3"
+        }
+      ]
+    },
+    {
+      "work_order": "WO-AFO-1fab3fc8b2e35f24-a2",
+      "peripheral": "usart",
+      "recorded_archive_sha256": "f6d597993a2dc90a9aa722e45e2442b070718ffc69548e37b05900d64e6c03ae",
+      "classification": "EXCLUDED_HISTORICAL_HOLDOUT",
+      "historical_holdout_reports": [
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-9300475.json",
+          "sha256": "c61463d98306b71955e9765e51e1d31ab31e0f8c5da96a19e7227501fcae47a7"
+        },
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-e0c020d.json",
+          "sha256": "a52e00a67c90ed5c59c7c168bc4f03c7c3f7e1adb9cfbf26e8cfbd59c7ec9de3"
+        }
+      ]
+    },
+    {
+      "work_order": "WO-AFO-03122bd1dd4fb5ff-a1",
+      "peripheral": "gpio",
+      "recorded_archive_sha256": "0d9f5889ba46c12fc97b48042d879c3cf3b48f1f89cc44548a9fdb6235c1a3ce",
+      "classification": "EXCLUDED_HISTORICAL_HOLDOUT",
+      "historical_holdout_reports": [
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-t2-runs.json",
+          "sha256": "d14f932d7382d3473a04fde7057b5e252b8f5bdc53e314d612e7a5d6059c4436"
+        },
+        {
+          "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-e0c020d.json",
+          "sha256": "a52e00a67c90ed5c59c7c168bc4f03c7c3f7e1adb9cfbf26e8cfbd59c7ec9de3"
+        }
+      ]
+    },
+    {
+      "work_order": "WO-AFO-c2fd276494a54e7f-a1",
+      "peripheral": "tim",
+      "recorded_archive_sha256": "995f31e322a1feb0370ecec97709424beab02c1d84102c02fae09b50113e4ad6",
+      "classification": "SEPARATE_TRAINING_SELECTION_REQUIRED",
+      "historical_holdout_reports": []
+    }
+  ]
+}

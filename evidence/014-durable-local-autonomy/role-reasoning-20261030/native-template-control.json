@@ -1,0 +1,2 @@
+{"rows": [{"effort": "medium", "prompt_sha256": "b6136cad3d9d9a36483bfd6943f7072e777a3522f304d5d08019b0e6efee30f5", "prompt_chars": 79, "ends_open_thinking": true}, {"effort": "xhigh", "prompt_sha256": "68ea35b99362da0ccbcd2676fe08dc71fe151cea3d1f39246d9f7889da057cdb", "prompt_chars": 316, "ends_open_thinking": true}], "per_request_template_differs": true, "generation_requests": 0, "raw_prompts_or_hidden_reasoning_collected": false}
+

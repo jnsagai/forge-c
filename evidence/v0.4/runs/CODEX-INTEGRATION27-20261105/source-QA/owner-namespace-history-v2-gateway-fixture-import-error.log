@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v2/factory/python/forge_factory/llm_gateway.py", line 31, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'

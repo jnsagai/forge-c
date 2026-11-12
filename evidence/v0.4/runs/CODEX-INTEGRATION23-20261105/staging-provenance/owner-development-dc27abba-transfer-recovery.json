@@ -1,0 +1,8 @@
+{
+  "initial_transfer": "TERMINAL_SCP1_UNEXPECTED_FILENAME_DOT",
+  "source_staging_or_probes_started": false,
+  "recovery": "Use exact15file tar after remote namespace inventory; no replay of source effects",
+  "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-dc27abba-transport.tar",
+  "sha256": "ef85afb5654299cce8c056093277e9a95c81c26ba88b7bfe38d334a7af3cad2e",
+  "bytes": 3952640
+}

@@ -1,0 +1,84 @@
+{
+  "captured_utc": "2026-10-28T10:17:52.086944Z",
+  "source_revision": "a7490b45e25a399c87e274f60c3f2fcaba1080c2",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 5
+  },
+  "order": {
+    "order_id": "afo-dfdd59e695d5333f",
+    "state": "BLOCKED",
+    "reason": null,
+    "terminal_reason": "UNKNOWN_NOT_RECOVERABLE_BY_AFO",
+    "created_at": null
+  },
+  "units": {
+    "forge-conductor-local-omniverse2.service": [
+      "MainPID=23323",
+      "ActiveState=active",
+      "SubState=running"
+    ],
+    "forge-afo-watchdog-014-omniverse2.timer": [
+      "ActiveState=active",
+      "SubState=waiting"
+    ],
+    "forge-qwen-golive-20261028.service": [
+      "MainPID=30565",
+      "ActiveState=active",
+      "SubState=running"
+    ]
+  },
+  "heartbeat": {
+    "ts": "2026-10-28T10:17:50.710059Z",
+    "epoch": 1793182670.7102597,
+    "pid": 23323,
+    "cycle": 66,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  },
+  "historical_charged_tokens": {
+    "RCC": 86000,
+    "IWDG": 116000
+  },
+  "resource_ownership": [
+    {
+      "resource": "inference",
+      "holder": null,
+      "epoch": 12
+    },
+    {
+      "resource": "generation",
+      "holder": null,
+      "epoch": 66
+    }
+  ],
+  "product_outcomes": [
+    {
+      "job_id": "afo-product-2db780fed7dfbd07702adb16",
+      "task_outcome": "BLOCKED",
+      "resource_lease": "RELEASED"
+    },
+    {
+      "job_id": "afo-product-065f631b6dba5274dd2eb329",
+      "task_outcome": "BLOCKED",
+      "resource_lease": "RELEASED"
+    },
+    {
+      "job_id": "afo-agent-97b4e7c926b400976634c0f6",
+      "task_outcome": "FAILED_PROTOCOL",
+      "resource_lease": "RELEASED"
+    }
+  ],
+  "new_q38_generation_requests": 0,
+  "role_qualification": "PENDING",
+  "operational_availability_qualification": "UNPROVEN",
+  "progress_recording": {
+    "branch": "q38/2026-10-28-local-factory",
+    "published_commit": "8bdcb71b8069ad863fb9e3de8c7763e5a0eb8595",
+    "published_utc": "2026-10-28T10:16:54.179231Z",
+    "new_order_intake": false,
+    "new_generation_requests": 0,
+    "old_source_guard_failure_preserved": true
+  }
+}

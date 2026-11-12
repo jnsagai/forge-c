@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="7.837" timestamp="2026-10-31T00:55:06.504524+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_package_order" name="test_model_cannot_seal_before_final_graph_verification[False]" time="3.897"><failure message="AssertionError: {'artifact_refs': ['archive:sha256:bf972f7dba45191458aa485d1f4145e34949e150bd95acd6c093682d3f910840'], 'issues': ['GAP...KED'}, 'provenance': {'invocation_id': 'inv-0592b4f3b55e49c8', 'tool': 'forge-packager-v0.4', 'version': '0.4.0'}, ...}&#10;assert 'PASS' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + PASS">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+bad_final = False
+
+    @pytest.mark.parametrize("bad_final", [False, True])
+    def test_model_cannot_seal_before_final_graph_verification(prepared, bad_final):
+        ws, man = prepared
+        D.preflight(ws)
+        candidate(ws)
+        assert D.verify(ws, 0)["status"] == "PASS"
+        ctx = sdk.ToolContext("forge-evidence-mcp", "build_package", "release-manager", None, ws, man["work_order"])
+        early = evidence.build_package(ctx, evidence.PackageIn())
+&gt;       assert early["status"] == "BLOCKED", early
+E       AssertionError: {'artifact_refs': ['archive:sha256:bf972f7dba45191458aa485d1f4145e34949e150bd95acd6c093682d3f910840'], 'issues': ['GAP...KED'}, 'provenance': {'invocation_id': 'inv-0592b4f3b55e49c8', 'tool': 'forge-packager-v0.4', 'version': '0.4.0'}, ...}
+E       assert 'PASS' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + PASS
+
+factory/python/tests/test_delivery_first_package_order.py:24: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_package_order" name="test_model_cannot_seal_before_final_graph_verification[True]" time="3.695"><failure message="AssertionError: {'artifact_refs': ['archive:sha256:9f9752aa5bdda72287f46eabbca5c2735a0292d253cfb22ddb536fec2fab935c'], 'issues': ['GAP...KED'}, 'provenance': {'invocation_id': 'inv-e7866e6b9f6d40d4', 'tool': 'forge-packager-v0.4', 'version': '0.4.0'}, ...}&#10;assert 'PASS' == 'BLOCKED'&#10;  &#10;  - BLOCKED&#10;  + PASS">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+bad_final = True
+
+    @pytest.mark.parametrize("bad_final", [False, True])
+    def test_model_cannot_seal_before_final_graph_verification(prepared, bad_final):
+        ws, man = prepared
+        D.preflight(ws)
+        candidate(ws)
+        assert D.verify(ws, 0)["status"] == "PASS"
+        ctx = sdk.ToolContext("forge-evidence-mcp", "build_package", "release-manager", None, ws, man["work_order"])
+        early = evidence.build_package(ctx, evidence.PackageIn())
+&gt;       assert early["status"] == "BLOCKED", early
+E       AssertionError: {'artifact_refs': ['archive:sha256:9f9752aa5bdda72287f46eabbca5c2735a0292d253cfb22ddb536fec2fab935c'], 'issues': ['GAP...KED'}, 'provenance': {'invocation_id': 'inv-e7866e6b9f6d40d4', 'tool': 'forge-packager-v0.4', 'version': '0.4.0'}, ...}
+E       assert 'PASS' == 'BLOCKED'
+E
+E         - BLOCKED
+E         + PASS
+
+factory/python/tests/test_delivery_first_package_order.py:24: AssertionError</failure></testcase></testsuite></testsuites>

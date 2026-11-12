@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_SOURCE_TRANSFER_AND_RECEIPTS_NOT_DF_M1_OR_RUNTIME_AVAILABILITY",
+  "checks": {
+    "compressed_raw_receipts_and_source_events_scanned": true,
+    "remote_local_raw_source_audit_hash_match": true,
+    "remote_local_raw_source_event_hash_match": true,
+    "active_runtime_source_unchanged": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+  },
+  "qualification_limits": [
+    "SOURCE_ORIGIN_ONLY",
+    "NO_CANDIDATE_EXECUTION_BY_AUDITOR",
+    "PIPELINE_TERMINAL_AUDIT_PENDING"
+  ]
+}

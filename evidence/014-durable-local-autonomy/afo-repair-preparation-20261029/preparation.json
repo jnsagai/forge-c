@@ -1,0 +1,138 @@
+{
+  "schema": "forge-c/afo-repair-preparation/1",
+  "status": "PREPARED_CONTROLS_VERIFIED_NOT_ENROLLED_NOT_RUN",
+  "created_utc": "2026-10-29T18:03:59.165534+00:00",
+  "trial_id": "F014-AFO-MCP-ROOT-REPAIR-20261029",
+  "controller_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "repair_baseline_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "profile": "local-rtx-v2-omniverse2-q38-qm-mtp",
+  "profile_version": 3,
+  "profile_sha256": "c6aa080f42205e741f4b75135e623a2626c3e6d9cb7cdc0d980a936b7a1ff262",
+  "model": "qwen3.8:27b-q8_0",
+  "model_identity": {
+    "digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+    "quantization": "Q8_0",
+    "license": "Apache-2.0",
+    "role_qualification": "NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify separately",
+    "license_source": "https://huggingface.co/Qwen/Qwen3.8-27B"
+  },
+  "reasoning": "xhigh",
+  "mtp_draft": 3,
+  "inference_slots": 1,
+  "role": "afo-factory-maintainer",
+  "role_job_tokens": 131072,
+  "requested_window_seconds": 14400,
+  "approved_new_window": null,
+  "existing_deadline_epoch": 1793297139.0,
+  "mission_id": "F014-IDR-M1-HIGH-20261028",
+  "prior_mission_sha256": "d208a7a9a9fd9dc59aba3baab0b1237abc77fe7517d9088f8331810b5242792e",
+  "prior_charges_preserved": 400000000,
+  "job_limit": 1,
+  "candidate_limit": 1,
+  "verification_workers": 1,
+  "allowed_patch_paths": [
+    "factory/python/forge_factory/fabro/runconfig.py",
+    "factory/python/tests/afo_candidate/**"
+  ],
+  "workflow": [
+    "AFO neutral role-only admission, no product launch",
+    "existing local_agent durable maintenance",
+    "existing maintainer submission receipt",
+    "existing VerificationJobs and CAPA/CRE review",
+    "sealed independent tool-context and inherited regression checks"
+  ],
+  "success_requires": [
+    "real Qwen-created patch and own baseline-failing reproducer",
+    "candidate receipt and independently quiescent inference",
+    "independent frozen checker fails baseline and passes candidate",
+    "existing veto/CAPA/CRE regression and holdout acceptance",
+    "all changes within declared scope; original mission retained"
+  ],
+  "success_claim": "INDEPENDENTLY_VERIFIED_FACTORY_REPAIR_CANDIDATE_ONLY",
+  "not_proven": [
+    "automatic production deployment",
+    "original driver recovery",
+    "M1 acceptance",
+    "general diagnosis qualification",
+    "learning benefit",
+    "24/7 availability"
+  ],
+  "model_exposure": [
+    "model-input/incident.json",
+    "model-input/source-evidence/**",
+    "isolated candidate baseline files via scoped MCP"
+  ],
+  "withheld": [
+    "verifier/**",
+    "operator/**",
+    "positive-control revision and patch"
+  ],
+  "controls": {
+    "baseline": {
+      "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/verifier",
+        "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/verifier/test_tool_context.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/operator/baseline.xml"
+      ],
+      "exit_code": 1,
+      "tests": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.140",
+        "timestamp": "2026-10-29T18:03:58.568316+00:00",
+        "hostname": "omniverse2"
+      },
+      "target_sha256": "ece8d322d0cbdfc15a5a62f4958ef69352cafc323a569958ab0c978cb86ca682"
+    },
+    "positive-control": {
+      "revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/verifier",
+        "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/verifier/test_tool_context.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2/operator/positive-control.xml"
+      ],
+      "exit_code": 0,
+      "tests": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.267",
+        "timestamp": "2026-10-29T18:03:58.866136+00:00",
+        "hostname": "omniverse2"
+      },
+      "target_sha256": "f83d9911555070be5b1d466e04a11d3975b45e91ee802a8518a6e45f3079e5e5"
+    }
+  },
+  "blockers": [
+    "OWNER_STOPPED_EPOCH33",
+    "NO_CURRENT_FOUR_HOUR_WINDOW_AUTHORIZED",
+    "SIGNED_EXACT_ROLE_TRIAL_AND_PRIMARY_SCOPE_NOT_CREATED",
+    "GPU_ALLOCATION_AND_NATIVE_MAINTENANCE_ROLE_PREFLIGHT_REQUIRED",
+    "ORIGINAL_STOPPED_ORDER_REQUIRES_FACTUAL_SETTLEMENT_BEFORE_SINGLE_SLOT_INTAKE",
+    "OBSERVED_GPU_FREE_BELOW_Q8_WEIGHT_FOOTPRINT"
+  ],
+  "model_requests": 0,
+  "orders_created": 0,
+  "operator_intent_changed": false,
+  "deployment_activated": false
+}

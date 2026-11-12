@@ -1,0 +1,37 @@
+........................................................................ [ 38%]
+........................................................................ [ 77%]
+.................F.FFF.........s.........                                [100%]
+=================================== FAILURES ===================================
+_ test_outside_scope_graphs_are_byte_identical_to_frozen_baseline[options2-85ac759a1d4c78333404db8ed9af35f160535fdaf0dbc5a593a34af3f469b0ef] _
+factory/python/tests/test_provided_hal_swe6_deliverable_plan.py:60: in test_outside_scope_graphs_are_byte_identical_to_frozen_baseline
+    assert hashlib.sha256(dot.encode()).hexdigest() == expected
+E   AssertionError: assert '4b7cb398301e...8f8617d143805' == '85ac759a1d4c...34af3f469b0ef'
+E     
+E     - 85ac759a1d4c78333404db8ed9af35f160535fdaf0dbc5a593a34af3f469b0ef
+E     + 4b7cb398301e3f303eb843dd5e5088c09402086e08d04b5264e8f8617d143805
+_ test_outside_scope_graphs_are_byte_identical_to_frozen_baseline[options4-ddd4adc509f7f16566e87dd7951ea98c0daf6a10f076b20982bec226d8fc0316] _
+factory/python/tests/test_provided_hal_swe6_deliverable_plan.py:60: in test_outside_scope_graphs_are_byte_identical_to_frozen_baseline
+    assert hashlib.sha256(dot.encode()).hexdigest() == expected
+E   AssertionError: assert '9b3abb9467a5...7edd608d026af' == 'ddd4adc509f7...ec226d8fc0316'
+E     
+E     - ddd4adc509f7f16566e87dd7951ea98c0daf6a10f076b20982bec226d8fc0316
+E     + 9b3abb9467a5e238e2366161c1758b82ef805450fa857ad410a7edd608d026af
+_ test_every_other_node_keeps_its_frozen_instructions_and_limits[crc-269c096007a4d509ff0a88e87c9089a2ad738829c5a9a8e215c0104799354f3d] _
+factory/python/tests/test_provided_hal_swe6_deliverable_plan.py:71: in test_every_other_node_keeps_its_frozen_instructions_and_limits
+    assert hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest() == expected
+E   AssertionError: assert 'c8d08974d3fb...42e845c092a40' == '269c096007a4...0104799354f3d'
+E     
+E     - 269c096007a4d509ff0a88e87c9089a2ad738829c5a9a8e215c0104799354f3d
+E     + c8d08974d3fbf123b120ea1f934b36c5feab14d9c8f4349849842e845c092a40
+_ test_every_other_node_keeps_its_frozen_instructions_and_limits[wwdg-d31dad362b04ade37fda9e59e7d5f49c7b97a7f83a3d8d6aa6e879057f9e69c8] _
+factory/python/tests/test_provided_hal_swe6_deliverable_plan.py:71: in test_every_other_node_keeps_its_frozen_instructions_and_limits
+    assert hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest() == expected
+E   AssertionError: assert '40e93131714b...28d7bd18a650a' == 'd31dad362b04...879057f9e69c8'
+E     
+E     - d31dad362b04ade37fda9e59e7d5f49c7b97a7f83a3d8d6aa6e879057f9e69c8
+E     + 40e93131714bf8edfe78061b38fd313642527b8d1ca3aea11cc28d7bd18a650a
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_provided_hal_swe6_deliverable_plan.py::test_outside_scope_graphs_are_byte_identical_to_frozen_baseline[options2-85ac759a1d4c78333404db8ed9af35f160535fdaf0dbc5a593a34af3f469b0ef]
+FAILED factory/python/tests/test_provided_hal_swe6_deliverable_plan.py::test_outside_scope_graphs_are_byte_identical_to_frozen_baseline[options4-ddd4adc509f7f16566e87dd7951ea98c0daf6a10f076b20982bec226d8fc0316]
+FAILED factory/python/tests/test_provided_hal_swe6_deliverable_plan.py::test_every_other_node_keeps_its_frozen_instructions_and_limits[crc-269c096007a4d509ff0a88e87c9089a2ad738829c5a9a8e215c0104799354f3d]
+FAILED factory/python/tests/test_provided_hal_swe6_deliverable_plan.py::test_every_other_node_keeps_its_frozen_instructions_and_limits[wwdg-d31dad362b04ade37fda9e59e7d5f49c7b97a7f83a3d8d6aa6e879057f9e69c8]

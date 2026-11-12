@@ -1,0 +1,11 @@
+{
+  "expected_remote_package_sha256": "cb189bb758b8f91aebb91f2251d036a74ed1be626646ba87558b5199b4f22e80",
+  "integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/full-pipeline-aspice-simulation/afo-product-540644845473ac5b1f983d02/forge-c-WO-AFO-f2a638a42fadd518-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "copied_at": "2026-10-30T18:54:03.245324+00:00",
+  "private_local_copy": true,
+  "model_requests": 0
+}

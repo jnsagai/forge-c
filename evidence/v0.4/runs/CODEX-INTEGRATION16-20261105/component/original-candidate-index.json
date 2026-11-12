@@ -1,0 +1,227 @@
+{
+  "schema": "forge-c/line-soak-source-candidate-index/1",
+  "created_utc": "2026-11-05T02:28:22.149655+00:00",
+  "source": {
+    "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-line-soak-prerequisites",
+    "branch": "change/line-soak-prerequisites-20261105",
+    "base": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+    "commit": "b8d45b3d1d30a3332ea1f3c38605e0db3bce3c61",
+    "tree": "f8675b104d2fc93a3d99bbf4264290f80a4f820d",
+    "clean": true,
+    "qualification": "PENDING_ROOT_I16_NORMAL_CHANGE",
+    "topological_source_commits": [
+      "b8d45b3d1d30a3332ea1f3c38605e0db3bce3c61"
+    ],
+    "protected_oracle_changes": false,
+    "files": [
+      {
+        "path": "docs/adr/ADR-DA-009-line-soak-stage-admission.md",
+        "sha256": "854e5c98e361c73bfe7ab1c4cabaab3de1cd11d947c9feddce9cbbd3973895d3",
+        "bytes": 8552
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_orders.py",
+        "sha256": "ba484c4a8b29a7ca4d3ac35926e27572de75db6974bf03892b369376184f8915",
+        "bytes": 83891
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_recovery.py",
+        "sha256": "c4c7548f963898069059123720866ed199b7f5142dd090b2ffe2405ecba3afdd",
+        "bytes": 11777
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_soak.py",
+        "sha256": "b84b7aa37f900e8b9e900880ddc91610c8595b365b074679e48572b764ac708d",
+        "bytes": 11921
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_soak_claims.py",
+        "sha256": "de5e068f8c6d292e0f44a049db84eb76a26fe5fce7ea846613da091660da9903",
+        "bytes": 6919
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_soak_intake.py",
+        "sha256": "f7807212728f4318daaeb3c6f3754d50a922805aec631c003cbd121d72828808",
+        "bytes": 12038
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_soak_prerequisites.py",
+        "sha256": "54e1683ae94187b131c9dc475e7499086c64e43e67456375f410efebce4066ae",
+        "bytes": 37970
+      },
+      {
+        "path": "factory/python/forge_factory/afo/line_soak_snapshot.py",
+        "sha256": "a2fc49aa80c6ffadba07ba99647a38349bae7c0f7998911c887a66033a0398e9",
+        "bytes": 5915
+      },
+      {
+        "path": "factory/python/forge_factory/afo/operational_campaign.py",
+        "sha256": "1ac853a686ddc68ef63c4cef6e839d8897af7dde20e1b224af09944d702efb21",
+        "bytes": 18679
+      },
+      {
+        "path": "factory/python/forge_factory/afo/product_role_trial.py",
+        "sha256": "8d52c4efd9aaa2480ed5794ec5df102b5b27495631d8ff92548ba9ffa3c57168",
+        "bytes": 14120
+      },
+      {
+        "path": "factory/python/forge_factory/afo/qualification_capture.py",
+        "sha256": "fe0d6799d60f7ebc5e9b12c9dddc9ddae7f7959c1e4bdbb076a8e27a25c946fa",
+        "bytes": 9679
+      },
+      {
+        "path": "factory/python/forge_factory/afo/queue.py",
+        "sha256": "56d7fca7d109c90b038394ff90eb159a51d77d2fbdbc26079c829290a1a0b3a2",
+        "bytes": 42001
+      },
+      {
+        "path": "factory/python/forge_factory/knowledge/qualification.py",
+        "sha256": "95c80c6d28ee46e9209a3ea488b298bb2c9f77e0df7b4f858fdd01a1cccb96db",
+        "bytes": 10323
+      },
+      {
+        "path": "factory/python/tests/test_line_soak_claims.py",
+        "sha256": "72e9880f71ad599de5076a0a76a367da8e7f941eb12686b307d2170e4126b9ad",
+        "bytes": 8974
+      },
+      {
+        "path": "factory/python/tests/test_line_soak_intake.py",
+        "sha256": "b1f64b43bcb9b88ab938578ec740501f6eda5f4141efca42cea625576346e43d",
+        "bytes": 18709
+      },
+      {
+        "path": "factory/python/tests/test_line_soak_prerequisites.py",
+        "sha256": "0f95b40b04723683de27959a6cf4977e4a59abd2502a3f4fd666e98622b0384d",
+        "bytes": 35266
+      }
+    ],
+    "bundle": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-source.bundle",
+      "sha256": "f993054b724cbc08099ce9297d8c61d9d90107fda81c39aedf7b1b368615f254",
+      "bytes": 48065
+    }
+  },
+  "validation": {
+    "test_runs": [
+      {
+        "xml": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-affected-v3.xml",
+          "sha256": "c18df70c3aa409307fefed1b9449024c6fa4c28794756c01018fbd88e285e78a",
+          "bytes": 50856
+        },
+        "log": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-affected-v3.log",
+          "sha256": "34bbfbb40b8ce46bb82b76b3266fb16122fa073f615df2579374733050a593c7",
+          "bytes": 400
+        },
+        "total": 314,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "passed": 313,
+        "exact_final_source_bytes": false,
+        "scope": "CONTROL, no model/service/native live qualification",
+        "note": "Earlier WIP bytes before final origin-capture/scalar guards; retained, not represented as exact final full regression."
+      },
+      {
+        "xml": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-origin-controls.xml",
+          "sha256": "428af1e7d82eb33e46f6bdb34bd99a26adfb9a0f14a4121fe38fc6b388a773a0",
+          "bytes": 13755
+        },
+        "log": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-origin-controls.log",
+          "sha256": "4bed8cc624113743771e380f4fea7f09ec8586d03d46684c5c3a9889a2038305",
+          "bytes": 160
+        },
+        "total": 82,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 82,
+        "exact_final_source_bytes": true,
+        "scope": "CONTROL, no model/service/native live qualification",
+        "note": null
+      },
+      {
+        "xml": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/intake-canonical-v2.xml",
+          "sha256": "f0c8d631baaef281d2e2d5b606ee8b05485d848716d00fd64b455728fed4dc34",
+          "bytes": 6339
+        },
+        "log": {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/intake-canonical-v2.log",
+          "sha256": "8e0dd3e259f68c193f05e3e04acef6407a9ed36e5124438d9f9a04fbd0db33db",
+          "bytes": 80
+        },
+        "total": 38,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 38,
+        "exact_final_source_bytes": false,
+        "scope": "CONTROL, no model/service/native live qualification",
+        "note": "Earlier WIP bytes before final origin-capture/scalar guards; retained, not represented as exact final full regression."
+      }
+    ],
+    "design14_log": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-design.log",
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe",
+      "bytes": 1514
+    },
+    "ruff15_python_files_log": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    "diff_check": "PASS",
+    "input_final_recheck": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-final-inputs.json",
+      "sha256": "1b5f43d11962c0ac2177de41ceb4c5e1c6f5cff82ef5ca111008394c91143844",
+      "bytes": 2409
+    },
+    "original_before_tests_receipt": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-inputs.json",
+      "sha256": "408bf11c728ab9d3473a1fdb05d9e5f7e96dd7feb0b48a41db18de502fc138c8",
+      "bytes": 1508
+    },
+    "explicit10_dependency_recheck": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-10deps-recheck.json",
+      "sha256": "9b5772856fb385e1a89c5b3227aaff0a7276c02d0ad48e08c01ff148831d8b91",
+      "bytes": 3136
+    },
+    "normal_queue_extraction_static_review": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/M9-queue-extraction-root-structural-review.json",
+      "sha256": "a4d8b165db4371f75fbf4e610cd56a66a80074796aef8e53c05344de41eb0239",
+      "bytes": 736
+    }
+  },
+  "contracts": {
+    "adr": "docs/adr/ADR-DA-009-line-soak-stage-admission.md",
+    "registered": "normal actual job/attempt binding remains strict",
+    "queued": "actual QUEUED+predicted next sequence, no admission or reservation",
+    "not_submitted": "independent approved first SWE.1 START only, actual row/history/canonical artifacts absent; no fabricated future upstream/UTC/native/outcome",
+    "future_execution": "normal Placer submit/admit, original mission link, normal product preparation and live per-request guards remain mandatory",
+    "optional_intake_identity": "payload_digest/campaign_sha256/profile/control_sha256, actual persisted-input capture+independent audit+replay; field absent legacy behavior unchanged",
+    "effect_fence": "internal nonserialized snapshot, bounded cryptographic verified input closure, current source/epoch/mission/lease/earliest UTC under existing Intent lock; heavy proof replay outside STOP lock",
+    "optional_claims": "observed at replay time only; no M7 repair benefit, lesson application or role competence inferred",
+    "generic_default": "preserved"
+  },
+  "live_status": {
+    "started_soaks": 0,
+    "model_calls": 0,
+    "service_actions": 0,
+    "real_grant_policy_mission_queue_changes": 0,
+    "role_qualification": "NOT_RUN",
+    "24h_72h_168h": "NOT_RUN",
+    "M9_acceptance_complete": false,
+    "real_effect_readiness": "BLOCKED until exact qualified source/profile, current actual stage/job/fault authority, host setup and role evidence satisfy normal validators"
+  },
+  "remaining": [
+    "Root independent I16 source review, exact affected tests/design and normal CHANGE/full frozen resolved prevention catalog before publication.",
+    "No completed 100/30 cohort or full M8 benefit is invented as 24-hour START prerequisite.",
+    "Actual role trials/qualification remain governed by existing finite signed scope and original mission, never source eligibility.",
+    "Real duration, all 16 fault exposures, independent product work, actual later-authorized intake and continued service remain authored stage outcomes.",
+    "Actual activation clock/authority/host readiness must be freshly established by the runtime owner; this source work changes none."
+  ]
+}

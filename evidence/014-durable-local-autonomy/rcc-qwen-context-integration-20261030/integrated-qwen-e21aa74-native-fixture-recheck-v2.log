@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/qualify-integrated-missing-fixture-v2.py", line 35, in <module>
+    assert all(p.is_dir() and p.is_relative_to(P/'inputs/st') for p in vendor)
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

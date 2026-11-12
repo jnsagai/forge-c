@@ -1,0 +1,4 @@
+{"fixture_only": true, "normal_python_control_exit": 0, "alias_command_exit": 0, "alias_error": "", "facts": {"prefix": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-repro-b217634045f4/rpr158-python-alias-_xp00k82/private-venv", "dependency_import": true, "alias_readonly": true, "unrelated_private_visible": false}, "pass": true}
+SYMPTOM_ABSENT
+
+--- stderr ---

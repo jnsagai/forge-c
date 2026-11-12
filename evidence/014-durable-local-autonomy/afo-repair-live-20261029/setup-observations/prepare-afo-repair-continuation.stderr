@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<stdin>", line 36, in <module>
+  File "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-budget-3f1ef1b-v1/repo/factory/python/forge_factory/lrtx/profile.py", line 37, in load
+    raise ProfileRefused([f"PROFILE_UNKNOWN:{profile_id}"])
+forge_factory.lrtx.profile.ProfileRefused: LOCAL_PROFILE_REFUSED: PROFILE_UNKNOWN:local-rtx-v2-omniverse2-q38-afo-repair-mtp

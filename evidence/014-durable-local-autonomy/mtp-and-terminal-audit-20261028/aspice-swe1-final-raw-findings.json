@@ -1,0 +1,18 @@
+[
+  {
+    "task": "inspect:d96f4b3e0dd53f00:SWE1-02",
+    "findings": [
+      "SWR-013 in workproducts/SWE.1/software_requirements.md requires a 'safe state', but safety/software_safety_requirements.md states safety assurance is not assessed and .forge-run/manifest.json#scope-target-budgets shows safety_allocation NOT_ASSESSED with safe_state placeholders, so the required safe startup state is undefined and the requirement is not objectively verifiable.",
+      "SWR-005 in workproducts/SWE.1/software_requirements.md is not atomic because one requirement combines writing CRC_CR.REV_OUT, writing CRC_CR.RTYPE_OUT, and preserving all other CRC_CR bits.",
+      "workproducts/SWE.1/software_requirements.md Open points contradict the requirement set for input reversal: one bullet says the task specifies only CRC_CR.RTYPE_IN, another says the task is restricted to CRC_CR.REV_IN and defers writing CRC_CR.RTYPE_IN, while SWR-006 and SWR-009 specify those writes and register_effects.json includes both field writes.",
+      "SWR-006 in workproducts/SWE.1/software_requirements.md is inconsistent with the stated scope because its trigger is 'When the LL function sets the input reversal mode' although it obliges only CRC_CR.RTYPE_IN, while .forge-run/manifest.json#scope-target-budgets defines input reversal mode as CRC_CR.REV_IN with CRC_CR.RTYPE_IN."
+    ]
+  },
+  {
+    "task": "inspect:d96f4b3e0dd53f00:SWE1-03",
+    "findings": [
+      "workproducts/SWE.1/software_requirements.md SWR-013 requires the CRC LL driver to remain in a safe state after reset, but the supplied baseline does not specify what that safe state is; traceability/upstream_gaps.md states no software safety requirement is allocated, and .forge-run/manifest.json#scope-target-budgets records safety_allocation as NOT_ASSESSED with safety_allocation.safe_state.id, description, max_reaction_time and owner still PLACEHOLDER.",
+      "workproducts/SWE.1/software_requirements.md does not specify failure handling for the CRC LL driver beyond SWR-014, which only requires the driver not to wait on CRC status flags; no requirement in workproducts/SWE.1/software_requirements.md or workproducts/SWE.1/register_effects.json specifies a failure-handling behavior for the stated LL operations."
+    ]
+  }
+]

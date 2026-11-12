@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-30T23:00:12.171816Z",
+  "read_only": true,
+  "model_calls": 0,
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "register_effects_sha256": "06fc181b0141d6da4afc6f0cf752d668dd73bf5bd6f9573fd78d60347564f81b",
+  "declared_fields": {
+    "CRC_CR": [
+      "POLYSIZE",
+      "RESET",
+      "REV_IN",
+      "REV_OUT",
+      "RTYPE_IN",
+      "RTYPE_OUT"
+    ],
+    "CRC_INIT": [
+      "CRC_INIT"
+    ],
+    "CRC_IDR": [
+      "IDR"
+    ]
+  },
+  "unsupported_contract_effects": [
+    {
+      "case": "WRITE_IDR_KEEP_CR",
+      "register": "CRC_CR",
+      "field": "CR",
+      "op": "no_write"
+    },
+    {
+      "case": "WRITE_IDR_KEEP_INIT",
+      "register": "CRC_INIT",
+      "field": "INIT",
+      "op": "no_write"
+    },
+    {
+      "case": "READ_IDR_KEEP_CR",
+      "register": "CRC_CR",
+      "field": "CR",
+      "op": "no_write"
+    },
+    {
+      "case": "READ_IDR_KEEP_INIT",
+      "register": "CRC_INIT",
+      "field": "INIT",
+      "op": "no_write"
+    }
+  ]
+}

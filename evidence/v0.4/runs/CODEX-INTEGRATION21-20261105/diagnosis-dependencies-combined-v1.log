@@ -1,0 +1,823 @@
+...................................................................FFFFF [ 34%]
+FFFF.....................................FFFFF.......................... [ 69%]
+................................................................         [100%]
+=================================== FAILURES ===================================
+___ test_explicit_signed_initial_envelope_is_charged_once_and_has_no_request ___
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edee2ff0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_explicit_signed_initial_e0/fixture-owner-key'))
+
+    def test_explicit_signed_initial_envelope_is_charged_once_and_has_no_request(signed):
+        p = signed
+>       job = prepare(p)
+              ^^^^^^^^^^
+
+factory/python/tests/test_da014_qualification_reservations.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_______________ test_production_prepare_keeps_registry_envelope ________________
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee0ace90>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_production_prepare_keeps_0/fixture-owner-key'))
+
+    def test_production_prepare_keeps_registry_envelope(signed):
+>       job = prepare(signed, manifest=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_qualification_reservations.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_______ test_signed_qualification_cannot_rebind_existing_job_reservation _______
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf91b50>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_signed_qualification_cann0/fixture-owner-key'))
+
+    def test_signed_qualification_cannot_rebind_existing_job_reservation(signed):
+        p = signed
+>       prepare(p, manifest=False)
+
+factory/python/tests/test_da014_qualification_reservations.py:148: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[changed-envelope] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf92810>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_0/fixture-owner-key'))
+fault = 'changed-envelope'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645edee5470>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf92810>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_0/fixture-owner-key'))
+fault = 'changed-envelope'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645edee5470>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[revoked] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ede6e5d0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_1/fixture-owner-key'))
+fault = 'revoked'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b150>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ede6e5d0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_1/fixture-owner-key'))
+fault = 'revoked'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b150>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'AUTH_REVOKED'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[expired] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf920f0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_2/fixture-owner-key'))
+fault = 'expired'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b310>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf920f0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_2/fixture-owner-key'))
+fault = 'expired'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b310>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'AUTH_NOT_CURRENT'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[different-case] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee335f10>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_3/fixture-owner-key'))
+fault = 'different-case'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b070>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee335f10>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_3/fixture-owner-key'))
+fault = 'different-case'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ede1b070>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[policy-cap] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee0acc50>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_4/fixture-owner-key'))
+fault = 'policy-cap'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ee2f38c0>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee0acc50>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_4/fixture-owner-key'))
+fault = 'policy-cap'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645ee2f38c0>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[changed-source] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee3357f0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_5/fixture-owner-key'))
+fault = 'changed-source'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645edec6430>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+        with pytest.raises(Refused, match=code):
+>           prepare(p)
+
+factory/python/tests/test_da014_qualification_reservations.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_qualification_reservations.py:115: in prepare
+    return L.prepare(
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+
+During handling of the above exception, another exception occurred:
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee3357f0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_mutated_unsigned_revoked_5/fixture-owner-key'))
+fault = 'changed-source'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7645edec6430>
+
+    @pytest.mark.parametrize("fault", ["changed-envelope", "revoked", "expired", "different-case", "policy-cap", "changed-source"])
+    def test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve(signed, fault, monkeypatch):
+        p = signed
+        code = "QUALIFICATION_INITIAL_RESERVATION_NOT_SIGNED"
+        if fault == "changed-envelope":
+            p.manifest["job_token_reservations"][p.jid] = 48000
+        elif fault == "revoked":
+            (p.grant_path.parent / "revoked.txt").write_text("AUTH-QUAL\n")
+            code = "AUTH_REVOKED"
+        elif fault == "expired":
+            p.grant["expires_utc"] = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+            p.grant_path.write_text(json.dumps(p.grant))
+            authz.sign(p.grant_path, p.key)
+            code = "AUTH_NOT_CURRENT"
+        elif fault == "different-case":
+            p.manifest["jobs"]["fixture:0"]["case_sha256"] = "0" * 64
+            code = "QUALIFICATION_INITIAL_RESERVATION_BINDING_MISMATCH"
+        elif fault == "policy-cap":
+            p.eff.policy["budgets"]["max_model_tokens_per_order"] = 16000
+            code = "QUALIFICATION_INITIAL_RESERVATION_EXCEEDS_POLICY"
+        else:
+            monkeypatch.setattr(Q, "revision", lambda: "2" * 40)
+            code = "QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH"
+        before = p.ledger.snapshot("qualification-only")
+>       with pytest.raises(Refused, match=code):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'QUALIFICATION_INITIAL_RESERVATION_SOURCE_MISMATCH'
+E         Actual message: 'COHERENT_OBJECTIVE_REQUIRED:'
+
+factory/python/tests/test_da014_qualification_reservations.py:180: AssertionError
+_ test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee337a10>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_empty_or_invalid_unmodifi0/fixture-owner-key'))
+content = ''
+
+    @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])
+    def test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt(signed, content):
+        p = signed
+>       job = L.prepare(p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_protocol_faults.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[  \n] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee413f50>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_empty_or_invalid_unmodifi1/fixture-owner-key'))
+content = '  \n'
+
+    @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])
+    def test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt(signed, content):
+        p = signed
+>       job = L.prepare(p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_protocol_faults.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[None] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645edf92930>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_empty_or_invalid_unmodifi2/fixture-owner-key'))
+content = None
+
+    @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])
+    def test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt(signed, content):
+        p = signed
+>       job = L.prepare(p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_protocol_faults.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[False] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee4b5490>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_empty_or_invalid_unmodifi3/fixture-owner-key'))
+content = False
+
+    @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])
+    def test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt(signed, content):
+        p = signed
+>       job = L.prepare(p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_protocol_faults.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[content4] _
+
+signed = namespace(store=<forge_factory.afo.queue.Store object at 0x7645ee4b5df0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...UTH-QUAL.json'), key=PosixPath('/tmp/pytest-of-jefferson/pytest-98/test_empty_or_invalid_unmodifi4/fixture-owner-key'))
+content = {'forged': 'content'}
+
+    @pytest.mark.parametrize("content", ["", "  \n", None, False, {"forged": "content"}])
+    def test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt(signed, content):
+        p = signed
+>       job = L.prepare(p.store, p.order, p.bundle["attempt_id"], "afo-recovery-planner", p.case, p.ws, p.eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_protocol_faults.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:275: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_explicit_signed_initial_envelope_is_charged_once_and_has_no_request
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_production_prepare_keeps_registry_envelope
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_signed_qualification_cannot_rebind_existing_job_reservation
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[changed-envelope]
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[revoked]
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[expired]
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[different-case]
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[policy-cap]
+FAILED factory/python/tests/test_da014_qualification_reservations.py::test_mutated_unsigned_revoked_or_out_of_scope_qualification_cannot_reserve[changed-source]
+FAILED factory/python/tests/test_da014_protocol_faults.py::test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[]
+FAILED factory/python/tests/test_da014_protocol_faults.py::test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[  \n]
+FAILED factory/python/tests/test_da014_protocol_faults.py::test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[None]
+FAILED factory/python/tests/test_da014_protocol_faults.py::test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[False]
+FAILED factory/python/tests/test_da014_protocol_faults.py::test_empty_or_invalid_unmodified_model_content_never_creates_a_semantic_receipt[content4]

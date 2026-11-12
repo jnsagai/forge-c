@@ -1,0 +1,12 @@
+{
+  "archive_sha256": "12dbfd978a1530bc66e419b4091226de86bd276e46bb99811032d443ba822682",
+  "files": 101,
+  "bytes": 4482319,
+  "all_member_hashes_and_sizes_verified": true,
+  "release_package": false,
+  "snapshot": "forge-c/interrupted-engineering-snapshot/1",
+  "captured_utc": "2026-10-29T16:35:47.758625Z",
+  "product_acceptance": "NOT_ESTABLISHED",
+  "local_directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/interrupted-engineering/afo-774900b297bdde37",
+  "new_model_requests": 0
+}

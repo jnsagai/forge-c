@@ -1,0 +1,73 @@
+{
+  "templates": {
+    "low": {
+      "sha256": "3a1e40369466adc1c948a77e49cc4ade38c11c6a349523bc675a7dc75c3744f6",
+      "open_thinking": true
+    },
+    "medium": {
+      "sha256": "3a1e40369466adc1c948a77e49cc4ade38c11c6a349523bc675a7dc75c3744f6",
+      "open_thinking": true
+    },
+    "high": {
+      "sha256": "3a1e40369466adc1c948a77e49cc4ade38c11c6a349523bc675a7dc75c3744f6",
+      "open_thinking": true
+    },
+    "xhigh": {
+      "sha256": "3a1e40369466adc1c948a77e49cc4ade38c11c6a349523bc675a7dc75c3744f6",
+      "open_thinking": true
+    },
+    "thinking_False": {
+      "sha256": "caaa23078d75e52c44877d9fc8b0f58c52e908931edc4e3e175118a71d71f173",
+      "ends_closed": true,
+      "ends_open": false
+    },
+    "thinking_True": {
+      "sha256": "3a1e40369466adc1c948a77e49cc4ade38c11c6a349523bc675a7dc75c3744f6",
+      "ends_closed": false,
+      "ends_open": true
+    }
+  },
+  "probe": {
+    "wall_seconds": 5.026154171209782,
+    "response_keys": [
+      "choices",
+      "created",
+      "model",
+      "system_fingerprint",
+      "object",
+      "usage",
+      "id",
+      "timings"
+    ],
+    "message_keys": [
+      "role",
+      "content",
+      "reasoning_content"
+    ],
+    "usage": {
+      "completion_tokens": 50,
+      "prompt_tokens": 56,
+      "total_tokens": 106,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 56,
+      "prompt_ms": 4695.534,
+      "prompt_per_token_ms": 83.84882142857143,
+      "prompt_per_second": 11.926226069282002,
+      "predicted_n": 50,
+      "predicted_ms": 328.771,
+      "predicted_per_token_ms": 6.70961224489796,
+      "predicted_per_second": 149.0399092377369
+    },
+    "finish_reason": "stop",
+    "reasoning_tokens_retokenized": 31,
+    "reasoning_characters": 68,
+    "final_answer_characters": 25,
+    "final_answer_json_valid": false,
+    "reasoning_content_collected": false
+  }
+}

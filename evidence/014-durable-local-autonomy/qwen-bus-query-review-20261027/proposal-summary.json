@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/external-review-sanitized/1",
+  "private_original_sha256": "e21c1cb9441b902c350638ef5d192714ab373a93d72d20027b6809c2882c5922",
+  "schema_errors": [],
+  "status": "INVALID_OR_BLOCKED_PROPOSAL",
+  "reference_check": "FAIL",
+  "findings": [
+    {
+      "index": 0,
+      "function": "_query",
+      "literal_source_quote_valid": true,
+      "claim": "8KiB ceiling should be inclusive",
+      "disposition": "REJECTED; fixed native replies are small and the bound is intentional"
+    },
+    {
+      "index": 1,
+      "function": "_query",
+      "literal_source_quote_valid": false,
+      "claim": "nonnumeric unique names may be valid",
+      "disposition": "REFERENCE_INVALID; independently reproduced a related protocol-grammar gap, fixed and checked externally"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1819,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens": 793,
+    "total_tokens": 2612
+  },
+  "wall_ms": 9433.4,
+  "raw_chars": 2924,
+  "finish_reason": "stop",
+  "correctness": "MODEL_OPINION_NOT_CORRECTNESS_EVIDENCE",
+  "raw_prompts_responses_hidden_reasoning": "NOT_PUBLISHED"
+}

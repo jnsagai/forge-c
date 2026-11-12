@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="13" time="11.634" timestamp="2026-10-29T23:32:41.679963+00:00" hostname="master"><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_rejected_receipted_artifacts_and_independent_facts_survive_quarantine" time="1.050"><failure message="AssertionError: assert 'ERROR' == 'SYMPTOM_ABSENT'&#10;  &#10;  - SYMPTOM_ABSENT&#10;  + ERROR">local = (&lt;forge_factory.afo.queue.Store object at 0x7575377a1fd0&gt;, {'admitted_utc': '2026-10-29T23:32:42.048142Z', 'authorizat...1-followup-20261029/pytest-of-jefferson/pytest-74/test_rejected_receipted_artifa0/state/afo/cases/afo-fb-1/case.json'))
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-74/test_rejected_receipted_artifa0/factory-repo')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7575386a1940&gt;
+
+    def test_rejected_receipted_artifacts_and_independent_facts_survive_quarantine(local, factory, monkeypatch):
+        p = setup_parent(local, factory, monkeypatch)
+        reject(p)
+        assert not Path(p.case['src']).exists()
+        before = p.ledger.snapshot('retained-test')
+        reference = R.prepare_next(p.store, p.job, p.eff, verification_fence=lambda: True)
+        assert reference['state'] == 'READY'
+        case_path = M.case_dir(reference['proposal_id']) / 'case.json'
+        child = json.loads(case_path.read_text())
+        assert child['base'] == p.case['base'] and child['retained_rework']['parent_candidate'] == p.sub['candidate']
+&gt;       assert child['retained_rework']['feedback']['reproducer_runs'][0]['verdict'] == 'SYMPTOM_ABSENT'
+E       AssertionError: assert 'ERROR' == 'SYMPTOM_ABSENT'
+E         
+E         - SYMPTOM_ABSENT
+E         + ERROR
+
+factory/python/tests/test_afo_maintenance_rework.py:80: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[disabled]" time="0.926" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[live_parent]" time="0.911" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[fence]" time="0.857" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[allowance]" time="0.878" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[authority]" time="0.961" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[deadline]" time="0.965" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[unsafe]" time="0.859" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_preparation_recovers_after_partial_seed_without_reverting_an_active_child" time="1.034" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_completed_worker_reference_is_required_before_conductor_can_admit" time="0.975" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_changed_feedback_is_never_adopted_after_partial_preparation" time="1.011" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_failure_to_prepare_child_does_not_replace_actual_independent_rejection" time="0.871" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_optional_policy_bound_is_validated_without_changing_existing_policy" time="0.010" /></testsuite></testsuites>

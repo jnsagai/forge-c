@@ -1,0 +1,49 @@
+{
+  "24_72_168h_availability": "NOT_RUN",
+  "cohorts": {
+    "initial-tests-retained": {
+      "errors": "0",
+      "failures": "1",
+      "hostname": "master",
+      "skipped": "0",
+      "tests": "50",
+      "time": "17.516",
+      "timestamp": "2026-10-28T14:22:01.522563+00:00"
+    },
+    "local-exact-tests": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "master",
+      "skipped": "0",
+      "tests": "16",
+      "time": "11.926",
+      "timestamp": "2026-10-28T14:28:11.150538+00:00"
+    },
+    "local-inherited-tests": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "master",
+      "skipped": "0",
+      "tests": "114",
+      "time": "95.776",
+      "timestamp": "2026-10-28T14:23:04.207226+00:00"
+    },
+    "native-tests": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "omniverse2",
+      "skipped": "0",
+      "tests": "100",
+      "time": "109.615",
+      "timestamp": "2026-10-28T14:28:18.774275+00:00"
+    }
+  },
+  "cohorts_overlap": true,
+  "exact_source_revision": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "initial_failure": "Synthetic resume-contract test retained a mutable reference rather than a serialized snapshot; corrected test uses deepcopy. Initial failure retained.",
+  "learning_benefit": "NOT_ESTABLISHED",
+  "model_role_qualification": "NOT_ESTABLISHED",
+  "native_scope": "Actual Omniverse2 toolchain and scripted/model-free fixtures; zero Qwen requests by these fixtures",
+  "not_full_suite": true,
+  "product_success": "NOT_ESTABLISHED"
+}

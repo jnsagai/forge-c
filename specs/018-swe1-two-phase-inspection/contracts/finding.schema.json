@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/swe1-quality-finding/1",
+  "title": "SWE.1 quality finding (guideline section 4, step 6)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requirement_id", "quality_id", "severity", "evidence", "required_action", "input_uncertainty"],
+  "properties": {
+    "requirement_id": {"type": "string", "pattern": "^(SWR-[0-9]{3,}|SET)$"},
+    "quality_id": {"type": "string", "pattern": "^(IQ-(0[1-9]|1[0-2])|SQ-(0[1-9]|10)|SWE1-0[1-8])$"},
+    "severity": {"enum": ["BLOCKING", "CORRECTABLE", "EDITORIAL", "N/A"]},
+    "evidence": {"type": "string", "minLength": 1, "maxLength": 400},
+    "required_action": {"type": "string", "maxLength": 300},
+    "input_uncertainty": {"type": "boolean"}
+  }
+}

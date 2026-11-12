@@ -1,0 +1,65 @@
+{
+  "tested_revision": "c541a3b44db25a26cbbd784485d9938c361ca3bd",
+  "runtime_candidate": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "results": [
+    {
+      "name": "integration",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_owner_supervised_development.py",
+        "factory/python/tests/test_owner_development_view.py",
+        "factory/python/tests/test_floor_factory_monitor.py",
+        "factory/python/tests/test_floor_lines.py",
+        "factory/python/tests/test_factory_floor.py",
+        "factory/python/tests/test_floor_recent_speed.py",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration23-checks-r1/integration.xml"
+      ],
+      "exit_code": 0,
+      "duration_s": 34.16677446199901,
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration23-checks-r1/integration.log",
+      "sha256": "6997ffb705c1c5fa984efec27d8164c9d96401110464c8e386ecce809f88569c"
+    },
+    {
+      "name": "baseline-v01",
+      "argv": [
+        "make",
+        "test"
+      ],
+      "exit_code": 0,
+      "duration_s": 0.12425526799779618,
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration23-checks-r1/baseline-v01.log",
+      "sha256": "3befd505481044371e9c0178b2f214b58badd3fdfe8740b18492fd16f74393c2"
+    },
+    {
+      "name": "reference-v03",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "factory/release-manager/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "duration_s": 0.16501206000248203,
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration23-checks-r1/reference-v03.log",
+      "sha256": "ce69735256fab343275d66ef27a1ad2e128e53761ea1486f4d1f98f1a777d42a"
+    },
+    {
+      "name": "design",
+      "argv": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "tests/spec/validate_design.py"
+      ],
+      "exit_code": 0,
+      "duration_s": 0.2649001590034459,
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration23-checks-r1/design.log",
+      "sha256": "75fdae0f6c198910a59b722ca4b91bd948fda8b3444f13abd544b651c68e8122"
+    }
+  ]
+}

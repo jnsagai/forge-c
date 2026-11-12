@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/omniverse-cpu-preflight/1",
+  "scope": "PROSPECTIVE_NOT_ACTIVATED_NO_ROLE_QUALIFICATION",
+  "source_revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "source_tracked_dirty": false,
+  "model_calls": 0,
+  "production_mutations": false,
+  "data_root": "/mnt/data/forge-c",
+  "isolation_backend": "bubblewrap",
+  "bwrap": {
+    "path": "/usr/bin/bwrap",
+    "sha256": "bf6cf3d4456665f5d80c14eb79a76e0ce87b39a0883e614a161658b4ec33492c",
+    "version": "bubblewrap 0.6.1"
+  },
+  "input_compiler_exit": 0,
+  "input_compiler_stderr": "",
+  "input_compiler": {
+    "header_sha256": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b",
+    "header_unchanged": true,
+    "input_logical_readonly": true,
+    "input_resolved_readonly": true,
+    "inputs_writable": false,
+    "compiler": "/mnt/data/forge-c/toolchains/formal/bin/arm-none-eabi-gcc",
+    "compiler_version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)",
+    "compiler_version_exit": 0,
+    "compile_exit": 0,
+    "object_exists": true,
+    "compile_error": null
+  },
+  "actual_owned_backend_teardown_exit": 0,
+  "verdict": "PASS_PROSPECTIVE_ONLY"
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="22" time="2.841" timestamp="2026-11-05T09:32:00.275490+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_offline_export" name="test_two_exports_of_the_same_runs_are_byte_identical_and_intact" time="0.173" /><testcase classname="factory.python.tests.test_da014_offline_export" name="test_records_travel_and_vendor_inputs_prompts_reasoning_and_secrets_do_not" time="0.021" /><testcase classname="factory.python.tests.test_da014_offline_export" name="test_tampering_with_any_exported_file_or_adding_content_is_detected" time="0.026" /><testcase classname="factory.python.tests.test_da014_offline_export" name="test_export_opens_no_network_connection" time="0.018" /><testcase classname="factory.python.tests.test_da014_offline_export" name="test_the_same_run_twice_is_refused" time="0.005" /><testcase classname="factory.python.tests.test_da014_offline_export" name="test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle" time="0.025"><failure message="KeyError: 'REPORT.md'">tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_report_is_detail0')
+
+    def test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle(tmp_path):
+        result = X.build([_ws(tmp_path)], tmp_path / "export.zip")
+        files = _files(tmp_path / "export.zip")
+&gt;       report = files["REPORT.md"]
+                 ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'REPORT.md'
+
+factory/python/tests/test_da014_offline_export.py:122: KeyError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_export" name="test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum" time="0.021"><failure message="KeyError: 'REPORT.md'">tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_report_cannot_claim_a_dif0')
+
+    def test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum(tmp_path):
+        X.build([_ws(tmp_path)], tmp_path / "export.zip")
+        files = _files(tmp_path / "export.zip")
+&gt;       files["REPORT.md"] = files["REPORT.md"].replace(b'"status": "FAIL"', b'"status": "PASS"')
+                             ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'REPORT.md'
+
+factory/python/tests/test_da014_offline_export.py:142: KeyError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_export" name="test_markdown_keeps_untrusted_record_text_inside_code_fences" time="0.018"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0/export.md'">tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0')
+
+    def test_markdown_keeps_untrusted_record_text_inside_code_fences(tmp_path):
+        ws = _ws(tmp_path)
+        (ws / "inspection/SWE.1/INS-SWE.1-001.json").write_text(json.dumps({
+            "status": "FAIL", "issues": ["```\n# APPROVED\n&lt;script&gt;run()&lt;/script&gt;\n``````"]}))
+        X.build([ws], tmp_path / "export.zip")
+&gt;       report = (tmp_path / "export.md").read_text()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_export.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:546: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0/export.md')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0/export.md'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_a_valid_patch_activates_after_its_local_checks_and_rolls_back" time="0.275" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_tampered_unsigned_and_foreign_signatures_are_refused" time="0.278" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_wrong_base_local_drift_protected_paths_and_missing_cre_decisions_are_refused" time="0.329" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_failing_preflight_or_regression_keeps_the_current_release" time="0.324" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[unchanged]" time="0.111" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[injected]" time="0.103" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[executable]" time="0.123" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[symlink]" time="0.111" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[policy]" time="0.104" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_release_identity_requires_both_signed_cre_tree_hashes" time="0.102" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_external_current_with_same_revision_name_is_not_the_installed_base" time="0.112" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_check_cannot_mutate_the_reviewed_target" time="0.117" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_release_content_identity_matches_git_listing_for_paths_modes_and_links" time="0.083" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_development_build_can_supply_a_portable_reviewed_runner" time="0.060"><failure message="TypeError: build() got an unexpected keyword argument 'runner_out'">env = {'base': '9a310fdd804dd42d39d30b17505b1d3b45f033ae', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_develop...ild_can_sup0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_development_build_can_sup0/dev'), ...}
+
+    def test_development_build_can_supply_a_portable_reviewed_runner(env):
+        runner = env["tmp"] / "transfer" / "apply-update.py"
+&gt;       result = P.build(env["repo"], env["base"], env["target"], ["tests/test_rule.py"], env["dec"],
+                         "Jefferson", env["tmp"] / "patch.zip", runner_out=runner)
+E       TypeError: build() got an unexpected keyword argument 'runner_out'
+
+factory/python/tests/test_da014_offline_patch.py:245: TypeError</failure></testcase></testsuite></testsuites>

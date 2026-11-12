@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0 -- /mnt/data/forge-c/production-local-014/venv/bin/python
+rootdir: /mnt/data/forge-c/production-local-014/deployment/qualification-integrated-qwen-e21aa74-v1/repo
+configfile: pyproject.toml
+collecting ... collected 1 item
+
+factory/python/tests/test_da014_product_role_trial.py::test_preflight_cli_persists_missing_review_without_launching PASSED [100%]
+
+- generated xml file: /mnt/data/forge-c/production-local-014/deployment/qualification-integrated-qwen-e21aa74-v1/private-input-fixture-recheck-v4/scratch/pytest.xml -
+============================== 1 passed in 1.30s ===============================

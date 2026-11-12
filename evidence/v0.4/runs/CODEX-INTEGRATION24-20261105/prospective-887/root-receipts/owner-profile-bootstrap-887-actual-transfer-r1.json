@@ -1,0 +1,7 @@
+{
+  "schema": "forge-c/root-887-packet-transfer/1",
+  "returncode": 0,
+  "stdout": "{\"status\": \"PRIVATE_PACKET_TRANSFERRED_VERIFIED\", \"root\": \"/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-88782030-review-20261105\", \"members\": 20, \"no_services_or_models_started\": true}\n",
+  "stderr": "",
+  "private_archive_sha256": "7366713cde3b06493a92ae50470279d272ff5256ff6c82da8ad5ae02a3814bf1"
+}

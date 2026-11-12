@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_NATIVE_TRANSFER_AND_RECEIPT_HASHES_NOT_RUNTIME",
+  "checks": {
+    "decompressed_raw_receipts_scanned": true,
+    "native_snapshot_hashes_match": true,
+    "raw_failed_test_receipt_preserved": true,
+    "all_publication_files_tracked_in_git": true
+  }
+}

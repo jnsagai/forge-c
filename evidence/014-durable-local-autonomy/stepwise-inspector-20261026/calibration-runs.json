@@ -1,0 +1,2315 @@
+{
+ "schema": "forge-c/feature014-calibration-runs/1",
+ "runs": [
+  {
+   "run": "calibration-s1",
+   "log_lines": [
+    "start 2026-10-26T10:40:40Z 285d21ec9063bfed8e1ea884069303f99dda73f3 subset=9",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"subset_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=40; local: 46 passed in 104.94s (0:01:44)",
+    "preflight (recorded): FAIL ['WO-0008C-ST-RCC-LL-b009', 'WO-0009B-STM32N6-IWDG-HAL-h005']",
+    "exit=0 2026-10-26T11:32:50Z"
+   ],
+   "summary": {
+    "seeded": 54,
+    "semantic_detection_on_target": 40,
+    "deterministic_detection": 9,
+    "inspection_fail_off_target": 4,
+    "missed": 1,
+    "false_rejections": 5,
+    "baselines": 9,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "rejected": [
+     "WO-0008C-ST-RCC-LL-b009",
+     "WO-0009B-STM32N6-IWDG-HAL-h005"
+    ]
+   },
+   "result_sha256": "bcd1982a99ef5e34b0c91569053a3db63a75a6775bc8036ca463f50ad0ae88da",
+   "rows": [
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOBUDGET",
+     "detected_by": "MISSED",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: requirement_untraceable",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-013",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-008",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    }
+   ]
+  },
+  {
+   "run": "calibration-s2",
+   "log_lines": [
+    "start 2026-10-26T11:32:50Z 285d21ec9063bfed8e1ea884069303f99dda73f3 subset=9",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"subset_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=40; local: 46 passed in 104.94s (0:01:44)",
+    "preflight (recorded): FAIL ['WO-0008C-ST-RCC-LL-b009', 'WO-0009B-STM32N6-IWDG-HAL-h005']",
+    "exit=0 2026-10-26T12:25:05Z"
+   ],
+   "summary": {
+    "seeded": 54,
+    "semantic_detection_on_target": 40,
+    "deterministic_detection": 9,
+    "inspection_fail_off_target": 4,
+    "missed": 1,
+    "false_rejections": 5,
+    "baselines": 9,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "rejected": [
+     "WO-0008C-ST-RCC-LL-b009",
+     "WO-0009B-STM32N6-IWDG-HAL-h005"
+    ]
+   },
+   "result_sha256": "c42a6a2c5f82605179184ac8c0305262dff1d774356fd2c2ed9d8fe19a43dd7a",
+   "rows": [
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOBUDGET",
+     "detected_by": "MISSED",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: requirement_untraceable",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-013",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-008",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    }
+   ]
+  },
+  {
+   "run": "calibration-s3",
+   "log_lines": [
+    "start 2026-10-26T12:25:05Z 285d21ec9063bfed8e1ea884069303f99dda73f3 subset=9",
+    "test set verified: {\"status\": \"UNCHANGED\", \"issues\": []} {\"subset_status\": \"UNCHANGED\", \"issues\": []}",
+    "unit tests (remote): ===========================shorttestsummaryinfo============================ skipped=40; local: 46 passed in 104.94s (0:01:44)",
+    "preflight (recorded): FAIL ['WO-0008C-ST-RCC-LL-b009', 'WO-0009B-STM32N6-IWDG-HAL-h005']",
+    "exit=0 2026-10-26T13:17:23Z"
+   ],
+   "summary": {
+    "seeded": 54,
+    "semantic_detection_on_target": 40,
+    "deterministic_detection": 9,
+    "inspection_fail_off_target": 4,
+    "missed": 1,
+    "false_rejections": 5,
+    "baselines": 9,
+    "no_inspection": 0
+   },
+   "model": "qwen3.6:35b-a3b",
+   "catalogue": "lrtx-seeded-2",
+   "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7",
+   "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+     "seed": 1,
+     "temperature": 0
+    },
+    "stepwise": true
+   },
+   "preflight": {
+    "status": "FAIL",
+    "rejected": [
+     "WO-0008C-ST-RCC-LL-b009",
+     "WO-0009B-STM32N6-IWDG-HAL-h005"
+    ]
+   },
+   "result_sha256": "7ca253948177fcbc29b6e571df82839c10e88b3019efe0b1039655147a0e96a9",
+   "rows": [
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008A-STM32N6-RCC-LL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b007",
+     "case": "S1-NOBUDGET",
+     "detected_by": "MISSED",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b008",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "RCC_CR.HSION",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-018",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-03: reset_startup_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0008C-ST-RCC-LL-b009",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-021",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-04: budget_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h003",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "BASELINE",
+     "detected_by": "none",
+     "target": null,
+     "target_field": null,
+     "verdict": "PASS",
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: requirement_untraceable",
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-009",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h004",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-04: budget_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded",
+      "SWE1-06: ambiguity_not_documented"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-h005",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-013",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirement_not_verifiable",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-001",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-010",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: safe_state_missing",
+      "SWE1-05: scope_behaviour_uncovered",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc1",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-014",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-04: budget_missing",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "BASELINE",
+     "detected_by": "FALSE_REJECTION_BY_INSPECTION",
+     "target": null,
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-OMIT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": "IWDG_KR.KEY",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: scope_behaviour_uncovered"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-QM",
+     "detected_by": "deterministic gate",
+     "target": "safety/software_safety_requirements.md",
+     "target_field": null,
+     "verdict": null,
+     "finding_codes": []
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-EFFECT",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-002",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOSTART",
+     "detected_by": "inspection (on target)",
+     "target": "SWR-008",
+     "target_field": "reset_startup_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-03: reset_startup_missing"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-GAPROW",
+     "detected_by": "inspection (on target)",
+     "target": "Safety allocation",
+     "target_field": null,
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-01: safety_allocation_missing",
+      "SWE1-02: requirements_inconsistent",
+      "SWE1-05: upstream_gap_not_recorded"
+     ]
+    },
+    {
+     "holdout": "WO-0009B-STM32N6-IWDG-HAL-rc3",
+     "case": "S1-NOBUDGET",
+     "detected_by": "inspection (off target)",
+     "target": "SWR-012",
+     "target_field": "budget_missing",
+     "verdict": "FAIL",
+     "finding_codes": [
+      "SWE1-02: requirements_inconsistent"
+     ]
+    }
+   ]
+  }
+ ]
+}

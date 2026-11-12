@@ -1,0 +1,18 @@
+{
+  "revision": "58ef89b7c798b7fdeb05aef08813f1b26a24a6a9",
+  "command": "python -m pytest factory/python/tests/test_delivery_first.py factory/python/tests/test_simulation_declared_headers.py factory/python/tests/test_simulation_performance_authored.py factory/python/tests/test_pipeline_demonstration.py factory/python/tests/test_demonstration_repair.py factory/python/tests/test_t007_policy.py factory/python/tests/test_da014_product_role_trial.py -q",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "1",
+    "tests": "104",
+    "time": "139.813",
+    "timestamp": "2026-10-30T21:37:45.455752+00:00",
+    "hostname": "master"
+  },
+  "passed": 103,
+  "skipped": "test_live_fabro_native_bypass_denied: FORGE_FABRO_LIVE=0",
+  "disjoint_cohorts": false,
+  "qualification": "DETERMINISTIC_IMPLEMENTATION_REGRESSION_NOT_AUTONOMOUS_MILESTONE"
+}

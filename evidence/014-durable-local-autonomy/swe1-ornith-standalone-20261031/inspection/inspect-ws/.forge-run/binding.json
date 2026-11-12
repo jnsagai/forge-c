@@ -1,0 +1,81 @@
+{
+  "binding_id": "WO-AFO-7f71565db57f0a76-a1",
+  "nodes": {
+    "df_author_0": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_1": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "df_author_2": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "release_manager": {
+      "role": "release-manager"
+    },
+    "swe1_author": {
+      "phase": "SWE.1",
+      "role": "swe1-author"
+    },
+    "swe1_inspector": {
+      "phase": "SWE.1",
+      "role": "swe1-inspector"
+    },
+    "swe2_author": {
+      "phase": "SWE.2",
+      "role": "swe2-author"
+    },
+    "swe2_inspector": {
+      "phase": "SWE.2",
+      "role": "swe2-inspector"
+    },
+    "swe3_author": {
+      "phase": "SWE.3",
+      "role": "swe3-author"
+    },
+    "swe3_inspector": {
+      "phase": "SWE.3",
+      "role": "swe3-inspector"
+    },
+    "swe4_author": {
+      "phase": "SWE.4",
+      "role": "swe4-author"
+    },
+    "swe4_inspector": {
+      "phase": "SWE.4",
+      "role": "swe4-inspector"
+    },
+    "swe4_test_author": {
+      "phase": "SWE.4",
+      "role": "swe4-author"
+    },
+    "swe5_author": {
+      "phase": "SWE.5",
+      "role": "swe5-author"
+    },
+    "swe5_inspector": {
+      "phase": "SWE.5",
+      "role": "swe5-inspector"
+    },
+    "swe5_target_author": {
+      "phase": "SWE.5",
+      "role": "swe5-author"
+    },
+    "swe6_author": {
+      "phase": "SWE.6",
+      "role": "swe6-author"
+    },
+    "swe6_inspector": {
+      "phase": "SWE.6",
+      "role": "swe6-inspector"
+    },
+    "swe6_test_author": {
+      "phase": "SWE.6",
+      "role": "swe6-author"
+    }
+  },
+  "workspace": "/mnt/data/forge-c/operations/swe1-ornith-20261031/inspect-ws"
+}

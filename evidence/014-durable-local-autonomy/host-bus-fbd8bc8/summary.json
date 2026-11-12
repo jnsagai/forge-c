@@ -1,0 +1,108 @@
+{
+  "tested_revision": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "scope": "FINITE_NATIVE_BUS_HEADER_AND_VISIBILITY_SOURCE_NOT_FULL_HOST_AUDIT",
+  "results": {
+    "affected": {
+      "tests": 319,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 318,
+      "seconds": 31.083
+    },
+    "release": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 8.794
+    }
+  },
+  "artifacts": {
+    "native-system-bus.json": "b11f37edb2bea409140100294dfdfff1f4f0705969ab1baec4a81cdf424d7d98",
+    "native-invocation.json": "a0cee626a0b5000e5241fe79bdd025e6256b72fc4e22915c87599e9eb80d0950",
+    "native-user-bus.log": "320dd845de3db04562638457ee1a3c82d533da31bdf35185dd7c424da3b81e78",
+    "native-user-bus.json": "cdda3ca3ee1964e1f72248f4be18008abc41de51e2bb3013b8629d72fb33bef0",
+    "native-system-bus.log": "0fb4154f0c2cb3a3e5ebd05e2d235e95fae2cc5ba9efc81da970a2986f0d3b1b",
+    "independent-cre.json": "fff92f987f1bc56d6e3ef3d64e919f28a97c8c75ad91bd0d0c0d2d5903357b60",
+    "invocation.json": "5cd785b7618c854fe366e0979c3270f63b3b904b6ac3594c7a43b17654769a6c",
+    "release.xml": "2fa0d065a7f3e84d74871bfe68570a5e9bb152be08adfc79aadebf40d5ff744a",
+    "affected.xml": "38bf4faadbf8bd60bf9f025321943aaebe82ebf059f5bc3c91694ee97d8c6b9d",
+    "native-kernel.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-kernel.json": "8f3a0a2237454452a6ca948748d826330eead4b75f1a200812df0cc52481aff4",
+    "affected.log": "eb9827afa1640b9210898f2e1be7ab445d6acc45f6dc99fdfb10cfbd7b096377",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9"
+  },
+  "native_preflights": [
+    {
+      "label": "kernel",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "preflight",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/kernel.json"
+      ],
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "blockers": [
+        "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+        "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+        "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+      ]
+    },
+    {
+      "label": "user-bus",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "bus-preflight",
+        "--bus",
+        "user",
+        "--seconds",
+        "1",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/user-bus.json"
+      ],
+      "exit_code": 0,
+      "status": "BUS_VISIBILITY_AND_HEADERS_CAPTURED",
+      "blockers": []
+    },
+    {
+      "label": "system-bus",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "bus-preflight",
+        "--bus",
+        "system",
+        "--seconds",
+        "1",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/system-bus.json"
+      ],
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "blockers": [
+        "BUS_AUDIT_BECOME_MONITOR_NOT_PROVEN",
+        "BUS_AUDIT_BOUNDARY_VISIBILITY_NOT_PROVEN",
+        "BUS_AUDIT_MONITOR_DIAGNOSTIC_OR_FALLBACK"
+      ]
+    }
+  ],
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "host_intervention_count": null,
+  "implementation_status": "PARTIAL; continuous loss/rotation accounting, authenticated-control and actor correlation, all-channel verification remain required",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "new_qwen_requests": 0,
+  "factory_deployment": "NOT_ACTIVATED",
+  "formal_progress": "30/58; no new task checkbox",
+  "broader_regressions": "Core 712 PASS at c86d577; inherited 1840 tests at 20650af; 7 systemd/history cases last 08cc432. Not claimed on this revision."
+}

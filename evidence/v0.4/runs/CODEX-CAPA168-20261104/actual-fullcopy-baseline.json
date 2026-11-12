@@ -1,0 +1,153 @@
+{
+  "schema": "forge-c/actual-frozen-row-binding-diagnostic/1",
+  "source_workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1I/workspace",
+  "private_full_copy": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa168-actual-20261104T223618Z/workspace",
+  "copied_file_count": 477,
+  "copy_hashes_equal": true,
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "run/cloud-gen30-capa167",
+    "commit": "10f9e10bbb3c8dc9b1106e81a1137cb303ac644a",
+    "dirty": false
+  },
+  "consumer_revision": "10f9e10bbb3c8dc9b1106e81a1137cb303ac644a",
+  "adapter_hashes": {
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen30/factory/python/forge_factory/workflow/provided_input_identity.py": "e438e4a5e79819cf919540cb62452786498e934b381eb61f8525695e8a2d08fb",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen30/factory/python/forge_factory/workflow/unit_target_observation.py": "0804a782abde44a6d6924b334d6b49c44cb58757436299dff1dc1baf89c04bf6",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-cloud-gen30/factory/python/forge_factory/workflow/unit_target_timing.py": "22395389e6fce3f03985d0a7556f0a489cea33f068928d56e96951163f2f36a0"
+  },
+  "gates": {
+    "SWE.1": {
+      "phase": "SWE.1",
+      "decision": "PASS",
+      "reason": "INS-SWE.1-002",
+      "failed_inspections": 0,
+      "max_rework_cycles": 3
+    },
+    "SWE.2": {
+      "phase": "SWE.2",
+      "decision": "PASS",
+      "reason": "INS-SWE.2-002",
+      "failed_inspections": 0,
+      "max_rework_cycles": 3
+    },
+    "SWE.3": {
+      "phase": "SWE.3",
+      "decision": "PASS",
+      "reason": "INS-SWE.3-001",
+      "failed_inspections": 0,
+      "max_rework_cycles": 3
+    }
+  },
+  "effective_inputs": {
+    "software/ll/stm32n6xx_ll_wwdg.h": {
+      "schema": "forge-c/provided-effective-code/1",
+      "path": "software/ll/stm32n6xx_ll_wwdg.h",
+      "validator_sha256": "e438e4a5e79819cf919540cb62452786498e934b381eb61f8525695e8a2d08fb",
+      "original_sha256": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f",
+      "effective_sha256": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4",
+      "source_work_order": "WO-F014-SWE6-WWDGL-20261103-L29",
+      "source_package": "archive:sha256:241f59111202d6fb73acf7640914156fb9769a8a6ca321aa5489990356950675",
+      "approval": {
+        "report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7",
+        "report_md_sha256": "5f674a7a95efc79b09c65128bb57da11647e9e6a82dfdd361ffd8aeae6c58c84",
+        "phase3_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+        "phase3_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+        "defects": [
+          {
+            "id": "DEF-001",
+            "core_sha256": "a739d13b7a53315bfcd2a08d3f7b0dcfa29d879e57560a1793ab87f29d7c5fbf",
+            "fixed_event": {
+              "baseline_id": "BL-SWE.3-001",
+              "status": "FIXED",
+              "ts": "2026-11-04T22:08:51.431998Z"
+            },
+            "fixed_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+            "fixed_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+            "fixed_report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7"
+          }
+        ]
+      }
+    }
+  },
+  "source_hashes": {
+    ".forge-run/manifest.json": "3bc7ac3e5e9515622264cc935fe996b7492a65fe54ab0e8e1da9ecbe6b38a3ad",
+    "workproducts/SWE.4/unit_test_plan.json": "1e021a845aecfd3fc9270d8296521be2b47a5449830dabd8b19d8bc0042c7aac",
+    "workproducts/SWE.3/unit_specifications.md": "871e9978c007846806b5738ddef76e7c6f494b679c38e1da9cb5a9a160fbbd5a",
+    "workproducts/SWE.1/software_requirements.md": "a9bcfd10d147353c7174b4ab6964dabe47852be74c6190664d2de29900230484",
+    "software/hal/stm32n6xx_hal_wwdg.c": "53afabb4c0bc042047a8437702746c78e436bf5d456328334abd0fa6d625589b",
+    "software/ll/stm32n6xx_ll_wwdg.h": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4",
+    "workproducts/SWE.3/provided_code_changes.json": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7"
+  },
+  "cases": [
+    {
+      "label": "literal_legacy",
+      "declaration": {
+        "schema": "forge-c/swe4-wwdg-target-observation/1",
+        "ut": "UT-021",
+        "uspec": "USPEC-HAL-04-03",
+        "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+        "scenario": "wwdg-ewif-clear-v1"
+      },
+      "declaration_sha256": "05aa54e247a9c027d755d061223a76592c002b89b9b67eeb5b963fc1fa24c3c5",
+      "result": "REFUSED",
+      "error_type": "ObservationError",
+      "error": "TARGET_OBSERVATION_FROZEN_PREDICATE_UNSUPPORTED"
+    },
+    {
+      "label": "actual_frozen_row",
+      "declaration": {
+        "schema": "forge-c/swe4-wwdg-target-observation/1",
+        "ut": "UT-023",
+        "uspec": "USPEC-HAL-04-03",
+        "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+        "scenario": "wwdg-ewif-clear-v1"
+      },
+      "declaration_sha256": "49fa7d8f1da1756b4e13e65e420096cf503e93da7bcc7a89dc6381b9bec61823",
+      "result": "REFUSED",
+      "error_type": "ObservationError",
+      "error": "TARGET_OBSERVATION_SCOPE_OR_CASE_INVALID"
+    }
+  ],
+  "selected_plan_rows": [
+    {
+      "behaviour": "Write 0 to EWIF and return HAL_OK.",
+      "constraints_verified_at_swe6": [],
+      "functions": [
+        "HAL_WWDG_ClearEarlyWakeupFlag"
+      ],
+      "kind": "requirement",
+      "swrs": [
+        "SWR-014",
+        "SWR-015",
+        "SWR-035",
+        "SWR-036"
+      ],
+      "test_kind": "positive",
+      "unit": "SWU-HAL-04",
+      "unknown_swrs": [],
+      "uspec": "USPEC-HAL-04-01",
+      "ut": "UT-021"
+    },
+    {
+      "behaviour": "Preserve other writable fields and reserved bits at reset values during writes.",
+      "constraints_verified_at_swe6": [],
+      "functions": [
+        "HAL_WWDG_ClearEarlyWakeupFlag"
+      ],
+      "kind": "requirement",
+      "swrs": [
+        "SWR-033",
+        "SWR-034"
+      ],
+      "test_kind": "negative",
+      "unit": "SWU-HAL-04",
+      "unknown_swrs": [],
+      "uspec": "USPEC-HAL-04-03",
+      "ut": "UT-023"
+    }
+  ],
+  "current_plan_matches_retained": true,
+  "original_unchanged": true,
+  "limits": "No model/GPU/services/source edits. Full private copied actual terminal workspace; no fabricated phase PASS, no missing-context fixture, no approval bypass."
+}

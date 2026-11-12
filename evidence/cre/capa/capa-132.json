@@ -1,0 +1,101 @@
+{
+ "CAPA-132": {
+  "history": [
+   {
+    "at": "2026-11-03T15:40:57.611154Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[\"compile-fatal-not-in-issues\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L27: build fatal error (stm32n6xx.h missing) not in the compile tool issues",
+    "seq": 973,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T15:40:57.637353Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 974,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T15:40:57.771593Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-132 assigned",
+    "seq": 975,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T15:41:03.208661Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[\"reproducer-run:rr-5b51a8d2074d0d12f374\", \"reproducer-run:rr-3991ff540378308c012e\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 976,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T15:41:03.244327Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[\"git:5617b3afca29..65b4672752f2\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 65b4672752f2 (patch 7117 bytes)",
+    "seq": 977,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T15:45:43.243967Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[\"reproducer-run:rr-2e097b71ad3f42f62597\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-132 absent at 2e4ee28898ff",
+    "seq": 978,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T15:45:43.273425Z",
+    "capa_id": "CAPA-132",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 979,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-f96e8fd6e0a35981c3e0447907179cbf5922e9c9",
+   "5617b3afca29d28eae673eb1bfcfd829466c9f4a",
+   "65b4672752f2c8318ee59034622c9727d1cd6f32",
+   "pd-ce076fc8ee83359a410e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<65b4672752f2"
+   ],
+   "candidate_patch_sha256": "8ad895c0e8b69a5df2627fa9dd11a6542b5d946c44c102f42f82508633c3c2a4",
+   "capa_id": "CAPA-132",
+   "created_at": "2026-11-03T15:40:57.611154Z",
+   "event_ids": [],
+   "incident_ids": [
+    "compile-fatal-not-in-issues"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-132",
+   "reproducer_id": "RPR-132",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-5b51a8d2074d0d12f374",
+    "reproducer-run:rr-3991ff540378308c012e"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T15:45:43.273425Z"
+  }
+ }
+}

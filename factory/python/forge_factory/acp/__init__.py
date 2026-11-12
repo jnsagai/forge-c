@@ -14,7 +14,9 @@ OD-2026-10-19-08: the same proxy and gates also run Claude (claude-agent-acp on 
 claude_home) for the non-author nodes, with no built-in tool and no settings source.
 """
 
+import os as _os
 import re as _re
+import shlex as _shlex
 import sys as _sys
 from pathlib import Path as _Path
 
@@ -25,12 +27,16 @@ NON_AUTHOR_ROLES = ("-inspector", "release-manager")
 
 
 def acp_command(ws: _Path, node: str, agent: str = "codex") -> str:
-    from ..common import state_dir
+    from ..common import data_root, state_dir
 
     pp = _Path(__file__).resolve().parents[2]
-    return (f"env PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {_sys.executable} -m forge_factory.acp.proxy "
-            f"--binding {_Path(ws) / '.forge-run/binding.json'} --node {node}"
-            + (f" --agent {agent}" if agent != "codex" else ""))
+    args = ["env", "PYTHONPATH=" + str(pp), "FORGE_STATE_DIR=" + str(state_dir()),
+            "FORGE_DATA_ROOT=" + str(data_root()), "PATH=" + _os.environ.get("PATH", "/usr/bin:/bin"),
+            _sys.executable, "-m", "forge_factory.acp.proxy", "--binding", str(_Path(ws) / ".forge-run/binding.json"),
+            "--node", node]
+    if agent != "codex":
+        args += ["--agent", agent]
+    return " ".join(_shlex.quote(arg) for arg in args)
 
 
 _NODE = _re.compile(r"^([ \t]*)(\w+) \[", _re.M)

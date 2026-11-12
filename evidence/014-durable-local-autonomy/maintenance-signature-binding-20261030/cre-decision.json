@@ -1,0 +1,152 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_sha256": "50564d8bfb965dd9b57a20101539fa2def1af5c44fb7f876f8584d587cf16816",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_sha256": "0465a6b2031ae17269f7c933b922d9e8a8ae7e97726386e53035ce5673533557",
+  "decision": "REJECTED",
+  "decision_id": "pd-147c6b8bc7d09c7ab490",
+  "evaluated_at": "2026-10-30T03:55:09.913190Z",
+  "evaluator_id": "cre-promotion-runner@5a288206f8b6",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:ab46545c1cfb..bc931bd9274b"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-2938bd805e1e1a3f8abb",
+        "reproducer-run:rr-622aedcb461b53c6ca05"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-81ef2411190ec8d97d59",
+        "reproducer-run:rr-cb4ec9de6724e44e6a01",
+        "reproducer-run:rr-c8814265e34c9ff3d86c",
+        "reproducer-run:rr-04c391136130bf585bf1",
+        "reproducer-run:rr-a089ecebfd89ac090c25",
+        "reproducer-run:rr-62672b3914871da7d1bd",
+        "reproducer-run:rr-7eebc0ffbf50e87d1874",
+        "reproducer-run:rr-a51152020adbe4938fa3",
+        "reproducer-run:rr-cec33729cb650368d4f8",
+        "reproducer-run:rr-63a736bc9a651629fb14",
+        "reproducer-run:rr-30ab37022461bc4aac3e",
+        "reproducer-run:rr-7b512ac0835c03df7219",
+        "reproducer-run:rr-55addddf44b21295d943",
+        "reproducer-run:rr-5e2853990f9f5cea2bca",
+        "reproducer-run:rr-a1d2e1755465204e6b99",
+        "reproducer-run:rr-23e9d7ce7ba2929f3d8f",
+        "reproducer-run:rr-7d5719ae5bfc361c85a1",
+        "reproducer-run:rr-319f13c777d5c153835d",
+        "reproducer-run:rr-bb7a72eb3b11a9ea4392",
+        "reproducer-run:rr-c7efe83ea038112599fd",
+        "reproducer-run:rr-b9db5e5fca4f217b07fd",
+        "reproducer-run:rr-924b83047bc50227a317",
+        "reproducer-run:rr-7734879475e053785cf5",
+        "reproducer-run:rr-f13a50333cb3a54a2a2d",
+        "reproducer-run:rr-72ff2da81e9c46aa1a14",
+        "reproducer-run:rr-4bacaab580a7e6e669d0",
+        "reproducer-run:rr-3031c142e06fe88c99a6",
+        "reproducer-run:rr-bb2c35d0dbeb8e35c0af",
+        "reproducer-run:rr-991da43f44a4c628d1a7",
+        "reproducer-run:rr-b8a035eb6642d1f4b2b6",
+        "reproducer-run:rr-28c05c90294885eb2270",
+        "reproducer-run:rr-39ba1e9b850055cea2e4",
+        "reproducer-run:rr-1830c31673f6c99465b6",
+        "reproducer-run:rr-2a5036212babf0834daa",
+        "reproducer-run:rr-5df4e6c65f221940abbc",
+        "reproducer-run:rr-6ce1d98256c7bebee89d",
+        "reproducer-run:rr-da8c264e313a5155496c",
+        "reproducer-run:rr-f5c910a4add361114488",
+        "reproducer-run:rr-6ed25409cda3ae3cac8f",
+        "reproducer-run:rr-082dc218e8c6e89075d9",
+        "reproducer-run:rr-ff976caf9eb03e24f601",
+        "reproducer-run:rr-a5fc46531d908170c89d",
+        "reproducer-run:rr-c7fce2368b355dddc387",
+        "reproducer-run:rr-638b797510f0a94ada71",
+        "reproducer-run:rr-9cba2ff745a00c2121d8",
+        "reproducer-run:rr-35e6ded874be14c4f855",
+        "reproducer-run:rr-9da39b0c1b263129d388",
+        "reproducer-run:rr-0769e5dcc3304aa69aa5",
+        "reproducer-run:rr-0293fd71975ea68adbc8",
+        "reproducer-run:rr-5f0742f69872e4f5ee00",
+        "reproducer-run:rr-1fa9eee6702094035ffa",
+        "reproducer-run:rr-e9301ace0c089349b9c2",
+        "reproducer-run:rr-f29bfc1696c5ea5bc5d6",
+        "reproducer-run:rr-239d3390cbbcf392e2cb",
+        "reproducer-run:rr-28d2a152342172c1ce7e",
+        "reproducer-run:rr-0bd33d8263a0d29a5aa8",
+        "reproducer-run:rr-97c8f6496fee08d12e54",
+        "reproducer-run:rr-80e3a1617e9643500bca",
+        "reproducer-run:rr-c8b1103b999b9a7a00bb",
+        "reproducer-run:rr-bc83b855cd672b143bd9",
+        "reproducer-run:rr-98162bc7c43c8398671b",
+        "reproducer-run:rr-741e39b452a8e8556813",
+        "reproducer-run:rr-e24fb101454907e49a07",
+        "reproducer-run:rr-bde450bef0f520511359",
+        "reproducer-run:rr-81051ea3b86630ce1bdc",
+        "reproducer-run:rr-5febdf0b4cba7ca9d37f",
+        "reproducer-run:rr-56a0fcbfff56fb99ffab",
+        "reproducer-run:rr-7095fabac148a298c95e",
+        "reproducer-run:rr-7a7a4ab2f2ebb2786898",
+        "reproducer-run:rr-0e314e6352bc8381f383",
+        "reproducer-run:rr-92f11263e3ee08da6a5b",
+        "reproducer-run:rr-2f2aecd7fabc6e203508"
+      ],
+      "name": "prevention",
+      "reason_code": "RESOLVED_FAILURE_REAPPEARED",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "f7bdc74c428fd668b0d291f53b2226b905d1d80d8fce86349841b20595d17f30",
+  "reasons": [
+    "sandbox: 10246 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "previously resolved failures reappear: RPR-004:ERROR, RPR-015:ERROR, RPR-018:ERROR, RPR-032:ERROR, RPR-060:SYMPTOM_PRESENT, RPR-064:SYMPTOM_PRESENT, RPR-065:SYMPTOM_PRESENT, RPR-067:SYMPTOM_PRESENT"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-2938bd805e1e1a3f8abb",
+    "reproducer-run:rr-622aedcb461b53c6ca05"
+  ],
+  "schema_version": "1.0"
+}

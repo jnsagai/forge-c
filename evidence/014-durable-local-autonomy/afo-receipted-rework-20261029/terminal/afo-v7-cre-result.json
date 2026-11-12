@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-29T23:40:53.140115Z",
+  "job_id": "afo-agent-64eb264a0be0ab8584ea42da",
+  "case": "/mnt/data/forge-c/production-local-014/state/afo/maintainer/mnt-dba0cf206b8b0f2b-a1/case.json",
+  "submission": {
+    "candidate": "375a12950d45b6ce2ae54d32fc559118a798f1ff",
+    "proposal_id": "mnt-dba0cf206b8b0f2b-a1",
+    "staged": {
+      "id": "AFO-mnt-dba0cf206b8b0f2b-a1",
+      "manifest": "/mnt/data/forge-c/production-local-014/state/afo/maintainer/mnt-dba0cf206b8b0f2b-a1/reproducer/manifest.yaml",
+      "sha256": "d45763471ecdde18e5c9c21144e13186a764c4344f28932505fbbc589e46e729"
+    },
+    "submitted_utc": "2026-10-29T23:36:51.626242Z",
+    "summary": "Hook env fix: emit FORGE_DATA_ROOT default only when hook_env does not declare it, declared overrides last (shell last-wins) so the override is not shadowed. MCP env table unchanged (host default + declared override, strict parse). Repro covers the hook path.",
+    "veto": []
+  },
+  "receipt": {
+    "candidate": "375a12950d45b6ce2ae54d32fc559118a798f1ff",
+    "case_sha256": "3252afb57288667c02e091542f8dbb6ceed552fabb044f5446fb87b114ffd0c8",
+    "manifest_sha256": "5d22cf1d281d9168115cad60f49646fb5938410bfb17e536a3d40f94546476fb",
+    "reproducer_sha256": "d45763471ecdde18e5c9c21144e13186a764c4344f28932505fbbc589e46e729",
+    "request_sha256": "ef41595bddc991f2b794df05cd6f55c11fbedc419a4e9d0de27ffcabcd36cc8c",
+    "schema_version": "1.0",
+    "submission_sha256": "7956243b6b779775dd1994222d28fc7b0769ad2b4fa838e13581c8b5dd561ab3"
+  },
+  "proposals": [
+    {
+      "authorization_ref": null,
+      "auto_deployment_allowed": false,
+      "baseline_commit": "9b4c390e1605d11c4865bdeea382df74a0078692",
+      "branch_ref": null,
+      "candidate_commit": "375a12950d45b6ce2ae54d32fc559118a798f1ff",
+      "capa_id": "CAPA-001",
+      "changed_paths": [
+        "factory/python/forge_factory/fabro/runconfig.py",
+        "factory/python/tests/afo_candidate/test_swe3_10_data_root.py",
+        "factory/python/tests/afo_candidate/test_zz_dbg.py"
+      ],
+      "cre_promotion_id": "pd-8945c1b48fdc257c0348",
+      "evidence_refs": [
+        "promotion-decision:pd-8945c1b48fdc257c0348",
+        "reproducer-run:rr-f9b6b716128208c0c823"
+      ],
+      "outcome": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+      "pr_url": null,
+      "proposal_id": "mnt-dba0cf206b8b0f2b-a1",
+      "protected_changes_count": 0,
+      "reproducer_id": "AFO-mnt-dba0cf206b8b0f2b-a1",
+      "schema_version": "1.0",
+      "source_incident_id": "afo-dba0cf206b8b0f2b",
+      "tests_ref": "local-agent:afo-agent-64eb264a0be0ab8584ea42da"
+    }
+  ],
+  "verification": {
+    "case_sha256": "3252afb57288667c02e091542f8dbb6ceed552fabb044f5446fb87b114ffd0c8",
+    "deadline_epoch": 1793330247.6781635,
+    "dispatches": 1,
+    "job_id": "afo-agent-64eb264a0be0ab8584ea42da",
+    "managed_process_group": true,
+    "owner": {
+      "boot": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "pid": 2778221,
+      "start": "306861970"
+    },
+    "result": {
+      "error": "MaintainerDenied",
+      "status": "BLOCKED"
+    },
+    "result_sha256": "42c730292c1eaaf47ef3c93f48f47cc6163b18d652147ac1e77ae3c4f2e42ce0",
+    "verification_id": "verify-ab8fcf28c5683dfa6db19e7d"
+  },
+  "model_requests": 0
+}

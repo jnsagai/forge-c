@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="24" time="9.440" timestamp="2026-10-29T11:58:55.754323+00:00" hostname="master"><testcase classname="factory.python.tests.test_archive_inventory" name="test_valid_inventory_with_and_without_external_checksum" time="0.007" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[missing-member]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[unlisted-member]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[duplicate-member]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[duplicate-checksum]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[malformed-checksum]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[invalid-encoding]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[empty-index]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_invalid_external_checksum_is_a_failed_verification[]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_invalid_external_checksum_is_a_failed_verification[not-a-checksum\n]" time="0.001" /><testcase classname="factory.python.tests.test_archive_inventory" name="test_invalid_external_checksum_is_a_failed_verification[0000000000000000000000000000000000000000000000000000000000000000  review.zip\n]" time="0.001" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_turn_budget_blocks_and_resets_per_visit" time="0.817" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_inspector_last_calls_reserved_for_recording_the_inspection" time="0.435" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_hook_returns_turn_budget_exhausted" time="1.491" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t042_token_exhaustion_cancels_and_blocks_never_false_pass" time="0.089" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t043_5mb_tool_log_small_payload_full_log_hashed" time="0.931" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence" time="0.379"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'fabro'">env = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-33/test_t044_interrupted_stage_re0')
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-33/test_t044_interrupted_stage_re0')
+
+    def test_t044_interrupted_stage_resume_is_idempotent_and_never_rewrites_evidence(env, tmp_path):
+        ws = tmp_path / "ws"
+        (ws / "workproducts/SWE.1").mkdir(parents=True)
+        (ws / "workproducts/SWE.1/software_requirements.md").write_text("- **SWR-001** The RCC driver shall reset.\n")
+        s = Store(ws)
+        b1 = s.freeze("SWE.1", "swe1-author")
+        first = (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes()
+        b2 = s.freeze("SWE.1", "swe1-author")  # "resumed" stage re-runs the same freeze
+        assert b2["baseline_id"] == b1["baseline_id"] and len(s.baselines("SWE.1")) == 1
+        assert (ws / f"configuration/baselines/SWE.1/{b1['baseline_id']}.json").read_bytes() == first
+        out = env / "archives/WO-T044"
+        F.finalize(ws, "WO-T044")
+        h = F.verify_archive(next(out.glob("*.zip")))
+        again = F.finalize(ws, "WO-T044")  # replayed finalizer must not rewrite a released archive
+        assert "write-once" in again["note"] and F.verify_archive(next(out.glob("*.zip"))) == h
+&gt;       r = subprocess.run([os.environ.get("FORGE_FABRO_BIN", "fabro"), "resume", "--help"], capture_output=True, text=True,
+                           env={**os.environ, "HOME": os.environ.get("FORGE_FABRO_HOME", str(Path.home()))})
+
+factory/python/tests/test_m7_governance_release.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: 255 args: ['fabro', 'resume', '--help']&gt;
+args = ['fabro', 'resume', '--help'], executable = b'fabro', preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None
+env = {'AMENT_PREFIX_PATH': '/opt/ros/iron', 'CARLA_DIR': '/home/jefferson/autoverse/temp/carla-src', 'CLANG_PATH': '/usr/bin/clang-12', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', ...}
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 11, c2pwrite = 12, errread = 13, errwrite = 14
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread &gt; 2)
+                and (c2pwrite == -1 or c2pwrite &gt; 2)
+                and (errwrite == -1 or errwrite &gt; 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask &lt; 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write &lt; 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn, _USE_VFORK)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) &gt; 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+&gt;                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'fabro'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:1991: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_v04_policy_superset_and_operational_inventory_hashed" time="1.450" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t045_ready_requires_every_check_and_tamper_detected" time="1.253" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_failing_swe3_static_check_blocked_archive_no_human" time="1.287" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_packages_crashed_run" time="0.334" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t046_external_finalizer_asks_the_server_that_holds_the_run" time="0.354" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t047_product_defect_loops_swe_infra_defect_routes_repair" time="0.075" /><testcase classname="factory.python.tests.test_m7_governance_release" name="test_t049_forged_ai_pass_cannot_pass_gate" time="0.233" /></testsuite></testsuites>

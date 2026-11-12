@@ -1,0 +1,40 @@
+{
+  "lesson_hash": "0cc572a3c7be0eb0c648b6e6f39a3bb171eb05de3343a0c800b6c194190d13a5",
+  "experience_source_hash": "4c2b7bd9d3835eff888414cb4d3d15e86f6456beddf3764c5d7c8940f26a28e3",
+  "cases": [
+    {
+      "id": "old-provided-contract-mandate",
+      "kind": "APPLICABLE",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "expected": "SYMPTOM_PRESENT"
+    },
+    {
+      "id": "corrected-provided-contract",
+      "kind": "APPLICABLE",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "expected": "SYMPTOM_ABSENT"
+    },
+    {
+      "id": "greenfield-contract-is-excluded",
+      "kind": "ADVERSE",
+      "producer": "reference",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "expected": "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a"
+    },
+    {
+      "id": "real-cmsis-host-link",
+      "kind": "APPLICABLE",
+      "producer": "gate",
+      "oracle_sha256": "70b92cf7328558d737c71c40372c5b9ddfdf20ed489be170cb3a4e267ac1b429",
+      "expected": "COMPILE_LINK_OK"
+    }
+  ],
+  "scope": "Narrow negative linkage observation only; all gates retained; no benefit or production exposure claim",
+  "source_evidence": [
+    "native-run:01M6JY7KXMXAB232QYZMHXTJZR",
+    "native-compile-log:sha256:42af712ec408ba2730cd237a93c762f770cfb0aab485a76fc489528955e542af",
+    "frozen-architecture:sha256:69abe43fd22596b4440745af0ae5c0c302a116d15c91a6202e251938e13bd677"
+  ]
+}

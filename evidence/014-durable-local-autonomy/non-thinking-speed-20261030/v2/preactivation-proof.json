@@ -1,0 +1,21 @@
+{
+  "status": "ACTUAL_POLICY_LOADER_SIGNATURES_FROZEN_INPUTS_TOOLS_AND_INTENT_PASS",
+  "policies": {
+    "medium": {
+      "effective_mode": "PILOT",
+      "canonical_policy_sha256": "5c1a50d0da1d7db195458c80574eb65c60e18afe1fbee2c5871d646874dfd8e7"
+    },
+    "none": {
+      "effective_mode": "PILOT",
+      "canonical_policy_sha256": "8959b71040e510d4b57b2ef84a447bd2469d2947b1c2084b3d095c8e3e639f0d"
+    },
+    "xhigh": {
+      "effective_mode": "PILOT",
+      "canonical_policy_sha256": "53ad47c19bf35e3de732ba01b3a9f2e9f04fdd96c743f8c8d6ab3982b8ccf8f0"
+    }
+  },
+  "scope_sha256": "9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043",
+  "model_requests": 0,
+  "operator_epoch": 89,
+  "source_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97"
+}

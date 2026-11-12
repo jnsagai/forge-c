@@ -1,0 +1,4 @@
+continue check b: continue
+SYMPTOM_ABSENT
+
+--- stderr ---

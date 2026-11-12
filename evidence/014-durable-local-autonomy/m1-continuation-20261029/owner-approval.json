@@ -1,0 +1,8 @@
+{
+  "schema": "forge-c/owner-delegation-receipt/1",
+  "owner_answer": "Approve exact scope, signing and activation",
+  "question_ref": "call_1bcd6502261d44c088d3344b6dafdafe",
+  "recorded_utc": "2026-10-29T10:06:57.594063+00:00",
+  "scope_sha256": "61749a3c90d281f7f8bd7535d38e88c5e89cd0eb847fcadf7442cc8591d9d59b",
+  "permission": "Sign exactly the three prepared authorization messages through existing SSH agent and activate exact source f206e3a for the same-M1 continuation until 2026-10-29T18:05:39Z; no private-key read/copy"
+}

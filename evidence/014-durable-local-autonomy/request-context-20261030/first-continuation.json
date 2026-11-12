@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-30T16:05:15.637691Z",
+  "source_revision": "20dccfcbd9ecea639d1d0b0a80deb9a8d920af71",
+  "native_status": "RUNNING",
+  "native": "01M66R7P6XYM1CFHKYXT8TN5R3",
+  "events": [
+    {
+      "seq": 15,
+      "at": "2026-10-30T15:53:10.969788305Z",
+      "kind": "stage.started",
+      "node": "start",
+      "properties": {}
+    },
+    {
+      "seq": 16,
+      "at": "2026-10-30T15:53:10.969856378Z",
+      "kind": "stage.completed",
+      "node": "start",
+      "properties": {
+        "status": "succeeded"
+      }
+    },
+    {
+      "seq": 17,
+      "at": "2026-10-30T15:53:10.969892845Z",
+      "kind": "edge.selected",
+      "node": null,
+      "properties": {
+        "from_node": "start",
+        "to_node": "swe1_author"
+      }
+    },
+    {
+      "seq": 19,
+      "at": "2026-10-30T15:53:11.039534906Z",
+      "kind": "stage.started",
+      "node": "swe1_author",
+      "properties": {}
+    },
+    {
+      "seq": 22,
+      "at": "2026-10-30T16:03:37.055581455Z",
+      "kind": "stage.completed",
+      "node": "swe1_author",
+      "properties": {
+        "status": "succeeded"
+      }
+    },
+    {
+      "seq": 23,
+      "at": "2026-10-30T16:03:37.056427831Z",
+      "kind": "edge.selected",
+      "node": null,
+      "properties": {
+        "from_node": "swe1_author",
+        "to_node": "swe1_author_cont"
+      }
+    },
+    {
+      "seq": 25,
+      "at": "2026-10-30T16:03:37.126779181Z",
+      "kind": "stage.started",
+      "node": "swe1_author_cont",
+      "properties": {}
+    },
+    {
+      "seq": 28,
+      "at": "2026-10-30T16:03:37.178221320Z",
+      "kind": "stage.completed",
+      "node": "swe1_author_cont",
+      "properties": {
+        "status": "succeeded"
+      }
+    },
+    {
+      "seq": 29,
+      "at": "2026-10-30T16:03:37.178701767Z",
+      "kind": "edge.selected",
+      "node": null,
+      "properties": {
+        "from_node": "swe1_author_cont",
+        "to_node": "swe1_author_more"
+      }
+    },
+    {
+      "seq": 31,
+      "at": "2026-10-30T16:03:37.244980206Z",
+      "kind": "stage.started",
+      "node": "swe1_author_more",
+      "properties": {}
+    }
+  ],
+  "visit": {
+    ".forge-run/lrtx/SWE.1/visit-state.json": {
+      "calls": 8,
+      "continuations": 1,
+      "findings": [],
+      "open": true,
+      "started_at": "2026-10-30T15:53:11.132121Z"
+    },
+    ".forge-run/lrtx/SWE.1/continue-checks.log": [
+      "CONTINUE"
+    ]
+  },
+  "scope": "FIRST_CHECKPOINTED_CONTINUATION_NOT_COMPLETE_PIPELINE_OR_AVAILABILITY_QUALIFICATION",
+  "external_native_restart_performed": false
+}

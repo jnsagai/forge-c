@@ -1,0 +1,35 @@
+{
+  "schema": "forge-c/maintenance-replay-evidence/1",
+  "origin": "HISTORICAL_REAL_FAILURE_REPLAY_NOT_A_NEW_OUTAGE",
+  "source_order_id": "afo-774900b297bdde37",
+  "source_job_id": "afo-product-b715f920180f440b708e55a0",
+  "source_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "phase": "SWE.3",
+  "inspections": [
+    "INS-SWE.3-001",
+    "INS-SWE.3-002"
+  ],
+  "observed_finding": "SWE3-10: PLANTUML_NOT_AVAILABLE for both declared unit diagrams",
+  "environment_facts": {
+    "java_installed": true,
+    "plantuml_jar_installed": true,
+    "isolated_mcp_children_observed": 9,
+    "children_with_data_root": 0
+  },
+  "engineering_obligation": "Diagnose and repair consistent tool-context resolution in generated isolated MCP and hook execution. Preserve declared overrides and source/policy boundaries.",
+  "candidate_file": "factory/python/forge_factory/fabro/runconfig.py",
+  "historical_evidence": [
+    {
+      "path": "model-input/source-evidence/actual-mcp-environment.json",
+      "sha256": "faebaf4a4209412eedbee98b39c531476b3045477e0aeb2e8815248de46c284e",
+      "bytes": 2446
+    },
+    {
+      "path": "model-input/source-evidence/frozen-swe3-transfer.json",
+      "sha256": "00f2d377aba9353e93c2efe1bd1ea39e46e7741aeb4a91051920acb4889c39e3",
+      "bytes": 3629
+    }
+  ],
+  "instruction_boundary": "Observed failure data; no reference patch or verifier answers are provided."
+}

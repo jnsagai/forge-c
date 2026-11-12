@@ -1,0 +1,132 @@
+{
+  "schema": "forge-c/history-copy-qualification/1",
+  "status": "PASS",
+  "source_dump_sha256": "86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783",
+  "original_source_mutated": false,
+  "schema_before": 4,
+  "schema_after": 9,
+  "legacy_tables": {
+    "afo_attempts": {
+      "rows": 20,
+      "rows_sha256": "ad878a4a09ffbde1b8f44e82ff6586e8c38a040804b1855f0d82a0457bb0c617",
+      "unchanged": true
+    },
+    "afo_checkpoints": {
+      "rows": 8,
+      "rows_sha256": "193d9bc477c7680f9870cf57ca78c62893c91b9a2459a9a291376e34b8022e52",
+      "unchanged": true
+    },
+    "afo_commands_outbox": {
+      "rows": 20,
+      "rows_sha256": "a9ddc5c01dd5ede6b7296285bc4f4c5fd1007f858e00fde5e74c3b8c4c6cf61b",
+      "unchanged": true
+    },
+    "afo_control": {
+      "rows": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "unchanged": true
+    },
+    "afo_dead_letters": {
+      "rows": 4,
+      "rows_sha256": "a217c19d9356a1fecc0200298dd7880e01db74980daa147ad04aa0d7d128a95a",
+      "unchanged": true
+    },
+    "afo_leases": {
+      "rows": 1,
+      "rows_sha256": "66bea7111d8ba4e08336c6f713d131f413fa78b20b8668133e4040d2b9379b00",
+      "unchanged": true
+    },
+    "afo_lifecycle_events": {
+      "rows": 180,
+      "rows_sha256": "3fcbb61b9b86bb3fd0e08f61658e9409d0468f7d99969690c9febf3623538b3c",
+      "unchanged": true
+    },
+    "afo_local_agent_jobs": {
+      "rows": 4,
+      "rows_sha256": "3d0c5d3e1f6e81f951e321995cbfcf56b030d0c1bcf9a58da378dabc9b4fa074",
+      "unchanged": true
+    },
+    "afo_maintainer_proposals": {
+      "rows": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "unchanged": true
+    },
+    "afo_notifications": {
+      "rows": 4,
+      "rows_sha256": "717c56a9813c31b39bbfb094c22d07e46bd024a61f76e1032dea7601eaca31c8",
+      "unchanged": true
+    },
+    "afo_operator_actions": {
+      "rows": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "unchanged": true
+    },
+    "afo_recovery_plans": {
+      "rows": 1,
+      "rows_sha256": "8002652b9695be2c4f95b8604e5b4d723faffaf083ddfca62837dae2dfc5ad1e",
+      "unchanged": true
+    },
+    "afo_work_orders": {
+      "rows": 4,
+      "rows_sha256": "25f81328b2e9e0c4f400c9c09db1f578a390278f80de870ee8d889507a9a79be",
+      "unchanged": true
+    }
+  },
+  "historical_attempt_rows": 20,
+  "unique_product_executions": 5,
+  "diagnoses": [
+    {
+      "native_run_id": "01M5QTF2X5M4WMSFKXPJ6KRHEJ",
+      "state": "SUCCEEDED",
+      "reserved_tokens": 16000,
+      "reported_tokens": 15507
+    },
+    {
+      "native_run_id": "01M5QVAH97WCR7E9W0VPTSMK8Q",
+      "state": "FAILED",
+      "reserved_tokens": 16000,
+      "reported_tokens": 9270
+    },
+    {
+      "native_run_id": "01M5QVW4QYPRC1JAX1Q413HEA8",
+      "state": "FAILED",
+      "reserved_tokens": 16000,
+      "reported_tokens": 16856
+    },
+    {
+      "native_run_id": "01M5QWC6CP1BJKGXKEXWG6HXHM",
+      "state": "FAILED",
+      "reserved_tokens": 16000,
+      "reported_tokens": 13071
+    }
+  ],
+  "replayed_imports_per_identity": 2,
+  "ledger": {
+    "authorization_ref": "OFFLINE_RECONSTRUCTION_NOT_A_LIVE_GRANT",
+    "created_at": "2026-10-25T12:52:13.728848Z",
+    "limits": {
+      "deadline": 1792918800,
+      "max_attempts": 5,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 64000,
+      "max_tools": 32
+    },
+    "lineage": "offline-copy:86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783",
+    "mission_id": "offline-historical-86e4142f533d6c5a",
+    "attempts": 5,
+    "jobs": 4,
+    "requests": 0,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 64856,
+    "usage_unknown": true,
+    "unique_executions": 9,
+    "unbounded_historical_usage": true
+  },
+  "new_admission_denial": "HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND",
+  "historical_v4_native_stop_cause": "UNKNOWN",
+  "new_live_inference": false,
+  "scope": "OFFLINE_COPY_ONLY_NOT_DEPLOYMENT_OR_AUTHORIZATION"
+}

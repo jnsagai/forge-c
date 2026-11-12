@@ -1,0 +1,105 @@
+{
+  "actual_model_calls": 0,
+  "credential_files_exported": false,
+  "files": [
+    {
+      "bytes": 26757,
+      "name": "staging-receipt.json",
+      "sha256": "021497be2b467eea76fac11eb0480e5599ad1a38e864bc81b7d5bb784c3e82e5"
+    },
+    {
+      "bytes": 696,
+      "name": "probe-summary.json",
+      "sha256": "1e786d8c465c869f545f5988cfc42d7cb4b4c37d794c7f33e4f1aac4b3e4a9de"
+    },
+    {
+      "bytes": 1474,
+      "name": "predecessor-bfe-preserved.json",
+      "sha256": "eac94cf88033d356f320657cf0c522f0961ca18c7cf1dd08eba8ef8149ba2748"
+    },
+    {
+      "bytes": 778,
+      "name": "transfer-intent.json",
+      "sha256": "b9d0c12a5c30a62b6a63d82c24541285ddf36cf42d8c94d0f3cb5e959b032489"
+    },
+    {
+      "bytes": 105,
+      "name": "stage-intent.json",
+      "sha256": "60edc829410f3187b72a514f0b4ae247769371788302484231573983a4e51d58"
+    },
+    {
+      "bytes": 97,
+      "name": "probe-intent.json",
+      "sha256": "a1e77bec3236f6448505919aee6eccc2b3b98dbf4e986b010cb297d6afe5297f"
+    },
+    {
+      "bytes": 23560,
+      "name": "stage.stdout.log",
+      "sha256": "88f4cc5ec8fe16a2edd1b7bec20aad8e026e770abab4946e17b6566862c30765"
+    },
+    {
+      "bytes": 317,
+      "name": "stage.stderr.log",
+      "sha256": "2e8a968345d6c34073e6828e366bfd1e8a7fad6544dcc2ecaa68e81bf7edd32d"
+    },
+    {
+      "bytes": 651,
+      "name": "qa.stdout.log",
+      "sha256": "e715c9c2eaf45bf3796e79f47243ff15d6b1d9f56dc8ed5953349b8fa626eaaa"
+    },
+    {
+      "bytes": 0,
+      "name": "qa.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 45420,
+      "name": "bootstrap-affected-controls.xml",
+      "sha256": "dd4c609d237904fa80db97af8713617510185acbc14349ad356b54e57fce290c"
+    },
+    {
+      "bytes": 320,
+      "name": "bootstrap-affected-controls.stdout.log",
+      "sha256": "23df0a71e3035577d192a4a4c7ca3e1441a4cda12a06a2e8e9f2d2e7c4d54466"
+    },
+    {
+      "bytes": 1167,
+      "name": "cpu-preflight.stdout.log",
+      "sha256": "221833dd35a5a2f890d0705b13f2b88bc592e469c566fbb94cbf4325b3c6c040"
+    },
+    {
+      "bytes": 1167,
+      "name": "cpu-preflight/preflight.json",
+      "sha256": "221833dd35a5a2f890d0705b13f2b88bc592e469c566fbb94cbf4325b3c6c040"
+    },
+    {
+      "bytes": 681,
+      "name": "cpu-preflight/actual-teardown.xml",
+      "sha256": "6019807e27e1a94f8e0ced732643d41f6530734f12abe9e4dce2a5ce2fbf75c7"
+    },
+    {
+      "bytes": 80,
+      "name": "cpu-preflight/actual-teardown.log",
+      "sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236"
+    },
+    {
+      "bytes": 3173,
+      "name": "native-header.stdout.log",
+      "sha256": "aef57c57eb80c91f09b90487f70d479708101362bad1f7e60507372e0fad640e"
+    },
+    {
+      "bytes": 3173,
+      "name": "native-header/measurement.json",
+      "sha256": "aef57c57eb80c91f09b90487f70d479708101362bad1f7e60507372e0fad640e"
+    }
+  ],
+  "own_stub_server_log_hash_only": {
+    "bytes": 38178,
+    "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105/native-header/fixture-server.log",
+    "raw_not_exported": true,
+    "sha256": "3ea2cc5f950e14f1d86bb96173652b350c5da7961a684d1c1958e03dc3f7910f"
+  },
+  "schema": "forge-c/actual-private-QA-export-index/1",
+  "scope": "CPU_KERNEL_AND_OWN_NATIVE_STUB_ONLY_NO_ROLE_COMPETENCE",
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd"
+}

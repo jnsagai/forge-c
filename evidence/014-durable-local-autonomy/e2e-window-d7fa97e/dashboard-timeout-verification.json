@@ -1,0 +1,47 @@
+{
+  "source_id": "forge-c-omniverse2-production",
+  "source_request_timeout_seconds": 30,
+  "old_sources_unchanged": true,
+  "new_tunnel_compression": true,
+  "execution_deadlines_changed": false,
+  "remote_worker_restarts": 0,
+  "results": [
+    {
+      "endpoint": "detail",
+      "status": "PASS",
+      "elapsed_s": 16.167,
+      "native_status": "running",
+      "stage_observations": [
+        {
+          "id": "start@1",
+          "node_id": "start",
+          "status": "succeeded"
+        },
+        {
+          "id": "swe1_author@1",
+          "node_id": "swe1_author",
+          "status": "succeeded"
+        },
+        {
+          "id": "swe1_author_cont@1",
+          "node_id": "swe1_author_cont",
+          "status": "succeeded"
+        },
+        {
+          "id": "swe1_author_more@1",
+          "node_id": "swe1_author_more",
+          "status": "running"
+        }
+      ],
+      "svg_chars": 0
+    },
+    {
+      "endpoint": "graph",
+      "status": "PASS",
+      "elapsed_s": 15.476,
+      "native_status": null,
+      "stage_observations": [],
+      "svg_chars": 68343
+    }
+  ]
+}

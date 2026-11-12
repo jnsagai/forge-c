@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-05T00:02:39.323416Z",
+  "exit_code": 1,
+  "log_sha256": "4414140aedeccc6e1ae4dbd78cdcbf0ebe6fcf164eb4dd4c8544549b0981f2ce",
+  "reproducer_id": "RPR-171",
+  "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "role": "BASELINE",
+  "run_id": "rr-fabf9a7d53289559f80c",
+  "signature": "WWDG frozen target instruction and virtual-time requirement receives host-only verified credit",
+  "verdict": "SYMPTOM_PRESENT"
+}

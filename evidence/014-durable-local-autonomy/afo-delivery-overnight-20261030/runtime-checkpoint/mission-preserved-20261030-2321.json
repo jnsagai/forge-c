@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-30T23:21:11.695662Z",
+  "read_only": true,
+  "mission": {
+    "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+    "created_at": "2026-10-30T22:02:18.150036Z",
+    "limits": {
+      "deadline": 1793433479,
+      "max_attempts": 10,
+      "max_corrections": 20,
+      "max_jobs": 1,
+      "max_requests": 8000,
+      "max_tokens": 1073741824,
+      "max_tools": 100000
+    },
+    "lineage": "CRC-IDR-native-20261030-shared-lineage",
+    "mission_id": "mission-feature014-delivery-first-20261030",
+    "attempts": 3,
+    "jobs": 0,
+    "requests": 347,
+    "tools": 625,
+    "corrections": 0,
+    "charged_tokens": 198705152,
+    "usage_unknown": true,
+    "unique_executions": 3,
+    "unbounded_historical_usage": false
+  },
+  "request_states": [
+    {
+      "state": "QUIESCENT",
+      "n": 100
+    },
+    {
+      "state": "SENT",
+      "n": 1
+    }
+  ],
+  "executions": [
+    {
+      "identity": "fabro-delivery-first-014-20261030-v1:01M6788GYKREQSS1YTZHS9N3TV",
+      "kind": "PRODUCT",
+      "charge": 64487424,
+      "reserved_tokens": 64487424,
+      "reported_tokens": null,
+      "imported": true,
+      "historical_counts": {
+        "corrections": 0,
+        "requests": 246,
+        "tools": 439
+      }
+    },
+    {
+      "identity": "afo-product-af2c3b6fc3d6986baacf3568",
+      "kind": "PRODUCT",
+      "charge": 67108864,
+      "reserved_tokens": 67108864,
+      "reported_tokens": null,
+      "imported": false,
+      "historical_counts": null
+    },
+    {
+      "identity": "afo-product-221ded78874865909a532471",
+      "kind": "PRODUCT",
+      "charge": 67108864,
+      "reserved_tokens": 67108864,
+      "reported_tokens": null,
+      "imported": false,
+      "historical_counts": null
+    }
+  ]
+}

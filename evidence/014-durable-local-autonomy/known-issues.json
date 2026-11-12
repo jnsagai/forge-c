@@ -1,0 +1,318 @@
+{
+ "schema": "forge-c/known-issues/1",
+ "feature": "014-durable-local-autonomy",
+ "updated": "2026-10-27",
+ "principle": "Owner 2026-10-26: 'a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human.'",
+ "issues": [
+  {
+   "id": "KI-014-001",
+   "title": "Five diagnosis protocol trials not run: no qualified alternative local model",
+   "area": "protocol",
+   "what": "The 20x5 protocol ran 95/100 trials (95 correct, 0 failures). The 5 'qualified-local-alternative' trials need a second, independently qualified local diagnosis model; none exists on Omniverse2 (qwen3.8:27b failed the single-response diagnosis; it was not tried stepwise).",
+   "impact": "If the only qualified diagnosis model fails or is withdrawn, there is no qualified local fallback; recovery then closes BLOCKED for a human.",
+   "evidence": "evidence/v0.4/runs/DA014-protocol-95/latest.json; evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json",
+   "human_action": "Decide whether a second local model is qualified (stepwise) for diagnosis, or accept single-model diagnosis. Owner 2026-10-26: 95/100 accepted.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-002",
+   "title": "Token usage UNKNOWN for 23 of 95 protocol trials",
+   "area": "accounting",
+   "what": "The native path did not report usage for 23 trials; the ledger keeps them as UNKNOWN (never as zero).",
+   "impact": "Mission budgets for those requests are reconciled conservatively; cost per trial is not exact.",
+   "evidence": "evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/audit-5dc2df3.json (usage_unknown)",
+   "human_action": "Decide whether exact usage is required (adapter change) or the conservative UNKNOWN handling is acceptable.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-003",
+   "title": "Stepwise inspector: clean held-out baselines still falsely rejected",
+   "area": "inspector",
+   "what": "Re-measured 2026-10-27 at 9300475 after learning sets 1-3 passed live (49/49, 63/63, 14/14): on the refreshed held-out test set 2 (Feature 015 GPIOA and CRC, registered 48207f1), 3 identical runs: 12/12 seeded defects flagged (11 on target, 1 off target, 0 missed), but 2/2 clean baselines falsely rejected, so the seeded-case detections partly ride on baseline noise (10/12 add a finding code their clean baseline lacks). GPIOA: a model error on the effects step (the BSRR toggle write answered 'not_stated'). CRC: rule gaps the truthful preflight already shows (CRC_CR.REV_IN/RTYPE_IN/REV_OUT/RTYPE_OUT and CRC_DR.DR writes not matched to their requirements; the Budgets gap row not recognised). Earlier subset calibration (285d21e): 49/54 caught, 5/9 clean baselines rejected. Learning set 4 (the spent pair, rules e0c020d) then reached 13/14 with both clean baselines accepted (job 040, learning data only); development is frozen by the owner until >= 4 new frozen held-out baselines exist.",
+   "impact": "On unseen drivers the advisory inspector registers false gaps for the end-of-run human review (advisory mode: it does not block). Detection carries over; clean-baseline acceptance does not yet.",
+   "evidence": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md; evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-t2-runs.json; evidence/v0.4/runs/DA014-calibration-t2/latest.json",
+   "human_action": "Test set 2 is now spent (it may become learning set 4). Release another frozen batch of current-factory baselines (e.g. after the TIM review or new Feature 015 drivers) so a refreshed held-out set can measure further fixes.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-004",
+   "title": "Escalation ladder: CAPA retrieval rung not integrated",
+   "area": "ladder",
+   "what": "Every gap's attempt record lists rework, progress extension, validated lessons, diagnosis repair (AFO) and stall detection. CAPA retrieval is not a rung yet. Resolved 2026-10-26 (5f6d540): capa_retrieval rung records the linked CAPAs.",
+   "impact": "A gap may be registered although an open CAPA already describes its cause; the reviewer must check the CAPA registry.",
+   "evidence": "factory/python/forge_factory/inspection/gate.py (_ladder); specs/014-durable-local-autonomy/tasks.md DA-T054",
+   "human_action": "None needed to decide; implementation pending.",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "KI-014-005",
+   "title": "Two inherited test failures",
+   "area": "regression",
+   "what": "test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim and test_sim_renode::test_renode_found_from_mcp_server_environment fail identically on the base f6ff873. Resolved 2026-10-27: both failed only under run_full_inherited.py's private empty FORGE_STATE_DIR (test-isolation artifacts, not factory defects); fixed in 1e2fd46; whole suite at 20650af: 0 failures.",
+   "impact": "The whole inherited suite is not green; the two failures predate Feature 014.",
+   "evidence": "specs/014-durable-local-autonomy/validation.md (2026-10-26 regression table)",
+   "human_action": "None: both were hermetic-harness artifacts, fixed in 1e2fd46 (test-only); DA-T029 ticked at 20650af.",
+   "status": "RESOLVED"
+  },
+  {
+   "id": "KI-014-006",
+   "title": "No usable parallel model serving for the inspector",
+   "area": "runtime",
+   "what": "Ollama 0.34.0 serves qwen35moe with one request slot. The experimental llama.cpp profile (-ls) serves 2 slots but gives the prefill-bound inspector ~0 speed-up, changes answers (1 learning-set result broke) and crashed twice right after stack start (cause unknown).",
+   "impact": "Inspector throughput stays one request at a time on Omniverse2.",
+   "evidence": "evidence/014-durable-local-autonomy/parallel-serving-20261026/README.md",
+   "human_action": "Decide whether parallel serving is worth a separate qualification (another runtime or model), or keep one slot.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-007",
+   "title": "Omniverse2 unit gate skips the review tests",
+   "area": "gates",
+   "what": "40 of 46 review/seeded tests skip on Omniverse2 (no pinned SafeC engine or owner inputs there). Compensated: calibration requires a loop10 run of the same revision with none skipped.",
+   "impact": "A remote-only change could pass the remote gate untested.",
+   "evidence": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md (gate defects)",
+   "human_action": "Decide whether the pinned engine and owner inputs may be placed on Omniverse2 (private data).",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-008",
+   "title": "Record copier misses some evaluation records",
+   "area": "evidence",
+   "what": "The periodic copier of the seeded harness keeps inspection records for about 40 of 49 evaluations; the rest are lost when the harness deletes its scratch.",
+   "impact": "Replay-based development and audits cannot see every evaluation.",
+   "evidence": "evidence/014-durable-local-autonomy/parallel-serving-20261026/README.md",
+   "human_action": "None needed to decide; harness change pending (write records next to the result).",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-009",
+   "title": "Signed dispositions and patch bundles not exercised live",
+   "area": "offline loop",
+   "what": "Export, owner-signed dispositions and the signed patch-import gate pass their deterministic tests. A live round trip needs the owner's allowed-signers lines for namespaces forge-review-disposition and forge-patch-bundle and the owner's own signatures.",
+   "impact": "The offline improvement loop is implemented but unproven end to end.",
+   "evidence": "evidence/v0.4/runs/DA014-US11/latest.json; specs/014-durable-local-autonomy/contracts/README.md",
+   "human_action": "Owner: add the two allowed-signers lines and sign one disposition and one patch.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-010",
+   "title": "Independent CRE rejects promotion of the branch",
+   "area": "promotion",
+   "what": "Independent CRE evaluates the Feature 014 range as REJECTED / PROTECTED_PATH_CHANGE (the branch changes evidence and specification paths). No gate is waived.",
+   "impact": "No automatic promotion; merging needs the owner's review.",
+   "evidence": "evidence/014-durable-local-autonomy/cre/independent-evaluation.json",
+   "human_action": "Owner review of PR #42 (draft); merge only after acceptance.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-011",
+   "title": "Long live campaigns not run",
+   "area": "qualification",
+   "what": "Real RCC recovery, the 30-product benchmark, chronological learning benefit and the 24/72/168-hour operation campaigns are implemented with fixtures but NOT_RUN.",
+   "impact": "Production readiness, product success, learning benefit and availability are unproven.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv",
+   "human_action": "Schedule dedicated Omniverse2 GPU windows for the campaigns.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-012",
+   "title": "DA-T004: Complete serialized prompts and packet partitioning not shown live",
+   "area": "live evidence",
+   "what": "No live serialized-input manifest, admission receipt or partition/coverage manifest; every live case had one obligation.",
+   "impact": "DA-T004 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials below/at/above the allowance with the manifests retained.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-013",
+   "title": "DA-T005: Semantic proposal negatives produced by Qwen itself not shown live",
+   "area": "live evidence",
+   "what": "The live campaign separated PROPOSE_REPAIR/NEEDS_EVIDENCE/CLOSE_BLOCKED; its negatives were injected after the answer, and correction counts were not recorded.",
+   "impact": "DA-T005 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: ~4 trials forcing absent hypothesis, wrong type, overlong field.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-014",
+   "title": "DA-T007: Registered vs transmitted schema and the MCP tool path not shown live",
+   "area": "live evidence",
+   "what": "The closed-branch wire schema fix is recorded; no schema hash capture, and no live trial used MCP tools.",
+   "impact": "DA-T007 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: One schema-capture trial per boundary (MCP and constrained mode).",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-015",
+   "title": "DA-T010: Separate request/tool/token/correction counters not shown live",
+   "area": "live evidence",
+   "what": "Live trials used no tools; no reserve-boundary or exhaustion trial.",
+   "impact": "DA-T010 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 tool-using trials up to the completion reserve.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-016",
+   "title": "DA-T012: Concurrent admission, late usage and overshoot not shown live",
+   "area": "live evidence",
+   "what": "Request counts and UNKNOWN usage are recorded (KI-014-002); no concurrent admission near exhaustion, late usage, overshoot or input/cached/output split.",
+   "impact": "DA-T012 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 3 trials: concurrent admission near exhaustion, cancel with late usage.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-017",
+   "title": "DA-T013: Liveness after cancel failure/timeout, restart and late adoption not shown live",
+   "area": "live evidence",
+   "what": "Live cancel-ack and lost-ack rows exist; no quiescence after a supervisor restart, no revocation before adoption, no cancel failure or timeout.",
+   "impact": "DA-T013 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 2 trials (cancel-ack with restart to quiescence; lost-ack with revocation before adoption).",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-018",
+   "title": "DA-T018: Status/scorecard dimensions with timestamps and a privacy scan not captured live",
+   "area": "live evidence",
+   "what": "No qualifying live status/scorecard snapshot and privacy scan. Backlog A1 was re-checked after Job 050 had already ended at 08:19 UTC; terminal artifact/hash replay and a published-metadata privacy-pattern scan pass, but cannot supply a live snapshot retrospectively.",
+   "impact": "DA-T018 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "evidence/014-durable-local-autonomy/st3-driver-runs/publication-recheck-20261027.json; specs/014-durable-local-autonomy/implementation-status.csv",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Snapshots and a privacy scan during any live run.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-019",
+   "title": "DA-T019: Obligation-scoped repair context not exercised on a real repair",
+   "area": "live evidence",
+   "what": "The live mission made no product attempt; plans were accepted but never implemented.",
+   "impact": "DA-T019 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product repair (reg32 mask) with independent oracle before/after.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-020",
+   "title": "DA-T021: Independent author/inspector regression on a real repair not run",
+   "area": "live evidence",
+   "what": "No live repair path, no author tampering attempt; inspector calibration missed 1/54 seeded defects.",
+   "impact": "DA-T021 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The DA-T019 product run plus seeded critical cases and tamper attempts.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-021",
+   "title": "DA-T031: Per-role capability profile recorded only for diagnosis (INCOMPLETE)",
+   "area": "live evidence",
+   "what": "capability-5dc2df3.json pins the identity but status INCOMPLETE, record() refused; no invalidation receipt.",
+   "impact": "DA-T031 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: The 5 qualified-local-alternative trials (KI-014-001) and one changed-identity trial.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-022",
+   "title": "DA-T032: Short-horizon decomposition not shown live",
+   "area": "live evidence",
+   "what": "All live cases had one obligation; no injected omission/interface/global-constraint faults.",
+   "impact": "DA-T032 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 product case with ~3 obligations and the three injections.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-023",
+   "title": "DA-T033: Evidence-indexed memory and checkpoints only partly shown live",
+   "area": "live evidence",
+   "what": "Stale/missing primary evidence handled 5/5; no checkpoint resume, stale lesson or effective-context trial.",
+   "impact": "DA-T033 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A resume-from-checkpoint trial with injected stale memory.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-024",
+   "title": "DA-T034: Sequential candidate selection and stall stop not shown live",
+   "area": "live evidence",
+   "what": "Reworded strategy rejected 5/5; no multi-candidate search, verifier ranking or stall stop.",
+   "impact": "DA-T034 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A bounded 3-candidate search inside a product repair.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-025",
+   "title": "DA-T035: Inspector qualification lacks author pairing and metamorphic/reference checks",
+   "area": "live evidence",
+   "what": "Learning sets pass; held-out calibration showed false alarms (KI-014-003); no paired author, metamorphic or reference manifests.",
+   "impact": "DA-T035 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: A paired author/inspector run on a refreshed held-out set.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-026",
+   "title": "DA-T036: Capability-limit disposition only partly shown live",
+   "area": "live evidence",
+   "what": "Unqualified alternative refused 5/5, CLOSE_BLOCKED and NEEDS_EVIDENCE correct; no typed CAPABILITY_LIMIT or repartition trial; qualified-alternative branch blocked (KI-014-001).",
+   "impact": "DA-T036 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 oversized trial ending in CAPABILITY_LIMIT or repartition.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-027",
+   "title": "DA-T040: Native lesson retrieval before a job not shown live",
+   "area": "live evidence",
+   "what": "Both delivery paths and APPLICATION recording are tested deterministically; no live job used a lesson.",
+   "impact": "DA-T040 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: Job A then job B with seeded lessons, plus one inspector job.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-028",
+   "title": "DA-T041: Independent lesson candidate qualification not shown live",
+   "area": "live evidence",
+   "what": "No live candidate curation.",
+   "impact": "DA-T041 stays unticked; its behaviour is verified only by deterministic fixtures.",
+   "evidence": "specs/014-durable-local-autonomy/implementation-status.csv; evidence mapping 2026-10-26 (validation.md)",
+   "human_action": "Owner 2026-10-26 'Known issues only': implemented and fixture-tested; no live work planned. Close with: 1 curation run over candidates from the committed campaign rows.",
+   "status": "ACCEPTED_BY_OWNER"
+  },
+  {
+   "id": "KI-014-029",
+   "area": "local-author",
+   "title": "All three new ST LL pilots stop at SWE.1 with missing required outputs",
+   "what": "Job 050 at clean 9a88fbc ran WWDG, RNG and LPTIM1 once each: all packages BLOCKED at SWE.1 with 59 gaps. Identical deterministic rejections repeated twice include missing register_effects.json and traceability output. Recorded author replies identify unsupported register-io-0.1 access/RMW/write-only semantics plus out-of-task and wrong-intent proposals; all-or-nothing assembly correctly emits no accepted partial outputs. Independent required-intent checks on Omniverse2 now establish a specific WWDG capability ceiling: nine of twelve required operation forms return UNSUPPORTED under the pinned profile; three ordinary reads pass the engine and the independent Python contract check. Both rs and rc_w0 access are absent from the profile, and RMW beside rs is unsupported. Sixteen total engine invocations across initial/full-scope checks, zero model calls. Another Qwen answer cannot supply missing engine semantics for this unchanged scope. Owner approved the scoped extension on 2026-10-27. At exact Forge-C a74baa9 and private semantic source c241a9a, explicit register-io-0.2 supports all twelve WWDG forms, with all36 derived-artifact checks independently passing on Omniverse2. Default pins and historical failures are preserved; this is capability qualification, not a completed driver. At466d87b the downstream domain-family/profile-loss defects are fixed. A joint12-form set passes all engine/consumer checks, but native frozen ST code matches40/44 register-image cases: GetPrescaler returns14336 versus logical7 in2cases; ClearFlag_EWKUP host word0xfffffffe versus0 in2cases. This is a verification-model/HSI incompatibility, not a hardware-defect or Qwen-failure claim. Zero model/product attempts.",
+   "impact": "Local Qwen full ST LL authoring is unproven; safety signatures alone cannot fix the earlier output failures.",
+   "evidence": "evidence/014-durable-local-autonomy/st3-driver-runs/author-diagnostics.json; evidence/014-durable-local-autonomy/wwdg-required-capability-20261027/summary.json; evidence/014-durable-local-autonomy/wwdg-v02-a74baa9/README.md; evidence/014-durable-local-autonomy/wwdg-consumers-466d87b/README.md",
+   "human_action": "Original extension approval is recorded. Before a full frozen-driver retry, independently baseline/qualify API representation and hardware-access-model assumptions or approve an explicit scoped alternative. Retain the current model incompatibility without changing frozen code or weakening gates. Current product authorization/cumulative mission continuation remain unbound; no grants or budgets reset. Private broader replay needs16 original inputs; Linux lint is fixed.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-030",
+   "area": "operational-qualification",
+   "title": "Complete independent host audit remains unavailable on Omniverse2",
+   "what": "Native probes at fbd8bc8 found kernel audit status unavailable and system-bus monitor/boundary visibility unproven (diagnostic/fallback). At 7e1abb2 user-bus visibility and 62 remote control/bus tests passed. Source 2246a58 adds frozen, privacy-checked application control ingestion/replay. Source c38158c adds bounded protected byte segments, retained single-rotation handoff and executable prefix-chain replay (152 Omniverse2 deterministic passes). Source 6b41668 adds bounded incremental selected-event replay across ranges/rotation, explicit pending/orphan facts and enriched-record handling (183 remote deterministic passes). Actual 6b41668 preflight remains BLOCKED: auditctl unavailable, continuous system-bus coverage and authenticated control correlation required. Native full-record/window qualification, batched continuous replay, native actor/control/write/service correlation and full all-channel intervention verification remain incomplete. Source 75d4bdc adds crash-replayable collection on the existing soak cadence, protected writer serialization, cumulative sampling bounds and retained failed host cursors (194 Omniverse2 deterministic passes). Preflight remains BLOCKED. Job050 has no durable AFO product bindings; no operational manifest or campaign was activated. Latest comparison/collector integration d9d70e1 passes 541 local affected cases with one disabled-live skip and 13 release cases; this is not host-wide qualification.",
+   "impact": "Unexpected interventions remain UNKNOWN. User-bus visibility alone cannot qualify a host or make an operational campaign PASS.",
+   "evidence": "evidence/014-durable-local-autonomy/event-replay-6b41668/summary.json; evidence/014-durable-local-autonomy/audit-segments-c38158c/summary.json; evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json; evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json; evidence/014-durable-local-autonomy/operational-collection-75d4bdc/summary.json; evidence/014-durable-local-autonomy/configuration-comparison-d9d70e1/summary.json",
+   "human_action": "Host administrator must provide approved kernel-audit and system-bus visibility plus the reboot/mount-loss fixture window. Continue independent source integration and tests; do not bypass permissions or deploy persistent source.",
+   "status": "OPEN"
+  },
+  {
+   "id": "KI-014-031",
+   "area": "operator-intent",
+   "title": "Older resume could leave database controls inconsistent with newer STOPPED intent",
+   "what": "The pinned prior synchronize function reproduced STOPPED intent with paused=0/draining=0 after a concurrent older resume. Source 7e1abb2 commits all database controls/action/event rows transactionally under the existing intent lock and retains caller/process provenance. Concurrency, rollback, CLI/HTTP and privacy tests pass locally and on Omniverse2.",
+   "impact": "The misleading/stale database effects are corrected. Existing admission already honored durable STOPPED intent; no actual service restart is inferred from the counterexample.",
+   "evidence": "evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json",
+   "human_action": "Review the source and exact receipts in draft PR #42. Native campaigns and independent host audit remain separate unrun work.",
+   "status": "RESOLVED_DETERMINISTIC"
+  }
+ ]
+}

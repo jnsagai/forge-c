@@ -1,0 +1,1361 @@
+{
+  "at": "2026-10-31T03:31:18.827783Z",
+  "attempts": [
+    {
+      "attempt_id": "afo-7f71565db57f0a76-a1",
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+      },
+      "execution": [
+        {
+          "execution_liveness": "LIVE",
+          "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+          "native_run_ids": [
+            "01M67ZJWDYS7H33828MPTK6E6D"
+          ],
+          "quiescence_evidence_ref": null,
+          "resource_lease": "HELD",
+          "task_outcome": "ACTIVE"
+        }
+      ],
+      "external_steering_events": 0,
+      "initial_preflight": {
+        "at": "2026-10-31T03:20:52.315388Z",
+        "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+        "candidate_code_substituted": false,
+        "candidate_initially_absent": true,
+        "contract": {
+          "candidate_files": [
+            "software/ll/stm32n6xx_ll_crc.h"
+          ],
+          "compiler_profiles": {
+            "host": "host-clang",
+            "target": "target-cm55-gcc"
+          },
+          "contract": "inputs/IDR-CONTRACT.md",
+          "host_oracle": "inputs/idr_oracle.c",
+          "include_dirs": [
+            "software/ll",
+            "inputs"
+          ],
+          "max_corrections": 2,
+          "required_functions": [
+            "LL_CRC_Write_IDR",
+            "LL_CRC_Read_IDR"
+          ],
+          "schema": "forge-c/delivery-first/1",
+          "simulation_adapter": "stm32n6-cortex-m55-v1",
+          "simulation_oracle": "inputs/idr_target_oracle.c",
+          "target_probe": "inputs/idr_target_probe.c",
+          "unit_harness": "inputs/idr_unit_harness.c"
+        },
+        "factory_revision": {
+          "basis": "recorded_at_launch",
+          "branch": "HEAD",
+          "commit": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+          "dirty": false
+        },
+        "inputs": [
+          {
+            "bytes": 1056393,
+            "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+            "role": "datasheet",
+            "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+          },
+          {
+            "bytes": 28656,
+            "path": "inputs/RM0486-rev4-ch26-crc.md",
+            "role": "reference_manual_crc_chapter",
+            "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+          },
+          {
+            "bytes": 3455,
+            "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+            "role": "reference_manual_memory_map",
+            "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+          },
+          {
+            "bytes": 3358,
+            "path": "inputs/RM0486-rev4-register-conventions.md",
+            "role": "reference_manual_register_conventions",
+            "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+          },
+          {
+            "bytes": 697,
+            "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+            "role": "conversion_provenance",
+            "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+          },
+          {
+            "bytes": 1362,
+            "path": "inputs/inputs-manifest.json",
+            "role": "conversion_provenance",
+            "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+          },
+          {
+            "bytes": 455865,
+            "path": "inputs/hal_driver_guideline.md",
+            "role": "development_guideline",
+            "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+          },
+          {
+            "bytes": 4572,
+            "path": "inputs/provided-requirements.json",
+            "role": "delivery_first_reviewed_reference_requirements",
+            "sha256": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14"
+          },
+          {
+            "bytes": 2496,
+            "path": "inputs/IDR-CONTRACT.md",
+            "role": "delivery_first_contract",
+            "sha256": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3"
+          },
+          {
+            "bytes": 1138,
+            "path": "inputs/forge_crc_device.h",
+            "role": "delivery_first_oracle_or_device_fixture",
+            "sha256": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961"
+          },
+          {
+            "bytes": 1803,
+            "path": "inputs/idr_oracle.c",
+            "role": "delivery_first_oracle_or_device_fixture",
+            "sha256": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10"
+          },
+          {
+            "bytes": 571,
+            "path": "inputs/idr_target_probe.c",
+            "role": "delivery_first_oracle_or_device_fixture",
+            "sha256": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625"
+          },
+          {
+            "bytes": 681,
+            "path": "inputs/idr_unit_harness.c",
+            "role": "delivery_first_host_harness",
+            "sha256": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb"
+          },
+          {
+            "bytes": 1316,
+            "path": "inputs/idr_target_oracle.c",
+            "role": "delivery_first_independent_target_oracle",
+            "sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd"
+          }
+        ],
+        "local_profile": {
+          "config": "config/factory/profiles/local-rtx-v2-omniverse2-q38-delivery-first.yaml",
+          "config_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+          "id": "local-rtx-v2-omniverse2-q38-delivery-first",
+          "status": "DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED",
+          "version": 3
+        },
+        "mode": "QM_DELIVERY_FIRST_DEMO",
+        "work_order": "WO-AFO-7f71565db57f0a76-a1"
+      },
+      "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+      "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+      "native_status": "RUNNING",
+      "phase_files": {
+        "SWE.1": [
+          {
+            "bytes": 365,
+            "path": "workproducts/SWE.1/register_effects.json",
+            "sha256": "5ccc4542c8f6750367fffd2e860462f7270004b22ba0573e35d9c4e8cf8ad65f"
+          },
+          {
+            "bytes": 6464,
+            "path": "workproducts/SWE.1/software_requirements.md",
+            "sha256": "4d616017b1977f101828bfba8ecf4a54beb3dcc27dd1ccafbd2e10bff40b391d"
+          },
+          {
+            "bytes": 26156,
+            "path": "workproducts/SWE.1/software_requirements.reqif",
+            "sha256": "b3fbaf88400c6f8cebc6e46bb4065bd7a1fd4b437fe27d7aa568a05f2ae9b4f4"
+          }
+        ],
+        "SWE.2": [],
+        "SWE.3": [],
+        "SWE.4": [],
+        "SWE.5": [],
+        "SWE.6": []
+      },
+      "request_states": [
+        {
+          "n": 29,
+          "state": "QUIESCENT"
+        }
+      ],
+      "stage_outcomes": [
+        {
+          "at": "2026-10-31T03:20:52.180240176Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "start"
+        },
+        {
+          "at": "2026-10-31T03:20:52.180357598Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "start"
+        },
+        {
+          "at": "2026-10-31T03:20:52.246260154Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "df_preflight"
+        },
+        {
+          "at": "2026-10-31T03:20:52.547824244Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "df_preflight"
+        },
+        {
+          "at": "2026-10-31T03:20:52.625369915Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "df_author_0"
+        },
+        {
+          "at": "2026-10-31T03:22:46.530585196Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "df_author_0"
+        },
+        {
+          "at": "2026-10-31T03:22:46.598707943Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "df_verify_0"
+        },
+        {
+          "at": "2026-10-31T03:22:50.513799409Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "df_verify_0"
+        },
+        {
+          "at": "2026-10-31T03:22:50.591331640Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "swe1_author"
+        },
+        {
+          "at": "2026-10-31T03:29:01.713994631Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "swe1_author"
+        },
+        {
+          "at": "2026-10-31T03:29:01.789819744Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "swe1_author_gate"
+        },
+        {
+          "at": "2026-10-31T03:29:02.144311541Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "swe1_author_gate"
+        },
+        {
+          "at": "2026-10-31T03:29:02.215153378Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "swe1_demo_snapshot"
+        },
+        {
+          "at": "2026-10-31T03:29:02.279794762Z",
+          "event": "stage.completed",
+          "failure": null,
+          "node": "swe1_demo_snapshot"
+        },
+        {
+          "at": "2026-10-31T03:29:02.352409211Z",
+          "event": "stage.started",
+          "failure": null,
+          "node": "swe1_inspector"
+        }
+      ],
+      "usage": {
+        "by_model": [
+          {
+            "model": {
+              "model_id": "qwen3.8:27b-q8_0",
+              "provider": "ollama"
+            },
+            "stages": 3,
+            "usage": {
+              "tokens": {
+                "cache_read": 745904,
+                "cache_write": 0,
+                "input": 114837,
+                "output": 27979,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "stages": [
+          {
+            "model": null,
+            "stage": {
+              "id": "df_preflight",
+              "name": "df_preflight"
+            },
+            "started_at": "2026-10-31T03:20:52.246260154Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 299,
+              "inference_time_ms": 0,
+              "tool_time_ms": 299,
+              "wall_time_ms": 367
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 0,
+                "cache_write": 0,
+                "input": 0,
+                "output": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": {
+              "model_id": "qwen3.8:27b-q8_0",
+              "provider": "ollama"
+            },
+            "stage": {
+              "id": "df_author_0",
+              "name": "df_author_0"
+            },
+            "started_at": "2026-10-31T03:20:52.625369915Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 110469,
+              "inference_time_ms": 104246,
+              "tool_time_ms": 6223,
+              "wall_time_ms": 113980
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 162072,
+                "cache_write": 0,
+                "input": 23472,
+                "output": 4284,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": null,
+            "stage": {
+              "id": "df_verify_0",
+              "name": "df_verify_0"
+            },
+            "started_at": "2026-10-31T03:22:46.598707943Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 3910,
+              "inference_time_ms": 0,
+              "tool_time_ms": 3910,
+              "wall_time_ms": 3980
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 0,
+                "cache_write": 0,
+                "input": 0,
+                "output": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": {
+              "model_id": "qwen3.8:27b-q8_0",
+              "provider": "ollama"
+            },
+            "stage": {
+              "id": "swe1_author",
+              "name": "swe1_author"
+            },
+            "started_at": "2026-10-31T03:22:50.591331640Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 367835,
+              "inference_time_ms": 361254,
+              "tool_time_ms": 6581,
+              "wall_time_ms": 371194
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 222196,
+                "cache_write": 0,
+                "input": 38805,
+                "output": 19906,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": null,
+            "stage": {
+              "id": "swe1_author_gate",
+              "name": "swe1_author_gate"
+            },
+            "started_at": "2026-10-31T03:29:01.789819744Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 352,
+              "inference_time_ms": 0,
+              "tool_time_ms": 352,
+              "wall_time_ms": 426
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 0,
+                "cache_write": 0,
+                "input": 0,
+                "output": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": null,
+            "stage": {
+              "id": "swe1_demo_snapshot",
+              "name": "swe1_demo_snapshot"
+            },
+            "started_at": "2026-10-31T03:29:02.215153378Z",
+            "state": "succeeded",
+            "timing": {
+              "active_time_ms": 62,
+              "inference_time_ms": 0,
+              "tool_time_ms": 62,
+              "wall_time_ms": 132
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 0,
+                "cache_write": 0,
+                "input": 0,
+                "output": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "model": {
+              "model_id": "qwen3.8:27b-q8_0",
+              "provider": "ollama"
+            },
+            "stage": {
+              "id": "swe1_inspector",
+              "name": "swe1_inspector"
+            },
+            "started_at": "2026-10-31T03:29:02.352409211Z",
+            "state": "running",
+            "timing": {
+              "active_time_ms": 133710,
+              "inference_time_ms": 125931,
+              "tool_time_ms": 7779,
+              "wall_time_ms": 136588
+            },
+            "usage": {
+              "tokens": {
+                "cache_read": 361636,
+                "cache_write": 0,
+                "input": 52560,
+                "output": 3789,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "totals": {
+          "timing": {
+            "active_time_ms": 616637,
+            "inference_time_ms": 591431,
+            "tool_time_ms": 25206,
+            "wall_time_ms": 626667
+          },
+          "usage": {
+            "tokens": {
+              "cache_read": 745904,
+              "cache_write": 0,
+              "input": 114837,
+              "output": 27979,
+              "reasoning": 0
+            }
+          }
+        }
+      },
+      "verifiers": [
+        {
+          "path": ".forge-run/delivery-first/attempt-0/result.json",
+          "result": {
+            "at": "2026-10-31T03:22:50.252714Z",
+            "attempt": 0,
+            "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+            "calls": [
+              {
+                "argv": [
+                  "clang",
+                  "-std=c11",
+                  "-O2",
+                  "-g",
+                  "-DFORGE_HOST_BUILD=1",
+                  "-Wall",
+                  "-Wextra",
+                  "-Werror",
+                  "-Wconversion",
+                  "-Wsign-conversion",
+                  "-Wshadow",
+                  "-Wcast-align",
+                  "-Wstrict-prototypes",
+                  "-Wmissing-prototypes",
+                  "-Wundef",
+                  "-pedantic",
+                  "-I",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/software/ll",
+                  "-I",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/inputs",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/inputs/idr_oracle.c",
+                  "-o",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/.forge-run/delivery-first/attempt-0/oracle"
+                ],
+                "check": "host_compile",
+                "duration_ms": 39.3,
+                "exit_code": 0,
+                "status": "PASS",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "timed_out": false
+              },
+              {
+                "argv": [
+                  "arm-none-eabi-gcc",
+                  "-std=c11",
+                  "-mcpu=cortex-m55",
+                  "-mthumb",
+                  "-mfloat-abi=hard",
+                  "-Os",
+                  "-ffunction-sections",
+                  "-fdata-sections",
+                  "-ffreestanding",
+                  "-Wall",
+                  "-Wextra",
+                  "-Werror",
+                  "-Wconversion",
+                  "-Wsign-conversion",
+                  "-Wshadow",
+                  "-Wcast-align",
+                  "-Wstrict-prototypes",
+                  "-Wmissing-prototypes",
+                  "-Wundef",
+                  "-pedantic",
+                  "-I",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/software/ll",
+                  "-I",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/inputs",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/inputs/idr_target_probe.c",
+                  "-c",
+                  "-o",
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/.forge-run/delivery-first/attempt-0/probe.o"
+                ],
+                "check": "target_compile",
+                "duration_ms": 18.4,
+                "exit_code": 0,
+                "status": "PASS",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "timed_out": false
+              },
+              {
+                "argv": [
+                  "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace/.forge-run/delivery-first/attempt-0/oracle"
+                ],
+                "check": "independent_behavior",
+                "duration_ms": 2.2,
+                "exit_code": 0,
+                "status": "PASS",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_sha256": "88a4b58146e9dbf667d2dd92980ca3c610c73835057144efe812b3e2b1817477",
+                "timed_out": false
+              }
+            ],
+            "candidate_hashes": {
+              "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+            },
+            "candidate_unchanged_during_checks": true,
+            "correction_count": 0,
+            "factory_revision": {
+              "basis": "recorded_at_launch",
+              "branch": "HEAD",
+              "commit": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+              "dirty": false
+            },
+            "independent_target": {
+              "independent_oracle_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+              "outputs": {
+                "compile": {
+                  "artifact_refs": [
+                    "artifact:sha256:cc3b0129bc248d849cf2233fe42d20d231e4575282e603b7cc018f90848f15b5"
+                  ],
+                  "issues": [],
+                  "metrics": {
+                    "failed_units": 0,
+                    "relocatable_elf": true,
+                    "units": 2
+                  },
+                  "provenance": {
+                    "duration_ms": 32.8,
+                    "exit_code": 0,
+                    "input_sha256": "81b2fd8c0a276f979ce8d480cb7d2d13a065c9d8c56e429b4f9ba0489482cb0a",
+                    "invocation_id": "inv-157a3fecdf6b4650",
+                    "output_sha256": "cc3b0129bc248d849cf2233fe42d20d231e4575282e603b7cc018f90848f15b5",
+                    "tool": "arm-none-eabi-gcc",
+                    "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+                  },
+                  "status": "PASS",
+                  "summary": "2/2 units compiled (target-cm55-gcc)"
+                },
+                "cost": {
+                  "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+                  "hardware_wcet": "NOT_MEASURED",
+                  "issues": [],
+                  "measurement_plan": {
+                    "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+                    "disassembly_sha256": "c7fe3fef1df3ff5eb5693be42e43d9bc608e5c20c3dc1a7bae3098d9ba125f27",
+                    "elf_sha256": "3c57dcea6426bc11629e501aaf088522d1c130fefc622fb7f9e040a5c2f7f99c",
+                    "hooks": [
+                      [
+                        "forge_measure_LL_CRC_Write_IDR",
+                        "BEGIN",
+                        872415768
+                      ],
+                      [
+                        "forge_measure_LL_CRC_Read_IDR",
+                        "BEGIN",
+                        872415772
+                      ],
+                      [
+                        "forge_measure_LL_CRC_Write_IDR",
+                        "END",
+                        872415384
+                      ],
+                      [
+                        "forge_measure_LL_CRC_Read_IDR",
+                        "END",
+                        872415440
+                      ]
+                    ],
+                    "model_sha256": "dc60996b97d2e17eb0b917e6cf59c2a090bf4de4c76f515bb9050297ac464ae2",
+                    "observer_sha256": "3f8a843a8a73e778d780e387faa2e0a1833cf2d917916c3003c60f0abd39e216",
+                    "platform_sha256": "391cc33dac73734ecac5e4a32f836b61bc2ecdac904c1b2d5287da6b6178ed30",
+                    "source_files": {
+                      "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+                      "inputs/IDR-CONTRACT.md": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3",
+                      "inputs/RM0486-rev4-ch26-crc.md": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+                      "inputs/RM0486-rev4-memory-map-excerpt-crc.md": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+                      "inputs/RM0486-rev4-register-conventions-manifest.json": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+                      "inputs/RM0486-rev4-register-conventions.md": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+                      "inputs/forge_crc_device.h": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961",
+                      "inputs/hal_driver_guideline.md": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+                      "inputs/idr_oracle.c": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10",
+                      "inputs/idr_target_oracle.c": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+                      "inputs/idr_target_probe.c": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625",
+                      "inputs/idr_unit_harness.c": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb",
+                      "inputs/inputs-manifest.json": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+                      "inputs/provided-requirements.json": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14",
+                      "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+                    },
+                    "symbols": [
+                      "forge_measure_LL_CRC_Write_IDR",
+                      "forge_measure_LL_CRC_Read_IDR"
+                    ],
+                    "test_source_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+                    "wrapper_sha256": "6ac7a84b283ddb4bc7f30f35086e6d118ee00baaa136070290614ed8ff704f3c"
+                  },
+                  "performance_mips": 100,
+                  "samples": {
+                    "forge_measure_LL_CRC_Read_IDR": [
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      }
+                    ],
+                    "forge_measure_LL_CRC_Write_IDR": [
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      },
+                      {
+                        "instructions": 2,
+                        "virtual_nanoseconds": 20
+                      }
+                    ]
+                  },
+                  "schema": "forge-c/simulation-call-performance/1",
+                  "scope": "observed complete calls in the pinned Renode instruction/time model; not silicon timing",
+                  "status": "PASS"
+                },
+                "simulation": {
+                  "artifact_refs": [
+                    "artifact:sha256:acef1d7a58ae69f134512f62bbf17c30e6e17138e263b10bf2db50e5979bf92b",
+                    "artifact:sha256:3a81948bd6a037bec1d77e04f7d603ab11eee5f7c55855a1bb3526d156821263",
+                    "artifact:sha256:349f2e0142e2bfc55c350cc837cad2017693beaa52b823f888e3882587a739c1"
+                  ],
+                  "issues": [],
+                  "metrics": {
+                    "cpu": "cortex-m55",
+                    "failed": 0,
+                    "passed": 351,
+                    "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+                    "silicon_verified": false,
+                    "simulation_performance_report": "artifact:sha256:349f2e0142e2bfc55c350cc837cad2017693beaa52b823f888e3882587a739c1",
+                    "target_evidence": "simulated"
+                  },
+                  "provenance": {
+                    "exit_code": 0,
+                    "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+                    "invocation_id": "inv-c2d2029648cf482c",
+                    "output_sha256": "acef1d7a58ae69f134512f62bbf17c30e6e17138e263b10bf2db50e5979bf92b",
+                    "tool": "renode",
+                    "version": "Renode v1.17.0"
+                  },
+                  "status": "PASS",
+                  "summary": "renode cortex-m55: 351 checks passed, 0 failed (1 images; behavioural CRC model)"
+                },
+                "size": {
+                  "artifact_refs": [
+                    "artifact:sha256:53cff326081905a560a84010da680f84b069c1fe44ebc3defe672295ed651a26"
+                  ],
+                  "issues": [],
+                  "metrics": {
+                    "bss": 0,
+                    "data": 0,
+                    "flash_bytes": 16,
+                    "objects": 2,
+                    "ram_bytes": 0,
+                    "scope": "object-level, not linked image",
+                    "text": 16
+                  },
+                  "provenance": {
+                    "duration_ms": 1.5,
+                    "exit_code": 0,
+                    "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+                    "invocation_id": "inv-157a3fecdf6b4650",
+                    "output_sha256": "53cff326081905a560a84010da680f84b069c1fe44ebc3defe672295ed651a26",
+                    "tool": "arm-none-eabi-size",
+                    "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+                  },
+                  "status": "PASS",
+                  "summary": "text=16 data=0 bss=0 (target-cm55-gcc)"
+                },
+                "stack": {
+                  "artifact_refs": [
+                    "artifact:sha256:510dacc7ed30e02250b189fbf3a051c83ee8cf0130332afac723dc714db5e5de"
+                  ],
+                  "issues": [],
+                  "metrics": {
+                    "functions": 4,
+                    "max_frame_bytes": 0,
+                    "scope": "per-function frames; call-graph worst case not computed"
+                  },
+                  "provenance": {
+                    "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+                    "invocation_id": "inv-157a3fecdf6b4650",
+                    "tool": "gcc/clang -fstack-usage",
+                    "version": "profile:target-cm55-gcc"
+                  },
+                  "status": "PASS",
+                  "summary": "max frame 0 B in forge_measure_LL_CRC_Write_IDR (target-cm55-gcc)"
+                }
+              },
+              "physical_hardware": "NOT_RUN",
+              "resource_scope": "OBJECT_LEVEL_AND_MAXIMUM_FRAME; NOT_LINKED_FIRMWARE_OR_CALL_GRAPH",
+              "resources_within_declared_limits": true,
+              "source_rewritten": false,
+              "status": "PASS",
+              "workspace": ".forge-run/delivery-first/attempt-0/independent-target/workspace"
+            },
+            "missing": [],
+            "mode": "QM_DELIVERY_FIRST_DEMO",
+            "physical_hardware": "NOT_RUN",
+            "release_eligibility": "BLOCKED",
+            "simulation": "PASS",
+            "status": "PASS",
+            "verification_round": "BOUNDED_AUTHOR_ATTEMPT",
+            "verification_scope": "DECLARED_HOST_TARGET_SIMULATION_COST_AND_OBJECT_FRAME_RESOURCES",
+            "work_order": "WO-AFO-7f71565db57f0a76-a1"
+          },
+          "sha256": "b5cb13e384b8181528d6788ab6f651976f8a7ec809bf845162d9621c61bb065a"
+        }
+      ],
+      "workspace": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace"
+    }
+  ],
+  "candidate_execution_by_observer": false,
+  "cohort_sha256": "a14bfe74a0365a47360a630e09cdaec0338b10385ecb8be7a1b4d3389d18e759",
+  "milestone": "REQUIRES_EXTERNAL_AUDIT_NOT_INFERRED",
+  "model_calls_by_observer": 0,
+  "order": {
+    "order_id": "afo-7f71565db57f0a76",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "producer_source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "read_only_product_workspace": true,
+  "schema": "forge-c/delivery-first-cohort-observation/1"
+}

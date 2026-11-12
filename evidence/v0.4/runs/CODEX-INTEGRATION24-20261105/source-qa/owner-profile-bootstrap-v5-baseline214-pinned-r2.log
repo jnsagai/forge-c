@@ -1,0 +1,253 @@
+ACTUAL_STACK_SOURCE=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v4/factory/python/forge_factory/lrtx/stack.py
+F
+=================================== FAILURES ===================================
+___ test_real_control_start_persists_owned_partial_projection_before_health ____
+
+cold = {'boot': {'binary': PosixPath('/tmp/pytest-of-jefferson/pytest-145/test_real_control_start_persis0/PRIVATE-TEST-fabro'...42dee-73a3-4c2b-ab42-a0...>], 'observed': [], 'probe': <function cold.<locals>.observe_partial at 0x7b95beb2fce0>, ...}
+
+    def test_real_control_start_persists_owned_partial_projection_before_health(cold):
+        b = cold["boot"]
+>       result = B.bootstrap(b["store"], b["placer"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_bootstrap_cold_start.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:333: in bootstrap
+    stack._start(settings, recovery=True, control_only=True)
+../forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_bootstrap_cold_start.py:78: in composed_start
+    return REAL_START(s, recovery=recovery, control_only=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+s = {'ports': {'fabro': 36271, 'gateway': 11456, 'llama': 11457, 'ollama': 11455}, 'profile': {'_path': 'config/factory/pr...ry-planner': 1048576}}, ...}, 'root': PosixPath('/tmp/pytest-of-jefferson/pytest-145/test_real_control_start_persis0')}
+
+    def _start(s: dict, *, recovery=False, control_only=False) -> dict:
+        guard = _guard_effect
+        guard()
+        r, p, prof = s["root"], s["ports"], s["profile"]
+        env = envmap(s)
+        if not (r / "venv/bin/python").exists():
+            raise RuntimeError("run `init` first")
+        holder = _holder(s)
+        saved = r / "run/services.json"
+        retired = set()
+        if recovery and saved.is_file():
+            prior = json.loads(saved.read_text())
+            # A live legacy PID without a pinned start identity is not safe to adopt automatically.
+            if holder and (not prior.get("holder_identity") or process_identity(holder) != prior["holder_identity"]):
+                if _pinned_process_ended(prior.get("holder_identity"), process_identity(holder)):
+                    # The old process ended. Forget its stale projection without
+                    # signaling or adopting the unrelated process now at that PID.
+                    (r / "run/holder.pid").unlink(missing_ok=True)
+                    holder = None
+                else:
+                    raise ValueError("LOCAL_NAMESPACE_OWNERSHIP_UNPROVEN")
+            for name, pr in (prior.get("processes") or {}).items():
+                if control_only and name in ("ollama", "gateway"):
+                    continue
+                current = process_identity(pr["pid"])
+                if current and (not pr.get("identity") or current != pr["identity"]):
+                    if _pinned_process_ended(pr.get("identity"), current):
+                        retired.add(name)
+                    else:
+                        raise ValueError("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
+        if holder is None:
+            # user + network namespace: loopback only; the GPU device nodes stay usable
+            guard()
+            subprocess.Popen(
+                [
+                    "setsid",
+                    "unshare",
+                    "--user",
+                    "--map-root-user",
+                    "--net",
+                    "--fork",
+                    "bash",
+                    "-c",
+                    f"ip link set lo up && echo $$ > {r}/run/holder.pid && exec sleep infinity",
+                ],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            for _ in range(50):
+                time.sleep(0.1)
+                if (holder := _holder(s)) is not None:
+                    break
+            if holder is None:
+                raise RuntimeError("network namespace holder did not start")
+        rec = json.loads((r / "run/services.json").read_text()) if (r / "run/services.json").is_file() else {}
+        procs = {k: v for k, v in (rec.get("processes") or {}).items() if k not in retired}
+        serving = rec.get("serving_instance")
+        known_serving = serving is not None
+        if managed_serving() and not control_only:
+            from ..afo.durable import Refused, digest, immutable_json
+            from . import provider_process as provider
+    
+            if serving is not None:
+                serving = serving_instance(s)
+                if not provider.quiet(serving) and os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD"):
+                    from ..afo.owner_supervised_development import require_compatible_provider
+    
+                    require_compatible_provider(serving)
+                if provider.quiet(serving):
+                    serving = None
+                    # nsenter waiters can briefly outlive the retired namespace.
+                    # They are not a serving instance and cannot be reused.
+                    procs = {k: v for k, v in procs.items() if k not in ("ollama", "gateway")}
+            if serving is None:
+                if not known_serving and any(
+                    _alive(pr["pid"], "ollama" if name == "ollama" else "forge_factory.llm_gateway")
+                    for name, pr in procs.items()
+                    if name in ("ollama", "gateway")
+                ):
+                    raise Refused("LEGACY_SERVING_LIFETIME_UNPROVEN")
+                pending = rec.get("serving_holder")
+                observed = process_identity(pending["pid"]) if pending else None
+                if (
+                    pending
+                    and observed
+                    and pending.get("identity")
+                    and all(observed[k] == pending["identity"][k] for k in ("boot_id", "start_ticks", "uid"))
+                ):
+                    parent_pid = pending["pid"]
+                else:
+                    guard()
+                    provider_command = ["unshare", "--mount", "--pid", "--fork", "--mount-proc",
+                                        "--kill-child=SIGKILL", "sleep", "infinity"]
+                    development_view = None
+                    development_handles = ()
+                    from ..afo import owner_supervised_development as owner_development
+    
+                    if owner_development.selected():
+                        from ..afo.owner_development_view import prepare
+    
+                        provider_command, development_view, development_handles = prepare(r, owner_development.current())
+                    try:
+                        proc = _in_ns(
+                            holder, provider_command, env, r / "logs/provider-holder.log", r,
+                            pass_fds=development_handles,
+                        )
+                    finally:
+                        for fd in development_handles:
+                            os.close(fd)
+                    parent_pid = proc.pid
+                    rec["serving_holder"] = {"pid": proc.pid, "identity": process_identity(proc.pid)}
+                    if development_view is not None:
+                        rec["serving_holder"]["owner_development_view"] = development_view
+                    _save_services(r, {**rec, "processes": procs})
+                deadline = time.monotonic() + 3
+                while True:
+                    try:
+                        serving = provider.capture(r, profile=prof["id"], profile_sha256=prof["_sha256"], parent_pid=parent_pid)
+                        break
+                    except Refused:
+                        if time.monotonic() >= deadline:
+                            raise
+                        time.sleep(0.05)
+                if view := (rec.get("serving_holder") or {}).get("owner_development_view"):
+                    serving["owner_development_view"] = view
+                immutable_json(r / "run/provider-instances" / (digest(serving) + ".json"), serving)
+                rec["serving_instance"] = serving
+                _save_services(r, {**rec, "processes": procs})
+        ollama_env = {
+            **env,
+            **prof["runtime"]["ollama"],
+            "OLLAMA_HOST": f"127.0.0.1:{p['ollama']}",
+            "OLLAMA_MODELS": str(r / "ollama-models"),
+            "HOME": str(r / "ollama-home"),
+        }
+        adm = prof["admission"]
+        gw_env = {
+            **env,
+            "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+            "FORGE_GATEWAY_MAX_INFLIGHT": str(adm["max_inflight"]),
+            "FORGE_GATEWAY_MAX_QUEUE": str(adm["max_queue"]),
+            "FORGE_GATEWAY_MAX_WAIT_S": str(adm["max_wait_s"]),
+            "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10)),
+            "FORGE_GATEWAY_REASONING": gateway_reasoning(prof),
+        }
+        from .request_measurement import policy as request_measurement_policy
+    
+        gw_env["FORGE_GATEWAY_REQUEST_MEASUREMENT"] = json.dumps(request_measurement_policy(prof))
+        if prof.get("gateway", {}).get("measure_unbound_requests") is True:
+            gw_env["FORGE_GATEWAY_MEASURE_UNBOUND"] = "1"
+            gw_env["FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT"] = str(prof["runtime"]["context_limit_tokens"])
+        gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
+        if prof.get("gateway", {}).get("live_tap") is True:  # owner 2026-11-01: display-only answer tokens (live_tap.py)
+            gw_env["FORGE_GATEWAY_LIVE_TAP"] = str(live_tap_path(r))
+        if "drop_retries" in prof.get("gateway", {}):
+            retries = prof["gateway"]["drop_retries"]
+            if type(retries) is not int or not 0 <= retries <= 2:
+                raise ValueError("GATEWAY_DROP_RETRIES_INVALID")
+            gw_env["FORGE_GATEWAY_DROP_RETRIES"] = str(retries)
+        cb = cloud_bridge(prof)
+        if cb is not None:  # comparison line (owner 2026-11-02): every model of the bridge goes to its unix socket
+            gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"unix:{bridge_socket(r, prof)}" for m in cb["models"]})
+        ls = llama_server_spec(r, prof, p, env) if cb is None else None
+        if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
+            served = served_models(prof)
+            gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in served})
+            if len(served) > 1:  # in-run swap: a request is answered only by the model it names (never another one)
+                gw_env["FORGE_GATEWAY_VERIFY_SERVED"] = "1"
+        specs = {
+            "ollama": ([str(r / "ollama-0.34.0/bin/ollama"), "serve"], ollama_env, f"http://127.0.0.1:{p['ollama']}/api/version"),
+            "gateway": (
+                [
+                    env["FORGE_VENV"] + "/bin/python",
+                    "-m",
+                    "forge_factory.llm_gateway",
+                    "--port",
+                    str(p["gateway"]),
+                    "--upstream",
+                    f"http://127.0.0.1:{p['ollama']}",
+                    "--meter",
+                    str(r / "state/llm-gateway/usage.jsonl"),
+                ],
+                gw_env,
+                f"http://127.0.0.1:{p['gateway']}/health",
+            ),
+            **({"llama_server": ls[:3]} if ls is not None else {}),
+            "fabro": (
+                [
+                    env["FORGE_FABRO_BIN"],
+                    "server",
+                    "start",
+                    "--foreground",
+                    "--no-web",
+                    "--no-upgrade-check",
+                    "--config",
+                    env["FORGE_FABRO_CONFIG"],
+                    "--storage-dir",
+                    env["FORGE_FABRO_STORAGE"],
+                ],
+                {**env, "HOME": env["FORGE_FABRO_HOME"]},
+                f"http://127.0.0.1:{p['fabro']}/health",
+            ),
+        }
+        if cb is not None:
+            specs.pop("ollama", None)  # no local model server in the comparison line
+        for name, (argv, penv, health) in specs.items():
+            if control_only and name != "fabro":
+                continue
+            old = procs.get(name)
+            if old and _alive(old["pid"], {"ollama": "ollama", "llama_server": "llama-server"}.get(name, argv[1])):
+                continue
+            guard()
+            if managed_serving() and name in ("ollama", "llama_server", "gateway"):
+                proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r, serving=serving)
+            else:
+                proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)
+            procs[name] = {"pid": proc.pid, "argv": argv, "health": health}
+            startup_binding = getattr(_EFFECT_GUARD.get(), "startup_binding", None)
+            bootstrap_binding = getattr(_EFFECT_GUARD.get(), "bootstrap_binding", None)
+            if startup_binding is not None or bootstrap_binding is not None:
+                procs[name]["identity"] = process_identity(proc.pid)
+>               procs[name]["owner_view"] = provider.owner_view(proc.pid)
+                                            ^^^^^^^^
+E               UnboundLocalError: cannot access local variable 'provider' where it is not associated with a value
+
+factory/python/forge_factory/lrtx/stack.py:848: UnboundLocalError
+=========================== short test summary info ============================
+FAILED ../forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_bootstrap_cold_start.py::test_real_control_start_persists_owned_partial_projection_before_health
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

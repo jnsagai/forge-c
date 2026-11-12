@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/verification-evidence/1",
+  "task": "BR-T001..BR-T006",
+  "status": "PASS",
+  "basis": "pytest-generated JUnit XML; no model calls; 45 resume cases and 19 profile/provider regression cases",
+  "command": ". scripts/forge-env.sh; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest factory/python/tests/test_brownfield_resume.py factory/python/tests/test_lrtx_profile.py factory/python/tests/test_cre_capa_051.py -q --junitxml=<acceptance.xml>",
+  "suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "64",
+    "time": "84.549",
+    "timestamp": "2026-10-24T19:34:18.475249+01:00",
+    "hostname": "master"
+  },
+  "artifact": "evidence/v0.4/runs/BR-ACCEPTANCE/acceptance.xml",
+  "artifact_sha256": "875634a18aa4369002be663356074153a8ee55d83b5bb014c747016d9f100827",
+  "candidate_revision": "7a1a797b70fdf971cefa8a000e50f3fc12137b13",
+  "source_hashes": {
+    "factory/python/forge_factory/afo/runtime.py": "082f8f8bd7bf162cc84ad11697d0c67489c521a283352540d28c402d66cb9e38",
+    "factory/python/forge_factory/assurance/package.py": "016cec6acac0a5b1307eea96df31c386e808dfea7880bf12c61a5aa099c2ffbe",
+    "factory/python/forge_factory/brownfield/package.py": "2421ae08190b91e030d0db94efa730972eac958a433f3fe82ceef498e87396a3",
+    "factory/python/forge_factory/brownfield/resume.py": "608cc14f1195d733983e2933119dc3c6861c5154f60afc6356c8883346704d2a",
+    "factory/python/forge_factory/lrtx/visit.py": "85566e37d68750553aaa96c25a6e0bd04a0a489add32b6abbd92535fd448a906",
+    "factory/python/forge_factory/policy/fabro_hook.py": "01e26caa2bfefd0c21680fb4d26ea46c2a435b7dccb8dba5b05eb756d86ed4ce",
+    "factory/python/forge_factory/workorder.py": "755ed19492047ce1b2bf818ef3d2b5aab79a0ec7dda2d8cc781698be0895655b",
+    "factory/python/tests/test_brownfield_resume.py": "6597b1ebf9e9f7f1b1c94d1ccb2eece526f12b1085507b58d127ca21801ba700"
+  },
+  "cre_decision": "pd-8e4ddfb61bded2afc156",
+  "scope_note": "Targeted acceptance PASS; broad factory regression retains three baseline host-state failures. See specs/012-validated-brownfield-resume/validation.md."
+}

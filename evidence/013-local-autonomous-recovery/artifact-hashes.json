@@ -1,0 +1,142 @@
+[
+  {
+    "path": "OVERNIGHT-HANDOFF.md",
+    "sha256": "2aa25924224f3847f8a266f6ef92325726bb3b97521fa261d77efc2c6a84e307"
+  },
+  {
+    "path": "activation-36ed0fc.json",
+    "sha256": "7d52fcc9d991932957e9c832e883a76cae61c2bad1625984282b166328cb0b7c"
+  },
+  {
+    "path": "activation-c008ba1.json",
+    "sha256": "a91faf5012147b49b38696c2ae7b547bc3012ceabc48deb89ac89db0f5722b6a"
+  },
+  {
+    "path": "continuation-36ed0fc.json",
+    "sha256": "56d5d28421ab6cc681eb145a83baf42b7c51e6129bee0940ddecc3a7ea04d9b5"
+  },
+  {
+    "path": "feature013-0960e6b-regression.log",
+    "sha256": "86475b79da22127b28613831bfd229b242650baa4e6da685ae5cf88e2ee0e014"
+  },
+  {
+    "path": "feature013-0960e6b-regression.xml",
+    "sha256": "c88adf3b5b8d445d836e634219e8537f76f7b7b3ff5f285efa628e4e400c9db4"
+  },
+  {
+    "path": "feature013-a477a6d-regression.log",
+    "sha256": "ac495f87c93297f7a6b6576302f0c026457a444008c68b065caf82d3eed780d0"
+  },
+  {
+    "path": "feature013-a477a6d-regression.xml",
+    "sha256": "39557b67fbff5f39cff1acae42bb1d92826c278c6cce103819accf493e4999f7"
+  },
+  {
+    "path": "feature013-c008ba1-targeted.log",
+    "sha256": "8876c9830608f9c64826246c16b2934e04138061819f176caaad11a1cf8ba140"
+  },
+  {
+    "path": "feature013-c008ba1-targeted.xml",
+    "sha256": "7a6ca9cbfc773c3dfcc868391570cfe6c72a57d2c834b5f791cdd8b2a7637d84"
+  },
+  {
+    "path": "feature013-design.log",
+    "sha256": "d676a0fc1ab6290ce80c3dbed095625e816199a525cebf4ed55f62259f219370"
+  },
+  {
+    "path": "feature013-final-cre.log",
+    "sha256": "68d1f88d208d35a9a7ec7807194c323968b48eae787c0af40697400ae7377ac9"
+  },
+  {
+    "path": "feature013-live-handoff-capa.json",
+    "sha256": "5e9f7788c6e03a5c1a99eb0855fd0f490bc8661571260b6a9e7dd11974e81580"
+  },
+  {
+    "path": "feature013-live-handoff-cre.json",
+    "sha256": "a998a2cf55a7bac90ea381c6dfe23743f99ba455b0fd742cfe4defcab744e87b"
+  },
+  {
+    "path": "feature013-scoped-skills-capa.json",
+    "sha256": "0f9e489790d262603ace0fe52e564ee74ad7057da14f7eb314b89ff7b5c81c30"
+  },
+  {
+    "path": "feature013-scoped-skills-cre.json",
+    "sha256": "29036de038d0596e5be7e8dacf694bbbe25c85da76306c2bd28c7c41f7bc365e"
+  },
+  {
+    "path": "feature013-scoped-skills.log",
+    "sha256": "0d9895b01a72da003bfefea5cae7c489196700e66f112e22a3d67db4c6991873"
+  },
+  {
+    "path": "feature013-scoped-skills.xml",
+    "sha256": "454032ae6b7b77bd6ff322a76cc440939dd83696cc69efdda94cca5f8e4cd448"
+  },
+  {
+    "path": "feature013-typed-plan-capa.json",
+    "sha256": "bf254d43e740224ce10d228dc494a64d04a22a3f777e3e1575ad1538d7088cc8"
+  },
+  {
+    "path": "feature013-typed-plan-cre.json",
+    "sha256": "ed6f776a6f94541a51cf6dda4d3afdca1e66d9c7e6879039550c3d81aba2b028"
+  },
+  {
+    "path": "feature013-typed-plan-final.log",
+    "sha256": "4bed8cc624113743771e380f4fea7f09ec8586d03d46684c5c3a9889a2038305"
+  },
+  {
+    "path": "feature013-typed-plan-final.xml",
+    "sha256": "efabba99c2582536ad2ba974598b8209f99b08d10e2c2dd83a28592a7949eaf3"
+  },
+  {
+    "path": "feature013-workspace-compat.log",
+    "sha256": "0cf35787ce611c646c9c57f1cc0667e2790a6f237a345792012a25f8247aba6c"
+  },
+  {
+    "path": "feature013-workspace-compat.xml",
+    "sha256": "294703a4fc6329c8ba10e24690804bd24a23b075ecf1d316f3209d222b0a7ea5"
+  },
+  {
+    "path": "historical-adoption-c008ba1.json",
+    "sha256": "69502d39ff4e6bab471036be59db79bfad91c6d09568b1dc2b42bcad35cf83b9"
+  },
+  {
+    "path": "independent-cre-c008ba1.json",
+    "sha256": "48b8e16f6a15b34efae326a768ad1cc2cdefed941927a0f1c53853c8e5d3c4f8"
+  },
+  {
+    "path": "omniverse-host-preflight-c008ba1.json",
+    "sha256": "964a2c45e2fe662865e7f89ab017991c96f50f0d63ae11604b6185a00ea7d19f"
+  },
+  {
+    "path": "runtime-status-36ed0fc.json",
+    "sha256": "bcd1789f85b95d850e466ce828fae1ade5f5e118caf0e2f5b0510d263488dfa8"
+  },
+  {
+    "path": "sealed-handoff-reproducer/manifest.yaml",
+    "sha256": "2c0f4436a3d092bdb3b5a3ad42e4a1a371a8dbc41f8976511d717766fbd64a76"
+  },
+  {
+    "path": "sealed-handoff-reproducer/reproducer.py",
+    "sha256": "cc78eb22f180dbce1eb2719d63b9761d9e16e5dabd03e20b8fea17f02840e775"
+  },
+  {
+    "path": "sealed-scoped-skills-reproducer/manifest.yaml",
+    "sha256": "369bb3e30ecb41d9f52c2332f64b468ebeb6349d5f0229d78dfe333c84069e90"
+  },
+  {
+    "path": "sealed-scoped-skills-reproducer/reproducer.py",
+    "sha256": "110a1aea8f5cfd1c1153993e7b5294a98d34cdcbe9d871f73815646c94525f29"
+  },
+  {
+    "path": "sealed-typed-plan-reproducer/manifest.yaml",
+    "sha256": "e56c5c5bc63d8890fdb4abf6aba7fedc2b3358758902645ddfc09d0931e93531"
+  },
+  {
+    "path": "sealed-typed-plan-reproducer/reproducer.py",
+    "sha256": "18b2a352f92aea0f8eb84b836ec647e4d45712fbd89d5187553de806acc8b4b1"
+  },
+  {
+    "path": "verify-recorded-evidence.py",
+    "sha256": "6476b30df36723d018c45224c715532eae38ca32a1e2b03555f03b6175e8856e"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "classification": "EXTERNAL_PRELAUNCH_INTAKE_HELPER_ERROR; NOT_FACTORY_OR_MODEL_FAILURE",
+  "exit_code": 1,
+  "output": "Traceback (most recent call last):\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/submit-prepared-df-cohort-v4b.py\", line 122, in <module>\n    product_role_trial.authorized(ref, job, effective)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/source/factory/python/forge_factory/afo/product_role_trial.py\", line 47, in authorized\n    raise Refused(\"PRODUCT_ROLE_TRIAL_BINDING_CHANGED\")\nforge_factory.afo.durable.Refused: PRODUCT_ROLE_TRIAL_BINDING_CHANGED:\n",
+  "cause": "product_role_trial.authorized requires a persisted order; helper invoked it before Store.submit",
+  "effects_before_failure": [
+    "Immutable M1/cohort admission binding created",
+    "Identical launch06 manifest written outside all product workspaces"
+  ],
+  "new_orders_submitted": 0,
+  "new_native_attempts": 0,
+  "new_model_requests": 0,
+  "mission_reservations_changed": false,
+  "fix": "Version2 calls existing Store.submit before role binding, under the same intent lock; runtime/source/profile/inputs/authority unchanged"
+}

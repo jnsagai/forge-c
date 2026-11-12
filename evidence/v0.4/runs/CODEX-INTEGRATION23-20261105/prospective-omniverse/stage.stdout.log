@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-development-dc27abba-review-20261105/stage-remote.py", line 72, in <module>
+    if __name__ == '__main__': main()
+                               ~~~~^^
+  File "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-development-dc27abba-review-20261105/stage-remote.py", line 35, in main
+    before = dict(head=git(OLD,'rev-parse','HEAD'), refs=git(OLD,'show-ref'), status=git(OLD,'status','--porcelain'))
+                                                         ~~~^^^^^^^^^^^^^^^^
+  File "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-development-dc27abba-review-20261105/stage-remote.py", line 17, in git
+    def git(p, *args): return subprocess.check_output(['git', '-C', str(p), *args], text=True, timeout=60).strip()
+                              ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', '-C', '/mnt/data/forge-c/swe1-fabro-20261031/qualification/local-gen36-74e44a1f-review-20261105/source', 'show-ref']' returned non-zero exit status 1.

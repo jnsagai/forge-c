@@ -1,0 +1,33 @@
+{
+  "status": "PREPARED_LOCAL_ONLY_NOT_UPLOADED_NOT_RUN",
+  "source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "bundle_sha256": "fcd35d8fc7649494032519888c1ecbf8703ee9b57f74a95e29ba43eb8b13c1e9",
+  "bundle_bytes": 203243,
+  "bundle_ref": "refs/qualification/014-swe6-route-3015e47",
+  "bundle_prerequisite": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "scripts": {
+    "render-real-unit-cases-v3.py": "0fde5233fc6a394d256c13edc8b5e23eebf7ca3e1a821b1cb554354c2e57d6c4",
+    "bootstrap-v3.py": "a2f5894e23de38a0214a1a3387be3ea5f794471602ff9217d4664fe0a1f5bd96"
+  },
+  "real_frozen_cases": {
+    "SWU-LL-01.puml": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+    "SWU-LL-02.puml": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599"
+  },
+  "guard": "RUNNING at explicitly supplied epoch; no pending execution, request, inference ownership or verification job; continuously rechecked",
+  "owner_current_intent": "STOPPED_EPOCH33; NO_AUTOMATIC_RESUME",
+  "model_generation_requests": 0,
+  "source_activation": false,
+  "global_timebox_seconds": 600,
+  "pytest_timebox_seconds": 480,
+  "render_timebox_seconds": 90,
+  "resource_hygiene": "Each child in a private PID namespace with unshare kill-child; on new intent/owner/timebox terminate only qualification session and namespace descendants",
+  "native_prerequisite": "unprivileged user/PID/mount namespaces; actual native execution NOT_RUN",
+  "local_directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native-swe6-route-3015e47",
+  "future_remote_directory": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-route-3015e47",
+  "required_test_result": {
+    "tests": 41,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  }
+}

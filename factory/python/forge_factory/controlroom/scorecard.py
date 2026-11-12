@@ -137,7 +137,7 @@ def counts(events: list[dict], start: str, end: str) -> dict:
 
 
 def scorecard(cache: EventCache, win: dict, cohort: str = "all") -> dict:
-    from ..kpi.engine import catalog, snapshot
+    from ..kpi.engine import catalog, snapshot, learning_metrics
     from ..kpi.service import load_baselines
 
     if not cache.ready.is_set():
@@ -149,6 +149,7 @@ def scorecard(cache: EventCache, win: dict, cohort: str = "all") -> dict:
     prev = snapshot(evs, win["previous"]["start_utc"], win["previous"]["end_utc"], "IN_PROGRESS", base)
     k20 = next((m for m in cur["metric_values"] if m["metric_id"] == "K20"), None)
     return {"status": "OK", "window": win, "cohort": cohort,
+            'learning':learning_metrics() if cohort == 'all' else {'status':'UNKNOWN','reason':'cohort-specific learning comparison not recorded'},
             "cohort_note": {"all": "includes cloud-model runs (owner decisions OD-2026-10-19-06/08)",
                             "cloud": "cloud-model runs only",
                             "production": "feature-003 production KPIs: local-model runs only"}[cohort],

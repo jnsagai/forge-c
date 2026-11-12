@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.921" timestamp="2026-10-30T21:34:38.986944+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first" name="test_native_graph_has_exactly_two_corrections_then_all_six_phases" time="0.387"><failure message="AssertionError: assert 'swe3_fix_author' not in {'df_author_0': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'df_author_1': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'df_author_2': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'release_manager': {'role': 'release-manager'}, ...}">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...7c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_native_graph_has_exactly_two_corrections_then_all_six_phases(prepared):
+        ws, man = prepared
+        graph, nodes = build(man["work_order"], layer="LL", peripheral="crc", sections=W.section_map(ws),
+                             operation_scope=man["operation_scope"], assessment_manifest=man,
+                             execution_policy=man["development_execution"])
+        for i in range(3):
+            assert nodes["df_author_" + str(i)] == {"role": "swe3-author", "phase": "SWE.3"}
+            assert f"df_author_{i} -&gt; df_verify_{i}" in graph
+        assert "df_author_3" not in graph and "df_verify_2 -&gt; swe1_author" in graph
+&gt;       assert "swe3_fix_author" not in nodes
+E       AssertionError: assert 'swe3_fix_author' not in {'df_author_0': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'df_author_1': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'df_author_2': {'phase': 'SWE.3', 'role': 'swe3-author'}, 'release_manager': {'role': 'release-manager'}, ...}
+
+factory/python/tests/test_delivery_first.py:192: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first" name="test_correction_bound_is_enforced_by_existing_tool_policy" time="0.298"><failure message="assert not True&#10; +  where True = Decision(allow=True, code='ALLOW_WRITE', reason='write_file', role='swe3-author', op=None).allow&#10; +    where Decision(allow=True, code='ALLOW_WRITE', reason='write_file', role='swe3-author', op=None) = decide('df_author_1', 'write_file', {'content': '#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include &quot;forge_crc_device.h&quot;\nstatic inline void LL_CRC_Write_ID...ad_IDR(const CRC_TypeDef *CRCx)\n{\n    return CRCx-&gt;IDR;\n}\n#endif\n', 'file_path': 'software/ll/stm32n6xx_ll_crc.h'})&#10; +      where decide = &lt;forge_factory.policy.authz.Authorizer object at 0x7dec6c72a510&gt;.decide">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...7c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_correction_bound_is_enforced_by_existing_tool_policy(prepared):
+        from forge_factory.policy.authz import Authorizer, Binding
+    
+        ws, man = prepared
+        roles = {name: {"role": "swe3-author", "phase": "SWE.3"} for name in
+                 ("df_author_0", "df_author_1", "df_author_2", "swe3_author", "swe3_fix_author")}
+        auth = Authorizer(Binding(man["work_order"], str(ws), roles))
+        args = {"file_path": man["delivery_first"]["candidate_files"][0], "content": GOOD}
+        D.preflight(ws)
+        assert auth.decide("df_author_0", "write_file", args).allow
+&gt;       assert not auth.decide("df_author_1", "write_file", args).allow
+E       assert not True
+E        +  where True = Decision(allow=True, code='ALLOW_WRITE', reason='write_file', role='swe3-author', op=None).allow
+E        +    where Decision(allow=True, code='ALLOW_WRITE', reason='write_file', role='swe3-author', op=None) = decide('df_author_1', 'write_file', {'content': '#ifndef TEST_CRC_H\n#define TEST_CRC_H\n#include "forge_crc_device.h"\nstatic inline void LL_CRC_Write_ID...ad_IDR(const CRC_TypeDef *CRCx)\n{\n    return CRCx-&gt;IDR;\n}\n#endif\n', 'file_path': 'software/ll/stm32n6xx_ll_crc.h'})
+E        +      where decide = &lt;forge_factory.policy.authz.Authorizer object at 0x7dec6c72a510&gt;.decide
+
+factory/python/tests/test_delivery_first.py:299: AssertionError</failure></testcase></testsuite></testsuites>

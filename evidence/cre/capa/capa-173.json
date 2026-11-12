@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<63a3a91d1093"
+  ],
+  "candidate_patch_sha256": "dc0bbb181003b40b597b567920cd92cf5ffd230c1e7132a8e265065e0aaa25d4",
+  "capa_id": "CAPA-173",
+  "created_at": "2026-11-05T09:15:51.943063Z",
+  "event_ids": [],
+  "incident_ids": [
+    "DA058-UNCHANGED-RELEASE-DRIFT"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-173",
+  "reproducer_id": "RPR-173",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-76bf993c8267b7eb86f9",
+    "reproducer-run:rr-b557ca28a85a5c07866a"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Only changed paths are checked before copying the whole live release. Bind the whole baseline and target to existing signed CRE tree identities, preserving policy checks and previous release.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T09:20:50.236509Z"
+}

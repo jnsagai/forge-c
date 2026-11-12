@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="0.601" timestamp="2026-10-30T05:10:57.704129+00:00" hostname="master"><testcase classname="factory.python.tests.test_lrtx_open_point_provenance" name="test_open_point_finding_routes_to_note_owner_and_referenced_requirement" time="0.022"><failure message="AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}&#10;  &#10;  Extra items in the right set:&#10;  'requirements:TEST_ENR'&#10;  Use -v to get more diff">def test_open_point_finding_routes_to_note_owner_and_referenced_requirement():
+        finding = 'Open points says the TEST_ENR input does not define TEST_RSTR, but SWR-006 specifies reset assertion.'
+        routed = visit.route_findings([finding], _map(), 'requirements:crosscutting')
+&gt;       assert set(routed) == {'requirements:TEST_ENR', 'requirements:TEST_RSTR'}
+E       AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}
+E         
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:20: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_lrtx_open_point_provenance" name="test_explicit_open_point_id_reaches_original_obligation" time="0.001"><failure message="AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}&#10;  &#10;  Extra items in the right set:&#10;  'requirements:TEST_ENR'&#10;  Use -v to get more diff">def test_explicit_open_point_id_reaches_original_obligation():
+        routed = visit.route_findings(['OP-0123456789abcdef is inconsistent with SWR-006.'],
+                                      _map(), 'requirements:crosscutting')
+&gt;       assert set(routed) == {'requirements:TEST_ENR', 'requirements:TEST_RSTR'}
+E       AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}
+E         
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:26: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_lrtx_open_point_provenance" name="test_unscoped_open_point_finding_covers_known_note_origins_and_legacy_maps_still_work" time="0.001"><failure message="AssertionError: assert {'requirements:crosscutting'} == {'requirements:TEST_ENR'}&#10;  &#10;  Extra items in the left set:&#10;  'requirements:crosscutting'&#10;  Extra items in the right set:&#10;  'requirements:TEST_ENR'&#10;  Use -v to get more diff">def test_unscoped_open_point_finding_covers_known_note_origins_and_legacy_maps_still_work():
+        finding = 'The Open points section contradicts the declared scope.'
+&gt;       assert set(visit.route_findings([finding], _map(), 'requirements:crosscutting')) == {'requirements:TEST_ENR'}
+E       AssertionError: assert {'requirements:crosscutting'} == {'requirements:TEST_ENR'}
+E         
+E         Extra items in the left set:
+E         'requirements:crosscutting'
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:31: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_lrtx_open_point_provenance" name="test_assembly_keeps_note_text_with_stable_source_scope_and_packet_identity" time="0.468"><failure message="KeyError: 'open_points'">ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-111/test_assembly_keeps_note_text_0/state/workorders/WO-T-IWDG-LL/workspace')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x733bb7a2c160&gt;
+
+    def test_assembly_keeps_note_text_with_stable_source_scope_and_packet_identity(ws, monkeypatch):  # noqa: F811
+        note = 'This prescaler input section does not define reload register fields.'
+        answers = copy.deepcopy(ANSWERS)
+        answers['requirements:IWDG_PR']['open_points'] = [note]
+        monkeypatch.setattr(S, 'call', _scripted(answers, []))
+        assert swe1.visit(ws, 'synthetic')['status'] == 'PASS'
+        amap = json.loads((ws / '.forge-run/lrtx/SWE.1/assembly.json').read_text())
+&gt;       entries = [(key, value) for key, value in amap['open_points'].items() if value['text'] == note]
+                                                  ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'open_points'
+
+factory/python/tests/test_lrtx_open_point_provenance.py:43: KeyError</failure></testcase></testsuite></testsuites>

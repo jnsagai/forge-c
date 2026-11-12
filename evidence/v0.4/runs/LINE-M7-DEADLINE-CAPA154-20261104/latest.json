@@ -1,0 +1,31 @@
+{
+  "schema": "forge-c/capa154-source-validation/1",
+  "at": "2026-11-04T14:19:33.086550+00:00",
+  "status": "PASS_FIX_SOURCE_ONLY",
+  "candidate": "e729dc56932b54b435307fb5e8356fec0cd8bb65",
+  "baseline": "7da0e9e84fcba8e0eeb820775b9a969b77376a37",
+  "decision": "pd-f595e771c38641bf1380",
+  "causal_baseline": "rr-d425b48a1caee58df526 SYMPTOM_PRESENT",
+  "causal_candidate": "rr-2f98b009266fb372f253 SYMPTOM_ABSENT",
+  "tests": {
+    "focused_pass": 29,
+    "regression_pass": 93,
+    "skipped": 0,
+    "static_design_pass": 14
+  },
+  "bounds": [
+    "jobdeadline",
+    "currenteffectivemissiondeadline",
+    "preexistingverifierdeadline"
+  ],
+  "preserved": [
+    "postauthorization/fencechecks",
+    "dispatchidentityandallowance",
+    "completedverificationhistory",
+    "legacydefaults",
+    "model/providerleases"
+  ],
+  "actual_model_calls": 0,
+  "production_changes": false,
+  "full_M7_qualification": "NOT_RUN"
+}

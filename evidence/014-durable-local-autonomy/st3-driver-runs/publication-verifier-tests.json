@@ -1,0 +1,18 @@
+{
+  "scope": "TERMINAL_PUBLICATION_REPLAY_NOT_LIVE_TELEMETRY",
+  "command": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "evidence/014-durable-local-autonomy/st3-driver-runs/verify-publication.py"
+  ],
+  "exit_code": 0,
+  "output": {
+    "DA_T018": "NOT_RUN_UNTICKED",
+    "blocked": 3,
+    "new_model_requests": 0,
+    "ready": 0,
+    "status": "PASS_TERMINAL_PUBLICATION_ONLY"
+  },
+  "negative_change": "private copy with request count incremented",
+  "negative_exit_code": 1,
+  "verifier_sha256": "3df9a970b92facc2c8795674dc1b6388d4267a6d5dd210537621c85bda038fb1"
+}

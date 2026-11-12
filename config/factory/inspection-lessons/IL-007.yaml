@@ -1,0 +1,33 @@
+# Cloud cross-inspection 2026-11-02, class X6 (candidate IL-C2): a register effect promised without the hardware
+# enabling conditions being assigned; worded to agree with IL-002 (in LL the caller precondition is sufficient)
+id: IL-007
+version: 1
+purpose: DETECTION
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-02, SWE1-03]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md]
+statement: >-
+  When the source names conditions under which a field write takes no effect or is not allowed (write protection, an
+  update still in progress, missing access rights), a requirement that promises that effect states who establishes
+  each condition: a caller precondition of the supported invocation domain, or the driver behaviour when it does not
+  hold. In a low-level work order the caller precondition is sufficient and no failure response is required; an open
+  point that only names the condition leaves the requirement infeasible as written.
+source: {kind: contract, ref: "factory/python/forge_factory/inspection/assessment_context.py#view"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X6], compatible_with: [IL-002]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-PRECOND]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE2-IWDG-20261101-02, baseline_id: BL-SWE.1-001, baseline_hash: 2fbf1e2b4f3908c0dc47d5c38a52e916d88893fa358b6028d76666a133db9f0c, item: SWE1-02, element: SWR-006}
+    - {work_order: WO-F014-SWE2-IWDG-20261101-02, baseline_id: BL-SWE.1-001, baseline_hash: 2fbf1e2b4f3908c0dc47d5c38a52e916d88893fa358b6028d76666a133db9f0c, item: SWE1-03, element: SWR-006}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}

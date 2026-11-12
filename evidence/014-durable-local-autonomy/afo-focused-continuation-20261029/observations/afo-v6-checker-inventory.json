@@ -1,0 +1,12 @@
+{
+  "basis": "Prepared before any accepted Qwen candidate; frozen external oracle stays unchanged and hidden from model",
+  "files": {
+    "verify-afo-proof-v6.py": "1d36a80bc8496add7794402c38543e6df3827f2d0ee73ae5687634b0753e9ef6",
+    "verify-afo-recovered-context-v6.py": "473ddd19f8d09aca40668bb1cffb95d711fe882a76075d60817ac62644ed0bac",
+    "check-afo-original-diagrams-v6.py": "e07055db3c41030c502de1adf790ad58e759ac21cb61013f751f2539d8a1cd71",
+    "verify-afo-original-phase-v6.py": "74f9ed3289ccf72e8925a20dd0e106397e1545ef10dc4a57f6d62fceff84cdd0",
+    "check-afo-original-phase-v6.py": "909263955b7e935b56e471ccc2f048cc0f1cf4a407de255ad74b117716df8b60",
+    "snapshot-qwen-written-artifacts-v6.py": "bdccd05a53dfbe387b9eba317ccc9ba10aef28e1b30daba00eb73a1ae078d84b",
+    "verify-qwen-unsubmitted-v6.py": "fcd054a41705afddf8ab6225152816bad10047c4794d48a9e33d732fe1826575"
+  }
+}

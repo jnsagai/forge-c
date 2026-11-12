@@ -1,0 +1,59 @@
+{
+  "schema": "forge-c/014-kernel-continuation-native/1",
+  "source_revision": "b321a8766947fa5f5174bbb4f61f5d05720b22d6",
+  "host": "omniverse2",
+  "command": [
+    "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_kernel_continuation.py",
+    "--basetemp=/mnt/data/forge-c/inspector-014-b309039/kernel-b321a87/pytest-tmp",
+    "--junitxml=/mnt/data/forge-c/inspector-014-b309039/kernel-b321a87/native-tests.xml"
+  ],
+  "exit_code": 0,
+  "execution_liveness": "CONFIRMED_TERMINAL",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "81",
+    "time": "28.073",
+    "timestamp": "2026-10-27T20:42:31.695479+00:00",
+    "hostname": "omniverse2"
+  },
+  "junit_sha256": "e9d8668edc215c80717d0285c9366cb5e23c0754491591c21bcd097aa8c47ac7",
+  "source_start_end": "CLEAN",
+  "sqlite_version": "3.53.1",
+  "long_source_assessments": [
+    {
+      "source_bytes": 134224080,
+      "segments": 17,
+      "uncaptured_final_source_bytes": 0,
+      "event_status": "SELECTED_EVENT_FACTS_REPLAYED",
+      "totals": {
+        "duplicate_records": 2095,
+        "events": 1,
+        "integrity_events": 0,
+        "orphan_compound_groups": 0,
+        "pending_events": 0,
+        "source_events": 2,
+        "source_records": 5
+      },
+      "input_sha256": "1f9c014bf93b8d93ba3848ede57afad01042c4068b358f86848daefafd4388dc",
+      "unexpected_interventions": null,
+      "scope": "SYNTHETIC_RETAINED_BYTE_AND_EVENT_FACTS_NOT_LIVE_HOST_COVERAGE"
+    }
+  ],
+  "wall_seconds": 28.342446942813694,
+  "limits": {
+    "wall_s": 180,
+    "cpu_s": 120,
+    "address_space_bytes": 3221225472
+  },
+  "model_calls": 0,
+  "product_attempts": 0,
+  "unexpected_interventions": null,
+  "scope": "SYNTHETIC_DETERMINISTIC_TESTS_NOT_A_LIVE_OPERATIONAL_CAMPAIGN"
+}

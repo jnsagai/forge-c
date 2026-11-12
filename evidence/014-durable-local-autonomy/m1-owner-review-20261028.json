@@ -1,0 +1,19 @@
+{
+  "schema": "forge-c/external-requirements-review/1",
+  "review": {
+    "status": "REVIEWED",
+    "reviewed_by": "Jefferson Nascimento",
+    "reviewed_at": "2026-10-28T20:49:52Z",
+    "record_ref": "evidence/014-durable-local-autonomy/m1-owner-review-20261028.json",
+    "payload_sha256": "09aa9891c58759059484cedbedb7f922ff2013d8350d72206245207968f1d1a4"
+  },
+  "basis": "Authenticated user reply in the current session: I approve, go. It follows the explicit requirements-review request and bounded M1 execution proposal.",
+  "user_statement": "I approve, go",
+  "scope": "Input-assisted two-function CRC IDR M1; original ST code FROZEN; real Qwen engineering/inspection and real quality gates.",
+  "approved_requirements_payload_sha256": "09aa9891c58759059484cedbedb7f922ff2013d8350d72206245207968f1d1a4",
+  "candidate_path": "examples/0014d-st-cube-crc-idr-assisted/provided-requirements.json",
+  "safety_approval": false,
+  "safety_assurance": "NOT_ASSESSED",
+  "old_mission_limits_changed": false,
+  "runtime_execution": "Separate hash-bound finite run grant and normal AFO admission remain required."
+}

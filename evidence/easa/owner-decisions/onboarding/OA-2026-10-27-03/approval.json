@@ -1,0 +1,17 @@
+{
+  "accepted_gaps": [],
+  "approval_id": "OA-2026-10-27-03",
+  "assumption_confirmations": [
+    {
+      "id": "ASM-HAL-RCCEX-GETPERIPHCLKFREQ",
+      "value": 64000000
+    }
+  ],
+  "conflict_resolutions": [],
+  "decided_by": "jnsagai",
+  "decided_on": "2026-10-27",
+  "decision": "APPROVED",
+  "package_sha256": "ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9",
+  "schema": "forge-c/onboarding-approval/0.1",
+  "work_order": "0012e-st-cube-usart-hal-ob"
+}

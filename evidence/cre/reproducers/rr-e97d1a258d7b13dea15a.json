@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-e97d1a258d7b13dea15a",
+  "reproducer_id": "RPR-174",
+  "revision": "d244e2dfbf013090dad9b1b6f813d70fd504e8b2",
+  "role": "CANDIDATE",
+  "exit_code": 1,
+  "verdict": "ERROR",
+  "signature": "--- stderr ---",
+  "log_sha256": "1ef447ee26d8fe5bd0ad399cc0122bb5b2556a20fbe71b107ecf1237e383feed",
+  "at": "2026-11-05T09:55:25.030314Z"
+}

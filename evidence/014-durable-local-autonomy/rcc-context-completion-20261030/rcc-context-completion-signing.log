@@ -1,0 +1,5 @@
+Signing file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-context-completion-signing/primary-authorization-message.bin
+Write signature to /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-context-completion-signing/primary-authorization-message.bin.sig
+Signing file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-context-completion-signing/roles-authorization-message.bin
+Write signature to /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/rcc-context-completion-signing/roles-authorization-message.bin.sig
+{"status": "EXACT_TWO_RECORDS_SIGNED_AND_VERIFIED", "scope_sha256": "858bd287930424bbbb9b9cc2879641a8aa4221d4135377dd9be30d15c39228bf", "deadline_utc": "2026-10-30T08:11:56Z", "delegation": "always approve it for now on automatically", "activation": false, "model_requests": 0}

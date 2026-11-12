@@ -1,0 +1,92 @@
+{
+  "at": "2026-10-31T17:01:31.485749Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7294,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7166,
+          "sha256": "c2a932d58ede1852368f3fcff03b8169708463d856d1400d24617159cf8d2201"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2052,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5468
+      },
+      "errors": [
+        "[idr_write_only_named_bits] effect IDR_WRITE: value 'caller_value' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[idr_write_only_named_bits] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [idr_write_only_named_bits] from the cross-cutting task",
+        "[idr_read_returns_current_value] is a requirement on CRC_IDR, which its register task covers - remove requirement [idr_read_returns_current_value] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "6767654cf1f273b9055acf48d63ba9c670850f23d601031eef4a00e1cde2bbd3",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 448,
+        "prompt_tokens": 1332,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 1780
+      },
+      "wall_ms": 6002.2
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9788,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 9660,
+          "sha256": "6f9b5872d709d8d9cbe507b7aad95258f669bf062e2057617fad8ddfec993655"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2911,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7831
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "db4d10820653ba0a3d6b68db09bdc13099aa922533092171027178bd2980f84b",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 1923,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 2054
+      },
+      "wall_ms": 2502.3
+    }
+  ],
+  "base_hash": "6767654cf1f273b9055acf48d63ba9c670850f23d601031eef4a00e1cde2bbd3",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "no_autonomous_startup_writes",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "Target robot test observes register state immediately after reset before any LL function call; passes when CRC_IDR.IDR register retains its reset value and no write to any CRC register occurs.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

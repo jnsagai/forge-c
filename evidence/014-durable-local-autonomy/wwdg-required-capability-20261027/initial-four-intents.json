@@ -1,0 +1,72 @@
+{
+  "schema": "forge-c/014-required-driver-capability/1",
+  "sdk_revision": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "host": "omniverse2",
+  "scope": "EXTERNAL_DETERMINISTIC_REQUIRED_INTENTS_NOT_NEW_PRODUCT_ATTEMPT",
+  "historical_workorder": "WWDG-LL-st301",
+  "recorded_request_ref": {
+    "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/request.json",
+    "sha256": "26537bd9568c89996b6f11d2f5c463f0d12e0d0ed732d0353fa1fdb7d53d70ac"
+  },
+  "domain_sha256": "c16d033114a973f1030d2d999e182089ef7960753b36bfb820628447e2d00088",
+  "engine": {
+    "source_commit_sha": "cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2",
+    "binary_sha256": "5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f",
+    "semantic_profile": "register-io-0.1"
+  },
+  "checks": [
+    {
+      "case": "required-activation",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "ace23f40957b647d6500b8379ea7c9caa0e926ee8c56b21017f47ac4b0cbf3da"
+    },
+    {
+      "case": "required-activation-query",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "357ed8d6ccfb05df8a080b8b4bcb00fbd82c5d2794fd9e9a7f1d06d9068f6c70"
+    },
+    {
+      "case": "required-counter-update",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-RMW-SIDE-EFFECT"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "4a7f3ff3267ab2cf46901d8ea3a67f6277daf49d7e3aebd5840196c965945603"
+    },
+    {
+      "case": "positive-control-counter-query",
+      "status": "PASS",
+      "admissible": true,
+      "issues": [],
+      "check_ids": [],
+      "independent_contract_check": "PASS_ENGINE_AND_INDEPENDENT_PYTHON_CONTRACT",
+      "request_sha256": "072163fa53f1d33c21d383ee0e3e843428a10f59624ce6f7f47ef937a9198d55"
+    }
+  ],
+  "status": "CAPABILITY_LIMIT_REPRODUCED",
+  "conclusion": "The actual required set/query activation and counter-update intents cannot pass register-io-0.1 for the frozen WWDG source facts. This is not fixed by another Qwen answer. Ordinary counter read passes both the engine and independent contract derivation.",
+  "original_scope_success": "NOT_POSSIBLE_WITH_THIS_ENGINE_DOMAIN",
+  "proposed_next_action": "QUALIFIED_RS_ACCESS_AND_RMW_ENGINE_EXTENSION_OR_EXPLICITLY_CHANGED_PRODUCT_SCOPE",
+  "native_model_requests": 0,
+  "new_product_attempts": 0,
+  "runtime_deployment": "NOT_ACTIVATED",
+  "safety_gates": "UNCHANGED",
+  "historical_expenditure": "UNCHANGED",
+  "qualified_lessons_added": 0,
+  "wall_seconds": 2.243598
+}

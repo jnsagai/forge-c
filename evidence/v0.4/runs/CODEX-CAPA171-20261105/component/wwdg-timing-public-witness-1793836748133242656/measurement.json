@@ -1,0 +1,97 @@
+{
+  "schema": "forge-c/wwdg-timing-public-contract-witness/1",
+  "scope": "PRIVATE_CONTROL_NOT_PRODUCTION_PHASE_OR_TIMING_QUALIFICATION",
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-public-witness-1793836748133242656/workspace",
+  "full_copy_source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/WWDG4J-timing-capability-audit/workspace",
+  "source_revision": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-wwdg-unit-timing",
+  "provided_effective_approval": {
+    "schema": "forge-c/provided-effective-code/1",
+    "path": "software/ll/stm32n6xx_ll_wwdg.h",
+    "validator_sha256": "e438e4a5e79819cf919540cb62452786498e934b381eb61f8525695e8a2d08fb",
+    "original_sha256": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f",
+    "effective_sha256": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4",
+    "source_work_order": "WO-F014-SWE6-WWDGL-20261103-L29",
+    "source_package": "archive:sha256:241f59111202d6fb73acf7640914156fb9769a8a6ca321aa5489990356950675",
+    "approval": {
+      "report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7",
+      "report_md_sha256": "5f674a7a95efc79b09c65128bb57da11647e9e6a82dfdd361ffd8aeae6c58c84",
+      "phase3_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+      "phase3_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+      "defects": [
+        {
+          "id": "DEF-001",
+          "core_sha256": "a739d13b7a53315bfcd2a08d3f7b0dcfa29d879e57560a1793ab87f29d7c5fbf",
+          "fixed_event": {
+            "baseline_id": "BL-SWE.3-001",
+            "status": "FIXED",
+            "ts": "2026-11-04T22:08:51.431998Z"
+          },
+          "fixed_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+          "fixed_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+          "fixed_report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7"
+        }
+      ]
+    }
+  },
+  "engineering_inputs_unchanged": true,
+  "engineering_input_sha256": {
+    ".forge-run/manifest.json": "3bc7ac3e5e9515622264cc935fe996b7492a65fe54ab0e8e1da9ecbe6b38a3ad",
+    "workproducts/SWE.4/unit_test_plan.json": "1e021a845aecfd3fc9270d8296521be2b47a5449830dabd8b19d8bc0042c7aac",
+    "workproducts/SWE.3/unit_specifications.md": "871e9978c007846806b5738ddef76e7c6f494b679c38e1da9cb5a9a160fbbd5a",
+    "workproducts/SWE.2/api_calls.json": "7abe01eee96d94af42b56067345c6c4377f056c519df473f0fb0ba0a90acbf5e",
+    "workproducts/SWE.1/software_requirements.md": "a9bcfd10d147353c7174b4ab6964dabe47852be74c6190664d2de29900230484",
+    "software/hal/stm32n6xx_hal_wwdg.c": "53afabb4c0bc042047a8437702746c78e436bf5d456328334abd0fa6d625589b",
+    "software/hal/stm32n6xx_hal_wwdg.h": "dbf05b2ecafcd44b9a4f5ddd5e73185d1a5d6f57351de3fa135f2cc2299a50ef",
+    "software/ll/stm32n6xx_ll_wwdg.h": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4"
+  },
+  "private_test_source": "// FORGE_UNIT_BACKEND: provided-ll-ram-v1\n#include <gtest/gtest.h>\n#include <ctime>\nextern \"C\" {\n#include \"stm32n6xx_hal_wwdg.h\"\n}\n/** @test UT-025\n * @verifies USPEC-HAL-04-05\n * Honest host CPU duration only; no target instruction or virtual time assertion.\n */\nTEST(SWU_HAL_04, UT_025) {\n const std::clock_t before = std::clock();\n const hal_status_t status = HAL_WWDG_ClearEarlyWakeupFlag();\n const std::clock_t after = std::clock();\n EXPECT_EQ(HAL_OK, status);\n EXPECT_LE(double(after-before)/CLOCKS_PER_SEC, 0.001);\n}\n",
+  "private_test_source_sha256": "b31a2daef101d5f4d21c4b6cbedc20b555544054d11b26445dc65ef8eb834e3b",
+  "omitted_declarations_private_control_only": [
+    {
+      "path": "software/tests/unit/target_timing.json",
+      "sha256": "df33c138ed9efc2a45bec8c54c1afc6d4a17927c174bf124bd06d34411befa0e"
+    },
+    {
+      "path": "software/tests/unit/target_observations.json",
+      "sha256": "a496f2bec754ca194a11064dab0f0d6a4616ffc76b206b9b295f3a0de217311e"
+    }
+  ],
+  "public_unit_status": "FAIL",
+  "public_unit_metrics": {
+    "passed": 1,
+    "failed": 1,
+    "executables": 1,
+    "environment": "host",
+    "target_evidence": false,
+    "wwdg_timing_environment": "Renode simulated Cortex-M55",
+    "wwdg_timing_ut_passed": 0,
+    "wwdg_timing_ut_failed": 0,
+    "silicon_verified": false
+  },
+  "public_unit_issues": [
+    "WWDG_TARGET_TIMING_DECLARATION_REQUIRED"
+  ],
+  "matrix4_selected_rows": [
+    {
+      "test": "UT-025",
+      "file": "software/tests/unit/target_wwdg_timing.json",
+      "uspec": "USPEC-HAL-04-05",
+      "result": "FAIL",
+      "status": "UNVERIFIED"
+    },
+    {
+      "test": "UT-025",
+      "file": "software/tests/unit/test_wwdg.cpp",
+      "uspec": "USPEC-HAL-04-05",
+      "result": "FAIL",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "timing_row_falsely_verified": false,
+  "actual_target_timing_executed": false,
+  "notes": [
+    "Full frozen context/approval copied without changes; only private unit source replaced and declarations omitted to test public contract.",
+    "Public SDK consumes genuine one-use ticket, runs ordinary unit handler and records its actual result. Normal trace generator reads the result artifacts.",
+    "An overall FAIL due missing other tests or changed-test integrity does not excuse individual false VERIFIED timing row."
+  ]
+}

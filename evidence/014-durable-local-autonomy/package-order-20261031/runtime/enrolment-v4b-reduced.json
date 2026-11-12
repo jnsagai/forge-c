@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-31T01:08:27.454600Z",
+  "created": false,
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "mission_before": {
+    "attempts": 3,
+    "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+    "charged_tokens": 198705152,
+    "corrections": 0,
+    "created_at": "2026-10-30T22:02:18.150036Z",
+    "jobs": 0,
+    "limits": {
+      "deadline": 1793433479,
+      "max_attempts": 10,
+      "max_corrections": 20,
+      "max_jobs": 1,
+      "max_requests": 8000,
+      "max_tokens": 1073741824,
+      "max_tools": 100000
+    },
+    "lineage": "CRC-IDR-native-20261030-shared-lineage",
+    "mission_id": "mission-feature014-delivery-first-20261030",
+    "requests": 578,
+    "tools": 983,
+    "unbounded_historical_usage": false,
+    "unique_executions": 3,
+    "usage_unknown": true
+  },
+  "model_requests": 0,
+  "namespace_preflight": {
+    "detail": "OSError: [Errno 101] Network is unreachable",
+    "interfaces": [
+      "lo"
+    ],
+    "netns": "net:[4026533325]",
+    "probe": "1.1.1.1:443",
+    "status": "DENIED_VERIFIED"
+  },
+  "operations_epoch": 6,
+  "order_id": "afo-ee4282b25001a15d",
+  "role_trial_sha256": "cdaab4b07799909a54f0d30050008f4ebf483d34a1593160af4e26c7fdafc7f6",
+  "scheduler_preflight": "PASS",
+  "scope_sha256": "f499259af281bb81aadb1cc5d7878e08c2e1561d9c46381cf9f8054f753a5ff0",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "status": "ENROLLED_NO_GENERATION_YET"
+}

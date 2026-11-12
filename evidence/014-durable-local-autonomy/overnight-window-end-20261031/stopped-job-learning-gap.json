@@ -1,0 +1,24 @@
+{
+  "trial08_learning_observations": [
+    {
+      "phase": "SWE.1",
+      "outcome": "PASS",
+      "state": "NO_NEW_LESSON",
+      "n": 1
+    },
+    {
+      "phase": "SWE.2",
+      "outcome": "PASS",
+      "state": "NO_NEW_LESSON",
+      "n": 1
+    }
+  ],
+  "qualified_lessons": 0,
+  "transfers": 0,
+  "read_only": true,
+  "model_calls": 0,
+  "observed_tool_utc": "2026-10-31T08:09:24Z",
+  "native_id": "01M68CMQAZNN7QGRZSX5DGRMYY",
+  "result": "STOPPED_JOB_FINAL_OUTCOME_LEARNING_NOT_YET_CAPTURED",
+  "limits": "Read-only snapshot: SWE.1/2 facts exist, final JOB and interrupted SWE.3 disposition absent. No backfilled experience or qualified lesson was created."
+}

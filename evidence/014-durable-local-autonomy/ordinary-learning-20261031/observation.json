@@ -1,0 +1,196 @@
+{
+  "all_dispositions": [
+    {
+      "n": 39,
+      "state": "DEFERRED_BUDGET"
+    },
+    {
+      "n": 33,
+      "state": "NO_NEW_LESSON"
+    }
+  ],
+  "at": "2026-10-31T05:49:07.372651Z",
+  "by_native": [
+    {
+      "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+      "phase_outcome_dispositions": [
+        {
+          "observations": 1,
+          "outcome": "BLOCKED",
+          "phase": "JOB",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 1,
+          "outcome": "SUCCEEDED",
+          "phase": "JOB",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.1",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.2",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.3",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.4",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.5",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.6",
+          "state": "DEFERRED_BUDGET"
+        }
+      ]
+    },
+    {
+      "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+      "phase_outcome_dispositions": [
+        {
+          "observations": 1,
+          "outcome": "BLOCKED",
+          "phase": "JOB",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 1,
+          "outcome": "SUCCEEDED",
+          "phase": "JOB",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.1",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.2",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.2",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.3",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.4",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.5",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.6",
+          "state": "NO_NEW_LESSON"
+        }
+      ]
+    },
+    {
+      "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+      "phase_outcome_dispositions": [
+        {
+          "observations": 1,
+          "outcome": "BLOCKED",
+          "phase": "JOB",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 1,
+          "outcome": "SUCCEEDED",
+          "phase": "JOB",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.1",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.2",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "FAIL",
+          "phase": "SWE.3",
+          "state": "DEFERRED_BUDGET"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.4",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.5",
+          "state": "NO_NEW_LESSON"
+        },
+        {
+          "observations": 2,
+          "outcome": "PASS",
+          "phase": "SWE.6",
+          "state": "NO_NEW_LESSON"
+        }
+      ]
+    }
+  ],
+  "candidate_execution": false,
+  "exists": true,
+  "lesson_qualifications": 0,
+  "lesson_transfers": [],
+  "limits": [
+    "Factual capture/dispositions only; no qualified lesson/transfer or measured learning benefit",
+    "Multiple factual observations of one native phase are not extra jobs/outcomes/lessons",
+    "JOB SUCCEEDED native and JOB BLOCKED strict package are distinct facts, not conflicting release approval",
+    "DEFERRED_BUDGET here means default zero inference consolidation allowance, not proof of global mission exhaustion",
+    "No causal benefit or learning overhead comparison measured"
+  ],
+  "model_calls": 0,
+  "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/knowledge/lessons.sqlite3",
+  "read_only": true,
+  "schema": "forge-c/ordinary-job-learning-observation/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

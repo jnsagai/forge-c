@@ -1,0 +1,50 @@
+{
+  "git_head": "08cc4326063074878b876c4aec36b9062fbde970",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-regress-08cc432",
+  "started_at": "2026-10-27T10:29:39.884811+00:00",
+  "start_dirty": "",
+  "results": [
+    {
+      "label": "affected",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_operational_work.py",
+        "factory/python/tests/test_da014_operational_report.py",
+        "factory/python/tests/test_da014_read_snapshot.py",
+        "factory/python/tests/test_da014_fault_observer.py",
+        "factory/python/tests/test_da014_operational_facts.py",
+        "factory/python/tests/test_da014_qualification.py",
+        "factory/python/tests/test_da014_qualification_audit.py",
+        "factory/python/tests/test_da014_qualification_state.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_afo_m2_queue.py",
+        "factory/python/tests/test_afo_m3_reconcile.py",
+        "factory/python/tests/test_afo_m6_operations.py",
+        "factory/python/tests/test_afo_m8_acceptance.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-08cc432-affected",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-08cc432-affected.xml"
+      ],
+      "exit_code": 0,
+      "ended_at": "2026-10-27T10:30:06.715953+00:00"
+    },
+    {
+      "label": "release",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_m7_governance_release.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-08cc432-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-08cc432-release.xml"
+      ],
+      "exit_code": 0,
+      "ended_at": "2026-10-27T10:30:16.212763+00:00"
+    }
+  ],
+  "end_dirty": "",
+  "end_head": "08cc4326063074878b876c4aec36b9062fbde970"
+}

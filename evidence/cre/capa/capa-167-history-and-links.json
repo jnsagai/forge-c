@@ -1,0 +1,113 @@
+{
+  "history": [
+    [
+      1253,
+      "CAPA-167",
+      null,
+      "OPEN",
+      "2026-11-04T21:25:46.377545Z",
+      "Actual PC-enabled provided HAL SWE2 cannot report the quoted supplied-LL CODE contradiction to its future SWE3 owner; same-owner SWE3 report also refuses. Old INPUT history and production source remain unchanged.",
+      "[\"INC-M1:WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H:EARLY_CODE_OWNER_UNREACHABLE\"]"
+    ],
+    [
+      1254,
+      "CAPA-167",
+      "OPEN",
+      "TRIAGED",
+      "2026-11-04T21:25:46.427619Z",
+      "triage by AGENT (Codex)",
+      "[]"
+    ],
+    [
+      1255,
+      "CAPA-167",
+      "TRIAGED",
+      "REPRODUCER_PENDING",
+      "2026-11-04T21:25:46.625706Z",
+      "reproducer RPR-167 assigned",
+      "[]"
+    ],
+    [
+      1256,
+      "CAPA-167",
+      "REPRODUCER_PENDING",
+      "CAUSE_VERIFIED",
+      "2026-11-04T21:25:49.051431Z",
+      "CAUSE_VERIFIED_BY_CONTRAST",
+      "[\"reproducer-run:rr-9c76e5d207bac1c879c0\", \"reproducer-run:rr-50f396ade9915977b5ed\"]"
+    ],
+    [
+      1257,
+      "CAPA-167",
+      "CAUSE_VERIFIED",
+      "FIX_CANDIDATE",
+      "2026-11-04T21:25:49.083935Z",
+      "fix 3e6c3d944b4a (patch 48662 bytes)",
+      "[\"git:1f6802b53ab5..3e6c3d944b4a\"]"
+    ],
+    [
+      1258,
+      "CAPA-167",
+      "FIX_CANDIDATE",
+      "FIX_CANDIDATE",
+      "2026-11-04T21:27:35.579638Z",
+      "Exact actual failed G29 source also independently reproduces the already verified early CODE-owner defect; no production relabeling or state reset.",
+      "[\"reproducer-run:rr-c2f0d3c655a32fbb4fb1\"]"
+    ],
+    [
+      1259,
+      "CAPA-167",
+      "FIX_CANDIDATE",
+      "PREVENTION_TESTED",
+      "2026-11-04T21:32:33.293542Z",
+      "prevention test prevention:RPR-167 absent at 3e6c3d944b4a",
+      "[\"reproducer-run:rr-f06e3f507690253d2530\"]"
+    ],
+    [
+      1260,
+      "CAPA-167",
+      "PREVENTION_TESTED",
+      "EFFECTIVENESS_OBSERVING",
+      "2026-11-04T21:32:33.348839Z",
+      "observation window opened",
+      "[]"
+    ]
+  ],
+  "links": [
+    [
+      710,
+      "CAPA-167",
+      "BASELINE_REVISION",
+      "1f6802b53ab5d4193c2b6efdb5466710a8d28a86",
+      "2026-11-04T21:25:49.030780Z"
+    ],
+    [
+      712,
+      "CAPA-167",
+      "FINGERPRINT",
+      "cfp1-85d3ebea90515aba1edb605ff57276e84b517643",
+      "2026-11-04T21:27:35.599346Z"
+    ],
+    [
+      709,
+      "CAPA-167",
+      "FINGERPRINT",
+      "cfp1-a0f0305a7752404d306a4a1458ff656a87cf941e",
+      "2026-11-04T21:25:46.409609Z"
+    ],
+    [
+      711,
+      "CAPA-167",
+      "FIX_REVISION",
+      "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+      "2026-11-04T21:25:49.046974Z"
+    ],
+    [
+      713,
+      "CAPA-167",
+      "PROMOTION_DECISION",
+      "pd-633cf159233aa3db72c3",
+      "2026-11-04T21:32:33.209816Z"
+    ]
+  ]
+}

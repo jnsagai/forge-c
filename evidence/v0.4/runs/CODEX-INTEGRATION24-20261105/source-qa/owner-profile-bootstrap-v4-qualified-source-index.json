@@ -1,0 +1,89 @@
+{
+  "status": "SOURCE_FROZEN_PRIVATE_QA_PASS_ROOT_NORMAL_CRE_PENDING",
+  "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "base": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v4",
+  "changed_paths": [
+    {
+      "path": "docs/adr/ADR-DA-012-owner-profile-bootstrap.md",
+      "sha256": "209407b20bf61fc10ef0586a2c4f20fa505d76267628e27d5b98f6c6bb99f4e8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_native_transport.py",
+      "sha256": "8aeab8d2991a4329ef8a0b98a7f3d4437445e0e935edf943cc29b63d518b41d8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "sha256": "5ba3f37c34dead13c164c0c5058f26d3c8cfcaa26bc39053992d1b219640194f"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "12b339f8e9d700e1e92fabae6ad54a17b64432dae4d17ae6e61794ae5ebeea11"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "de5ebc1bf11ac919759d43a4ac04f214b9f373b9d430a4811e444e66053ed4bf"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f"
+    },
+    {
+      "path": "factory/python/tests/test_owner_profile_bootstrap.py",
+      "sha256": "1fde4ee71644eab7d8145aec5ec251d796e73c28a5d0f352f31c5f3c30854474"
+    }
+  ],
+  "affected_tests": {
+    "tests": 149.0,
+    "failures": 0.0,
+    "errors": 0.0,
+    "skipped": 0.0,
+    "time": 93.09
+  },
+  "design": "14 PASS",
+  "legacy": "16 PASS",
+  "v03_packager": "7 PASS",
+  "ruff": "PASS",
+  "artifacts": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-affected.log",
+      "sha256": "632077e000ec3110031d124d34558cc1861fce1b3a7f170625cdb637b55adf6f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-affected.xml",
+      "sha256": "a5b62841e5386bad1703550ee9a31a8f7dcb2787abe5b2de43744351cbde9a04"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-design.log",
+      "sha256": "75fdae0f6c198910a59b722ca4b91bd948fda8b3444f13abd544b651c68e8122"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-legacy.log",
+      "sha256": "f71cbb8bc169b686b6382c554486678c4231f3fbacbd37ce91e77491a904528a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-v03-packager.log",
+      "sha256": "319bff1b143a7e15ee19f943a3e5e761a3a82cfb0c5106349ff5003a4d4e9ba0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v4-inputs-before-tests.json",
+      "sha256": "d4c56b1c18105c94076579328b20d527310314c8079994e4c9d09b4fa5a43054"
+    }
+  ],
+  "prior_failures_preserved": [
+    "owner-profile-bootstrap-v3-affected.log",
+    "owner-profile-bootstrap-v3-affected.xml"
+  ],
+  "production_source_byteidentical_to_v3": "d38a5f230273ec78e30cfed50e2c58354ffdef5e",
+  "model_calls": 0,
+  "remote_mutations": false,
+  "qualification": "NOT_RUN_BY_COMPONENT_AGENT"
+}

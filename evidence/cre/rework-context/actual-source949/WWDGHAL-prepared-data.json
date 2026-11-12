@@ -1,0 +1,172 @@
+{
+  "schema": "forge-c/rework-context/1",
+  "authority": "UNTRUSTED_REFERENCE_DATA_ONLY",
+  "phase": "SWE.4",
+  "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1E",
+  "source_run_id": "01M6KD58MTA02YY42ZQ4B3PVMZ",
+  "source_terminal_status": "SUCCEEDED",
+  "source_manifest_sha256": "d60b8a9ad918c082dc2e786afc4eabe7e9ef4e6b4e506d474264a810e99541c3",
+  "source_factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "run/cloud-gen23-inspector-capacity",
+    "commit": "c3aa129d74377f94467b6027f4f5c8c758ddd9e9",
+    "dirty": false
+  },
+  "source_gate_sha256": "bb1ed8674ff9563a13dffdfc7194cc1512123ad91a214a3b160efeb05ec40511",
+  "inspection_state": "BOUND",
+  "source_inspection_sha256": "9c17d77c6f0d9af812aaa33a04ad55a93556b09e6da62def43bb21e6e4562a73",
+  "inspection": {
+    "inspection_id": "INS-SWE.4-001",
+    "phase": "SWE.4",
+    "verdict": "FAIL",
+    "recorded_at": "2026-11-04T14:05:54.468724Z",
+    "baseline_id": "BL-SWE.4-001",
+    "baseline_hash": "6171108aca3d0349faa5dc994fa179b3d7163955e25471e28e86e74156322321",
+    "author_role": "swe4-author",
+    "inspector_role": "swe4-inspector",
+    "failed_items": {
+      "SWE4-01": {
+        "verdict": "FAIL",
+        "findings": [
+          "Owner SWE.4: workproducts/SWE.4/unit_verification_report.md omits the manifest scope exclusions for reset generation, interrupt handler, RCC clock enable, hardware watchdog option, debug freeze, disable and deinitialisation; document these exclusions in the verification scope"
+        ],
+        "evidence_refs": [
+          "configuration/baselines/SWE.4/BL-SWE.4-001.json"
+        ]
+      },
+      "SWE4-02": {
+        "verdict": "FAIL",
+        "findings": [
+          "Owner SWE.4: software/tests/unit/test_wwdg.cpp UT-007 tests preservation of EWI only from initial state 1 although SWR-029 requires both initial states. UT-008 checks repeated call counts and two ordering relationships but does not assert repeated prescaler/window/counter arguments or the complete initialisation sequence required by USPEC-HAL-01-08"
+        ],
+        "evidence_refs": [
+          "configuration/baselines/SWE.4/BL-SWE.4-001.json"
+        ]
+      },
+      "SWE4-04": {
+        "verdict": "FAIL",
+        "findings": [
+          "Owner SWE.4: unit_verification_report.md Static analysis lists tool results and a subset disclaimer without review or disposition of manual coding-rule gaps. verification/static/misra_coverage_matrix.md leaves unsupported rules requiring manual review, and workproducts/SWE.3/misra_deviations.md records no review or deviations"
+        ],
+        "evidence_refs": [
+          "configuration/baselines/SWE.4/BL-SWE.4-001.json"
+        ]
+      },
+      "SWE4-06": {
+        "verdict": "FAIL",
+        "findings": [
+          "Owner SWE.4: matrix_4_unittest_to_unitspec.csv marks USPEC-HAL-01-09, USPEC-HAL-02-04 and USPEC-HAL-04-03 VERIFIED although UT-009/014/021 assert only LL calls. The report explicitly states register preservation is not established, but the traceability records contain no qualification or linked closure evidence for these outstanding obligations"
+        ],
+        "evidence_refs": [
+          "configuration/baselines/SWE.4/BL-SWE.4-001.json"
+        ]
+      }
+    },
+    "findings": [
+      {
+        "id": "SWE4-01",
+        "severity": "major",
+        "detail": "Owner SWE.4: workproducts/SWE.4/unit_verification_report.md omits the manifest scope exclusions for reset generation, interrupt handler, RCC clock enable, hardware watchdog option, debug freeze, disab"
+      },
+      {
+        "id": "SWE4-02",
+        "severity": "major",
+        "detail": "Owner SWE.4: software/tests/unit/test_wwdg.cpp UT-007 tests preservation of EWI only from initial state 1 although SWR-029 requires both initial states. UT-008 checks repeated call counts and two orde"
+      },
+      {
+        "id": "SWE4-04",
+        "severity": "major",
+        "detail": "Owner SWE.4: unit_verification_report.md Static analysis lists tool results and a subset disclaimer without review or disposition of manual coding-rule gaps. verification/static/misra_coverage_matrix."
+      },
+      {
+        "id": "SWE4-06",
+        "severity": "major",
+        "detail": "Owner SWE.4: matrix_4_unittest_to_unitspec.csv marks USPEC-HAL-01-09, USPEC-HAL-02-04 and USPEC-HAL-04-03 VERIFIED although UT-009/014/021 assert only LL calls. The report explicitly states register p"
+      }
+    ]
+  },
+  "gate_records": [
+    {
+      "ts": "2026-11-04T14:01:35.820353Z",
+      "phase": "SWE.4",
+      "step": "author",
+      "result": "FROZEN"
+    },
+    {
+      "ts": "2026-11-04T14:06:08.896256Z",
+      "phase": "SWE.4",
+      "step": "inspect",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "INS-SWE.4-001",
+        "phase": "SWE.4"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:06:09.613541Z",
+      "phase": "SWE.4",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "INS-SWE.4-001",
+        "phase": "SWE.4"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:10:34.774094Z",
+      "phase": "SWE.4",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Register-preservation verification remains open for USPEC-HAL-01-09, USPEC-HAL-02-04 and USPEC-HAL-04-03.",
+        "Manual coding-rule review and disposition remain open."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:10:35.168165Z",
+      "phase": "SWE.4",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "BASELINE_CHANGED_AFTER_FREEZE",
+        "phase": "SWE.4"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:13:03.542770Z",
+      "phase": "SWE.4",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Register-preservation verification remains open for USPEC-HAL-01-09, USPEC-HAL-02-04 and USPEC-HAL-04-03.",
+        "Manual coding-rule review and disposition remain open."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:13:03.899404Z",
+      "phase": "SWE.4",
+      "step": "route",
+      "gate": {
+        "decision": "BLOCKED",
+        "reason": "rework budget exhausted (3 failed cycles)",
+        "phase": "SWE.4"
+      }
+    }
+  ],
+  "carried_upstream_baselines": {
+    "SWE.1": "4075783c97606b950c4a63c9d238f4db0f1d39bf9bda96cd1a8ffa7bafceaa85",
+    "SWE.2": "51578820fa20060d1132ff98b1039e41efa380112d5d3134b852f4bdd0cd5f52",
+    "SWE.3": "6d38ddabe3c68f2dedd85135dd32089d17d0ea25b0d5d8dfa223fcdc4a6ceb4a"
+  },
+  "provided_headers": {
+    "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+  },
+  "failed_phase_current_unit_sources": {
+    "software/hal/stm32n6xx_hal_wwdg.c": "ef247b68e7655de62ba69ce840c810e603449e86866d9b6b2d3363977659849f",
+    "software/hal/stm32n6xx_hal_wwdg.h": "fea2956260b23bf5885c450c79477c1e65e71c0a6dfa29098ed4d2251a39c4ba",
+    "software/ll/stm32n6xx_ll_wwdg.h": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f"
+  },
+  "acceptance": "NEW_NATIVE_GATES_AND_INDEPENDENT_INSPECTION_REQUIRED"
+}

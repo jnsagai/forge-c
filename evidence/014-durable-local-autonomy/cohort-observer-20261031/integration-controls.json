@@ -1,0 +1,42 @@
+{
+  "scope": "OBSERVER_TOOLING_INTEGRATION_ONLY_NOT_QWEN_CAPABILITY",
+  "tool_sha256": "c5bf3b9cb7eb4c2a4f7890696da67d746779cbebc70a10005701e489b703ffbd",
+  "observer_revision": "e5cdc45ff5983486a32c452ff226d6404245307c",
+  "cases": [
+    {
+      "case": "queued-order-no-native",
+      "returncode": 0,
+      "expected_rejection": null,
+      "result": "PASS_QUEUED_NOT_QUALIFIED",
+      "observation": {
+        "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/cohort/afo-f83452175591716f/0b036181f597475518697f448141b46003b0f3fb2d0c94c603f122136b3c4c4d.json",
+        "sha256": "0b036181f597475518697f448141b46003b0f3fb2d0c94c603f122136b3c4c4d",
+        "order": {
+          "order_id": "afo-f83452175591716f",
+          "state": "QUEUED",
+          "terminal_reason": null
+        },
+        "attempts": [],
+        "model_calls_by_observer": 0,
+        "candidate_execution_by_observer": false,
+        "milestone": "REQUIRES_EXTERNAL_AUDIT_NOT_INFERRED"
+      }
+    },
+    {
+      "case": "outside-cohort",
+      "returncode": 1,
+      "expected_rejection": "ORDER_NOT_IN_FROZEN_COHORT",
+      "result": "PASS_EXPECTED_REFUSAL",
+      "stderr": "Traceback (most recent call last):\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/collect_delivery_trial-e5cdc45f.py\", line 169, in <module>\n    main()\n    ~~~~^^\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/collect_delivery_trial-e5cdc45f.py\", line 40, in main\n    raise ValueError(\"ORDER_NOT_IN_FROZEN_COHORT\")\nValueError: ORDER_NOT_IN_FROZEN_COHORT\n"
+    },
+    {
+      "case": "nonlocal-api",
+      "returncode": 1,
+      "expected_rejection": "OBSERVER_API_MUST_BE_LOCAL",
+      "result": "PASS_EXPECTED_REFUSAL",
+      "stderr": "Traceback (most recent call last):\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/collect_delivery_trial-e5cdc45f.py\", line 169, in <module>\n    main()\n    ~~~~^^\n  File \"/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/collect_delivery_trial-e5cdc45f.py\", line 43, in main\n    raise ValueError(\"OBSERVER_API_MUST_BE_LOCAL\")\nValueError: OBSERVER_API_MUST_BE_LOCAL\n"
+    }
+  ],
+  "model_calls": 0,
+  "candidate_execution": false
+}

@@ -1,0 +1,26 @@
+{
+ "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace": {
+  "added": [],
+  "changed": {},
+  "entries": 706,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces/ornith-1.5-35b-a3b-q8-01/workspace": {
+  "added": [],
+  "changed": {},
+  "entries": 607,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces/ornith-1.5-35b-a3b-q8-02/workspace": {
+  "added": [],
+  "changed": {},
+  "entries": 607,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ }
+}

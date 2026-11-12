@@ -1,0 +1,102 @@
+{
+  "schema": "forge-c/014-profile-binding-qualification/1",
+  "source_revision": "024a3fa55fe6b4cce85c61155382cf35aabf76cd",
+  "source_start_end": "CLEAN",
+  "scope": "EXPLICIT_PROFILE_AND_ACTUAL_INTAKE_PREFLIGHT_NOT_PRODUCT_EXECUTION",
+  "results": {
+    "local_targeted": {
+      "tests": 232,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 232,
+      "seconds": 112.601,
+      "junit_sha256": "afa1609314d54db9d88c08cb5a3269ab439d4af5440b96194053e57d51d04b12",
+      "skip_reasons": []
+    },
+    "release_legacy": {
+      "tests": 29,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 29,
+      "seconds": 8.872,
+      "junit_sha256": "5e1419cadcce2a11c96e9fb33c1fe97068e524671c2febf17ef605d67201f486",
+      "skip_reasons": []
+    },
+    "omniverse2": {
+      "tests": 74,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 2,
+      "passed": 72,
+      "seconds": 4.098,
+      "junit_sha256": "10ebdc1fce8b56de32413380b6d6bf5633d84303cd79b2f22b533357173e372d",
+      "skip_reasons": [
+        "owner RM0486 inputs (git-ignored) not present in this checkout",
+        "owner RM0486 inputs (git-ignored) not present in this checkout"
+      ]
+    },
+    "omniverse2_restored_compatibility": {
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 2,
+      "seconds": 2.033,
+      "junit_sha256": "1f80a312605eeb640c963b1572c57a292f4b4089442081ae04265f6bc3548d13",
+      "skip_reasons": []
+    },
+    "afo_integration": {
+      "tests": 75,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 10.413,
+      "junit_sha256": "0c0c7bbf59502717a7c56390821cbe5ef4758276423e37618cadfff5520c0936",
+      "passed": 75
+    }
+  },
+  "targeted_filter": "not wp_proves_each_register_effect and not target_oracle_on_the_iwdg",
+  "unrepeated_tests": "Two unchanged solver/target-oracle cases from earlier a74baa9 qualification are excluded from this affected cohort; no full inherited-suite claim",
+  "retained_wip_failures": [
+    "9 initial profile/binding/snapshot tests failed before implementation",
+    "positive fixture lacked registers; corrected without gate change",
+    "fixture omitted new frozen semantic marker; positive and downgrade test caught it",
+    "real workorder intake projection dropped new semantic marker; fixed and regressed"
+  ],
+  "static_checks": {
+    "profile024-static-spec.log": {
+      "status": "PASS",
+      "sha256": "442b344881a58d48a5c862590b4f2cabd0ae02244a849ae7310c0188e153681b"
+    },
+    "profile024-static-contracts.log": {
+      "status": "PASS",
+      "sha256": "6a44a7de8ed0f6a80069d8865c1317666d9f7fa6b39733979af864ac8ce77b94"
+    },
+    "profile024-static-design.log": {
+      "status": "PASS",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139"
+    },
+    "profile024-static-handoff.log": {
+      "status": "PASS",
+      "sha256": "5cbf3321a8c9951f403f5e18123567253e7da69b4c02a684634c81d046f9392a"
+    },
+    "profile024-static-ruff.log": {
+      "status": "PASS",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  },
+  "new_model_calls": 0,
+  "new_engine_requests": 12,
+  "new_product_attempts": 0,
+  "global_qualified_model_roles": "UNCHANGED",
+  "formal_task_count": "30/58",
+  "product_success": "NOT_PROVEN",
+  "self_healing": "NOT_PROVEN",
+  "learning_benefit": "NOT_MEASURED",
+  "availability_campaigns": "NOT_RUN",
+  "private_full_regression": "UNCHANGED_MISSING16_ORIGINAL_INPUTS",
+  "draft_pr": 42,
+  "deployment": "NOT_ACTIVATED"
+}

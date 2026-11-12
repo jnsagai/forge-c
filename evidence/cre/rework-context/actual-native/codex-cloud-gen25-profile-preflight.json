@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-04T16:05:12.783333+00:00",
+  "revision": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+  "model_calls": 0,
+  "results": [
+    {
+      "tag": "CRCHAL",
+      "inspector_model_and_serve": "6/6PASS",
+      "author_model_serve": "6/6PASS",
+      "factory_timing_guidance": true,
+      "swe6_planning_guidance": true,
+      "optional_rework_context": "installed_only_at_actual_new_workorder_creation",
+      "actual_model_execution": "NOT_RUN"
+    },
+    {
+      "tag": "WWDGHAL",
+      "inspector_model_and_serve": "6/6PASS",
+      "author_model_serve": "6/6PASS",
+      "factory_timing_guidance": true,
+      "swe6_planning_guidance": true,
+      "optional_rework_context": "installed_only_at_actual_new_workorder_creation",
+      "actual_model_execution": "NOT_RUN"
+    }
+  ]
+}

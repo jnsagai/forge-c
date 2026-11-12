@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-05T02:33:20.279391+00:00",
+  "candidate": "a856b521fccab43309ee4bfe1cded42c2eb37938",
+  "baseline": "c121ea79813bcd06f51b2468a067e7584ef15cdf",
+  "independent_regression": {
+    "tests": 327,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "passed": 326,
+  "skipped": [
+    "test_act_dry_run_replay_over_todays_line_state"
+  ],
+  "skip_reason": "Existing historical M3 replay needs its original read-only line snapshot; absent FORGE_M3_REPLAY_DIR. No new skip or oracle replacement.",
+  "design_checks": 14,
+  "ruff_changed_python_files": 15,
+  "tracked_clean": true,
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration16-independent.xml",
+      "sha256": "a09a6cd38ee22a2baec0279a1ddc3235349bfabac8c5cb34d5f05769c313c86d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration16-independent.log",
+      "sha256": "c0a139c62e55d17cb6e682e9e64cf5e066a2f709dd6cddeec684b9719d4a7de4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration16-design.log",
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration16-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ],
+  "runtime_or_role_qualification": "NOT_RUN",
+  "next": "Normal independent CHANGE/full frozen prevention on this exact source"
+}

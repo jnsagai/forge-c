@@ -1,0 +1,25 @@
+{
+  "classification": "POST_TERMINAL_OBSERVER_TOOLING_ONLY",
+  "incidents": [
+    {
+      "kind": "SOURCE_AUDIT_RECORD_WRAPPER_IMPORT_PATH",
+      "effect": "Read-only source CLI finished, but host-side receipt wrapper import failed; no packet written",
+      "resolution": "Set host helper sys.path to the unchanged producer source and rerun the read-only audit",
+      "job_or_archive_changed": false
+    },
+    {
+      "kind": "ARCHIVE_INPUT_LOCATION_ASSUMPTION",
+      "effect": "Audit builder stopped on absent top-level full-manual input path; no false PASS record written",
+      "resolution": "Verified all14 input hashes at the actual archived final independent-verification snapshot paths",
+      "job_or_archive_changed": false
+    },
+    {
+      "kind": "AUDIT_REPLAY_OUTPUT_GUARD",
+      "effect": "Published builder now preserves an existing audit on identical-facts replay, ignoring only fresh collection timestamp",
+      "resolution": "Replayed all checks; original audit SHA9ffc4f56... unchanged",
+      "job_or_archive_changed": false
+    }
+  ],
+  "model_calls": 0,
+  "candidate_execution_by_observer": false
+}

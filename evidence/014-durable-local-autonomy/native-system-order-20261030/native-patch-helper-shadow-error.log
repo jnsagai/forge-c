@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/swe1_patch.py", line 186, in <module>
+    sid = add('When the %s clock is-enabled query function is called, the RCC LL driver shall return 1U when %s (bit %d) is set and 0U when it is clear.' % (field, ref, bit, reg),
+TypeError: not all arguments converted during string formatting

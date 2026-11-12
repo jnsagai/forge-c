@@ -1,0 +1,58 @@
+{
+  "campaign_denominator": 100,
+  "captured_utc": "2026-10-28T11:30:02.590322Z",
+  "historical_driver_mission_snapshots_unchanged": true,
+  "independent_observations": {
+    "admitted_receipts": 0,
+    "authority_escapes": 0,
+    "duplicate_effects": 0,
+    "false_success": false,
+    "native_runs": 1,
+    "provider_requests": 1,
+    "repair_plan": null,
+    "request_allowance": 1,
+    "tool_uses": 0
+  },
+  "job_state": "FAILED",
+  "learning_benefit": "NOT_TESTED",
+  "mission": {
+    "attempts": 0,
+    "authorization_ref": "AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1",
+    "charged_tokens": 65536,
+    "corrections": 0,
+    "created_at": "2026-10-28T10:45:00.800456Z",
+    "jobs": 1,
+    "limits": {
+      "deadline": 1793196391.0,
+      "max_attempts": 0,
+      "max_corrections": 0,
+      "max_jobs": 1,
+      "max_requests": 1,
+      "max_tokens": 65536,
+      "max_tools": 0
+    },
+    "lineage": "owner:q38-first-protocol-generation:20261028",
+    "mission_id": "qualification-014-q38-quality-smoke-20261028",
+    "requests": 1,
+    "tools": 0,
+    "unbounded_historical_usage": false,
+    "unique_executions": 1,
+    "usage_unknown": true
+  },
+  "native_run_ids": [
+    "01M611WAN8544QQKWQE3A1H2MC"
+  ],
+  "observed": "FAILED_PROTOCOL",
+  "observed_denominator": 1,
+  "operational_availability": "UNPROVEN",
+  "operator_epoch": 9,
+  "product_success": "NOT_TESTED",
+  "production_authorization_ref": "AUTH-014-OMNIVERSE2-Q38-GOLIVE-20261028-V2",
+  "production_expiry_unchanged": "2026-10-29T05:00:00Z",
+  "protocol_report_status": "FAIL",
+  "role_qualification": "NOT_ESTABLISHED",
+  "source_revision": "1cfea7ad69b43ffecf0aaf40a243d05078584d05",
+  "status": "SCOPED_SMOKE_AUDITED_PRODUCTION_AUTHORITY_RESTORED",
+  "subject_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "trial": "obligation-counterexample:0"
+}

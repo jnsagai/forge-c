@@ -1,0 +1,19 @@
+E
+==================================== ERRORS ====================================
+_ ERROR at setup of test_real_control_start_persists_owned_partial_projection_before_health _
+file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_bootstrap_cold_start.py, line 86
+  def test_real_control_start_persists_owned_partial_projection_before_health(cold):
+file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_bootstrap_cold_start.py, line 21
+  @pytest.fixture
+  def cold(boot, monkeypatch):  # noqa: F811 - imported pytest fixture requested by name
+file /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_profile_bootstrap.py, line 59
+  @pytest.fixture
+  def boot(supervised, tmp_path, monkeypatch):  # noqa: F811 - imported pytest fixture is requested by name
+E       fixture 'supervised' not found
+>       available fixtures: _dashboard_sign_in_on, _easa_hermetic, _prompt_state_restored, anyio_backend, anyio_backend_name, anyio_backend_options, boot, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cold, cov, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v5/factory/python/tests/test_owner_profile_bootstrap.py:59
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_owner_bootstrap_cold_start.py::test_real_control_start_persists_owned_partial_projection_before_health
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

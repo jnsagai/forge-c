@@ -1,0 +1,51 @@
+{
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "native_run_id": "01M65G3CG47YKS11GRQEATNB10",
+  "first_baseline": "3f1de8adb287ebfbd004c7dc82ea4dac184c2c672eecc382797ae886ec205849",
+  "second_baseline": "4790389bbe01a9007ebaf6c52c85cd0f677c155b7b3ec290d7a510ad830e3626",
+  "first_failed_items": [
+    "SWE1-02",
+    "SWE1-03",
+    "SWE1-04"
+  ],
+  "second_failed_items": [
+    "SWE1-04"
+  ],
+  "first_criterion2_model_findings_count": 2,
+  "first_criterion2_model_finding_lengths": [
+    363,
+    283
+  ],
+  "published_item_finding_lengths": [
+    200,
+    200
+  ],
+  "author_visible_summary_length": 200,
+  "second_author_visit": {
+    "at": "2026-10-30T05:01:47.745965Z",
+    "calls": 2,
+    "issues": [],
+    "max_calls": 35,
+    "prompt_tokens": [
+      [
+        3420,
+        4405
+      ],
+      [
+        3774,
+        5058
+      ]
+    ],
+    "status": "PASS"
+  },
+  "snapshot_files": {
+    "INS-SWE.1-001.json": "87fd18e830c67581e0f37476d9b2b270e10aa050e2383acd76cc6e2132df823d",
+    "INS-SWE.1-002.json": "c94b7b026f547ba374f3890396f845ec18c52d5c88aefed48e78ecc6f0306e0c",
+    "requirements__RCC_AHB1ENR.json": "a817696667b485caacae39bb8d486c392630cb5c0c7e4d7631590ff636671c17",
+    "visits.jsonl": "767f84e89f749ddbcd762f7e0039ba9edd294f9e9b2c7864784935581b632e6c",
+    "inspect__3f1de8adb287ebfb__SWE1-02.json": "5c7dd9fbe78cdfc50c16725c3e3c43ea42a58b0b6cc73a12f0a98b1547778e2c"
+  },
+  "new_source_deployed": false,
+  "native_pipeline": "STILL_ACTIVE",
+  "model_requests_by_collection": 0
+}

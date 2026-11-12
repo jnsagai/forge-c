@@ -31,7 +31,7 @@ IDENTITY_SCHEMA = "forge-c/safec-bridge-identity/1"
 DOMAIN_SCHEMA = "forge-c/register-io-domain/2"
 CONTRACT_SCHEMA = "forge-c/register-io-contract/1"
 STATUSES = ("PASS", "FAIL", "INCONCLUSIVE", "UNSUPPORTED", "STALE", "ERROR")
-PROFILES = ("register-io-0.1",)
+PROFILES = ("register-io-0.1", "register-io-0.2")
 MAX_REQUEST_BYTES = 1024 * 1024
 MAX_RESULT_BYTES = 4 * 1024 * 1024
 MAX_IDENTITY_BYTES = 64 * 1024
@@ -81,45 +81,66 @@ def strict_loads(raw: bytes, limit: int) -> dict:
     return doc
 
 
-_validators: dict[str, object] = {}
+_validators: dict[tuple[str, str], object] = {}
 
 
-def schema(kind: str) -> dict:
+def domain_schema(profile: str) -> str:
+    if profile not in PROFILES:
+        raise ContractError("UNSUPPORTED_PROFILE")
+    return DOMAIN_SCHEMA if profile == PROFILES[0] else "forge-c/register-io-domain/3"
+
+
+def schema(kind: str, profile: str = PROFILES[0]) -> dict:
+    domain_schema(profile)  # Only the two implemented, explicit version families.
     name = {"request": "bridge-request.schema.json", "result": "bridge-result.schema.json",
             "domain": "register-io-domain.schema.json", "contract": "register-io-contract.schema.json",
             "oracle": "register-io-oracle.schema.json",
             "obligations": "register-io-obligations.schema.json"}[kind]
-    return json.loads((FEATURE / name).read_text())
+    directory = FEATURE if profile == PROFILES[0] else FEATURE / "register-io-v02"
+    return json.loads((directory / name).read_text())
 
 
-def _validator(kind: str):
-    if kind not in _validators:
+def _validator(kind: str, profile: str = PROFILES[0]):
+    domain_schema(profile)
+    identity = (kind, profile)
+    if identity not in _validators:
         from jsonschema import Draft202012Validator
 
-        s = schema(kind)
+        s = schema(kind, profile)
         Draft202012Validator.check_schema(s)
-        _validators[kind] = Draft202012Validator(s)
-    return _validators[kind]
+        _validators[identity] = Draft202012Validator(s)
+    return _validators[identity]
 
 
-def schema_errors(kind: str, doc: dict) -> list[str]:
+def schema_errors(kind: str, doc: dict, *, profile: str = PROFILES[0]) -> list[str]:
     return sorted(f"{'/'.join(map(str, e.absolute_path)) or '<root>'}: {e.message}"[:300]
-                  for e in _validator(kind).iter_errors(doc))
+                  for e in _validator(kind, profile).iter_errors(doc))
 
 
-def _require(kind: str, doc: dict) -> dict:
-    errs = schema_errors(kind, doc)
+def _require(kind: str, doc: dict, *, profile: str = PROFILES[0]) -> dict:
+    try:
+        errs = schema_errors(kind, doc, profile=profile)
+    except ContractError as exc:
+        if exc.code != "UNSUPPORTED_PROFILE":
+            raise
+        raise ContractError("SCHEMA_VIOLATION", "unsupported engine semantic profile") from exc
     if errs:
         raise ContractError("SCHEMA_VIOLATION", "; ".join(errs[:5]))
     return doc
 
 
 def parse_request(raw: bytes) -> dict:
-    return _require("request", strict_loads(raw, MAX_REQUEST_BYTES))
+    doc = strict_loads(raw, MAX_REQUEST_BYTES)
+    engine = doc.get("expected_engine")
+    profile = engine.get("semantic_profile", PROFILES[0]) if isinstance(engine, dict) else PROFILES[0]
+    return _require("request", doc, profile=profile)
 
 
 def parse_result(raw: bytes) -> dict:
-    doc = _require("result", strict_loads(raw, MAX_RESULT_BYTES))
+    doc = strict_loads(raw, MAX_RESULT_BYTES)
+    engine = doc.get("engine")
+    profile = engine.get("semantic_profile", PROFILES[0]) if isinstance(engine, dict) else PROFILES[0]
+    doc = _require("result", doc, profile=profile)
     ids = [f["finding_id"] for f in doc["findings"]]
     if len(ids) != len(set(ids)):
         raise ContractError("DUPLICATE_FINDING_ID")
@@ -142,7 +163,8 @@ def parse_identity(raw: bytes) -> dict:
             and isinstance(eng["semantic_profiles"], list)):
         raise ContractError("IDENTITY_VALUES")
     if doc["protocol"] not in ({"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA},
-                               {"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA, "domain": DOMAIN_SCHEMA}):
+                               {"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA, "domain": DOMAIN_SCHEMA},
+                               {"request": REQUEST_SCHEMA, "result": RESULT_SCHEMA, "domain": domain_schema(PROFILES[1])}):
         raise ContractError("PROTOCOL_MISMATCH", json.dumps(doc["protocol"])[:200])
     ops = doc["operations"]
     if not isinstance(ops, dict) or not all(isinstance(k, str) and v in ("SUPPORTED", "UNSUPPORTED")
@@ -170,7 +192,7 @@ def build_request(*, request_id: str, operation: str, engine: dict, binding: dic
     doc = {"schema": REQUEST_SCHEMA, "request_id": request_id, "operation": operation,
            "expected_engine": {k: engine[k] for k in ("source_commit_sha", "binary_sha256", "semantic_profile")},
            "binding": binding, "inputs": {"semantic_intents": intents, **extra_inputs}}
-    _require("request", doc)
+    _require("request", doc, profile=engine["semantic_profile"])
     raw = canonical_bytes(doc)
     if len(raw) > MAX_REQUEST_BYTES:
         raise ContractError("OVERSIZED", f"request {len(raw)} bytes")

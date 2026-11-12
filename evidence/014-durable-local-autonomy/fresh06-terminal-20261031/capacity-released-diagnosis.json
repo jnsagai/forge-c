@@ -1,0 +1,46 @@
+{
+  "executions": [
+    {
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-af2c3b6fc3d6986baacf3568",
+      "quiescence_evidence_ref": "native-terminals:8cc9ac02f73440b2e8f87a6e6f687cf1d9cd9a402cba5f30a4040f73d0a4c301",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED"
+    },
+    {
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-221ded78874865909a532471",
+      "quiescence_evidence_ref": "native-terminals:ca8106a640548f6db61de2abb448a6008b50e9c688ac8fd9f65e6dd353192f48",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED"
+    },
+    {
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-0fbf506c5889f9f7faa87f04",
+      "quiescence_evidence_ref": "native-terminals:178d91058a5032232b5133520767e934a3d7c3da76dcbd6854e1563cdbb7ba6b",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED"
+    },
+    {
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+      "quiescence_evidence_ref": "native-terminals:d6b99771a3606aa439020d728c6e7b26b50325cf901feb5c0b5ccdcefbed957b",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED"
+    }
+  ],
+  "heartbeat": {
+    "cycle": 833,
+    "detail": "idle",
+    "epoch": 1793422509.1704755,
+    "mode": "PILOT",
+    "ok": true,
+    "pid": 2567516,
+    "ts": "2026-10-31T04:55:09.170424Z"
+  },
+  "heartbeat_age_s": 2.839099168777466,
+  "tables": [
+    "afo_leases",
+    "afo_control"
+  ]
+}

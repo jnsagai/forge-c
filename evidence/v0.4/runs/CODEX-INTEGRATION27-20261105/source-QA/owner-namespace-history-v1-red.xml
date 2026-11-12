@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="6.491" timestamp="2026-11-05T20:46:53.095657+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_bootstrap_reconciliation" name="test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap" time="3.679"><failure message="AttributeError: module 'forge_factory.afo.owner_bootstrap_reconciliation' has no attribute 'CONSUMED_KIND'">pending = {'before_unknown': &lt;sqlite3.Row object at 0x71da3224de70&gt;, 'boot': {'binary': PosixPath('/tmp/pytest-of-jefferson/pyte... 'forge-c/sqlite-logical-stream/1', 'encoded_bytes': 0, 'hash_chunk_bytes': 65536, 'max_row_bytes': 0, ...}, ...}, ...}
+
+    def test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap(pending):
+        p = pending
+        b = p["boot"]
+        with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+            B.bootstrap(b["store"], b["placer"])
+        token = reconcile(p)
+        assert b["effects"] == [] and b["placer"]._act_lock is None
+        with b["store"].tx() as c:
+            assert (
+                c.execute(
+                    "SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=?", (p["old"]["intent_id"] + "-result",)
+                ).fetchone()
+                == p["before_unknown"]
+            )
+            assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1
+        assert R.ledger_checkpoint(b["store"].path) == p["ledger"]
+        assert B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)["status"] == "READY"
+        with b["store"].tx() as c:
+            consumed = c.execute(
+&gt;               "SELECT record FROM afo_independent_decisions WHERE kind=?", (R.CONSUMED_KIND,)
+                                                                              ^^^^^^^^^^^^^^^
+            ).fetchall()
+E           AttributeError: module 'forge_factory.afo.owner_bootstrap_reconciliation' has no attribute 'CONSUMED_KIND'
+
+tests/test_owner_bootstrap_reconciliation.py:220: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_owner_bootstrap_reconciliation" name="test_consumed_receipt_and_following_intent_rollback_together" time="2.486"><failure message="forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_RECONCILIATION_LEDGER_HISTORY_CHANGED:">pending = {'before_unknown': &lt;sqlite3.Row object at 0x71da322a9f60&gt;, 'boot': {'binary': PosixPath('/tmp/pytest-of-jefferson/pyte... 'forge-c/sqlite-logical-stream/1', 'encoded_bytes': 0, 'hash_chunk_bytes': 65536, 'max_row_bytes': 0, ...}, ...}, ...}
+
+    def test_consumed_receipt_and_following_intent_rollback_together(pending):
+        p = pending
+        b = p["boot"]
+        token = reconcile(p)
+        key = "owner-profile-bootstrap-" + digest(D.current())
+        # Actual SQLite failure after receipt validation must roll back both rows.
+        with b["store"].tx() as c:
+            c.execute(
+                "CREATE TRIGGER private_reject_bootstrap BEFORE INSERT ON afo_independent_decisions "
+                "WHEN NEW.decision_id='" + key + "' BEGIN SELECT RAISE(ABORT,'PRIVATE_INTENT_ABORT'); END"
+            )
+        import sqlite3
+    
+        with pytest.raises(sqlite3.IntegrityError, match="PRIVATE_INTENT_ABORT"):
+&gt;           B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)
+
+tests/test_owner_bootstrap_reconciliation.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+forge_factory/afo/owner_profile_bootstrap.py:140: in bootstrap
+    return _coordinate(
+forge_factory/afo/owner_profile_bootstrap.py:336: in _coordinate
+    consume(c, store, record, reconciliation_ref, row[0], native_before, guard)
+forge_factory/afo/owner_bootstrap_reconciliation.py:310: in consume
+    validate(c, store, record, value["request"], native)
+forge_factory/afo/owner_bootstrap_reconciliation.py:250: in validate
+    require(evidence.get("ledger_before") == evidence.get("ledger_after") == ledger, "RECONCILIATION_LEDGER_HISTORY_CHANGED")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ok = False, code = 'RECONCILIATION_LEDGER_HISTORY_CHANGED'
+
+    def require(ok, code):
+        if not ok:
+&gt;           raise Refused("OWNER_BOOTSTRAP_" + code)
+E           forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_RECONCILIATION_LEDGER_HISTORY_CHANGED:
+
+forge_factory/afo/owner_profile_bootstrap.py:28: Refused</failure></testcase></testsuite></testsuites>

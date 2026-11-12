@@ -1,0 +1,22 @@
+{
+  "returncode": 0,
+  "facts": {
+    "ns/user": {
+      "errno": 13
+    },
+    "ns/pid": {
+      "errno": 13
+    },
+    "uid_map": [
+      "         0 4294967295 4294967295"
+    ],
+    "self_uid_map": [
+      "         0       1000          1"
+    ],
+    "self_pid_ns": "pid:[4026531836]"
+  },
+  "stderr": "",
+  "host_initial_pid_namespace": "pid:[4026531836]",
+  "host_initial_user_namespace": "user:[4026531837]",
+  "effect": "PRIVATE_CPU_ONLY_READ_KERNEL_FACTS"
+}

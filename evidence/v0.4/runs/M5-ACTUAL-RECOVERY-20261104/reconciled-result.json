@@ -1,0 +1,59 @@
+{
+  "schema": "forge-c/watchdog169-actual-drill-reconciled/1",
+  "status": "PASS_ACTUAL_ENABLED_TIMER_FAILED_CONDUCTOR_RECOVERY_ONLY",
+  "original_measurement": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/watchdog169-actual-drill-20261104T234119Z/measurement.json",
+  "original_measurement_sha256": "43779fb2c2513d4646e1e9fa12230093991ff0613a13f0c2865a3730ea6f7972",
+  "original_postprocessing_error": "journalctl did not parse the original ISO --since argument; original failure status retained unchanged. Existing timer recovery, heartbeat and history had already passed. This read-only reconciliation captures normal journal JSON timestamps.",
+  "timer_triggered_recovery": {
+    "realtime_us": "1793835734607291",
+    "invocation_id": "75d3d7d515064f07a32d34b1e644065f",
+    "message": {
+      "ok": false,
+      "code": "LINE_UNIT_NOT_ACTIVE",
+      "unit": "forge-line-conductor-local.service",
+      "recovery": {
+        "action": "START_REQUESTED",
+        "returncode": 0,
+        "epoch": 1,
+        "next_probe": 1793836334.1993937
+      }
+    }
+  },
+  "watchdog_messages_after_fault": [
+    {
+      "realtime_us": "1793835734607291",
+      "invocation_id": "75d3d7d515064f07a32d34b1e644065f",
+      "message": {
+        "ok": false,
+        "code": "LINE_UNIT_NOT_ACTIVE",
+        "unit": "forge-line-conductor-local.service",
+        "recovery": {
+          "action": "START_REQUESTED",
+          "returncode": 0,
+          "epoch": 1,
+          "next_probe": 1793836334.1993937
+        }
+      }
+    }
+  ],
+  "conductor_now": {
+    "Restart": "always",
+    "MainPID": "2866337",
+    "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/controller-local-finite-d77709f4/factory/python",
+    "KillMode": "process",
+    "ActiveState": "active"
+  },
+  "observed_mode": "OBSERVE",
+  "intent_mode": "RUNNING",
+  "intent_epoch": 1,
+  "recoveries": 1,
+  "next_recovery_epoch": 1793836334.1993937,
+  "native_model_calls": 0,
+  "queue_mission_history_spend_identical": true,
+  "no_manual_recovery_start": true,
+  "restart_restored": "always",
+  "other_authored_fault_drills": "NOT_RUN",
+  "real_role_qualification": "NOT_RUN_CAPA170_NATIVE_SOURCE_HOLD",
+  "installed_artifact": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+  "source_or_policy_or_recipe_promotion": "NONE_MANUAL_QUALIFIED_ARTIFACT_INSTALLATION_WITH_EXISTING_REVIEWED_RECIPE"
+}

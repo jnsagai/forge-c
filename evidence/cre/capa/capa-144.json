@@ -1,0 +1,101 @@
+{
+ "CAPA-144": {
+  "history": [
+   {
+    "at": "2026-11-04T09:23:12.156615Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[\"INC-LOCAL-ACT-SMOKE-20261104\"]",
+    "from_state": null,
+    "reason": "ACT model-swap smoke falsely refuses healthy Qwen because two newline-free model-list replies are accumulated in one logfile",
+    "seq": 1057,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T09:23:12.246659Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1058,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:23:12.427395Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-144 assigned",
+    "seq": 1059,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:23:16.915544Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[\"reproducer-run:rr-179d944ccfc24600d494\", \"reproducer-run:rr-7cb84e3b36bcb319b012\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1060,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T09:23:16.942128Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[\"git:211f1162f081..6dd3f516b368\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 6dd3f516b368 (patch 4119 bytes)",
+    "seq": 1061,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T09:30:14.419578Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[\"reproducer-run:rr-2d1dd1aa8873a5b22efd\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-144 absent at 6dd3f516b368",
+    "seq": 1077,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T09:30:14.472030Z",
+    "capa_id": "CAPA-144",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1078,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-38129301404c89ee14126df0a87f2343effd2f76",
+   "211f1162f0815ba244015292a911f6ce1cb09bdc",
+   "6dd3f516b368a13c9b5b2f3f098838b65949c72f",
+   "pd-ba7d2a49855fe3e2b43e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<6dd3f516b368"
+   ],
+   "candidate_patch_sha256": "6e888e263d21c3deb12945bb24f28b9b2edb8f8962a17a6bd600993058f01cff",
+   "capa_id": "CAPA-144",
+   "created_at": "2026-11-04T09:23:12.156615Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-LOCAL-ACT-SMOKE-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-144",
+   "reproducer_id": "RPR-144",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-179d944ccfc24600d494",
+    "reproducer-run:rr-7cb84e3b36bcb319b012"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "ShellHost.stack must preserve full logs but return only the current invocation, including empty-output refusal control",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T09:30:14.472030Z"
+  }
+ }
+}

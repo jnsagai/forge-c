@@ -1,0 +1,2 @@
+/mnt/data/forge-c/benchmarks/ornith-speed-20261031/trials/author_c-r2-off/candidate.c:15:42: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int'
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /mnt/data/forge-c/benchmarks/ornith-speed-20261031/trials/author_c-r2-off/candidate.c:15:42

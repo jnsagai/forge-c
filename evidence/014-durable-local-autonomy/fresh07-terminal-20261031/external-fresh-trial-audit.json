@@ -1,0 +1,209 @@
+{
+  "archive": {
+    "remote_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-f83452175591716f-a1/forge-c-WO-AFO-f83452175591716f-a1-review.zip",
+    "sha256": "8a02a83573cf5d47c8c6078af9e2322c3d5dbd7a5483345d389f162b3280e103"
+  },
+  "at": "2026-10-31T07:11:37.164397+00:00",
+  "auditor_revision": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "automatic_factory_handoff": "NOT_QUALIFIED; inherited capacity backoff required external administrative retries before07 and08",
+  "candidate_execution_by_auditor": false,
+  "candidate_hashes": {
+    "software/ll/stm32n6xx_ll_crc.h": "70d5558762d299a8ce664dc0aa589b42c77425e969ec365e5430badbbaced689"
+  },
+  "cohort_sha256": "a14bfe74a0365a47360a630e09cdaec0338b10385ecb8be7a1b4d3389d18e759",
+  "cohort_status": "TWO_OF_THREE_QUALIFIED; ONE_OTHER_NOT_YET_QUALIFIED",
+  "conditions": {
+    "1": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "2": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "3": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "4": {
+      "basis": "All six attempt outcomes recorded; SWE.6 author HTTP429 failures, trace-only available artifacts and missing report remain explicit gaps, not complete SWE.6 delivery.",
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "5": {
+      "basis": "External session observation: zero post-launch job interventions/steering. Administrative retry of07 occurred before07launch; retry08 after07terminal is separately disclosed.",
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "6": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "7": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    },
+    "8": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-negative-control-index.json",
+          "sha256": "62f2e058492327f0cfb9f6d19b88cd8d62744ffaf00603ede5fd07ec1e85d88e"
+        }
+      ],
+      "status": "PASS"
+    },
+    "9": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-observation.json",
+          "sha256": "e1c00a64bbc896cf93d5dfab462f5c73b958b916038848c92bc5360ec3b06709"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native07-terminal-source-audit.json",
+          "sha256": "3558ebf279180737574f32b4b116d0e51ad30ab3e6a843348172f398cee83c61"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "gap_count": 35,
+  "gates": {
+    "SWE.1": "PASS",
+    "SWE.2": "PASS",
+    "SWE.3": "REWORK",
+    "SWE.4": "REWORK",
+    "SWE.5": "REINSPECT",
+    "SWE.6": "REWORK"
+  },
+  "metrics": {
+    "author_role_output_tokens": 194067,
+    "corrections": 0,
+    "native_usage": {
+      "timing": {
+        "active_time_ms": 6559004,
+        "inference_time_ms": 6333039,
+        "tool_time_ms": 225965,
+        "wall_time_ms": 7532944
+      },
+      "usage": {
+        "tokens": {
+          "cache_read": 11835530,
+          "cache_write": 0,
+          "input": 906238,
+          "output": 321796,
+          "reasoning": 0
+        }
+      }
+    },
+    "post_launch_job_interventions": 0,
+    "reasoning_breakdown": "UNKNOWN; provider0 is not a measurement of hidden reasoning",
+    "request_ledger_entries": 264
+  },
+  "model_calls_by_auditor": 0,
+  "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+  "observer_limits": "Session-scoped intervention observation, not a general tamper-proof detector",
+  "order_id": "afo-f83452175591716f",
+  "phase_delivery_limits": [
+    "SWE.5 inspection record missing after stage timeout",
+    "SWE.6 authors attempted but HTTP429 blocked, no executed Robot verification/report; trace files only",
+    "All35strict gaps retained; no full pipeline artifact-completion claim"
+  ],
+  "phase_file_counts": {
+    "SWE.1": 3,
+    "SWE.2": 8,
+    "SWE.3": 9,
+    "SWE.4": 3,
+    "SWE.5": 5,
+    "SWE.6": 2
+  },
+  "process_qualification": "GAPS",
+  "producer": "CODEX_EXTERNAL_OBSERVER_NOT_OWNER_RELEASE_AUTHORITY",
+  "release_eligibility": "BLOCKED",
+  "remaining_claims_not_established": [
+    "full LL/HAL",
+    "strict release",
+    "production",
+    "assessed ASPICE",
+    "generic drivers",
+    "learning benefit",
+    "24/7 availability",
+    "three-run repeatability"
+  ],
+  "result": "FUNCTIONAL_MILESTONE_PASS",
+  "schema": "forge-c/delivery-first-fresh-trial-audit/1",
+  "scope": "ONLY_PREREGISTERED_CRC_IDR_TWO_FUNCTIONS",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "trial_request_id": "DF-AFO-CRC-IDR-20261030-07"
+}

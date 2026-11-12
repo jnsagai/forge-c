@@ -1,0 +1,90 @@
+{
+  "history": [
+    {
+      "at": "2026-11-05T00:02:37.130910Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[\"CAPA-171\"]",
+      "from_state": null,
+      "reason": "Independent actual normal SDK/Matrix4 WWDG host-only target timing false credit; source/history/frozen contracts preserved.",
+      "seq": 1288,
+      "to_state": "OPEN"
+    },
+    {
+      "at": "2026-11-05T00:02:37.162044Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[]",
+      "from_state": "OPEN",
+      "reason": "triage by RULE",
+      "seq": 1289,
+      "to_state": "TRIAGED"
+    },
+    {
+      "at": "2026-11-05T00:02:37.336409Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[]",
+      "from_state": "TRIAGED",
+      "reason": "reproducer RPR-171 assigned",
+      "seq": 1290,
+      "to_state": "REPRODUCER_PENDING"
+    },
+    {
+      "at": "2026-11-05T00:02:41.755996Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[\"reproducer-run:rr-fabf9a7d53289559f80c\", \"reproducer-run:rr-0a663d998586b97f0fb3\"]",
+      "from_state": "REPRODUCER_PENDING",
+      "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+      "seq": 1291,
+      "to_state": "CAUSE_VERIFIED"
+    },
+    {
+      "at": "2026-11-05T00:02:41.786014Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[\"git:edff27525b83..12dbbed2d674\"]",
+      "from_state": "CAUSE_VERIFIED",
+      "reason": "fix 12dbbed2d674 (patch 61883 bytes)",
+      "seq": 1292,
+      "to_state": "FIX_CANDIDATE"
+    },
+    {
+      "at": "2026-11-05T00:04:41.446525Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[\"reproducer-run:rr-89e9593acc5f40c28a0d\"]",
+      "from_state": "FIX_CANDIDATE",
+      "reason": "prevention test prevention:RPR-171 absent at 12dbbed2d674",
+      "seq": 1293,
+      "to_state": "PREVENTION_TESTED"
+    },
+    {
+      "at": "2026-11-05T00:04:41.468506Z",
+      "capa_id": "CAPA-171",
+      "evidence": "[]",
+      "from_state": "PREVENTION_TESTED",
+      "reason": "observation window opened",
+      "seq": 1294,
+      "to_state": "EFFECTIVENESS_OBSERVING"
+    }
+  ],
+  "link_rows": [
+    {
+      "at": "2026-11-05T00:02:41.745038Z",
+      "capa_id": "CAPA-171",
+      "kind": "BASELINE_REVISION",
+      "ref": "edff27525b8331af7ce943de0490172c9fc180c5",
+      "seq": 734
+    },
+    {
+      "at": "2026-11-05T00:02:41.750233Z",
+      "capa_id": "CAPA-171",
+      "kind": "FIX_REVISION",
+      "ref": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+      "seq": 735
+    },
+    {
+      "at": "2026-11-05T00:04:41.490528Z",
+      "capa_id": "CAPA-171",
+      "kind": "PROMOTION_DECISION",
+      "ref": "pd-28a5094a58675e3bbff2",
+      "seq": 736
+    }
+  ]
+}

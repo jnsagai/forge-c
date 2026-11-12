@@ -1,0 +1,48 @@
+{
+  "command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_host_check_identity.py factory/python/tests/test_cre_capa_013_015.py factory/python/tests/test_easa_swtrace.py factory/python/tests/test_peripheral_prompts.py factory/python/tests/test_m2_mcp.py factory/python/tests/test_delivery_first_scenario_contract.py -k 'not real_robot' --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/host-check-identity-6a4721ec.xml",
+  "generation_performed": false,
+  "initial_test_version": "Seven cases before final fixture expansion; not the final test file",
+  "qwen_output_executed_locally": false,
+  "receipt_representations": {
+    "initial-before.xml": {
+      "decoded_sha256": "c22f3b686d15bb21785600db8f654b39124ddf3727acd44da816f77ec6323b50",
+      "encoding": "gzip",
+      "stored_as": "initial-before.xml.gz",
+      "stored_sha256": "85d934e93ffe033015540f064fc2133952cac10a2d41b5e22774d2a4e3f26c94"
+    }
+  },
+  "runtime_activation": "NOT_RUN",
+  "schema": "forge-c/local-regression-evidence/1",
+  "source_sha256": {
+    "factory/python/forge_factory/mcp/servers/tests.py": "493f22f50870239667eb5847b5eceb77a3e58b81554c4dfdfb58d370a3d1842d",
+    "factory/python/forge_factory/workflow/prompts.py": "699a4118b6a6c166ade6afe9edcc316fce3463e8444479675309757355291052",
+    "factory/python/tests/test_host_check_identity.py": "f7d6a87cbbc18a6ac63077fc1bc21371a581da4773717a1ddd282ee06c372704"
+  },
+  "summaries": {
+    "exact-6a4721ec.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "1",
+        "tests": "91",
+        "time": "34.320",
+        "timestamp": "2026-10-31T08:27:02.049949+00:00"
+      }
+    ],
+    "initial-before.xml": [
+      {
+        "errors": "0",
+        "failures": "4",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "7",
+        "time": "1.022",
+        "timestamp": "2026-10-31T08:23:56.238145+00:00"
+      }
+    ]
+  },
+  "tested_revision": "6a4721ecbef8c85326dfd101811c232f6258174e"
+}

@@ -1,0 +1,5 @@
+{"target": "SWE.2", "decision": "RETURN", "return_to": "SWE.3"}
+{"target": "SWE.2", "decision": "FIX", "return_to": null}
+SYMPTOM_ABSENT
+
+--- stderr ---

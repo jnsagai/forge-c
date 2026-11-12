@@ -1,0 +1,71 @@
+........................................F............................... [ 80%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+_ test_real_model_free_conductor_continues_without_engineering_authority_then_honors_stop _
+
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-core-stop-3015e47-v5/tmp/pytest-of-root/pytest-0/test_real_model_free_conductor0')
+
+    def test_real_model_free_conductor_continues_without_engineering_authority_then_honors_stop(tmp_path):
+        import os
+        import subprocess
+        import sys
+        from forge_factory.common import REPO_ROOT
+        from forge_factory.afo.queue import Store
+    
+        private = tmp_path / "operations"
+        private.mkdir(mode=0o700)
+        intent = Intent(private / "intent.json")
+        intent.set("RUNNING", actor="owner-fixture", reason="isolated control-plane continuity", initialize=True)
+        state = tmp_path / "state"
+        store = Store(state / "conductor/conductor.sqlite3")
+        from forge_factory.afo.mission_ledger import MissionLedger
+    
+        ledger = MissionLedger(store)
+        ledger.register(
+            "exhausted-fixture",
+            "isolated-expired-fixture",
+            dict(max_attempts=0, max_jobs=0, max_requests=0, max_tokens=0, max_tools=0, max_corrections=0, deadline=0),
+            "EXPIRED_OFFLINE_FIXTURE",
+            authorize=lambda *_: True,
+        )
+        before = ledger.snapshot("exhausted-fixture")
+        env = {
+            **os.environ,
+            "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+            "FORGE_STATE_DIR": str(state),
+            "FORGE_OPERATIONS_INTENT": str(intent.path),
+            "FORGE_AFO_POLICY": str(tmp_path / "missing-policy.yaml"),
+            "FORGE_DURABLE_AUTONOMY": "1",
+            "FORGE_FABRO_URL": "http://127.0.0.1:9/api/v1",
+            "FORGE_FABRO_STORAGE": str(tmp_path / "empty-native-storage"),
+        }
+        for key in ("NOTIFY_SOCKET", "WATCHDOG_PID", "WATCHDOG_USEC"):
+            env.pop(key, None)
+        log = tmp_path / "conductor.log"
+        with log.open("wb") as stream:
+            proc = subprocess.Popen(
+                [sys.executable, "-m", "forge_factory.afo.conductor", "--interval", "0.1"],
+                env=env,
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+            try:
+                heartbeat = state / "afo/conductor.heartbeat"
+                until = time.monotonic() + 20
+                observed = None
+                while time.monotonic() < until:
+                    if heartbeat.is_file():
+                        observed = json.loads(heartbeat.read_text())
+                        if observed["cycle"] >= 2 and observed["ok"]:
+                            break
+                    if proc.poll() is not None:
+                        break
+                    time.sleep(0.05)
+>               assert observed and observed["cycle"] >= 2 and observed["ok"], log.read_text()
+E               AssertionError: 
+E               assert ({'cycle': 191, 'detail': 'QueueError: DURABLE_DATA_VOLUME_NOT_READY', 'epoch': 1793293643.146354, 'mode': 'UNKNOWN', ...} and 191 >= 2 and False)
+
+factory/python/tests/test_da014_integration.py:927: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_integration.py::test_real_model_free_conductor_continues_without_engineering_authority_then_honors_stop

@@ -1,0 +1,82 @@
+{
+ "at": "2026-10-31T13:43:31.625929Z",
+ "case": {
+  "READ_IDR_RETURNS": "SWR-002",
+  "WRITE_IDR_STORES": "SWR-001"
+ },
+ "files": [
+  "safety/software_safety_requirements.md",
+  "traceability/requirements_to_tests.csv",
+  "traceability/upstream_gaps.md",
+  "workproducts/SWE.1/register_effects.json",
+  "workproducts/SWE.1/software_requirements.md"
+ ],
+ "open_points": {
+  "OP-33d78b12ee1af8ba": {
+   "packet_input_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+   "record_sha256": "ccb81da5ff3dca4dacf7ed33860aa11e3dd0b6fc3b4b1759fc022129408d2f6c",
+   "register": "CRC_IDR",
+   "source_file": "inputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md",
+   "source_section": "26.4.2",
+   "task": "requirements:CRC_IDR",
+   "text": "The source specifies CRC_IDR.IDR as bits 31:0 with reset value 0x0000 0000 but does not require any requirement for the reset value within this write/read slice, so no reset/startup requirement is generated here.",
+   "text_sha256": "ae61c00fa87806e4d98f69255761cac210ff749b9e2d5bd89c3f6f9669be826d"
+  },
+  "OP-ab553c2573d3e2ee": {
+   "packet_input_hash": "4cb35d34720caf938bf08f10e785a1af6907ff7968f1885705ed0f847a6cfb7b",
+   "record_sha256": "d669d11da8f2e13d7177aad063c4191a875ef5ab098f4c52f6c84b08de2b0298",
+   "task": "requirements:crosscutting",
+   "text": "Caller-owned clock, power, security and register-access setup is a precondition and is not specified or verified by these LL functions.",
+   "text_sha256": "2b047d85463b77151ddcecf785ea48944842ca6bb561a4d7588827f1b5b23b41"
+  },
+  "OP-b911bc936110a35f": {
+   "packet_input_hash": "4cb35d34720caf938bf08f10e785a1af6907ff7968f1885705ed0f847a6cfb7b",
+   "record_sha256": "d669d11da8f2e13d7177aad063c4191a875ef5ab098f4c52f6c84b08de2b0298",
+   "task": "requirements:crosscutting",
+   "text": "No failure-handling or error-return contract is specified, as invalid pointers and inaccessible hardware fall outside the supported invocation domain defined by the work order.",
+   "text_sha256": "6142b84830ceb9fe543c372990df1cfec6618b2c89e2442f754f88192a8e4d57"
+  },
+  "OP-c93b0603aa6dc8da": {
+   "packet_input_hash": "4cb35d34720caf938bf08f10e785a1af6907ff7968f1885705ed0f847a6cfb7b",
+   "record_sha256": "d669d11da8f2e13d7177aad063c4191a875ef5ab098f4c52f6c84b08de2b0298",
+   "task": "requirements:crosscutting",
+   "text": "The write and read of CRC_IDR.IDR are covered by the CRC_IDR task and are outside the scope of this cross-cutting work order slice.",
+   "text_sha256": "8430e8a4c3724df29489b0af7aa83afa6b5c04d2f01ed53052baf4a8e777cbd0"
+  }
+ },
+ "schema": "forge-c/lrtx-swe1-assembly/1",
+ "swr": {
+  "SWR-001": {
+   "key": "write_idr_stores_value",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-002": {
+   "key": "read_idr_returns_current_value",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-003": {
+   "key": "no_autonomous_startup_writes",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-004": {
+   "key": "budget_flash",
+   "task": "budgets"
+  },
+  "SWR-005": {
+   "key": "budget_static_ram",
+   "task": "budgets"
+  },
+  "SWR-006": {
+   "key": "budget_stack",
+   "task": "budgets"
+  },
+  "SWR-007": {
+   "key": "budget_simulation_cpu",
+   "task": "budgets"
+  },
+  "SWR-008": {
+   "key": "budget_simulation_time",
+   "task": "budgets"
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+  "candidate": "7f55de5c10a413bb251e91d8c6b9f4d61481df47",
+  "baseline": "d5024d62842b276c4a81fd51ed399704c7fc43cb",
+  "decision_id": "pd-4b59475597a0ce939448",
+  "prevention": 175,
+  "all_prevention_logs_hash_verified": true,
+  "focused_pass": 49,
+  "design_pass": 14,
+  "new_files_ruff": "PASS",
+  "isolation": "bubblewrap",
+  "cpu_jobs": 1,
+  "all12_inputs_copied_before_pooled_tests": true,
+  "causal": "NOT_RUN_NOT_APPLICABLE_FOR_CHANGE",
+  "source_activation_scope": "Two read-only floor units only; no factory authority/model/policy changes",
+  "limits": [
+    "No role competence or mission qualification implied by this monitor.",
+    "Last-reported model is not a provider-current proof.",
+    "Desired RUNNING is not a running product job."
+  ]
+}

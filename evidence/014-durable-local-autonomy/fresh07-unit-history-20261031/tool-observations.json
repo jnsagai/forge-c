@@ -1,0 +1,176 @@
+{
+  "at": "2026-10-31T06:03:27.892839Z",
+  "candidate_execution_by_observer": false,
+  "model_calls_by_observer": 0,
+  "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+  "tools": [
+    {
+      "at": "2026-10-31T05:56:55.186614101Z",
+      "event_sha256": "f1ec36cb9023e5759d567442ab4a5615bc825b8ebc59b12ae4b559371d322ec3",
+      "is_error": false,
+      "node": "swe4_test_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [
+          "DUPLICATE_TEST_ID:UT-002:used by 4 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-004:used by 4 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-005:used by 5 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-006:used by 2 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-007:used by 4 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-008:used by 3 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-009:used by 2 checks - give each check its own id"
+        ],
+        "metrics": {
+          "environment": "host",
+          "executables": 1,
+          "failed": 1,
+          "passed": 1,
+          "target_evidence": false
+        },
+        "status": "FAIL",
+        "summary": "unit: 1 passed, 1 failed (HOST)"
+      },
+      "tool": "mcp__forge_tests_mcp__run_unit"
+    },
+    {
+      "at": "2026-10-31T05:59:07.631242686Z",
+      "event_sha256": "f64082016d5e86ba930f8778e39535937df75481f90fdec5f6a706196418a8eb",
+      "is_error": false,
+      "node": "swe4_test_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "environment": "host",
+          "executables": 1,
+          "failed": 0,
+          "passed": 1,
+          "target_evidence": false
+        },
+        "status": "PASS",
+        "summary": "unit: 1 passed, 0 failed (HOST)"
+      },
+      "tool": "mcp__forge_tests_mcp__run_unit"
+    },
+    {
+      "at": "2026-10-31T05:59:11.385381477Z",
+      "event_sha256": "deb628d613a373234d772afb50c0ddfb8d4b5a03eaec630a7ec012b710a7f3d9",
+      "is_error": false,
+      "node": "swe4_test_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "branch_pct": null,
+          "environment": "host",
+          "function_pct": 100.0,
+          "line_pct": 100.0,
+          "mcdc_pct": null,
+          "region_pct": 100.0,
+          "target_evidence": false
+        },
+        "status": "PASS",
+        "summary": "line 100.0% branch None% MC/DC None% (host)"
+      },
+      "tool": "mcp__forge_tests_mcp__llvm_coverage"
+    },
+    {
+      "at": "2026-10-31T06:00:00.811900138Z",
+      "event_sha256": "d353e31b869192557381d36fa9ebc4503b8cf5eadae98fca76dd66b5d6e7c469",
+      "is_error": false,
+      "node": "swe4_test_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "planned_test_links": 5,
+          "requirements": 14,
+          "rows": 14,
+          "test_files_required": true,
+          "traced": 14
+        },
+        "status": "PASS",
+        "summary": "14/14 requirements traced; 5 test links planned (test files are due at SWE.4)"
+      },
+      "tool": "mcp__forge_evidence_mcp__validate_trace"
+    },
+    {
+      "at": "2026-10-31T06:01:15.792319880Z",
+      "event_sha256": "0eaec061b5843a86102cc40525e7dfcebb3767999bc6ad0b4c976997797e9ab1",
+      "is_error": false,
+      "node": "swe4_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "environment": "host",
+          "executables": 1,
+          "failed": 0,
+          "passed": 1,
+          "target_evidence": false
+        },
+        "status": "PASS",
+        "summary": "unit: 1 passed, 0 failed (HOST)"
+      },
+      "tool": "mcp__forge_tests_mcp__run_unit"
+    },
+    {
+      "at": "2026-10-31T06:01:23.819055318Z",
+      "event_sha256": "64983b560c7f69b555eaec1b0adba998d4770ba24cbdc34614d9b621d8a81ff3",
+      "is_error": false,
+      "node": "swe4_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "planned_test_links": 5,
+          "requirements": 14,
+          "rows": 14,
+          "test_files_required": true,
+          "traced": 14
+        },
+        "status": "PASS",
+        "summary": "14/14 requirements traced; 5 test links planned (test files are due at SWE.4)"
+      },
+      "tool": "mcp__forge_evidence_mcp__validate_trace"
+    },
+    {
+      "at": "2026-10-31T06:01:24.228927849Z",
+      "event_sha256": "d8f20adb71e7443b71eb7f5b8c3a0dea4111f26b58411d644eb8255a722ce96f",
+      "is_error": false,
+      "node": "swe4_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "branch_pct": null,
+          "environment": "host",
+          "function_pct": 100.0,
+          "line_pct": 100.0,
+          "mcdc_pct": null,
+          "region_pct": 100.0,
+          "target_evidence": false
+        },
+        "status": "PASS",
+        "summary": "line 100.0% branch None% MC/DC None% (host)"
+      },
+      "tool": "mcp__forge_tests_mcp__llvm_coverage"
+    },
+    {
+      "at": "2026-10-31T06:03:00.706797709Z",
+      "event_sha256": "1414c3d8b7b471712de3b78557ebd42a67e61aea499a95688ab195f252a1c552",
+      "is_error": false,
+      "node": "swe4_author",
+      "output_type": "dict",
+      "result": {
+        "issues": [],
+        "metrics": {
+          "bytes": 5996
+        },
+        "status": "PASS",
+        "summary": "markdown: 0 issues"
+      },
+      "tool": "mcp__forge_docs_mcp__validate_artifact"
+    }
+  ]
+}

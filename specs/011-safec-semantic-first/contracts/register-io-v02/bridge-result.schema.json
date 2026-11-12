@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:feature-011:safec-bridge-result:1:register-io-0.2",
+  "title": "SafeC Forge bridge result \u2014 register-io-0.2 interface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "input_sha256",
+    "engine",
+    "status",
+    "findings",
+    "evidence_sha256",
+    "output_artifacts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/safec-bridge-result/1"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_commit_sha",
+        "binary_sha256",
+        "semantic_profile"
+      ],
+      "properties": {
+        "source_commit_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "binary_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "semantic_profile": {
+          "type": "string",
+          "enum": [
+            "register-io-0.2"
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE",
+        "UNSUPPORTED",
+        "STALE",
+        "ERROR"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "finding_id",
+          "check_id",
+          "target_id",
+          "source_fact_ids",
+          "message",
+          "severity"
+        ],
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "check_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "source_fact_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "minor",
+              "major",
+              "critical"
+            ]
+          },
+          "expected": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "observed": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "suggested_repair": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        }
+      },
+      "uniqueItems": true
+    },
+    "evidence_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "sha256",
+          "kind"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "validated_contract",
+              "source_trace",
+              "test_oracle",
+              "formal_analysis",
+              "formal_obligations",
+              "candidate_verification",
+              "tool_manifest"
+            ]
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 1024
+      }
+    },
+    "measured": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wall_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cpu_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "peak_rss_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

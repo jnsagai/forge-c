@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-31T07:56:14.666724Z",
+  "attempts": [
+    {
+      "at": "2026-10-31T07:55:56.115432Z",
+      "result": {
+        "serving_settlement": {
+          "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+          "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+          "observed_at": "2026-10-31T07:55:54.270227Z",
+          "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+        },
+        "settled": false,
+        "unresolved_native_jobs": [
+          "afo-product-db4a6451b1d049d5966ddcc2"
+        ]
+      }
+    },
+    {
+      "at": "2026-10-31T07:56:01.277349Z",
+      "result": {
+        "serving_settlement": {
+          "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+          "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+          "observed_at": "2026-10-31T07:56:01.145846Z",
+          "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+        },
+        "settled": false,
+        "unresolved_native_jobs": [
+          "afo-product-db4a6451b1d049d5966ddcc2"
+        ]
+      }
+    },
+    {
+      "at": "2026-10-31T07:56:07.123671Z",
+      "result": {
+        "serving_settlement": {
+          "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+          "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+          "observed_at": "2026-10-31T07:56:06.950345Z",
+          "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+        },
+        "settled": false,
+        "unresolved_native_jobs": [
+          "afo-product-db4a6451b1d049d5966ddcc2"
+        ]
+      }
+    },
+    {
+      "at": "2026-10-31T07:56:14.666698Z",
+      "result": {
+        "serving_settlement": {
+          "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+          "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+          "observed_at": "2026-10-31T07:56:12.263618Z",
+          "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+        },
+        "settled": true,
+        "unresolved_native_jobs": []
+      }
+    }
+  ],
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "renewed": false,
+  "settled": true
+}

@@ -64,7 +64,11 @@ def new_attempt(store: Store, order_id: str, *, plan_id: str, epoch: int, max_at
         o = c.execute("SELECT state FROM afo_work_orders WHERE order_id=?", (order_id,)).fetchone()
         if o is None or o["state"] != "WAITING_RECOVERY":
             raise QueueError("NOT_WAITING_RECOVERY", order_id)
-        n = c.execute("SELECT COUNT(*) FROM afo_attempts WHERE order_id=?", (order_id,)).fetchone()[0]
+        prior = c.execute('SELECT attempt_id,record FROM afo_attempts WHERE order_id=?', (order_id,)).fetchall()
+        existing = next((r['attempt_id'] for r in prior if json.loads(r['record']).get('recovery_plan_id') == plan_id), None)
+        if existing:
+            return existing
+        n = len(prior)
         if n >= max_attempts:
             raise QueueError("ORDER_ATTEMPT_BUDGET_EXHAUSTED", f"{n} >= {max_attempts}")
         seq = n + 1

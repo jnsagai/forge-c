@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-30T02:46:48.093642Z",
+  "job_state": "RUNNING",
+  "job_id": "afo-agent-61401956787984d8c097bc36",
+  "run_id": "01M65A075HQ97KJXSG6A1Z9KC6",
+  "head": "b64f64daf03aec12d72a5513fa322426cf9c93bd",
+  "parent_equal": true,
+  "tree_equal": true,
+  "message_equal": false,
+  "expected_message_repr": "'AFO maintainer candidate mnt-7e653513a54375a5-a1-r1: Preserved profile_context_tokens fix and time.monotonic call-path repair in structured.py; reworked candidate reproducer so its final stdout line is exactly SYMPTOM_PRESENT:<suffix> (exit 1 baseline) '",
+  "actual_message_repr": "'AFO maintainer candidate mnt-7e653513a54375a5-a1-r1: Preserved profile_context_tokens fix and time.monotonic call-path repair in structured.py; reworked candidate reproducer so its final stdout line is exactly SYMPTOM_PRESENT:<suffix> (exit 1 baseline)'",
+  "expected_len": 253,
+  "actual_len": 252,
+  "trailing_space_only": true,
+  "intent_sha256": "1fac9374b0f7ccaa85b36991569188e78de6b9a7f46293d9018d59ad668d6881",
+  "submission_receipt_exists": false,
+  "model_requests": 0
+}

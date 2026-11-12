@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature013-evidence-check.py"
+  ],
+  "duration_s": 0.022,
+  "exit_code": 2,
+  "git_dirty": true,
+  "git_head": "a477a6d8676f7dc1f75bfef7b04be6eda280d860",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/LA-T005/20261024T205647.log",
+  "log_sha256": "d2a7f423ceb8922f149a0f25d1883c4e9742615c0088268fe71a5e9f3eb7a37c",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "LA-T005",
+  "ts_utc": "2026-10-24T20:56:47.469688Z"
+}

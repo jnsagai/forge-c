@@ -1,0 +1,32 @@
+{
+  "source_revision": "c1f1378733af388b50ba1d6e5de37c16f3c0a9ee",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "pytest_exit_code": 0,
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--rootdir",
+    "/mnt/data/forge-c/production-local-014/deployment/qualification-focused-maintenance-c1f1378-v2/repo",
+    "factory/python/tests/test_mcp_input_schema_metadata.py",
+    "factory/python/tests/test_afo_retained_work_unit.py",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-focused-maintenance-c1f1378-v2/scratch/pytest.xml"
+  ],
+  "started": 1793313397.7478628,
+  "finished": 1793313399.2071037,
+  "model_requests": 0,
+  "gpu_devices_exposed": false,
+  "network": false,
+  "cpu_affinity": [
+    0
+  ],
+  "address_space_limit_bytes": 1073741824,
+  "cpu_seconds_limit": 45,
+  "backend": "bubblewrap",
+  "bundle_sha256": "93533833ae293fcc3ddea9fea96d17063269e073d796899dc1617c02085eae0e",
+  "production_changed": false
+}

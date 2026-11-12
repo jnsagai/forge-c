@@ -1,0 +1,4234 @@
+{
+ "binary": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server (build b1-0f3a71be1, same as speed study)",
+ "gpuq_stop_file": {
+  "created": false,
+  "existed_before": false,
+  "exists_after": false,
+  "reason": "gpuq-runner.sh loops 'while [ ! -f $QD/STOP ]' and exits when STOP exists (header: 'Stop after the current job'). Creating it would have terminated runner PID 2742646, contradicting 'do not stop ... any of them'; removing STOP later would not restart it. Guarded by the 1 s watcher + per-request checks instead.",
+  "removed": "n/a"
+ },
+ "host": "omniverse2 (RTX 6000 Ada 48 GB)",
+ "model": {
+  "alias": "ornith-1.5-35b-a3b-q8",
+  "blob": "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+  "bytes": 37802149280,
+  "hash_basis": "speed-study model-hash-verification.json; size re-checked 37802149280 (ls)",
+  "hash_reverified": false
+ },
+ "owner_authorization": [
+  "2026-10-31 'have a subagent testing Ornith model'",
+  "2026-10-31 'Run, guard GPU queue' (relaxed constraint 1 for listed idle processes)"
+ ],
+ "phases": {
+  "S1-q1": {
+   "ended": 1793449480.586919,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449460.7169163
+    },
+    {
+     "result": "OK",
+     "t": 1793449462.3373466
+    },
+    {
+     "result": "OK",
+     "t": 1793449466.6316252
+    },
+    {
+     "result": "OK",
+     "t": 1793449468.0602083
+    },
+    {
+     "result": "OK",
+     "t": 1793449472.092826
+    },
+    {
+     "result": "OK",
+     "t": 1793449473.821888
+    },
+    {
+     "result": "OK",
+     "t": 1793449479.2928958
+    }
+   ],
+   "phase": "q1",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are vague and lack measurable criteria, so they cannot be objectively ver\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q1-plain-off-s1",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 655.411,
+      "predicted_n": 80,
+      "predicted_per_second": 120.53505357706844,
+      "prompt_ms": 198.949,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 80,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 216
+     },
+     "wall_seconds": 1.311
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-on1024-s1",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2769.662,
+      "predicted_n": 394,
+      "predicted_per_second": 141.89457052882267,
+      "prompt_ms": 76.064,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.398
+    },
+    {
+     "content_eval": {
+      "chars": 207,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable criteria, making them untestable.\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-off-s2",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 2,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 565.633,
+      "predicted_n": 79,
+      "predicted_per_second": 137.8986020971195,
+      "prompt_ms": 93.256,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 79,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 215
+     },
+     "wall_seconds": 1.17
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are qualitative claims with no measurable threshold, so they cannot be\u5ba2\u89c2-\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q1-plain-on1024-s2",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 299,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 2,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2691.078,
+      "predicted_n": 382,
+      "predicted_per_second": 141.57895088882597,
+      "prompt_ms": 74.281,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 382,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 516
+     },
+     "wall_seconds": 3.206
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"Requirements 002 and 004 use subjective, unmeasurable terms ('fast', 'user friendly') with no defined threshold or test.\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-adv-off",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 624,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 690.561,
+      "predicted_n": 79,
+      "predicted_per_second": 112.95164366363001,
+      "prompt_ms": 97.35,
+      "prompt_n": 173
+     },
+     "usage": {
+      "completion_tokens": 79,
+      "prompt_tokens": 173,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 252
+     },
+     "wall_seconds": 1.287
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective with no measurable threshold or acceptance criterion, so a\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-adv-on1024",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 624,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 526,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 4095.711,
+      "predicted_n": 606,
+      "predicted_per_second": 147.7155004344789,
+      "prompt_ms": 77.662,
+      "prompt_n": 171
+     },
+     "usage": {
+      "completion_tokens": 606,
+      "prompt_tokens": 171,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 777
+     },
+     "wall_seconds": 4.828
+    },
+    {
+     "content_eval": {
+      "chars": 307,
+      "content": "```json\n{\n  \"passes\": false,\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"confidence\": 0.92\n}\n```\n\nThe set fails because REQ-002 (\"shall be fast\") and REQ-004 (\"shall be user friendly\") are vague, subjective, and lack measurable or verifiable criteria, whereas REQ-001 and REQ-003 define concrete, testable outcomes.",
+      "factory_parse_note": null,
+      "factory_would_accept": false,
+      "has_think_tag": false,
+      "json_error": "Expecting value: line 1 column 1 (char 0)",
+      "leading_or_trailing_ws": false,
+      "schema_errors": null,
+      "schema_valid": false,
+      "starts_with_fence": true,
+      "strict_json": false
+     },
+     "content_tokens_retokenized": 103,
+     "finish_reason": "stop",
+     "label": "q1-adv-off-CONTROL-no-response_format",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 624,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 687.931,
+      "predicted_n": 104,
+      "predicted_per_second": 149.72431828192072,
+      "prompt_ms": 80.823,
+      "prompt_n": 173
+     },
+     "usage": {
+      "completion_tokens": 104,
+      "prompt_tokens": 173,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 277
+     },
+     "wall_seconds": 1.442
+    }
+   ],
+   "server": "S1",
+   "started": 1793449460.4722545
+  },
+  "S1-q2": {
+   "ended": 1793449597.0415301,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449591.578048
+    },
+    {
+     "result": "OK",
+     "t": 1793449593.9523587
+    },
+    {
+     "result": "OK",
+     "t": 1793449595.8894458
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1708.1
+    },
+    "json_schema": {
+     "errors": [
+      "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+      "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+     ],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": false,
+     "wall_ms": 2387.2
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1617.5
+    },
+    "probed_at": "2026-10-31T12:26:31.325840Z",
+    "selected_mode": "json_object"
+   },
+   "server": "S1",
+   "started": 1793449591.3258376
+  },
+  "S1-q3": {
+   "ended": 1793449570.808161,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449564.6896725
+    },
+    {
+     "result": "OK",
+     "t": 1793449565.9748461
+    },
+    {
+     "result": "OK",
+     "t": 1793449567.4788206
+    },
+    {
+     "result": "OK",
+     "t": 1793449569.1547012
+    },
+    {
+     "result": "OK",
+     "t": 1793449570.2283518
+    }
+   ],
+   "phase": "q3",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 0,
+      "content": "",
+      "factory_parse_note": "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+      "factory_would_accept": false,
+      "has_think_tag": false,
+      "json_error": "Expecting value: line 1 column 1 (char 0)",
+      "leading_or_trailing_ws": false,
+      "schema_errors": null,
+      "schema_valid": false,
+      "starts_with_fence": false,
+      "strict_json": false
+     },
+     "content_tokens_retokenized": 0,
+     "finish_reason": "length",
+     "label": "q3-num-on-unbounded-max64",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 64,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 64,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 413.104,
+      "predicted_n": 64,
+      "predicted_per_second": 152.50396994461445,
+      "prompt_ms": 85.461,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 64,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 199
+     },
+     "wall_seconds": 0.976
+    },
+    {
+     "content_eval": {
+      "chars": 18,
+      "content": "{\n \"x\": 349025,\n \"",
+      "factory_parse_note": "NOT_JSON:Unterminated string starting at: line 3 column 2 (char 17)",
+      "factory_would_accept": false,
+      "has_think_tag": false,
+      "json_error": "Unterminated string starting at: line 3 column 2 (char 17)",
+      "leading_or_trailing_ws": false,
+      "schema_errors": null,
+      "schema_valid": false,
+      "starts_with_fence": false,
+      "strict_json": false
+     },
+     "content_tokens_retokenized": 15,
+     "finish_reason": "length",
+     "label": "q3-num-on-b8-max24",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 7,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 24,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 8,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 151.565,
+      "predicted_n": 24,
+      "predicted_per_second": 151.7500742255798,
+      "prompt_ms": 74.507,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 24,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 159
+     },
+     "wall_seconds": 0.679
+    },
+    {
+     "content_eval": {
+      "chars": 18,
+      "content": "{\n \"x\": 349025,\n \"",
+      "factory_parse_note": "NOT_JSON:Unterminated string starting at: line 3 column 2 (char 17)",
+      "factory_would_accept": false,
+      "has_think_tag": false,
+      "json_error": "Unterminated string starting at: line 3 column 2 (char 17)",
+      "leading_or_trailing_ws": false,
+      "schema_errors": null,
+      "schema_valid": false,
+      "starts_with_fence": false,
+      "strict_json": false
+     },
+     "content_tokens_retokenized": 15,
+     "finish_reason": "length",
+     "label": "q3-num-on-b8-max24-stream",
+     "message_keys": null,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 7,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 24,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      },
+      "temperature": 0.6,
+      "thinking_budget_tokens": 8,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "stream": {
+      "content_deltas": 15,
+      "data_lines": 26,
+      "done": true,
+      "reasoning_deltas": 7,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 152.088,
+      "predicted_n": 24,
+      "predicted_per_second": 151.2282362842565,
+      "prompt_ms": 74.458,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 24,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 159
+     },
+     "wall_seconds": 1.087
+    },
+    {
+     "content_eval": {
+      "chars": 22,
+      "content": "{\n  \"verdict\": \"FAIL\",",
+      "factory_parse_note": "NOT_JSON:Expecting property name enclosed in double quotes: line 2 column 21 (char 22)",
+      "factory_would_accept": false,
+      "has_think_tag": false,
+      "json_error": "Expecting property name enclosed in double quotes: line 2 column 21 (char 22)",
+      "leading_or_trailing_ws": false,
+      "schema_errors": null,
+      "schema_valid": false,
+      "starts_with_fence": false,
+      "strict_json": false
+     },
+     "content_tokens_retokenized": 10,
+     "finish_reason": "length",
+     "label": "q3-review-off-max10",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 10,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 93.679,
+      "predicted_n": 10,
+      "predicted_per_second": 96.07275910289393,
+      "prompt_ms": 93.316,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 10,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 146
+     },
+     "wall_seconds": 0.719
+    },
+    {
+     "doc_is_none": true,
+     "factory_call": {
+      "errors": [
+       "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+       "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+      ],
+      "finish_reason": "length",
+      "format_note": "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+      "raw_chars": 0,
+      "usage": {
+       "completion_tokens": 16,
+       "prompt_tokens": 183,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "total_tokens": 199
+      },
+      "wall_ms": 899.4
+     },
+     "label": "q3-factory-call-reserve16"
+    }
+   ],
+   "server": "S1",
+   "started": 1793449564.4544
+  },
+  "S1-q4": {
+   "ended": 1793449549.8370266,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449494.2395926
+    },
+    {
+     "result": "OK",
+     "t": 1793449511.2676227
+    },
+    {
+     "result": "OK",
+     "t": 1793449514.8416798
+    },
+    {
+     "result": "OK",
+     "t": 1793449523.6702254
+    },
+    {
+     "result": "OK",
+     "t": 1793449532.216806
+    }
+   ],
+   "phase": "q4",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 53,
+      "content": "{\"x\": 487050, \"updated\": 2774293157, \"extracted\": 92}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 34,
+     "finish_reason": "stop",
+     "label": "q4-num-on-b0",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "numeric_correct": true,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 2362,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 0,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 15552.278,
+      "predicted_n": 2399,
+      "predicted_per_second": 154.18963061231287,
+      "prompt_ms": 79.4,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 2399,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2534
+     },
+     "wall_seconds": 16.475
+    },
+    {
+     "content_eval": {
+      "chars": 56,
+      "content": "{\n\"x\": 368269,\n\"updated\": 2775825157,\n\"extracted\": 108\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 39,
+     "finish_reason": "stop",
+     "label": "q4-num-on-b256",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "numeric_correct": false,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 255,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 256,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 1913.869,
+      "predicted_n": 297,
+      "predicted_per_second": 154.66053319218818,
+      "prompt_ms": 74.283,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 297,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 432
+     },
+     "wall_seconds": 2.857
+    },
+    {
+     "content_eval": {
+      "chars": 54,
+      "content": "{\n\"x\": 45613,\n\"updated\": 2789949665,\n\"extracted\": 90\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 37,
+     "finish_reason": "stop",
+     "label": "q4-num-on-b1024",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "numeric_correct": false,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 1023,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 6947.174,
+      "predicted_n": 1063,
+      "predicted_per_second": 152.86791434905763,
+      "prompt_ms": 73.214,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 1063,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1198
+     },
+     "wall_seconds": 7.663
+    },
+    {
+     "content_eval": {
+      "chars": 54,
+      "content": "{\n\"x\": 45613,\n\"updated\": 2789949665,\n\"extracted\": 90\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 37,
+     "finish_reason": "stop",
+     "label": "q4-num-on-b1024-NO-SCHEMA",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "numeric_correct": false,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 1023,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 7032.581,
+      "predicted_n": 1063,
+      "predicted_per_second": 151.0114138749344,
+      "prompt_ms": 73.291,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 1063,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1198
+     },
+     "wall_seconds": 7.666
+    },
+    {
+     "content_eval": {
+      "chars": 53,
+      "content": "{\"x\": 487050, \"updated\": 2774293157, \"extracted\": 92}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 34,
+     "finish_reason": "stop",
+     "label": "q4-num-on-unbounded",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "numeric_correct": true,
+     "prompt_messages_chars": 342,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 2362,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 8192,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "extracted": {
+           "type": "integer"
+          },
+          "updated": {
+           "type": "integer"
+          },
+          "x": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "x",
+          "updated",
+          "extracted"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 15673.688,
+      "predicted_n": 2399,
+      "predicted_per_second": 152.9952618681704,
+      "prompt_ms": 75.956,
+      "prompt_n": 135
+     },
+     "usage": {
+      "completion_tokens": 2399,
+      "prompt_tokens": 135,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2534
+     },
+     "wall_seconds": 16.237
+    }
+   ],
+   "server": "S1",
+   "started": 1793449493.9058511
+  },
+  "S1-q5": {
+   "ended": 1793449585.5247672,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449577.1119204
+    },
+    {
+     "result": "OK",
+     "t": 1793449581.1325085
+    },
+    {
+     "result": "OK",
+     "t": 1793449582.585405
+    },
+    {
+     "result": "OK",
+     "t": 1793449584.0062284
+    }
+   ],
+   "phase": "q5",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 224,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\n    \"REQ-002\",\n    \"REQ-004\"\n  ],\n  \"note\": \"REQ-002 and REQ-004 use subjective terms ('fast' and 'user friendly') with no measurable threshold, so they cannot be un\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 86,
+     "finish_reason": "stop",
+     "label": "q5-stream-on256-usage",
+     "message_keys": null,
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 255,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      },
+      "temperature": 0.6,
+      "thinking_budget_tokens": 256,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "stream": {
+      "content_deltas": 88,
+      "data_lines": 347,
+      "done": true,
+      "reasoning_deltas": 255,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2396.021,
+      "predicted_n": 346,
+      "predicted_per_second": 143.9887213008567,
+      "prompt_ms": 77.244,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 346,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 480
+     },
+     "wall_seconds": 3.077
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are vague and lack measurable criteria, so they cannot be objectively ver\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q5-stream-off-usage",
+     "message_keys": null,
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      },
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "stream": {
+      "content_deltas": 79,
+      "data_lines": 83,
+      "done": true,
+      "reasoning_deltas": 0,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 666.099,
+      "predicted_n": 80,
+      "predicted_per_second": 118.60098874191372,
+      "prompt_ms": 101.245,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 80,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 216
+     },
+     "wall_seconds": 1.287
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are vague and lack measurable criteria, so they cannot be objectively ver\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q5-stream-off-NO-include_usage",
+     "message_keys": null,
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": true,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "stream": {
+      "content_deltas": 79,
+      "data_lines": 82,
+      "done": true,
+      "reasoning_deltas": 0,
+      "usage_chunk_had_empty_choices": null,
+      "usage_chunks": 0
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 648.348,
+      "predicted_n": 80,
+      "predicted_per_second": 121.84814328107745,
+      "prompt_ms": 102.435,
+      "prompt_n": 136
+     },
+     "usage": null,
+     "wall_seconds": 1.237
+    },
+    {
+     "doc": {
+      "answer": "yes",
+      "items": [
+       2,
+       4,
+       6
+      ]
+     },
+     "factory_call": {
+      "errors": [],
+      "finish_reason": "stop",
+      "format_note": null,
+      "raw_chars": 37,
+      "usage": {
+       "completion_tokens": 166,
+       "prompt_tokens": 182,
+       "prompt_tokens_details": {
+        "cached_tokens": 71
+       },
+       "total_tokens": 348
+      },
+      "wall_ms": 1755.0
+     },
+     "label": "q5-factory-call-reserve2048"
+    }
+   ],
+   "server": "S1",
+   "started": 1793449576.8766184
+  },
+  "S1-q6": {
+   "calls": [
+    {
+     "doc": null,
+     "errors": [
+      "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+      "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+     ],
+     "finish_reason": "length",
+     "format_note": "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+     "label": "q6-factory-call-default",
+     "raw_chars": 0,
+     "requirements": null,
+     "usage": {
+      "completion_tokens": 4096,
+      "prompt_tokens": 3840,
+      "prompt_tokens_details": {
+       "cached_tokens": 3838
+      },
+      "total_tokens": 7936
+     },
+     "wall_seconds": 27.88
+    },
+    {
+     "content_eval": {
+      "chars": 9661,
+      "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"xtmr_ctrl_en_start\",\n      \"statement\": \"The XTMR driver shall write XTMR_CTRL.EN to 1 in order to start the counter at the next prescaled clock edge.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL at bits 0:0 equals 1 after xtmr_start is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_EN_START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"write\",\n          \"value\": \"1\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_en_stop\",\n      \"statement\": \"The XTMR driver shall write XTMR_CTRL.EN to 0 in order to stop the counter and hold the counter value.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL at bits 0:0 equals 0 after xtmr_stop is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_EN_STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"write\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_en_read_modify_write\",\n      \"statement\": \"The XTMR driver shall change XTMR_CTRL.EN by read-modify-write without altering the values of the other XTMR_CTRL fields.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL shows that only bits 0:0 change and every other field of XTMR_CTRL remains unchanged after an API call that touches EN.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_EN_RMW\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"write\",\n          \"value\": \"preserve_others\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_dir_config\",\n      \"statement\": \"The XTMR driver shall write XTMR_CTRL.DIR to 0 in order to configure up-counting and to 1 in order to configure down-counting.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL at bits 1:1 equals the requested direction after xtmr_set_direction is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_DIR_CONFIG\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"write\",\n          \"value\": \"0_or_1\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_dir_read_modify_write\",\n      \"statement\": \"The XTMR driver shall change XTMR_CTRL.DIR by read-modify-write without altering the values of the other XTMR_CTRL fields.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL shows that only bits 1:1 change and every other field of XTMR_CTRL remains unchanged after an API call that touches DIR.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_DIR_RMW\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"write\",\n          \"value\": \"preserve_others\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stat_clear_uif\",\n      \"statement\": \"The XTMR driver shall write XTMR_STAT.UIF to 0 in order to clear the update flag.\",\n      \"source_page\": 42,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_STAT at bits 0:0 equals 0 after xtmr_clear_flags is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_STAT_CLEAR_UIF\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"UIF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stat_clear_cc1if\",\n      \"statement\": \"The XTMR driver shall write XTMR_STAT.CC1IF to 0 in order to clear the capture/compare flag.\",\n      \"source_page\": 42,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_STAT at bits 1:1 equals 0 after xtmr_clear_flags is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_STAT_CLEAR_CC1IF\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"CC1IF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stat_clear_ovr\",\n      \"statement\": \"The XTMR driver shall write XTMR_STAT.OVR to 0 in order to clear the overcapture flag.\",\n      \"source_page\": 42,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_STAT at bits 2:2 equals 0 after xtmr_clear_flags is called, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_STAT_CLEAR_OVR\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"OVR\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stat_clear_read_modify_write\",\n      \"statement\": \"The XTMR driver shall clear the XTMR_STAT flags by read-modify-write without altering the values of the other XTMR_STAT fields.\",\n      \"source_page\": 42,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_STAT shows that only the flag bits 0:2 change and every other field of XTMR_STAT remains unchanged after xtmr_clear_flags is called.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_STAT_CLEAR_RMW\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"UIF\",\n          \"op\": \"clear\",\n          \"value\": \"preserve_others\"\n        },\n        {\n          \"case\": \"XTMR_STAT_CLEAR_RMW_CC1IF\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"CC1IF\",\n          \"op\": \"clear\",\n          \"value\": \"preserve_others\"\n        },\n        {\n          \"case\": \"XTMR_STAT_CLEAR_RMW_OVR\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"OVR\",\n          \"op\": \"clear\",\n          \"value\": \"preserve_others\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stat_clear_only_zero\",\n      \"statement\": \"The XTMR driver shall set XTMR_STAT.UIF by writing 0 because a write of 1 to the read-write-zero flag has no effect on the flag state.\",\n      \"source_page\": 42,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_STAT at bits 0:0 is 0 after a clear operation and stays 0, confirming that only a write of 0 affects the flag.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_STAT_CLEAR_ONLY_ZERO\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"UIF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_ckd_division\",\n      \"statement\": \"The XTMR driver shall write XTMR_CTRL.CKD to the value 00, 01 or 10 in order to select the clock division of the input filter.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL at bits 5:4 equals the requested division code after the corresponding configuration is applied, while all other fields retain their previous values.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_CKD_DIVISION\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"CKD\",\n          \"op\": \"write\",\n          \"value\": \"00_01_10\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_ctrl_ckd_read_modify_write\",\n      \"statement\": \"The XTMR driver shall change XTMR_CTRL.CKD by read-modify-write without altering the values of the other XTMR_CTRL fields.\",\n      \"source_page\": 41,\n      \"verification\": \"host_unit_test passes when the register array value of XTMR_CTRL shows that only bits 5:4 change and every other field of XTMR_CTRL remains unchanged after an API call that touches CKD.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"XTMR_CTRL_CKD_RMW\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"CKD\",\n          \"op\": \"write\",\n          \"value\": \"preserve_others\"\n        }\n      ]\n    }\n  ],\n  \"not_covered\": [\n    {\n      \"field\": \"XTMR_CTRL.OPM\",\n      \"reason\": \"One-pulse mode is not exercised by any API in this work-order scope (xtmr_start, xtmr_stop, xtmr_set_direction, xtmr_clear_flags), so no requirement sets or writes OMR and the behaviour is reserved for a separate work order.\"\n    },\n    {\n      \"field\": \"XTMR_CTRL.ARPE\",\n      \"reason\": \"Auto-reload preload enable is not referenced by any API in this work-order scope and the ARR preload behaviour is not touched by the driver functions of this task, so no requirement sets or writes ARPE.\"\n    }\n  ],\n  \"open_points\": [\n    \"The source describes OPM and ARPE as fields of this task but lists no API function that writes them, so it is unclear whether the driver should expose configuration for these fields or whether they remain unconfigured within this scope.\",\n    \"The source states that writing CKD to 11 is ignored as reserved, but does not state whether xtmr_set_clock_division must reject the value 11 or simply write it to the register, so the handling of the reserved code is left open.\",\n    \"The source describes UIF, CC1IF and OVR as read-write-zero flags but gives the clear-only semantics explicitly only for UIF, leaving whether the same explicit wording should be required for CC1IF and OVR open.\"\n  ]\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 2672,
+     "finish_reason": "stop",
+     "label": "q6-raw-thinking-off",
+     "message_keys": null,
+     "prompt_messages_chars": 13978,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "not_covered": {
+           "items": {
+            "additionalProperties": false,
+            "properties": {
+             "field": {
+              "type": "string"
+             },
+             "reason": {
+              "minLength": 5,
+              "type": "string"
+             }
+            },
+            "required": [
+             "field",
+             "reason"
+            ],
+            "type": "object"
+           },
+           "type": "array"
+          },
+          "open_points": {
+           "items": {
+            "type": "string"
+           },
+           "type": "array"
+          },
+          "requirements": {
+           "items": {
+            "additionalProperties": false,
+            "properties": {
+             "effects": {
+              "items": {
+               "additionalProperties": false,
+               "properties": {
+                "case": {
+                 "pattern": "^[A-Z][A-Z0-9_]{1,47}$",
+                 "type": "string"
+                },
+                "field": {
+                 "type": "string"
+                },
+                "op": {
+                 "enum": [
+                  "set",
+                  "clear",
+                  "write",
+                  "no_write"
+                 ],
+                 "type": "string"
+                },
+                "register": {
+                 "type": "string"
+                },
+                "value": {
+                 "type": "string"
+                }
+               },
+               "required": [
+                "case",
+                "register",
+                "field",
+                "op",
+                "value"
+               ],
+               "type": "object"
+              },
+              "type": "array"
+             },
+             "key": {
+              "pattern": "^[a-z][a-z0-9_]{2,40}$",
+              "type": "string"
+             },
+             "source_page": {
+              "type": "integer"
+             },
+             "statement": {
+              "minLength": 20,
+              "type": "string"
+             },
+             "verification": {
+              "minLength": 10,
+              "type": "string"
+             },
+             "verified_by": {
+              "enum": [
+               "host_unit_test",
+               "target_robot_test"
+              ],
+              "type": "string"
+             }
+            },
+            "required": [
+             "key",
+             "statement",
+             "source_page",
+             "verification",
+             "verified_by",
+             "effects"
+            ],
+            "type": "object"
+           },
+           "type": "array"
+          }
+         },
+         "required": [
+          "requirements",
+          "not_covered",
+          "open_points"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      }
+     },
+     "requirements": 12,
+     "stream": {
+      "content_deltas": 2672,
+      "data_lines": 2676,
+      "done": true,
+      "reasoning_deltas": 0,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 3838,
+      "predicted_ms": 17653.202,
+      "predicted_n": 2673,
+      "predicted_per_second": 151.3606426754761,
+      "prompt_ms": 68.288,
+      "prompt_n": 4
+     },
+     "usage": {
+      "completion_tokens": 2673,
+      "prompt_tokens": 3842,
+      "prompt_tokens_details": {
+       "cached_tokens": 3838
+      },
+      "total_tokens": 6515
+     },
+     "wall_seconds": 18.574
+    },
+    {
+     "content_eval": {
+      "chars": 10042,
+      "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"xtmr_start_set_en\",\n      \"statement\": \"The XTMR driver shall start counting by setting XTMR_CTRL.EN to 1 at the next prescaled clock edge when the API xtmr_start is called.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test calls xtmr_start and asserts the register array value of XTMR_CTRL passes when its bit 0:0 (EN) equals 1.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"set\",\n          \"value\": \"1\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stop_clear_en\",\n      \"statement\": \"The XTMR driver shall stop the counter and hold CNT by clearing XTMR_CTRL.EN to 0 when the API xtmr_stop is called.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test calls xtmr_stop and asserts the register array value of XTMR_CTRL passes when its bit 0:0 (EN) equals 0.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_set_direction_dir\",\n      \"statement\": \"The XTMR driver shall set XTMR_CTRL.DIR to 1 so the counter counts down when the API xtmr_set_direction is called with a down direction while XTMR_CTRL.EN equals 0.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test calls xtmr_set_direction with a down direction and asserts the register array value of XTMR_CTRL passes when its bit 1:1 (DIR) equals 1.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"set\",\n          \"value\": \"1\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_clear_flags_uif\",\n      \"statement\": \"The XTMR driver shall clear XTMR_STAT.UIF to 0 by a read-modify-write of XTMR_STAT when the API xtmr_clear_flags is called.\",\n      \"source_page\": 42,\n      \"verification\": \"The host unit test sets UIF, calls xtmr_clear_flags and asserts the register array value of XTMR_STAT passes when its bit 0:0 (UIF) equals 0.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"UIF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_clear_flags_cc1if\",\n      \"statement\": \"The XTMR driver shall clear XTMR_STAT.CC1IF to 0 by a read-modify-write of XTMR_STAT when the API xtmr_clear_flags is called.\",\n      \"source_page\": 42,\n      \"verification\": \"The host unit test sets CC1IF, calls xtmr_clear_flags and asserts the register array value of XTMR_STAT passes when its bit 1:1 (CC1IF) equals 0.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"CC1IF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_clear_flags_ovr\",\n      \"statement\": \"The XTMR driver shall clear XTMR_STAT.OVR to 0 by a read-modify-write of XTMR_STAT when the API xtmr_clear_flags is called.\",\n      \"source_page\": 42,\n      \"verification\": \"The host unit test sets OVR, calls xtmr_clear_flags and asserts the register array value of XTMR_STAT passes when its bit 2:2 (OVR) equals 0.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"OVR\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_start_rmw_en\",\n      \"statement\": \"The XTMR driver shall read-modify-write XTMR_CTRL to change EN without altering other fields when it calls xtmr_start.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test writes non-default values to fields other than EN, calls xtmr_start and asserts the register array value of XTMR_CTRL passes when only EN changes and every other field retains its prior value.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"set\",\n          \"value\": \"1\"\n        },\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"OPM\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"ARPE\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"START\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"CKD\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_stop_rmw_en\",\n      \"statement\": \"The XTMR driver shall read-modify-write XTMR_CTRL to change EN without altering other fields when it calls xtmr_stop.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test writes non-default values to fields other than EN, calls xtmr_stop and asserts the register array value of XTMR_CTRL passes when only EN changes and every other field retains its prior value.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"OPM\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"ARPE\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"STOP\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"CKD\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_set_direction_rmw_dir\",\n      \"statement\": \"The XTMR driver shall read-modify-write XTMR_CTRL to change DIR without altering other fields when it calls xtmr_set_direction.\",\n      \"source_page\": 41,\n      \"verification\": \"The host unit test writes non-default values to fields other than DIR, calls xtmr_set_direction and asserts the register array value of XTMR_CTRL passes when only DIR changes and every other field retains its prior value.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"DIR\",\n          \"op\": \"set\",\n          \"value\": \"1\"\n        },\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"EN\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"OPM\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"ARPE\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"SET_DIRECTION_DOWN\",\n          \"register\": \"XTMR_CTRL\",\n          \"field\": \"CKD\",\n          \"op\": \"no_write\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"key\": \"xtmr_clear_flags_rmw_stat\",\n      \"statement\": \"The XTMR driver shall read-modify-write XTMR_STAT to change each of UIF, CC1IF and OVR without altering other fields when it calls xtmr_clear_flags.\",\n      \"source_page\": 42,\n      \"verification\": \"The host unit test sets UIF, CC1IF and OVR together with non-default values in other bits, calls xtmr_clear_flags and asserts the register array value of XTMR_STAT passes when UIF, CC1IF and OVR all equal 0 while every other bit retains its prior value.\",\n      \"verified_by\": \"host_unit_test\",\n      \"effects\": [\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"UIF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"CC1IF\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        },\n        {\n          \"case\": \"CLEAR_FLAGS\",\n          \"register\": \"XTMR_STAT\",\n          \"field\": \"OVR\",\n          \"op\": \"clear\",\n          \"value\": \"0\"\n        }\n      ]\n    }\n  ],\n  \"not_covered\": [\n    {\n      \"field\": \"XTMR_CTRL.OPM\",\n      \"reason\": \"One-pulse mode is not set or read by any API in the work-order scope (xtmr_start, xtmr_stop, xtmr_set_direction, xtmr_clear_flags), so no requirement can be derived for it.\"\n    },\n    {\n      \"field\": \"XTMR_CTRL.ARPE\",\n      \"reason\": \"Auto-reload preload enable is not set or read by any API in the work-order scope (no ARR/ARPE API), so no requirement can be derived for it.\"\n    },\n    {\n      \"field\": \"XTMR_CTRL.CKD\",\n      \"reason\": \"Clock division is not set or read by any API in the work-order scope (no clock-division API), so no requirement can be derived for it.\"\n    }\n  ],\n  \"open_points\": [\n    \"The API xtmr_set_direction takes a direction argument; the source does not describe the up direction (DIR=0), so whether an explicit DIR=0 requirement is needed is open.\",\n    \"The scope lists xtmr_clear_flags as clearing flags, but the source does not state whether the call clears UIF, CC1IF and OVR all together or only a subset.\",\n    \"The source states DIR writes have no effect until EN is cleared, but does not state what xtmr_set_direction must do when EN is currently 1, so the interaction is open.\"\n  ]\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 2900,
+     "finish_reason": "stop",
+     "label": "q6-raw-thinking-budget2048",
+     "message_keys": null,
+     "prompt_messages_chars": 13978,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 2047,
+     "request": {
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 6144,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "not_covered": {
+           "items": {
+            "additionalProperties": false,
+            "properties": {
+             "field": {
+              "type": "string"
+             },
+             "reason": {
+              "minLength": 5,
+              "type": "string"
+             }
+            },
+            "required": [
+             "field",
+             "reason"
+            ],
+            "type": "object"
+           },
+           "type": "array"
+          },
+          "open_points": {
+           "items": {
+            "type": "string"
+           },
+           "type": "array"
+          },
+          "requirements": {
+           "items": {
+            "additionalProperties": false,
+            "properties": {
+             "effects": {
+              "items": {
+               "additionalProperties": false,
+               "properties": {
+                "case": {
+                 "pattern": "^[A-Z][A-Z0-9_]{1,47}$",
+                 "type": "string"
+                },
+                "field": {
+                 "type": "string"
+                },
+                "op": {
+                 "enum": [
+                  "set",
+                  "clear",
+                  "write",
+                  "no_write"
+                 ],
+                 "type": "string"
+                },
+                "register": {
+                 "type": "string"
+                },
+                "value": {
+                 "type": "string"
+                }
+               },
+               "required": [
+                "case",
+                "register",
+                "field",
+                "op",
+                "value"
+               ],
+               "type": "object"
+              },
+              "type": "array"
+             },
+             "key": {
+              "pattern": "^[a-z][a-z0-9_]{2,40}$",
+              "type": "string"
+             },
+             "source_page": {
+              "type": "integer"
+             },
+             "statement": {
+              "minLength": 20,
+              "type": "string"
+             },
+             "verification": {
+              "minLength": 10,
+              "type": "string"
+             },
+             "verified_by": {
+              "enum": [
+               "host_unit_test",
+               "target_robot_test"
+              ],
+              "type": "string"
+             }
+            },
+            "required": [
+             "key",
+             "statement",
+             "source_page",
+             "verification",
+             "verified_by",
+             "effects"
+            ],
+            "type": "object"
+           },
+           "type": "array"
+          }
+         },
+         "required": [
+          "requirements",
+          "not_covered",
+          "open_points"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      },
+      "thinking_budget_tokens": 2048
+     },
+     "requirements": 10,
+     "stream": {
+      "content_deltas": 2900,
+      "data_lines": 4951,
+      "done": true,
+      "reasoning_deltas": 2047,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 3838,
+      "predicted_ms": 32991.437,
+      "predicted_n": 4950,
+      "predicted_per_second": 150.008621934231,
+      "prompt_ms": 49.332,
+      "prompt_n": 2
+     },
+     "usage": {
+      "completion_tokens": 4950,
+      "prompt_tokens": 3840,
+      "prompt_tokens_details": {
+       "cached_tokens": 3838
+      },
+      "total_tokens": 8790
+     },
+     "wall_seconds": 33.517
+    }
+   ],
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449704.8749437
+    },
+    {
+     "result": "OK",
+     "t": 1793449732.7577379
+    },
+    {
+     "result": "OK",
+     "t": 1793449751.549467
+    }
+   ],
+   "packet": {
+    "accounting": {
+     "complete_serialized_request": {
+      "input_tokens": 15920,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false,
+      "serialized_bytes": 15792,
+      "sha256": "e5b4805b0058157f8e28a69f3e743207fe5fe9a0ac737cb7fb36d1d410738746"
+     },
+     "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+     "context_tokens": 24576,
+     "estimated_prompt_tokens": 5146,
+     "fits": true,
+     "output_reserve": 4096,
+     "serialized_chars": 13978
+    },
+    "input_hash": "867460093152eb93890c0c3ff25a042cf33054bcd39bebada2f7d4a0586e68d4",
+    "skill": {
+     "path": ".fabro/skills/swe1-author/SKILL.md",
+     "sha256": "30ee693393b01d137ccb267bf3a142b821352035de7ab22e693b62b488ef238f"
+    },
+    "sources": [
+     {
+      "path": "synthetic/xtmr-register-description.md",
+      "sha256": "12ce57461e081bfcfc073f05fdf060e9e152e7dd1707375b8ba0598d71f3f4e7"
+     }
+    ]
+   }
+  },
+  "S1-q6-attempt1-TRANSCRIBED": {
+   "note": "first Q6 run crashed in the driver after the factory call (content cap bug); factory-call values transcribed from printed output",
+   "results": {
+    "errors": [
+     "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+     "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+    ],
+    "finish_reason": "length",
+    "label": "q6-factory-call-default",
+    "raw_chars": 0,
+    "usage": {
+     "cached_tokens": 0,
+     "completion_tokens": 4096,
+     "prompt_tokens": 3840
+    },
+    "wall_seconds": 28.4
+   }
+  },
+  "S2-q1short": {
+   "ended": 1793449843.4494,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449828.6539094
+    },
+    {
+     "result": "OK",
+     "t": 1793449830.1813664
+    },
+    {
+     "result": "OK",
+     "t": 1793449834.148521
+    },
+    {
+     "result": "OK",
+     "t": 1793449839.8322618
+    }
+   ],
+   "phase": "q1short",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are vague and lack measurable criteria, so they cannot be objectively ver\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q1-plain-off-s1",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": false
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 635.147,
+      "predicted_n": 80,
+      "predicted_per_second": 124.38065518690948,
+      "prompt_ms": 101.472,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 80,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 216
+     },
+     "wall_seconds": 1.247
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-on1024-s1",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2692.692,
+      "predicted_n": 394,
+      "predicted_per_second": 145.95059516647282,
+      "prompt_ms": 74.294,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.232
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective with no measurable threshold or acceptance criterion, so a\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-adv-on1024",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 624,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 526,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 4193.774,
+      "predicted_n": 606,
+      "predicted_per_second": 144.26146950217154,
+      "prompt_ms": 82.071,
+      "prompt_n": 171
+     },
+     "usage": {
+      "completion_tokens": 606,
+      "prompt_tokens": 171,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 777
+     },
+     "wall_seconds": 4.769
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-nokwargs-stream",
+     "message_keys": null,
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": true,
+      "stream_options": {
+       "include_usage": true
+      },
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "stream": {
+      "content_deltas": 78,
+      "data_lines": 395,
+      "done": true,
+      "reasoning_deltas": 313,
+      "usage_chunk_had_empty_choices": true,
+      "usage_chunks": 1
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2690.101,
+      "predicted_n": 394,
+      "predicted_per_second": 146.0911690676298,
+      "prompt_ms": 77.992,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.377
+    }
+   ],
+   "server": "S2",
+   "started": 1793449828.417438
+  },
+  "S2-q2-run1-TRANSCRIBED": {
+   "note": "file overwritten by run 2 (driver bug); values transcribed from the driver's printed output",
+   "results": {
+    "json_object": {
+     "errors": [
+      "NOT_JSON:Expecting value: line 1 column 1 (char 0)",
+      "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+     ],
+     "prompt_tokens": 182,
+     "valid": false,
+     "wall_ms": 2339.3
+    },
+    "json_schema": {
+     "errors": [],
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1596.6
+    },
+    "none": {
+     "errors": [],
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1551.9
+    },
+    "selected_mode": "json_schema"
+   }
+  },
+  "S2-q2-run2": {
+   "ended": 1793449856.0063224,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449851.4251382
+    },
+    {
+     "result": "OK",
+     "t": 1793449852.874696
+    },
+    {
+     "result": "OK",
+     "t": 1793449854.8806312
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 2006.5
+    },
+    "json_schema": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1512.7
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1369.5
+    },
+    "probed_at": "2026-10-31T12:30:51.114648Z",
+    "selected_mode": "json_schema"
+   },
+   "server": "S2",
+   "started": 1793449851.1146448
+  },
+  "S2-q2-run3": {
+   "ended": 1793449860.1784847,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449856.3863943
+    },
+    {
+     "result": "OK",
+     "t": 1793449857.7734556
+    },
+    {
+     "result": "OK",
+     "t": 1793449859.1477697
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1520.4
+    },
+    "json_schema": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1242.4
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1276.2
+    },
+    "probed_at": "2026-10-31T12:30:56.136185Z",
+    "selected_mode": "json_schema"
+   },
+   "server": "S2",
+   "started": 1793449856.136182
+  },
+  "S3-q1off": {
+   "ended": 1793449897.7816896,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449892.4789631
+    },
+    {
+     "result": "OK",
+     "t": 1793449894.2730355
+    }
+   ],
+   "phase": "q1off",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are vague and lack measurable criteria, so they cannot be objectively ver\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 77,
+     "finish_reason": "stop",
+     "label": "q1-plain-nokwargs",
+     "message_keys": [
+      "content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": false,
+     "reasoning_tokens_retokenized": 0,
+     "request": {
+      "cache_prompt": false,
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 636.871,
+      "predicted_n": 80,
+      "predicted_per_second": 124.04395866666877,
+      "prompt_ms": 107.419,
+      "prompt_n": 136
+     },
+     "usage": {
+      "completion_tokens": 80,
+      "prompt_tokens": 136,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 216
+     },
+     "wall_seconds": 1.338
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-request-on1024",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2682.879,
+      "predicted_n": 394,
+      "predicted_per_second": 146.48442959969495,
+      "prompt_ms": 77.237,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.206
+    }
+   ],
+   "server": "S3",
+   "started": 1793449892.2340283
+  },
+  "S3-q2": {
+   "ended": 1793449892.0535445,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449890.0005276
+    },
+    {
+     "result": "OK",
+     "t": 1793449890.9951787
+    },
+    {
+     "result": "OK",
+     "t": 1793449891.6380959
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 184,
+     "valid": true,
+     "wall_ms": 666.6
+    },
+    "json_schema": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 184,
+     "valid": true,
+     "wall_ms": 967.3
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 184,
+     "valid": true,
+     "wall_ms": 650.1
+    },
+    "probed_at": "2026-10-31T12:31:29.766231Z",
+    "selected_mode": "json_schema"
+   },
+   "server": "S3",
+   "started": 1793449889.766228
+  },
+  "S3-q6": {
+   "calls": [
+    {
+     "doc": {
+      "not_covered": [],
+      "open_points": [
+       "The API xtmr_set_direction takes a direction argument, but the source does not state whether the argument is 0 for up and 1 for down, so the exact value the driver must write is inferred from the DIR field description.",
+       "The xtmr_set_clock_division API is not part of the stated work-order scope of xtmr_start, xtmr_stop, xtmr_set_direction and xtmr_clear_flags, so the requirement for CKD is written against a plausible API rather than a confirmed one.",
+       "The xtmr_clear_flags API does not state which flags it clears when called with no argument, so the requirement assumes it clears UIF, CC1IF and OVR."
+      ],
+      "requirements": [
+       {
+        "effects": [
+         {
+          "case": "START",
+          "field": "EN",
+          "op": "set",
+          "register": "XTMR_CTRL",
+          "value": "1"
+         }
+        ],
+        "key": "xtmr_start_sets_en",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.EN field to 1 when xtmr_start is called to begin counting.",
+        "verification": "The host_unit_test calls xtmr_start and passes when the register array value of XTMR_CTRL has XTMR_CTRL.EN equal to 1 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [],
+        "key": "xtmr_start_starts_next_edge",
+        "source_page": 41,
+        "statement": "The XTMR driver shall start counting at the next prescaled clock edge after XTMR_CTRL.EN is set to 1.",
+        "verification": "The host_unit_test checks the XTMR_CTRL.EN field of the register array and passes when XTMR_CTRL.EN equals 1 after xtmr_start is called.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "STOP",
+          "field": "EN",
+          "op": "clear",
+          "register": "XTMR_CTRL",
+          "value": "0"
+         }
+        ],
+        "key": "xtmr_stop_clears_en",
+        "source_page": 41,
+        "statement": "The XTMR driver shall clear the XTMR_CTRL.EN field to 0 when xtmr_stop is called to stop the counter.",
+        "verification": "The host_unit_test calls xtmr_stop and passes when the register array value of XTMR_CTRL has XTMR_CTRL.EN equal to 0 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [],
+        "key": "xtmr_stop_holds_cnt",
+        "source_page": 41,
+        "statement": "The XTMR driver shall hold the counter value CNT when XTMR_CTRL.EN is cleared to 0 by xtmr_stop.",
+        "verification": "The host_unit_test checks the XTMR_CTRL.EN field of the register array and passes when XTMR_CTRL.EN equals 0 after xtmr_stop is called.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "SET_FIELD",
+          "field": "EN",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "via_rmw"
+         },
+         {
+          "case": "SET_FIELD",
+          "field": "DIR",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "via_rmw"
+         },
+         {
+          "case": "SET_FIELD",
+          "field": "OPM",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "via_rmw"
+         },
+         {
+          "case": "SET_FIELD",
+          "field": "ARPE",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "via_rmw"
+         },
+         {
+          "case": "SET_FIELD",
+          "field": "CKD",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "via_rmw"
+         }
+        ],
+        "key": "xtmr_read_modify_write_ctrl",
+        "source_page": 41,
+        "statement": "The XTMR driver shall read-modify-write XTMR_CTRL to change an EN, DIR, OPM, ARPE or CKD field without altering the other fields.",
+        "verification": "The host_unit_test reads back the register array value of XTMR_CTRL after each API call that touches a field and passes when only the intended field differs from the value before the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "DIR_DOWN",
+          "field": "DIR",
+          "op": "set",
+          "register": "XTMR_CTRL",
+          "value": "1"
+         }
+        ],
+        "key": "xtmr_set_direction_sets_dir",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.DIR field to 1 when xtmr_set_direction is called to count down.",
+        "verification": "The host_unit_test calls xtmr_set_direction for the down direction and passes when the register array value of XTMR_CTRL has XTMR_CTRL.DIR equal to 1 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "DIR_UP",
+          "field": "DIR",
+          "op": "clear",
+          "register": "XTMR_CTRL",
+          "value": "0"
+         }
+        ],
+        "key": "xtmr_set_direction_counts_up",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.DIR field to 0 when xtmr_set_direction is called to count up.",
+        "verification": "The host_unit_test calls xtmr_set_direction for the up direction and passes when the register array value of XTMR_CTRL has XTMR_CTRL.DIR equal to 0 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "DIR_RUNNING",
+          "field": "DIR",
+          "op": "no_write",
+          "register": "XTMR_CTRL",
+          "value": "pending_en_clear"
+         }
+        ],
+        "key": "xtmr_dir_no_effect_while_running",
+        "source_page": 41,
+        "statement": "The XTMR driver shall not change XTMR_CTRL.DIR before EN is cleared when xtmr_set_direction is called while XTMR_CTRL.EN is 1.",
+        "verification": "The host_unit_test sets XTMR_CTRL.EN to 1, calls xtmr_set_direction and passes when XTMR_CTRL.DIR of the register array is unchanged until XTMR_CTRL.EN is cleared.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "OPM_ENABLE",
+          "field": "OPM",
+          "op": "set",
+          "register": "XTMR_CTRL",
+          "value": "1"
+         }
+        ],
+        "key": "xtmr_opm_clears_en_on_update",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.OPM field to 1 when one-pulse mode is requested so that XTMR_CTRL.EN is cleared by hardware at the next update event.",
+        "verification": "The host_unit_test sets one-pulse mode and passes when the register array value of XTMR_CTRL has XTMR_CTRL.OPM equal to 1 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "ARPE_ENABLE",
+          "field": "ARPE",
+          "op": "set",
+          "register": "XTMR_CTRL",
+          "value": "1"
+         }
+        ],
+        "key": "xtmr_arpe_enables_reload_preload",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.ARPE field to 1 when auto-reload preload is enabled so that writes to ARR take effect at the next update event.",
+        "verification": "The host_unit_test enables auto-reload preload and passes when the register array value of XTMR_CTRL has XTMR_CTRL.ARPE equal to 1 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CKD_DIV2",
+          "field": "CKD",
+          "op": "write",
+          "register": "XTMR_CTRL",
+          "value": "01"
+         }
+        ],
+        "key": "xtmr_ckd_sets_clock_division",
+        "source_page": 41,
+        "statement": "The XTMR driver shall set the XTMR_CTRL.CKD field to 01 when a clock division of /2 is requested for the input filter.",
+        "verification": "The host_unit_test requests a clock division of /2 and passes when the register array value of XTMR_CTRL has XTMR_CTRL.CKD equal to 01 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CKD_RESERVED",
+          "field": "CKD",
+          "op": "no_write",
+          "register": "XTMR_CTRL",
+          "value": "unchanged"
+         }
+        ],
+        "key": "xtmr_ckd_ignores_reserved",
+        "source_page": 41,
+        "statement": "The XTMR driver shall ignore a reserved CKD value of 11 when xtmr_set_clock_division is called so that XTMR_CTRL.CKD keeps its previous value.",
+        "verification": "The host_unit_test writes a CKD value of 11 and passes when the register array value of XTMR_CTRL.CKD is unchanged after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CLEAR_UIF",
+          "field": "UIF",
+          "op": "clear",
+          "register": "XTMR_STAT",
+          "value": "0"
+         }
+        ],
+        "key": "xtmr_clear_flags_clears_uif",
+        "source_page": 42,
+        "statement": "The XTMR driver shall clear the XTMR_STAT.UIF field by writing 0 when xtmr_clear_flags is called for the update flag.",
+        "verification": "The host_unit_test sets XTMR_STAT.UIF, calls xtmr_clear_flags and passes when the register array value of XTMR_STAT has XTMR_STAT.UIF equal to 0 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CLEAR_CC1IF",
+          "field": "CC1IF",
+          "op": "clear",
+          "register": "XTMR_STAT",
+          "value": "0"
+         }
+        ],
+        "key": "xtmr_clear_flags_clears_cc1if",
+        "source_page": 42,
+        "statement": "The XTMR driver shall clear the XTMR_STAT.CC1IF field by writing 0 when xtmr_clear_flags is called for the capture/compare 1 flag.",
+        "verification": "The host_unit_test sets XTMR_STAT.CC1IF, calls xtmr_clear_flags and passes when the register array value of XTMR_STAT has XTMR_STAT.CC1IF equal to 0 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CLEAR_OVR",
+          "field": "OVR",
+          "op": "clear",
+          "register": "XTMR_STAT",
+          "value": "0"
+         }
+        ],
+        "key": "xtmr_clear_flags_clears_ovr",
+        "source_page": 42,
+        "statement": "The XTMR driver shall clear the XTMR_STAT.OVR field by writing 0 when xtmr_clear_flags is called for the overcapture flag.",
+        "verification": "The host_unit_test sets XTMR_STAT.OVR, calls xtmr_clear_flags and passes when the register array value of XTMR_STAT has XTMR_STAT.OVR equal to 0 after the call.",
+        "verified_by": "host_unit_test"
+       },
+       {
+        "effects": [
+         {
+          "case": "CLEAR_FIELD",
+          "field": "UIF",
+          "op": "write",
+          "register": "XTMR_STAT",
+          "value": "via_rmw"
+         },
+         {
+          "case": "CLEAR_FIELD",
+          "field": "CC1IF",
+          "op": "write",
+          "register": "XTMR_STAT",
+          "value": "via_rmw"
+         },
+         {
+          "case": "CLEAR_FIELD",
+          "field": "OVR",
+          "op": "write",
+          "register": "XTMR_STAT",
+          "value": "via_rmw"
+         }
+        ],
+        "key": "xtmr_clear_flags_read_modify_write_stat",
+        "source_page": 42,
+        "statement": "The XTMR driver shall read-modify-write XTMR_STAT to clear a UIF, CC1IF or OVR field without altering the other fields.",
+        "verification": "The host_unit_test reads back the register array value of XTMR_STAT after xtmr_clear_flags and passes when only the intended flag differs from the value before the call.",
+        "verified_by": "host_unit_test"
+       }
+      ]
+     },
+     "errors": [],
+     "finish_reason": "stop",
+     "format_note": null,
+     "label": "q6-factory-call-default",
+     "raw_chars": 11453,
+     "requirements": 16,
+     "usage": {
+      "completion_tokens": 3282,
+      "prompt_tokens": 3842,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 7124
+     },
+     "wall_seconds": 22.88
+    }
+   ],
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449908.7332134
+    }
+   ],
+   "packet": {
+    "accounting": {
+     "complete_serialized_request": {
+      "input_tokens": 15920,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false,
+      "serialized_bytes": 15792,
+      "sha256": "e5b4805b0058157f8e28a69f3e743207fe5fe9a0ac737cb7fb36d1d410738746"
+     },
+     "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+     "context_tokens": 24576,
+     "estimated_prompt_tokens": 5146,
+     "fits": true,
+     "output_reserve": 4096,
+     "serialized_chars": 13978
+    },
+    "input_hash": "867460093152eb93890c0c3ff25a042cf33054bcd39bebada2f7d4a0586e68d4",
+    "skill": {
+     "path": ".fabro/skills/swe1-author/SKILL.md",
+     "sha256": "30ee693393b01d137ccb267bf3a142b821352035de7ab22e693b62b488ef238f"
+    },
+    "sources": [
+     {
+      "path": "synthetic/xtmr-register-description.md",
+      "sha256": "12ce57461e081bfcfc073f05fdf060e9e152e7dd1707375b8ba0598d71f3f4e7"
+     }
+    ]
+   }
+  },
+  "S4-q1nokwargs": {
+   "ended": 1793449973.0019832,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449965.4187574
+    },
+    {
+     "result": "OK",
+     "t": 1793449969.2734044
+    }
+   ],
+   "phase": "q1off",
+   "results": [
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-nokwargs",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2697.814,
+      "predicted_n": 394,
+      "predicted_per_second": 145.6734971350879,
+      "prompt_ms": 75.273,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.317
+    },
+    {
+     "content_eval": {
+      "chars": 212,
+      "content": "{\n  \"verdict\": \"FAIL\",\n  \"severity\": \"high\",\n  \"ids\": [\"REQ-002\", \"REQ-004\"],\n  \"note\": \"REQ-002 ('fast') and REQ-004 ('user friendly') are subjective and lack measurable thresholds, so they cannot be verified\"\n}",
+      "factory_parse_note": null,
+      "factory_would_accept": true,
+      "has_think_tag": false,
+      "leading_or_trailing_ws": false,
+      "schema_errors": [],
+      "schema_valid": true,
+      "starts_with_fence": false,
+      "strict_json": true
+     },
+     "content_tokens_retokenized": 76,
+     "finish_reason": "stop",
+     "label": "q1-plain-request-on1024",
+     "message_keys": [
+      "content",
+      "reasoning_content",
+      "role"
+     ],
+     "prompt_messages_chars": 462,
+     "reasoning_present": true,
+     "reasoning_tokens_retokenized": 313,
+     "request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+       "enable_thinking": true
+      },
+      "max_tokens": 4096,
+      "min_p": 0.0,
+      "model": "ornith-1.5-35b-a3b-q8",
+      "response_format": {
+       "json_schema": {
+        "name": "packet_output",
+        "schema": {
+         "additionalProperties": false,
+         "properties": {
+          "ids": {
+           "items": {
+            "pattern": "^REQ-[0-9]{3}$",
+            "type": "string"
+           },
+           "minItems": 1,
+           "type": "array"
+          },
+          "note": {
+           "maxLength": 120,
+           "type": "string"
+          },
+          "severity": {
+           "enum": [
+            "low",
+            "medium",
+            "high"
+           ],
+           "type": "string"
+          },
+          "verdict": {
+           "enum": [
+            "PASS",
+            "FAIL"
+           ],
+           "type": "string"
+          }
+         },
+         "required": [
+          "verdict",
+          "severity",
+          "ids",
+          "note"
+         ],
+         "type": "object"
+        },
+        "strict": true
+       },
+       "type": "json_schema"
+      },
+      "seed": 1,
+      "stream": false,
+      "temperature": 0.6,
+      "thinking_budget_tokens": 1024,
+      "top_k": 20,
+      "top_p": 0.95
+     },
+     "timings": {
+      "cache_n": 0,
+      "predicted_ms": 2711.116,
+      "predicted_n": 394,
+      "predicted_per_second": 144.95875499240904,
+      "prompt_ms": 76.109,
+      "prompt_n": 134
+     },
+     "usage": {
+      "completion_tokens": 394,
+      "prompt_tokens": 134,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 528
+     },
+     "wall_seconds": 3.391
+    }
+   ],
+   "server": "S4",
+   "started": 1793449965.1580825
+  },
+  "S4-q2-run1": {
+   "ended": 1793449960.3923388,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449956.2825243
+    },
+    {
+     "result": "OK",
+     "t": 1793449957.6668146
+    },
+    {
+     "result": "OK",
+     "t": 1793449959.0869792
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1422.5
+    },
+    "json_schema": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1371.6
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1556.9
+    },
+    "probed_at": "2026-10-31T12:32:36.038199Z",
+    "selected_mode": "json_schema"
+   },
+   "server": "S4",
+   "started": 1793449956.038196
+  },
+  "S4-q2-run2": {
+   "ended": 1793449964.9859598,
+   "guards": [
+    {
+     "result": "OK",
+     "t": 1793449960.8195825
+    },
+    {
+     "result": "OK",
+     "t": 1793449962.0519757
+    },
+    {
+     "result": "OK",
+     "t": 1793449963.8064394
+    }
+   ],
+   "phase": "q2",
+   "results": {
+    "json_object": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1764.1
+    },
+    "json_schema": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1211.6
+    },
+    "model": "ornith-1.5-35b-a3b-q8",
+    "none": {
+     "errors": [],
+     "estimated_prompt_tokens": 305,
+     "prompt_tokens": 182,
+     "valid": true,
+     "wall_ms": 1424.8
+    },
+    "probed_at": "2026-10-31T12:32:40.582309Z",
+    "selected_mode": "json_schema"
+   },
+   "server": "S4",
+   "started": 1793449960.5823061
+  }
+ },
+ "preflight": {
+  "chat_requests_total": 55,
+  "chat_requests_with_saved_guard_record": 51,
+  "checked": [
+   "before each server spawn (server.sh)",
+   "every ~1 s by the watcher while a server ran",
+   "before each chat request (loop10 driver, via ssh)"
+  ],
+  "first_attempt": "ABORTED 2026-10-31T12:12:11Z (see preflight-abort.json)",
+  "guard_failures": 0,
+  "rerun_guard": "guard.sh: gpuq pending/ and running/ empty; conductor heartbeat == OBSERVE_ONLY operations_wait pid 3699940; factory intent STOPPED epoch 7; no GPU compute process except ours"
+ },
+ "reasoning_text_retained": false,
+ "remote_clock_note": "omniverse2 clock ~61 s behind loop10; server times are omniverse2 UTC",
+ "schema": "forge-c/ornith-protocol-test/1",
+ "servers": {
+  "S1": {
+   "argv": [
+    "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server",
+    "--model",
+    "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+    "--alias",
+    "ornith-1.5-35b-a3b-q8",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18591",
+    "--no-webui",
+    "--offline",
+    "-c",
+    "32768",
+    "-np",
+    "1",
+    "--jinja",
+    "--reasoning",
+    "auto",
+    "--reasoning-format",
+    "deepseek",
+    "--cache-type-k",
+    "f16",
+    "--cache-type-v",
+    "f16",
+    "--flash-attn",
+    "on",
+    "--gpu-layers",
+    "all",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off",
+    "--metrics"
+   ],
+   "env": {
+    "GGML_BACKEND_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13/libggml-cuda.so",
+    "LD_LIBRARY_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama:/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13"
+   },
+   "health_ok_seconds_after_spawn": 6.28,
+   "pid": 2459668,
+   "props": {
+    "build_info": "b1-0f3a71be1",
+    "chat_template_caps": {
+     "supports_preserve_reasoning": true,
+     "supports_reasoning_effort": false,
+     "supports_system_role": true,
+     "supports_tools": true
+    },
+    "n_ctx": 32768,
+    "total_slots": 1
+   },
+   "purpose": "speed-study form: --reasoning auto --reasoning-format deepseek",
+   "server_log_model_loaded_at": "5.396 s",
+   "start_ticks": "320082927",
+   "started_at": "2026-10-31T12:20:45.247072787Z",
+   "stop": {
+    "at": "2026-10-31T12:28:53Z",
+    "exit_status": 0,
+    "gpu_compute_apps_after": "",
+    "gpu_memory_used_MiB_after": 936,
+    "label": "S1",
+    "pid": 2459668,
+    "port_open_after": "no",
+    "process_gone": "yes",
+    "reason": "STOP_REQUESTED",
+    "signal": "TERM",
+    "stop_seconds": 1.06
+   },
+   "vram_MiB": {
+    "baseline_before": 936,
+    "peak": 37384,
+    "sample_period_s": "~1.07",
+    "samples": 455
+   }
+  },
+  "S2": {
+   "argv": [
+    "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server",
+    "--model",
+    "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+    "--alias",
+    "ornith-1.5-35b-a3b-q8",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18591",
+    "--no-webui",
+    "--offline",
+    "-c",
+    "32768",
+    "-np",
+    "1",
+    "--jinja",
+    "--reasoning",
+    "on",
+    "--cache-type-k",
+    "f16",
+    "--cache-type-v",
+    "f16",
+    "--flash-attn",
+    "on",
+    "--gpu-layers",
+    "all",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off",
+    "--metrics"
+   ],
+   "env": {
+    "GGML_BACKEND_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13/libggml-cuda.so",
+    "LD_LIBRARY_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama:/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13"
+   },
+   "health_ok_seconds_after_spawn": 6.31,
+   "pid": 2476324,
+   "purpose": "factory form, profile reasoning 'on' without effort: --reasoning on (server default --reasoning-format auto)",
+   "server_log_model_loaded_at": "5.424 s",
+   "start_ticks": "320133035",
+   "started_at": "2026-10-31T12:29:06.318816033Z",
+   "stop": {
+    "at": "2026-10-31T12:30:09Z",
+    "exit_status": 0,
+    "gpu_compute_apps_after": "",
+    "gpu_memory_used_MiB_after": 936,
+    "label": "S2",
+    "pid": 2476324,
+    "port_open_after": "no",
+    "process_gone": "yes",
+    "reason": "STOP_REQUESTED",
+    "signal": "TERM",
+    "stop_seconds": 1.06
+   },
+   "vram_MiB": {
+    "baseline_before": 936,
+    "peak": 37366,
+    "sample_period_s": "~1.07",
+    "samples": 59
+   }
+  },
+  "S3": {
+   "argv": [
+    "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server",
+    "--model",
+    "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+    "--alias",
+    "ornith-1.5-35b-a3b-q8",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18591",
+    "--no-webui",
+    "--offline",
+    "-c",
+    "32768",
+    "-np",
+    "1",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--cache-type-k",
+    "f16",
+    "--cache-type-v",
+    "f16",
+    "--flash-attn",
+    "on",
+    "--gpu-layers",
+    "all",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off",
+    "--metrics"
+   ],
+   "env": {
+    "GGML_BACKEND_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13/libggml-cuda.so",
+    "LD_LIBRARY_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama:/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13"
+   },
+   "health_ok_seconds_after_spawn": 6.27,
+   "pid": 2478701,
+   "purpose": "factory form, profile reasoning 'off': --reasoning off (default format)",
+   "server_log_model_loaded_at": "5.399 s",
+   "start_ticks": "320139424",
+   "started_at": "2026-10-31T12:30:10.212971500Z",
+   "stop": {
+    "at": "2026-10-31T12:31:20Z",
+    "exit_status": 0,
+    "gpu_compute_apps_after": "",
+    "gpu_memory_used_MiB_after": 936,
+    "label": "S3",
+    "pid": 2478701,
+    "port_open_after": "no",
+    "process_gone": "yes",
+    "reason": "STOP_REQUESTED",
+    "signal": "TERM",
+    "stop_seconds": 1.06
+   },
+   "vram_MiB": {
+    "baseline_before": 936,
+    "peak": 37384,
+    "sample_period_s": "~1.07",
+    "samples": 65
+   }
+  },
+  "S4": {
+   "argv": [
+    "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server",
+    "--model",
+    "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+    "--alias",
+    "ornith-1.5-35b-a3b-q8",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18591",
+    "--no-webui",
+    "--offline",
+    "-c",
+    "32768",
+    "-np",
+    "1",
+    "--jinja",
+    "--reasoning",
+    "on",
+    "--reasoning-effort",
+    "medium",
+    "--reasoning-format",
+    "deepseek",
+    "--cache-type-k",
+    "f16",
+    "--cache-type-v",
+    "f16",
+    "--flash-attn",
+    "on",
+    "--gpu-layers",
+    "all",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off",
+    "--metrics"
+   ],
+   "env": {
+    "GGML_BACKEND_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13/libggml-cuda.so",
+    "LD_LIBRARY_PATH": "/mnt/data/forge-c/ollama-0.34.0/lib/ollama:/mnt/data/forge-c/ollama-0.34.0/lib/ollama/cuda_v13"
+   },
+   "health_ok_seconds_after_spawn": 6.29,
+   "pid": 2481263,
+   "purpose": "factory form of current profiles with effort: --reasoning on --reasoning-effort medium --reasoning-format deepseek",
+   "server_log_model_loaded_at": "5.411 s",
+   "start_ticks": "320146478",
+   "started_at": "2026-10-31T12:31:20.757186493Z",
+   "stop": {
+    "at": "2026-10-31T12:32:04Z",
+    "exit_status": 0,
+    "gpu_compute_apps_after": "",
+    "gpu_memory_used_MiB_after": 936,
+    "label": "S4",
+    "pid": 2481263,
+    "port_open_after": "no",
+    "process_gone": "yes",
+    "reason": "STOP_REQUESTED",
+    "signal": "TERM",
+    "stop_seconds": 1.07
+   },
+   "vram_MiB": {
+    "baseline_before": 936,
+    "peak": 37364,
+    "sample_period_s": "~1.07",
+    "samples": 41
+   }
+  }
+ },
+ "status": "COMPLETED",
+ "untouched_processes_after": {
+  "2742646": "gpuq-runner.sh alive",
+  "3699940": "conductor alive"
+ },
+ "wall_bound": {
+  "deadline_epoch": 1793452845,
+  "first_server_spawn": "2026-10-31T12:20:45Z",
+  "last_server_stopped": "2026-10-31T12:32:04Z",
+  "used_seconds_of_3600": 679
+ }
+}

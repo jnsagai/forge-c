@@ -1,0 +1,212 @@
+[
+  {
+    "trial_id": "late-finding:0",
+    "job_id": "afo-agent-2cfe71b63586cf269614cb36",
+    "proposal_sha256": "759d2f43a77dbce448fd1d0054d0afcfcd8df512a107bd1c3c89e766a291a95e",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:663fc2f03d060b6cc41e7b20",
+          "finding:db06589fc6db23f526aa6e9b",
+          "finding:2ec6f0e5bc97756a90f933c4",
+          "finding:c2b0de378f4ce1aa7fe8a031",
+          "finding:4ea225678e891aaf0b7fe4a9",
+          "finding:1c29136cd5279935b25bec91",
+          "finding:00a26264a489b1af8db32865",
+          "finding:e673e1dabe3aa66ea9081007",
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied packet and primary sources do not establish which artifact is the authoritative contract for USPEC-001/SWR-001. A1 and A3 are identical requirement-like texts, A2 is an architecture note,"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "late-finding:1",
+    "job_id": "afo-agent-ae28f16ddeccf9950650dd65",
+    "proposal_sha256": "eaecb4485a4058474473549dea928ec1ebae33ac955a63d64520fa611089b1d7",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:663fc2f03d060b6cc41e7b20",
+          "finding:db06589fc6db23f526aa6e9b",
+          "finding:2ec6f0e5bc97756a90f933c4",
+          "finding:c2b0de378f4ce1aa7fe8a031",
+          "finding:4ea225678e891aaf0b7fe4a9",
+          "finding:1c29136cd5279935b25bec91",
+          "finding:00a26264a489b1af8db32865",
+          "finding:e673e1dabe3aa66ea9081007",
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied packet and primary sources do not establish which artifact is the authoritative contract for USPEC-001/SWR-001. A1 and A3 are identical and describe the required EN bit-0 behavior, but A2"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:0",
+    "job_id": "afo-agent-63b15f6e24ea0637a4a5ab2b",
+    "proposal_sha256": "462f6f1f5cad403072fcb2822e8dd8bf779d0a4711c4a95c2bb05f8eda340f78",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative EN ownership contract is unavailable, so the required behavior for reg_enable cannot be confirmed from the supplied primary source alone."
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:1",
+    "job_id": "afo-agent-236adbd5b1bd046b90a0aa4b",
+    "proposal_sha256": "7d3cae595b8a87b31875de5cf1853dca087d46ed26851ac7f33b89094f951c43",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The EN ownership contract is unavailable, so the authoritative requirement contract needed to resolve the SWR-001 counterexample is missing."
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:0",
+    "job_id": "afo-agent-9a9dbbfc5503b18a9196443e",
+    "proposal_sha256": "6da9c968dc88701295ea97ae65c752dfa40dae1bcb7b1aafef47f8ad493b8bb1",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied sources conflict on the authoritative EN mask: A1 and A3 require UINT32_C(1), while A2 states the implementation uses EN mask 1 but A4 uses UINT32_C(2). No supplied source establishes a 3"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:1",
+    "job_id": "afo-agent-01e1fcdce0b75c2e8e4e9593",
+    "proposal_sha256": "153f1464b9a740e514c301dc0dba92a99d7312216c3183f23f8ad00099d1bc94",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied packet and primary sources do not establish which artifact is the authoritative contract for USPEC-001/SWR-001. A1 and A3 are identical requirement/specification texts, A2 is an unversion"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:0",
+    "job_id": "afo-agent-20e38e7801c6e11cdd2bcdcc",
+    "proposal_sha256": "12d16699ab29b054a2ab5dd08ecbec2598f4d83fd67865dfbdcc66dcca88143f",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied packet does not identify which of the conflicting SWE.1/SWE.2/SWE.3 artifacts is the authoritative contract for the EN mask, so the decisive repair target cannot be selected without an un"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:1",
+    "job_id": "afo-agent-48faf4cffaa5304c2b9e4daf",
+    "proposal_sha256": "db1ae50b79c8139a43dcfb712b7a868836cda4750d94a02d720414e242dac937",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The supplied sources conflict on the EN mask: A1 and A3 require UINT32_C(1), while A2 and A4 use UINT32_C(2). No supplied source establishes which conflicting workproduct is the authoritative owner of"
+          }
+        ]
+      },
+      "reason": null
+    }
+  }
+]

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.243" timestamp="2026-11-04T18:18:36.614667+00:00" hostname="master"><testcase classname="factory.python.tests.test_governor_persistence" name="test_four_writers_cannot_append_after_unlock_before_buffer_close" time="0.132"><failure message="json.decoder.JSONDecodeError: Extra data: line 1 column 13 (char 12)">tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-306/test_four_writers_cannot_appen0')
+
+    def test_four_writers_cannot_append_after_unlock_before_buffer_close(tmp_path):
+        context = multiprocessing.get_context('fork')
+        barrier, queue = context.Barrier(4), context.Queue()
+        workers = [context.Process(target=_writer, args=(tmp_path, barrier, queue)) for _ in range(4)]
+        for worker in workers:
+            worker.start()
+        outcomes = _finish(workers, queue)
+        assert all(row['ok'] for row in outcomes), outcomes
+        # The old code produces multiple complete JSON documents at this real unlocked-close boundary.
+&gt;       state = json.loads((tmp_path / 'governor/fixture.json').read_text())
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_governor_persistence.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/json/__init__.py:352: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;json.decoder.JSONDecoder object at 0x770e4754b8c0&gt;
+s = '{"calls": 1}{"calls": 1}{"calls": 1}{"calls": 1}'
+_w = &lt;built-in method match of re.Pattern object at 0x770e47331080&gt;
+
+    def decode(self, s, _w=WHITESPACE.match):
+        """Return the Python representation of ``s`` (a ``str`` instance
+        containing a JSON document).
+    
+        """
+        obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+        end = _w(s, end).end()
+        if end != len(s):
+&gt;           raise JSONDecodeError("Extra data", s, end)
+E           json.decoder.JSONDecodeError: Extra data: line 1 column 13 (char 12)
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/json/decoder.py:348: JSONDecodeError</failure></testcase></testsuite></testsuites>

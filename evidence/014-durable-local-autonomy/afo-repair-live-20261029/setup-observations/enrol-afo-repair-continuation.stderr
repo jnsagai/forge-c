@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v2/enrol-afo-repair-continuation.py", line 78, in <module>
+    assert lease is not None,'SCHEDULER_LEASE_STILL_OWNED'
+           ^^^^^^^^^^^^^^^^^
+AssertionError: SCHEDULER_LEASE_STILL_OWNED

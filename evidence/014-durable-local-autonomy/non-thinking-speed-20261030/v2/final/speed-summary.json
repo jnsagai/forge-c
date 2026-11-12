@@ -1,0 +1,407 @@
+{
+  "schema": "forge-c/descriptive-mtp-speed-pilot/1",
+  "status": "COMPLETE_DESCRIPTIVE_PILOT",
+  "runtime_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "cohorts": {
+    "none": {
+      "complete": true,
+      "expected_trials": 8,
+      "recorded_trials": 8,
+      "decode_measured_trials": 8,
+      "setup_no_generation": 0,
+      "expected_decision_matches": 2,
+      "median_decode_tokens_per_second": 61.75547337154943,
+      "load_and_control_start_seconds": 10.409617914818227,
+      "rows": [
+        {
+          "trial_id": "late-finding:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 134,
+          "gateway_total_seconds": 4.0389,
+          "trial_wall_seconds": 165.5092089176178,
+          "backend_decode_tokens_per_second": 51.860394913037084,
+          "metric_sha256": "372e246d15d0cb44933152e45696ba5d3d9f6a6534d735c7874bb3bd6f0993a1"
+        },
+        {
+          "trial_id": "late-finding:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 134,
+          "gateway_total_seconds": 3.6997,
+          "trial_wall_seconds": 72.85069680213928,
+          "backend_decode_tokens_per_second": 51.560870686105886,
+          "metric_sha256": "40cc18deb72fceab5453e4b7b2e16a30e5e715245b4c42f7978d2cc43d28abb4"
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 142,
+          "gateway_total_seconds": 3.3243,
+          "trial_wall_seconds": 74.50837206840515,
+          "backend_decode_tokens_per_second": 61.43675475485869,
+          "metric_sha256": "92a1173ac93a89f686f22a5b15c22b8ff8fbf24adebff5ec31249db49dd7d1e1"
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 141,
+          "gateway_total_seconds": 2.7965,
+          "trial_wall_seconds": 73.23871278762817,
+          "backend_decode_tokens_per_second": 62.34606932352303,
+          "metric_sha256": "57ec22f1d78e33694e1280278eddf27ae398cc0b474a2c208f3b2aff4e92184e"
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 157,
+          "gateway_total_seconds": 3.4199,
+          "trial_wall_seconds": 69.65324425697327,
+          "backend_decode_tokens_per_second": 62.81130603508631,
+          "metric_sha256": "827e50d92223741402f3f876ce30f18cabd7d90e15dbb5fb760de97c53b5c65f"
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 157,
+          "gateway_total_seconds": 3.4375999999999998,
+          "trial_wall_seconds": 74.8906888961792,
+          "backend_decode_tokens_per_second": 62.19176454277169,
+          "metric_sha256": "ed01f530bbc11788c562607c869405f6cf1d0b876d501a5c30fe59ae9025593d"
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 163,
+          "gateway_total_seconds": 3.8973,
+          "trial_wall_seconds": 72.76550436019897,
+          "backend_decode_tokens_per_second": 62.07419198824017,
+          "metric_sha256": "25276efd7654f8e39d2f046af3c69d997960ba3393763e96b29f031a12f96327"
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 156,
+          "gateway_total_seconds": 3.7019,
+          "trial_wall_seconds": 78.58416938781738,
+          "backend_decode_tokens_per_second": 57.12256084834327,
+          "metric_sha256": "0a3d342ad2926e01d27c447b7967507414258153da0d5167948837254da50ac3"
+        }
+      ]
+    },
+    "medium": {
+      "complete": true,
+      "expected_trials": 8,
+      "recorded_trials": 8,
+      "decode_measured_trials": 8,
+      "setup_no_generation": 0,
+      "expected_decision_matches": 2,
+      "median_decode_tokens_per_second": 68.64404567905625,
+      "load_and_control_start_seconds": 10.509778621606529,
+      "rows": [
+        {
+          "trial_id": "late-finding:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 786,
+          "gateway_total_seconds": 12.7887,
+          "trial_wall_seconds": 185.5738606452942,
+          "backend_decode_tokens_per_second": 69.46887246540255,
+          "metric_sha256": "3b7eb2df4efec52edaad847379cc31ea23f2565746968688bfed3022e0ead68a"
+        },
+        {
+          "trial_id": "late-finding:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 700,
+          "gateway_total_seconds": 11.818299999999999,
+          "trial_wall_seconds": 72.6668553352356,
+          "backend_decode_tokens_per_second": 67.31015171708196,
+          "metric_sha256": "3385cfc2b41f47dfd4ce43ba121b1af939769234b9f05ecbbb763072233af4f1"
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 1090,
+          "gateway_total_seconds": 17.1338,
+          "trial_wall_seconds": 78.12449789047241,
+          "backend_decode_tokens_per_second": 67.59140807785538,
+          "metric_sha256": "3431d2b084137c9b1a277e1d42f06778483e51d748592187d343e9a408c681bf"
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 1344,
+          "gateway_total_seconds": 20.8108,
+          "trial_wall_seconds": 75.01853775978088,
+          "backend_decode_tokens_per_second": 67.17658895874787,
+          "metric_sha256": "1bcf444d83c2599b0a553d5ee417f6efc1644959f4ed603218607b1fe6f7f106"
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 795,
+          "gateway_total_seconds": 12.507700000000002,
+          "trial_wall_seconds": 75.1651496887207,
+          "backend_decode_tokens_per_second": 70.82676663783111,
+          "metric_sha256": "49ab04d0081923888a080cc83eb228d3b6a5fb5fb464f534777a36c2d4152a09"
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 788,
+          "gateway_total_seconds": 12.5039,
+          "trial_wall_seconds": 75.50897812843323,
+          "backend_decode_tokens_per_second": 70.23692483490312,
+          "metric_sha256": "5cdc7ccd541ec95dc08ba99e4989fd60aa82dfa9fd765a832c79abab071fda6b"
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 1421,
+          "gateway_total_seconds": 22.0525,
+          "trial_wall_seconds": 101.85283327102661,
+          "backend_decode_tokens_per_second": 68.34852456650874,
+          "metric_sha256": "2e41c41cbb60454ac35d1d03090e0fa1c4d00d0e79cec08ca727b41632a7a96b"
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 1266,
+          "gateway_total_seconds": 19.671599999999998,
+          "trial_wall_seconds": 79.27703046798706,
+          "backend_decode_tokens_per_second": 68.93956679160375,
+          "metric_sha256": "f66596b642591a9fa74b8622ddb7554f020d666e0f6ada450045643c48f32ec2"
+        }
+      ]
+    },
+    "xhigh": {
+      "complete": true,
+      "expected_trials": 8,
+      "recorded_trials": 8,
+      "decode_measured_trials": 8,
+      "setup_no_generation": 0,
+      "expected_decision_matches": 2,
+      "median_decode_tokens_per_second": 63.29321457598397,
+      "load_and_control_start_seconds": 10.667217263951898,
+      "rows": [
+        {
+          "trial_id": "late-finding:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 6685,
+          "gateway_total_seconds": 106.7218,
+          "trial_wall_seconds": 284.4837005138397,
+          "backend_decode_tokens_per_second": 63.51311614729533,
+          "metric_sha256": "2f74523793144ad05e3ca458e8560c692d53aa71f5961e1d2a2e575b6eef7976"
+        },
+        {
+          "trial_id": "late-finding:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 11756,
+          "gateway_total_seconds": 189.0648,
+          "trial_wall_seconds": 247.47611546516418,
+          "backend_decode_tokens_per_second": 62.714788548309485,
+          "metric_sha256": "ee9d81f43caff5b800f55aa91a8970ee1caaab0f1d535cd26156ad3edfd5a73e"
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 14307,
+          "gateway_total_seconds": 223.709,
+          "trial_wall_seconds": 296.99445366859436,
+          "backend_decode_tokens_per_second": 64.36484913535293,
+          "metric_sha256": "3fc0d176cd1a82c6c564d31481d21a17866b1c3f3c83facc583f0a9e471513a7"
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 9079,
+          "gateway_total_seconds": 141.033,
+          "trial_wall_seconds": 201.84635734558105,
+          "backend_decode_tokens_per_second": 64.96862807424728,
+          "metric_sha256": "91c8c07264dd1457bca75a0221a387279e2531944d5d7a687610c3f02fc04b13"
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 6505,
+          "gateway_total_seconds": 102.7031,
+          "trial_wall_seconds": 180.82652187347412,
+          "backend_decode_tokens_per_second": 64.37306571554844,
+          "metric_sha256": "fe98a99d9720a11fdcd067b99b2f06324090651d487f06324a41b5ad8e166e02"
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 7234,
+          "gateway_total_seconds": 116.1587,
+          "trial_wall_seconds": 202.81115555763245,
+          "backend_decode_tokens_per_second": 63.073313004672606,
+          "metric_sha256": "f092048638b166daef4744df7965450ae9be70c26a87bbf496d8db10d3f9f07f"
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 5928,
+          "gateway_total_seconds": 99.32939999999999,
+          "trial_wall_seconds": 185.24778866767883,
+          "backend_decode_tokens_per_second": 60.59900398054085,
+          "metric_sha256": "916259bbc9b700de98fb8f07128e964a76c7abe877354963aea20222f8f429ab"
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 12292,
+          "gateway_total_seconds": 199.4165,
+          "trial_wall_seconds": 260.2544240951538,
+          "backend_decode_tokens_per_second": 62.09287856007968,
+          "metric_sha256": "50fc23e5d214187de0d99008cd70ff41948ec81d4d0e39eef1f4b51553c314dc"
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "none": {
+      "paired_generated_cases": [
+        {
+          "trial_id": "late-finding:0",
+          "baseline_gateway_seconds": 106.7218,
+          "candidate_gateway_seconds": 4.0389,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "late-finding:1",
+          "baseline_gateway_seconds": 189.0648,
+          "candidate_gateway_seconds": 3.6997,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "baseline_gateway_seconds": 223.709,
+          "candidate_gateway_seconds": 3.3243,
+          "both_match_expected": true
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "baseline_gateway_seconds": 141.033,
+          "candidate_gateway_seconds": 2.7965,
+          "both_match_expected": true
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "baseline_gateway_seconds": 102.7031,
+          "candidate_gateway_seconds": 3.4199,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "baseline_gateway_seconds": 116.1587,
+          "candidate_gateway_seconds": 3.4375999999999998,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "baseline_gateway_seconds": 99.32939999999999,
+          "candidate_gateway_seconds": 3.8973,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "baseline_gateway_seconds": 199.4165,
+          "candidate_gateway_seconds": 3.7019,
+          "both_match_expected": false
+        }
+      ],
+      "aggregate_gateway_speedup": 41.60658777162109
+    },
+    "medium": {
+      "paired_generated_cases": [
+        {
+          "trial_id": "late-finding:0",
+          "baseline_gateway_seconds": 106.7218,
+          "candidate_gateway_seconds": 12.7887,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "late-finding:1",
+          "baseline_gateway_seconds": 189.0648,
+          "candidate_gateway_seconds": 11.818299999999999,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "baseline_gateway_seconds": 223.709,
+          "candidate_gateway_seconds": 17.1338,
+          "both_match_expected": true
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "baseline_gateway_seconds": 141.033,
+          "candidate_gateway_seconds": 20.8108,
+          "both_match_expected": true
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "baseline_gateway_seconds": 102.7031,
+          "candidate_gateway_seconds": 12.507700000000002,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "baseline_gateway_seconds": 116.1587,
+          "candidate_gateway_seconds": 12.5039,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "baseline_gateway_seconds": 99.32939999999999,
+          "candidate_gateway_seconds": 22.0525,
+          "both_match_expected": false
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "baseline_gateway_seconds": 199.4165,
+          "candidate_gateway_seconds": 19.671599999999998,
+          "both_match_expected": false
+        }
+      ],
+      "aggregate_gateway_speedup": 9.112544696965596
+    }
+  },
+  "fixed": {
+    "model": "Qwen3.8-27B Q8_0",
+    "kv": "f16",
+    "reasoning": "VARIANT",
+    "context_tokens": 262144,
+    "one_inference": true
+  },
+  "automatic_model_selection": false,
+  "formal_controlled_comparison": "INCOMPLETE_INDEPENDENT_MEASUREMENT_NOT_QUALIFIED",
+  "learning_overhead": "NOT_SEPARATELY_MEASURED",
+  "limitations": [
+    "Eight frozen diagnosis cases per setting; not authors/inspectors or full pipeline",
+    "Serial none/medium/xhigh order, thermal/cache effects recorded, not randomized",
+    "Failed, rejected, blocked and unknown-usage outcomes remain in denominator",
+    "No hidden reasoning collected; designated semantic proposals retained"
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "at": "2026-10-31T17:01:11.483856Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7263,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7135,
+          "sha256": "a0a0ebd9f42081c7ab86b6d03d8ec87a0f2d5db4f1bf8024d54b645aca04a2a5"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2041,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5437
+      },
+      "errors": [
+        "[crc_idr_no_autonomous_startup_write] effect NO_FUNCTION_CALL_AFTER_RESET: the statement must name CRC_IDR.IDR",
+        "[crc_idr_no_autonomous_startup_write] effect NO_FUNCTION_CALL_AFTER_RESET: value must be \"\" for op no_write",
+        "[crc_idr_write_only_named_bits] effect WRITE_IDR_CALL: value 'input_value' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[crc_idr_no_autonomous_startup_write] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_idr_no_autonomous_startup_write] from the cross-cutting task",
+        "[crc_idr_write_only_named_bits] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_idr_write_only_named_bits] from the cross-cutting task",
+        "[crc_idr_read_only_returns_idr] is a requirement on CRC_IDR, which its register task covers - remove requirement [crc_idr_read_only_returns_idr] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "44b2ce1a9e7e3461fcc031bf8653b45e911e4f1b593ce44b56cede1abed6bd20",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 479,
+        "prompt_tokens": 1328,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 1807
+      },
+      "wall_ms": 6445.9
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 10231,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 10103,
+          "sha256": "2802c12a1c602825bd18a67fb939a9723c11aca7faf89d22ba459e897527ea27"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3060,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8241
+      },
+      "errors": [
+        "the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has been called after reset, the CRC LL driver shall not write any CRC register.' (verified_by target_robot_test)"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "93a3392d4d5c6e0e5a40a42017c1c7ccc55a24a45d90cef68887a72ef5ff79f9",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 2058,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 2079
+      },
+      "wall_ms": 1289.8
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7695,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7567,
+          "sha256": "cbc43372df2c625c56e1a8f2362bdb67365de250ac51571a604c8d96c5244371"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2192,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5853
+      },
+      "errors": [
+        "[crc_reset_no_write] verification has no pass criterion ('passes when ...')",
+        "[crc_reset_no_write] effect RESET_STARTUP_NO_CALL: the statement must name CRC_IDR.IDR",
+        "[crc_reset_no_write] effect RESET_STARTUP_NO_CALL: value must be \"\" for op no_write",
+        "[crc_reset_no_write] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_reset_no_write] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "bf646ce11dfc44e629929c3e88d7e582adc414150996e89953a4e3661ed79174",
+      "n": 2,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 166,
+        "prompt_tokens": 1425,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 1591
+      },
+      "wall_ms": 2896.3
+    }
+  ],
+  "base_hash": "44b2ce1a9e7e3461fcc031bf8653b45e911e4f1b593ce44b56cede1abed6bd20",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "RESET_STARTUP_NO_CALL",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": "N/A"
+          }
+        ],
+        "key": "crc_reset_no_write",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any CRC register.",
+        "verification": "Verify no register writes occur before any LL_CRC_Write_IDR or LL_CRC_Read_IDR call is made.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [
+    "[crc_reset_no_write] verification has no pass criterion ('passes when ...')",
+    "[crc_reset_no_write] effect RESET_STARTUP_NO_CALL: the statement must name CRC_IDR.IDR",
+    "[crc_reset_no_write] effect RESET_STARTUP_NO_CALL: value must be \"\" for op no_write",
+    "[crc_reset_no_write] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_reset_no_write] from the cross-cutting task"
+  ],
+  "reused": false,
+  "status": "INVALID",
+  "task": "requirements:crosscutting"
+}

@@ -25,7 +25,7 @@ def test_every_example_record_validates_and_a_broken_one_does_not(p):
 def test_shipped_policy_and_state_machine():
     assert contracts.errors("afo-policy", load_yaml(REPO_ROOT / "config/factory/afo-policy.yaml")) == []
     f = contracts.fsm()
-    assert set(f["order_terminal"]) == {"REJECTED_INTAKE", "READY_FOR_OFFLINE_REVIEW", "BLOCKED"}
+    assert set(f["order_terminal"]) == {"REJECTED_INTAKE", "READY_FOR_OFFLINE_REVIEW", "BLOCKED", "QUALIFICATION_RECORDED"}
     assert "no_ready_without_six_independent_gates" in f["invariants"]
     with pytest.raises(contracts.ContractError):
         contracts.errors("not-a-contract", {})

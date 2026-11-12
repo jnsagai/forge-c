@@ -1,0 +1,119 @@
+{
+ "CAPA-151": {
+  "history": [
+   {
+    "at": "2026-11-04T10:41:54.397542Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[\"INC-OLD-SERIES-QUEUE-20261104\"]",
+    "from_state": null,
+    "reason": "Terminal old campaign CRC run remained RUNNING in queue and stranded capacity after series change",
+    "seq": 1109,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T10:41:54.434113Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1110,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T10:41:54.596003Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-151 not in the frozen manifest",
+    "seq": 1111,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T10:42:21.446965Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by Codex local driver agent; corrected invocation repository root after manifest lookup used main",
+    "seq": 1112,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T10:42:21.674505Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-151 assigned",
+    "seq": 1113,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T10:42:26.803880Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[\"reproducer-run:rr-975f60ed04d4f8ff8111\", \"reproducer-run:rr-4dccb901171c4eaedaa6\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1114,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T10:42:26.824332Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[\"git:964daadef72c..65127bdc15c7\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 65127bdc15c7 (patch 7908 bytes)",
+    "seq": 1115,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T10:49:48.425174Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[\"reproducer-run:rr-efc09dad1d865ebbaee9\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-151 absent at 65127bdc15c7",
+    "seq": 1116,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T10:49:48.447613Z",
+    "capa_id": "CAPA-151",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1117,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-52155756d96a905978a151f95e85de4e8dda8155",
+   "964daadef72ce8671b56fec748bb9961eff9cb0b",
+   "65127bdc15c77a1caaa18ed0553b01beccf67259",
+   "pd-87ad8202c77c2ed03519"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<65127bdc15c7"
+   ],
+   "candidate_patch_sha256": "f692bb748e4a09e31b028b773302a58a6fbc3a90411b41edfc93c3904960b374",
+   "capa_id": "CAPA-151",
+   "created_at": "2026-11-04T10:41:54.397542Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-OLD-SERIES-QUEUE-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-151",
+   "reproducer_id": "RPR-151",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-975f60ed04d4f8ff8111",
+    "reproducer-run:rr-4dccb901171c4eaedaa6"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Reconcile terminal old-series queue rows with exact tenant/spec/attempt/Fabro identity and signed recover scope; preserve all history",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T10:49:48.447613Z"
+  }
+ }
+}

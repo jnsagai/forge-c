@@ -107,3 +107,25 @@ Generated candidate C and tests trace to the same validated requirement contract
 - Claude Code uses cloud resources only for **engineering and PR authoring**, with approved repository access. The shipped `local-rtx-v2` runtime is fully offline.
 - Runtime resource reference: RTX 4070 Laptop 8 GB VRAM, 32 GB RAM; only one local model resident/request in the initial pilot. New models must pass resource and quality probes.
 - Existing ASIL B work orders with missing mandatory owner-supplied safety evidence may remain BLOCKED by correct policy. Never manipulate scope to meet SC-008.
+
+## Addendum 2026-10-24 — inspector knowledge base (owner decision)
+
+Owner 2026-10-24: "transform this non passing case in kind of generic (not specific by drive) knowledge base (RAG?) to be
+used by the inspector and keep improving its performance"; choice "Add F011 tasks". omniverse2 (local models only) is
+the only factory host, so the local inspector must qualify there (F011-T030). Measured basis (F011-T029 runs 1–7):
+every candidate family produced false rejections that contradict recorded artifact semantics or owner policy; the same
+model rejected different clean baselines on repeated runs.
+
+- **F011-FR-029** Inspection lessons are generic statements of artifact semantics or recorded policy (contract, ADR,
+  owner decision or ruling), never driver-specific text and never a model's own explanation. They reuse the existing
+  lessons store lifecycle (PROPOSED -> VALIDATED -> RETRACTED/EXPIRED), its injection and weakening validators, and are
+  given to the inspector as reference data with provenance, never as instructions.
+- **F011-FR-030** Lesson retrieval is deterministic: selected by phase, checklist item, layer and the artifacts present;
+  no similarity search. The selected lesson ids and hashes are part of the inspector packet hash.
+- **F011-FR-031** Every lesson carries at least one must-still-detect seeded defect in its scope; a lesson is promoted
+  only through CRE when it removes its source false rejection and every paired defect is still detected on target.
+- **F011-FR-032** Cases are split into a learning set (lessons may be written from it; all cases used up to 2026-10-24)
+  and a frozen test set selected and hashed before any local inspector sees it. Qualification uses the test set only,
+  with repeated runs per case and the worst run counted. Adjudicator rules stay as the deterministic backstop.
+- **F011-SC-010** On the frozen test set, with the validated lessons: 0 false rejections and every applicable seeded
+  defect detected on target over all repeated runs, or the candidate stays NOT_QUALIFIED with the measured rates.

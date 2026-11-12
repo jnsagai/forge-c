@@ -1,0 +1,29 @@
+Q1-plain False 1 stop True True 29 66.83853719087176
+Q1-plain False 2 stop True True 29 80.09496974984626
+Q1-plain True 1 stop True True 29 80.47295102933526
+Q1-plain True 2 stop True True 29 78.18455464123062
+Q1-adversarial False 1 stop True True 21 62.64682850430697
+Q1-adversarial False 2 stop True True 27 66.48137115271027
+Q1-adversarial True 1 stop True True 21 65.43474846882688
+Q1-adversarial True 2 stop True True 27 65.6943896991197
+Q1-nested False 1 stop True True 101 83.9962033716076
+Q1-nested False 2 stop True True 102 82.3811916398588
+Q1-nested True 1 stop True True 101 82.69335567156514
+Q1-nested True 2 stop True True 102 85.56878247483559
+Q1-swe1-group-schema False 1 stop True True 522 82.40366916176332
+Q1-swe1-group-schema False 2 stop True True 529 80.01355381108498
+Q1-swe1-group-schema True 1 stop True True 522 82.99368578941012
+Q1-swe1-group-schema True 2 stop True True 529 82.11245487314092
+Q1-review-verdict-schema False 1 stop True True 110 82.28986264387514
+Q1-review-verdict-schema False 2 stop True True 114 82.66343035679147
+Q1-review-verdict-schema True 1 stop True True 110 82.33629618103109
+Q1-review-verdict-schema True 2 stop True True 114 84.32175090757814
+control stop False False
+Q3-truncate-8 False length False 8
+Q3-truncate-8 True length False 8
+Q3-truncate-64 False length False 64
+Q3-truncate-64 True length False 64
+Q5 no include_usage: usage_chunks 0
+structured.call 4096 stop [] {'completion_tokens': 420, 'prompt_tokens': 129, 'total_tokens': 549, 'prompt_tokens_details': {'cached_tokens': 18}}
+structured.call 16 length ['NOT_JSON:Unterminated string starting at: line 4 column 14 (char 41)', 'OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)'] {'completion_tokens': 16, 'prompt_tokens': 129, 'total_tokens': 145, 'prompt_tokens_details': {'cached_tokens': 125}}
+{"Q1_strict_json_schema": "PASS", "Q1_counts": {"n": 20, "stop": 20, "exact": 20, "schema_valid": 20, "reasoning_present": 0}, "Q3_truncation_finish_reason": "PASS", "Q5_streaming_usage": "PASS", "factory_call": "PASS"}

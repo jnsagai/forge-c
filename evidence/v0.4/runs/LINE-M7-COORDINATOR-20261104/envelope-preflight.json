@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/line-maintenance-envelope-preflight/1",
+  "status": "BLOCKED_CONFIGURATION_NOT_RUNTIME_FAILURE",
+  "profile": "local-rtx-v2-omniverse2-ornith-think-author-q38-inspector",
+  "profile_sha256": "830da0ee607c66e462f9eabc3c5037fe64c88b5ebf35c05b99d978b7d505536f",
+  "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+  "maintenance_role_reservation_tokens": 131072,
+  "minimum_positive_request_output_cap_after_gateway": 131073,
+  "configured_profile_answer_cap_after_gateway": 147456,
+  "additional_input_tokens": "NOT_MEASURED",
+  "minimal_cap_already_exceeds_entire_role_reservation": true,
+  "model_calls": 0,
+  "changes_applied": false,
+  "required_action": "Owner review of explicit profile reservation plus finite policy/mission envelope; do not clamp or silently enlarge."
+}

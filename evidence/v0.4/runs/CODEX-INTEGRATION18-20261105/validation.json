@@ -1,0 +1,37 @@
+{
+  "schema": "forge-c/integration18-validation/1",
+  "candidate": "63a3a91d10932d8693b2f144b5d425424e0311a3",
+  "baseline": "afa651a717f391f4c1e689516c626141d0f205b1",
+  "status": "ELIGIBLE_FOR_OFFLINE_REVIEW_ONLY",
+  "decision_id": "pd-7badb6abb420eea09812",
+  "passed": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "design_checks": 14,
+  "ruff_python_files": 2,
+  "prevention_passed": 172,
+  "causal_baseline": "SYMPTOM_PRESENT",
+  "causal_candidate": "SYMPTOM_ABSENT",
+  "original_oracle_version_preserved": true,
+  "private_nss_fixture_only": true,
+  "original_oracle_errors_preserved": [
+    "rr-6274a0a846ad9ce772d7",
+    "rr-c12db63f40628e659343"
+  ],
+  "test_collection_typo_preserved": "green-v2 exit4: nonexistent filename; corrected v3 passes unchanged tests",
+  "release_layout": "CLEAN_CODE_ONLY_ARCHIVE_WITH_EXTERNAL_STATE_AND_DEPENDENCIES",
+  "full_offline_round_trip": "NOT_RUN",
+  "markdown_report": "NOT_IMPLEMENTED",
+  "transfer_runner": "NOT_IMPLEMENTED",
+  "live_patch_import": false,
+  "model_calls": 0,
+  "mission_amendment": false,
+  "grant_changes": false,
+  "limitations": [
+    "Exact tree identity excludes untracked dependency/input/cache files. Regression scopes needing ignored owner inputs require external-input routing.",
+    "No actual offline factory run, native model competence or endurance acceptance is established.",
+    "Current local GEN35 signatures and packet are unchanged; live activation remains held on credible host UTC.",
+    "No main merge, automatic source promotion, safety approval or production release."
+  ]
+}

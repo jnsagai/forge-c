@@ -1,0 +1,11 @@
+{
+  "tests": 164,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "xml_sha256": "c688d52536066a3069c8b337cb466d69382b7303cedda05d63833bd8482f4731",
+  "duration_seconds": 570.063,
+  "live_model_requests": 0,
+  "source_clean_after": true
+}

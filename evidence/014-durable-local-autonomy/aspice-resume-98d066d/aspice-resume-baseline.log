@@ -1,0 +1,23 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_aspice_resume_preserves_evidence_and_historical_scope_across_attempt_ids[ASPICE_ONLY] _
+
+pair = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-202610...ure014/overnight-audit-20261028/pytest-of-jefferson/pytest-34/test_aspice_resume_preserves_e0/0008a-rcc-ll-delivered'))
+
+    @pytest.mark.parametrize("pair", ["ASPICE_ONLY"], indirect=True)
+    def test_aspice_resume_preserves_evidence_and_historical_scope_across_attempt_ids(pair):
+        src, old, dst, new, _, _ = pair
+        original = R.files(src, ".")
+        assert old["historical_safety_scope"]["scope"]["work_order_id"] == "WO-SRC"
+        assert new["historical_safety_scope"]["scope"]["work_order_id"] == "WO-DST"
+>       assert old["resume_identity"] == new["resume_identity"]
+E       AssertionError: assert {'configurati...: 86400}, ...} == {'configurati...: 86400}, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'contract_sha256': 'addb005a02d184248f8e4ad92030839856b3524d99ad4a602db72136f2ded4ce'} != {'contract_sha256': '52441762574c591e4c466c96dea583023ed4409957d43abcbd24b51662984455'}
+E         Use -v to get more diff
+
+factory/python/tests/test_brownfield_resume.py:89: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_brownfield_resume.py::test_aspice_resume_preserves_evidence_and_historical_scope_across_attempt_ids[ASPICE_ONLY]

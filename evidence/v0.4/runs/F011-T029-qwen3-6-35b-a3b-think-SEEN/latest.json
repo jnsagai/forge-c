@@ -1,0 +1,36 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.seeded",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0009A-STM32N6-IWDG-LL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0002A-STM32N6-RCC-LL-rc1/workspace",
+    "--case",
+    "S1-OMIT",
+    "--case",
+    "S1-QM",
+    "--model",
+    "qwen3.6:35b-a3b",
+    "--inspector",
+    "semantic",
+    "--out",
+    "/mnt/data/forge-c/lrtx-v2/m7/qwen3-6-35b-a3b-think-seen.json"
+  ],
+  "duration_s": 501.681,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2ec19e422aed09fc4743c6a2b7a36adb7e9fe861",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T029-qwen3-6-35b-a3b-think-SEEN/20261024T065929.log",
+  "log_sha256": "e65ad65752e4818c84934d21d79c6fad38ddfa9518de258f7ca4969ce6c8a795",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T029-qwen3-6-35b-a3b-think-SEEN",
+  "ts_utc": "2026-10-24T06:59:29.766008Z"
+}

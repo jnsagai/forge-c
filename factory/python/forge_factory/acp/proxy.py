@@ -53,6 +53,7 @@ def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
     keys = sorted(((run.get("run") or {}).get("agent") or {}).get("mcps", {}))
     env = {"PYTHONPATH": str(Path(__file__).resolve().parents[2]),
            "FORGE_STATE_DIR": os.environ.get("FORGE_STATE_DIR", str(data_root() / "state")),
+           "FORGE_DATA_ROOT": str(data_root()),
            "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
 
     def srv(server: str) -> dict:
@@ -109,6 +110,7 @@ class Proxy:
         from ..policy.authz import Binding
 
         self.binding_path, self.node, self.kind = binding, node, agent
+        self.visit_budget_started = False
         self.prompts = set()  # ids of session/prompt requests whose results carry usage (feature 007)
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
@@ -122,6 +124,7 @@ class Proxy:
                "CODEX_PATH": str(data_root() / codex_home.CODEX),
                "CODEX_CONFIG": json.dumps({"features": {f: False for f in codex_home.DISABLED_FEATURES},
                                         "model_verbosity": codex_home.VERBOSITY,
+                                        "developer_instructions": codex_home.REPLY_INSTRUCTIONS,
                                            "mcp_servers": gate_servers(binding, node, self.ws)})}
         argv = agent_argv or [str(data_root() / CODEX_ACP)]
         self.agent = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -158,6 +161,21 @@ class Proxy:
                               "disableBuiltInTools": True}
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
+            if getattr(self, "visit_budget_started", None) is False:
+                # ACP tool calls bypass Fabro's native pre-tool hook. Start the
+                # existing per-visit counter once for this proxy lifetime, not
+                # once per prompt/retry. Shared mission charges are untouched.
+                from ..policy.authz import Binding
+                from ..policy.fabro_hook import handle
+
+                binding = Binding.load(self.binding_path)
+                run = self.ws / ".forge-run/fabro_run_id"
+                rid = run.read_text().strip() if run.is_file() else "acp"
+                result = handle({"event": "stage_start", "run_id": rid, "node_id": self.node}, binding)
+                if not result.allow:
+                    raise ValueError("ACP_VISIT_BUDGET_START_REFUSED")
+                self.visit_budget_started = True
+                self._log({"event": "visit_budget_started", "run_id": rid, "node": self.node})
             if "id" in m:
                 if self.prompts is None:
                     self.prompts = set()

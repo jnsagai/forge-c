@@ -1,0 +1,199 @@
+{
+  "promotion": {
+    "allowed_auto_deployment": false,
+    "baseline_sha256": "5926602d56c970bdbd9ac7ff4df0766ef8246a227bede775af9875f1156da99d",
+    "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+    "candidate_sha256": "d6e8eb13de6ce9bddbb31b4e13819175322b16921876e7f3bda155c4f1d8e93e",
+    "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+    "decision_id": "pd-8945c1b48fdc257c0348",
+    "evaluated_at": "2026-10-29T23:38:40.516527Z",
+    "evaluator_id": "cre-promotion-runner@f9e7f54b1838",
+    "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+    "hard_gates": [
+      {
+        "evidence_refs": [
+          "git-diff:9b4c390e1605..375a12950d45"
+        ],
+        "name": "protected_files",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "policy:candidate"
+        ],
+        "name": "policy_integrity",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "reproducer-run:rr-27ff522ea08cb18e9bd1",
+          "reproducer-run:rr-481f29e86cf24946eeb6"
+        ],
+        "name": "reproducer",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "reproducer-run:rr-800dcf02662ddec4d4fe",
+          "reproducer-run:rr-bc5e2673e14ad444783f",
+          "reproducer-run:rr-46756e84cdb3c5673df8",
+          "reproducer-run:rr-64872bec73e7727f63c0",
+          "reproducer-run:rr-e5240e5e6ccc4247baf6",
+          "reproducer-run:rr-c70f646789fb8e924335",
+          "reproducer-run:rr-cfd6313fcbd377254147",
+          "reproducer-run:rr-05d1eae6c91692cbd21c",
+          "reproducer-run:rr-93b247be7beb5baf8902",
+          "reproducer-run:rr-875f8ab9ce65320deee9",
+          "reproducer-run:rr-43a9444ac35635968d7c",
+          "reproducer-run:rr-3a78add78af53ab2c36b",
+          "reproducer-run:rr-32b67b4fe922ecbc84a9",
+          "reproducer-run:rr-d938170f18278fb09ee1",
+          "reproducer-run:rr-3336ed343433bba2a12e",
+          "reproducer-run:rr-f652e6efa13039995890",
+          "reproducer-run:rr-1bafd04ba02021fcf4df",
+          "reproducer-run:rr-deb2cdab765f4f056846",
+          "reproducer-run:rr-9fcb274642c336b5c0fe",
+          "reproducer-run:rr-7ba2745cff159de8c5b4",
+          "reproducer-run:rr-c9cf6d77b72131aef768",
+          "reproducer-run:rr-98a5966eb02765003c32",
+          "reproducer-run:rr-fff1156e430543b5ba16",
+          "reproducer-run:rr-5f6298c3ea9f95479118",
+          "reproducer-run:rr-3d89ea89f98b90bcba69",
+          "reproducer-run:rr-dae21e9c00b351fd1bae",
+          "reproducer-run:rr-943fd8ff79c44a4809b7",
+          "reproducer-run:rr-202d1fa36187bd5dc393",
+          "reproducer-run:rr-ade8430eec9f73766958",
+          "reproducer-run:rr-8e16e30ecead22f35b59",
+          "reproducer-run:rr-d1a54b4bb1cb34df1aa7",
+          "reproducer-run:rr-4ea3e819187dc30d2eac",
+          "reproducer-run:rr-7d6418c607b7a077c3e5",
+          "reproducer-run:rr-2a0d5762943293cc994b",
+          "reproducer-run:rr-961097c6e15cbcf78e49",
+          "reproducer-run:rr-abeb1c34e773d1bbaf96",
+          "reproducer-run:rr-71e53b03bfd8e47cdffd",
+          "reproducer-run:rr-c4a90eae1ec534b14342",
+          "reproducer-run:rr-9fe1d5541c1bc7f40eff",
+          "reproducer-run:rr-d2bf012e93868cb6555a",
+          "reproducer-run:rr-faba46bb3474c768a3e5",
+          "reproducer-run:rr-32d1c3a9a29cc49858b7",
+          "reproducer-run:rr-3f278573ac0bbd7299e6",
+          "reproducer-run:rr-95511234f9865caaacf1",
+          "reproducer-run:rr-6ae5e42a24bbdb2fac20",
+          "reproducer-run:rr-21125781b4c11f565322",
+          "reproducer-run:rr-389da52e7033260f1eeb",
+          "reproducer-run:rr-ec957e2bcadf89f5f33e",
+          "reproducer-run:rr-8966ecf4f078b5bad5f4",
+          "reproducer-run:rr-1ee7d4a08ca5264a2e1f",
+          "reproducer-run:rr-c4bf58f79f12086f8511",
+          "reproducer-run:rr-f3d073d8770b100aef75",
+          "reproducer-run:rr-97d705807fb9db9e4e09",
+          "reproducer-run:rr-1bf215681d983090df2d",
+          "reproducer-run:rr-64f8337fa6e4a27dde29",
+          "reproducer-run:rr-eca884459aa3f175a546",
+          "reproducer-run:rr-22fd6210d88201927c80",
+          "reproducer-run:rr-aec1d0decf6848ac5908",
+          "reproducer-run:rr-4bb1e611e49ae6c0908b",
+          "reproducer-run:rr-5e09cee6dadb6aedeae9",
+          "reproducer-run:rr-e16bc71ab7fa89425a52",
+          "reproducer-run:rr-11616e0d26159342e969",
+          "reproducer-run:rr-16debdc28e6b78776812",
+          "reproducer-run:rr-963525e536821355a246",
+          "reproducer-run:rr-cf26cb0d3a8c978ecea6",
+          "reproducer-run:rr-177e2263d23b8f8afac6",
+          "reproducer-run:rr-d45bab33e5ed2f297bae",
+          "reproducer-run:rr-d27b3affa94b2243a56b",
+          "reproducer-run:rr-95533942181507186f1e",
+          "reproducer-run:rr-b5d62c74f67bf2032a6b",
+          "reproducer-run:rr-0dacfa65be9df508dc46",
+          "reproducer-run:rr-25646f3ac1b556965896"
+        ],
+        "name": "prevention",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "candidate-tests:exit0:sha256:435e2538a3c0131b",
+          "baseline-tests:exit0:sha256:34e3f485eff3753b",
+          "design:exit0"
+        ],
+        "name": "quality_process",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "benchmark-run:br-4635d9c766c2319eca9e",
+          "benchmark-run:br-391a086a84c80c50d657"
+        ],
+        "name": "golden_benchmark",
+        "reason_code": null,
+        "result": "PASS"
+      },
+      {
+        "evidence_refs": [
+          "benchmark-run:br-bb15711a1cbf8772270b",
+          "benchmark-run:br-b4aa340d2abb633f48c0"
+        ],
+        "name": "holdout",
+        "reason_code": null,
+        "result": "PASS"
+      }
+    ],
+    "metrics_snapshot_ref": null,
+    "policy_sha256": "f7bdc74c428fd668b0d291f53b2226b905d1d80d8fce86349841b20595d17f30",
+    "reasons": [
+      "sandbox: 8556 protected paths read-only (OS) in the candidate/baseline worktrees",
+      "efficiency (informational, n=1 run each, not a gate): golden duration 19.4s -> 20.1s; model tokens 0 -> 0",
+      "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+    ],
+    "reproducer_evidence_refs": [
+      "reproducer-run:rr-27ff522ea08cb18e9bd1",
+      "reproducer-run:rr-481f29e86cf24946eeb6"
+    ],
+    "schema_version": "1.0"
+  },
+  "reproducer_runs": [
+    {
+      "run_id": "rr-f9b6b716128208c0c823",
+      "reproducer_id": "AFO-mnt-dba0cf206b8b0f2b-a1",
+      "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED",
+      "log_sha256": "fd7ef72796fbd9fa5432beabba57be3cbff71a47be6dd2a234f3b8f909363b5e",
+      "at": "2026-10-29T23:37:16.435849Z",
+      "log": "SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED\n\n--- stderr ---\n  - generated MCP env block does not pin the host FORGE_DATA_ROOT\n  - generated policy hook does not pin the host FORGE_DATA_ROOT\n  - isolated MCP child resolves a different data root (/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c)\n  - plantuml jar invisible to the child -> PLANTUML_NOT_AVAILABLE\n"
+    },
+    {
+      "run_id": "rr-27ff522ea08cb18e9bd1",
+      "reproducer_id": "AFO-mnt-dba0cf206b8b0f2b-a1",
+      "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED",
+      "log_sha256": "fd7ef72796fbd9fa5432beabba57be3cbff71a47be6dd2a234f3b8f909363b5e",
+      "at": "2026-10-29T23:37:19.614809Z",
+      "log": "SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED\n\n--- stderr ---\n  - generated MCP env block does not pin the host FORGE_DATA_ROOT\n  - generated policy hook does not pin the host FORGE_DATA_ROOT\n  - isolated MCP child resolves a different data root (/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c)\n  - plantuml jar invisible to the child -> PLANTUML_NOT_AVAILABLE\n"
+    },
+    {
+      "run_id": "rr-481f29e86cf24946eeb6",
+      "reproducer_id": "AFO-mnt-dba0cf206b8b0f2b-a1",
+      "revision": "375a12950d45b6ce2ae54d32fc559118a798f1ff",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-10-29T23:37:20.626300Z",
+      "log": "SYMPTOM_ABSENT\n\n--- stderr ---\n"
+    }
+  ],
+  "read_only": true,
+  "model_requests": 0
+}

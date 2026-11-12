@@ -1,0 +1,80 @@
+.....FFF.............F                                                   [100%]
+=================================== FAILURES ===================================
+_ test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle _
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_report_is_detail0')
+
+    def test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle(tmp_path):
+        result = X.build([_ws(tmp_path)], tmp_path / "export.zip")
+        files = _files(tmp_path / "export.zip")
+>       report = files["REPORT.md"]
+                 ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'REPORT.md'
+
+factory/python/tests/test_da014_offline_export.py:122: KeyError
+__ test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum __
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_report_cannot_claim_a_dif0')
+
+    def test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum(tmp_path):
+        X.build([_ws(tmp_path)], tmp_path / "export.zip")
+        files = _files(tmp_path / "export.zip")
+>       files["REPORT.md"] = files["REPORT.md"].replace(b'"status": "FAIL"', b'"status": "PASS"')
+                             ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'REPORT.md'
+
+factory/python/tests/test_da014_offline_export.py:142: KeyError
+_________ test_markdown_keeps_untrusted_record_text_inside_code_fences _________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0')
+
+    def test_markdown_keeps_untrusted_record_text_inside_code_fences(tmp_path):
+        ws = _ws(tmp_path)
+        (ws / "inspection/SWE.1/INS-SWE.1-001.json").write_text(json.dumps({
+            "status": "FAIL", "issues": ["```\n# APPROVED\n<script>run()</script>\n``````"]}))
+        X.build([ws], tmp_path / "export.zip")
+>       report = (tmp_path / "export.md").read_text()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_export.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:546: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0/export.md')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-jefferson/pytest-78/test_markdown_keeps_untrusted_0/export.md'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError
+_________ test_development_build_can_supply_a_portable_reviewed_runner _________
+
+env = {'base': '9a310fdd804dd42d39d30b17505b1d3b45f033ae', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_develop...ild_can_sup0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-78/test_development_build_can_sup0/dev'), ...}
+
+    def test_development_build_can_supply_a_portable_reviewed_runner(env):
+        runner = env["tmp"] / "transfer" / "apply-update.py"
+>       result = P.build(env["repo"], env["base"], env["target"], ["tests/test_rule.py"], env["dec"],
+                         "Jefferson", env["tmp"] / "patch.zip", runner_out=runner)
+E       TypeError: build() got an unexpected keyword argument 'runner_out'
+
+factory/python/tests/test_da014_offline_patch.py:245: TypeError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_offline_export.py::test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle
+FAILED factory/python/tests/test_da014_offline_export.py::test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum
+FAILED factory/python/tests/test_da014_offline_export.py::test_markdown_keeps_untrusted_record_text_inside_code_fences
+FAILED factory/python/tests/test_da014_offline_patch.py::test_development_build_can_supply_a_portable_reviewed_runner

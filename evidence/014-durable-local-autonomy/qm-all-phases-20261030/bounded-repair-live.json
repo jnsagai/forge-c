@@ -1,0 +1,262 @@
+{
+  "at": "2026-10-30T07:38:13.082185Z",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 72
+  },
+  "source_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
+  "order_id": "afo-f3ad027406784ef7",
+  "model_requests_by_observer": 0,
+  "order": {
+    "state": "RUNNING",
+    "terminal_reason": null,
+    "created_epoch": 1793344592.842838
+  },
+  "attempts": [
+    {
+      "attempt_id": "afo-f3ad027406784ef7-a1",
+      "seq": 1,
+      "state": "RUNNING",
+      "record": {
+        "workspace_ref": "workorder:WO-AFO-f3ad027406784ef7-a1",
+        "factory_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
+        "fabro_run_id": "01M65TR9K7DRDTM8AX8ZTP445G"
+      }
+    }
+  ],
+  "products": [
+    {
+      "job_id": "afo-product-09d5a51e57adaa5a6a71589e",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-f3ad027406784ef7-a1/workspace",
+      "model": "qwen3.8:27b-q8_0",
+      "profile": "local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp",
+      "reserved_tokens": 1000000000,
+      "deadline_epoch": 1793368372,
+      "execution": {
+        "execution_liveness": "LIVE",
+        "resource_lease": "HELD",
+        "native_run_ids": [
+          "01M65TR9K7DRDTM8AX8ZTP445G"
+        ],
+        "task_outcome": "ACTIVE",
+        "terminal_reason": null
+      },
+      "request_states": {
+        "QUIESCENT": 5,
+        "SENT": 1
+      },
+      "reported_tokens_known": 76163,
+      "requests_with_unknown_usage": 1,
+      "last_request_fields": [
+        "accounting",
+        "body_sha256",
+        "charge",
+        "created_at",
+        "input_tokens_reserved",
+        "job_id",
+        "mission_id",
+        "output_cap",
+        "provider_instance",
+        "provider_instance_sha256",
+        "reported_tokens",
+        "request_id",
+        "reserved_tokens",
+        "sent_at",
+        "state"
+      ],
+      "request_measurements": [
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 14638,
+          "output_cap": 36864,
+          "reserved_tokens": 51502,
+          "reported_tokens": 8930,
+          "created_at": "2026-10-30T07:30:33.242291Z",
+          "sent_at": "2026-10-30T07:30:33.409153Z"
+        },
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 11528,
+          "output_cap": 36864,
+          "reserved_tokens": 48392,
+          "reported_tokens": 13086,
+          "created_at": "2026-10-30T07:32:13.818492Z",
+          "sent_at": "2026-10-30T07:32:14.002984Z"
+        },
+        {
+          "state": "SENT",
+          "input_tokens_reserved": 11675,
+          "output_cap": 36864,
+          "reserved_tokens": 48539,
+          "reported_tokens": null,
+          "created_at": "2026-10-30T07:35:05.831465Z",
+          "sent_at": "2026-10-30T07:35:05.999394Z"
+        }
+      ],
+      "inspection_files": [],
+      "packet_progress": [
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_AHB1ENR.json",
+          "task": "requirements:RCC_AHB1ENR",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_1.json",
+          "task": "requirements:RCC_CR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_2.json",
+          "task": "requirements:RCC_CR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_1.json",
+          "task": "requirements:RCC_SR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_2.json",
+          "task": "requirements:RCC_SR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        }
+      ],
+      "inspection_packet_results": [],
+      "native_status_now": {
+        "01M65TR9K7DRDTM8AX8ZTP445G": "RUNNING"
+      },
+      "native_metadata_keys": [
+        "ask_fabro",
+        "automation",
+        "children_count",
+        "created_by",
+        "current_question",
+        "diff",
+        "goal",
+        "id",
+        "labels",
+        "lifecycle",
+        "links",
+        "models",
+        "origin",
+        "pull_request",
+        "repository",
+        "retried_from",
+        "sandbox",
+        "size",
+        "source_directory",
+        "superseded_by",
+        "timestamps",
+        "timing",
+        "title",
+        "usage",
+        "workflow"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "resource": "inference",
+      "holder": "afo-product-09d5a51e57adaa5a6a71589e",
+      "epoch": 63
+    },
+    {
+      "resource": "generation",
+      "holder": "structured-request-920df508af2840b395c200c44b4aebf9",
+      "epoch": 1273
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-QM-ALL-PHASES-TIME-20261030-V1",
+    "created_at": "2026-10-27T22:31:02.178374Z",
+    "limits": {
+      "deadline": 1793368372,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "F014-ROLE-EXPERIMENT-20261027-RCC",
+    "mission_id": "F014-NIGHT-20261027-RCC",
+    "initial_limits": {
+      "deadline": 1793161857.1740136,
+      "max_attempts": 3,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 120000,
+      "max_tools": 32
+    },
+    "initial_authorization_ref": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793161857.1740136,
+        "deadline_epoch": 1793347916,
+        "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+        "accepted_at": "2026-10-30T00:15:57.142624Z"
+      },
+      {
+        "old_deadline": 1793347916,
+        "deadline_epoch": 1793368372,
+        "authorization_ref": "AUTH-014-QM-ALL-PHASES-TIME-20261030-V1",
+        "accepted_at": "2026-10-30T05:54:39.771949Z"
+      }
+    ],
+    "capacity_amendments": [
+      {
+        "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+        "old_limits": {
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 32,
+          "max_tokens": 120000,
+          "max_tools": 32
+        },
+        "document": {
+          "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+          "limits": {
+            "max_attempts": 1000,
+            "max_corrections": 1,
+            "max_jobs": 1000,
+            "max_requests": 100000,
+            "max_tokens": 100000000000,
+            "max_tools": 1000000
+          },
+          "mission_id": "F014-NIGHT-20261027-RCC",
+          "operator_epoch": 50,
+          "reason": "Owner explicitly requested extraordinary high finite limits; same RCC lineage, old charges and uncertainty, no exhausted mission reset",
+          "request": {
+            "driver_class": "LL",
+            "model": "qwen3.8:27b-q8_0",
+            "order_id": "f014-rcc-ll-aspice-20261030-v1"
+          },
+          "schema": "forge-c/mission-capacity-amendment/1",
+          "snapshot_sha256": "2875dbb11d2de75585243868b5b0ca4fdc5c11662253455141019d75fb51b6ad"
+        },
+        "accepted_at": "2026-10-30T00:15:45.195395Z"
+      }
+    ],
+    "attempts": 7,
+    "jobs": 7,
+    "requests": 126,
+    "tools": 23,
+    "corrections": 1,
+    "charged_tokens": 5004348144,
+    "usage_unknown": true,
+    "unique_executions": 14,
+    "unbounded_historical_usage": false
+  }
+}

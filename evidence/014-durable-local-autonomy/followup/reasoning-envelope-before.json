@@ -1,0 +1,14 @@
+{
+  "runtime_source_revision": "794e8d0e5b26fd24276ad1331f0ed90a7ecafe08",
+  "documentation_head": "a46549656a3b022bc2cc015cd99d3b3cd65dcba7",
+  "adapter_accepted_raw_request": true,
+  "raw_input_bound": 11563,
+  "raw_output_cap": 2048,
+  "profile_effective_reasoning": "high",
+  "profile_effective_output_cap": 18432,
+  "effective_input_bound": 11590,
+  "job_reservation": 16000,
+  "gateway_would_refuse_envelope": true,
+  "inference_requests": 0,
+  "scope": "LOCAL_DETERMINISTIC_SERIALIZATION_NOT_NATIVE_QUALIFICATION"
+}

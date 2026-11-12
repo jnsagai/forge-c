@@ -1,0 +1,68 @@
+[
+  {
+    "at": "2026-11-04T21:25:47.318436Z",
+    "exit_code": 1,
+    "log_sha256": "3376ab93b0f00a9794bdb55b60880c64423154d08df77602b31dc30f7f1d2e3a",
+    "reproducer_id": "RPR-167",
+    "revision": "1f6802b53ab5d4193c2b6efdb5466710a8d28a86",
+    "role": "BASELINE",
+    "run_id": "rr-9c76e5d207bac1c879c0",
+    "signature": "normal early provided LL CODE is refused or routed as a forward upstream loop",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T21:25:48.328419Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-167",
+    "revision": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+    "role": "CANDIDATE",
+    "run_id": "rr-50f396ade9915977b5ed",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T21:27:35.284603Z",
+    "exit_code": 1,
+    "log_sha256": "3376ab93b0f00a9794bdb55b60880c64423154d08df77602b31dc30f7f1d2e3a",
+    "reproducer_id": "RPR-167",
+    "revision": "5b08fef7c1f44bb100f1a01883130f37f5364137",
+    "role": "BASELINE",
+    "run_id": "rr-c2f0d3c655a32fbb4fb1",
+    "signature": "normal early provided LL CODE is refused or routed as a forward upstream loop",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T21:28:51.319277Z",
+    "exit_code": 1,
+    "log_sha256": "3376ab93b0f00a9794bdb55b60880c64423154d08df77602b31dc30f7f1d2e3a",
+    "reproducer_id": "RPR-167",
+    "revision": "1f6802b53ab5d4193c2b6efdb5466710a8d28a86",
+    "role": "BASELINE",
+    "run_id": "rr-0ca627ed6118fb137079",
+    "signature": "normal early provided LL CODE is refused or routed as a forward upstream loop",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T21:28:51.551010Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-167",
+    "revision": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+    "role": "CANDIDATE",
+    "run_id": "rr-1a5ebb9b8f715908e1a8",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T21:30:11.541967Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-167",
+    "revision": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+    "role": "PREVENTION",
+    "run_id": "rr-f06e3f507690253d2530",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  }
+]

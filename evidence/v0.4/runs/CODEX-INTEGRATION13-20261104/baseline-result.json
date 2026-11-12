@@ -1,0 +1,149 @@
+{
+  "revision": "a7171bd5ee4f4c172cd24167dd0ff3f757d22acb",
+  "selected_modules": 234,
+  "total_cases": 2801,
+  "passed": 2769,
+  "failed": 6,
+  "skipped": 26,
+  "failures": [
+    {
+      "classname": "factory.python.tests.test_afo_paging_limits",
+      "name": "test_source_limit_is_bounded_and_does_not_enlarge_write_permissions",
+      "kind": "failure"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_compat",
+      "name": "test_current_tree_reproduces_the_preserved_baseline_fixtures",
+      "kind": "failure"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_compat",
+      "name": "test_current_tree_reproduces_the_frozen_v1_fixtures",
+      "kind": "failure"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_p3",
+      "name": "test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+      "kind": "failure"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_rework_unchanged",
+      "name": "test_a_valid_checkpoint_without_findings_is_still_reused",
+      "kind": "failure"
+    },
+    {
+      "classname": "factory.python.tests.test_owner_obligation_coverage",
+      "name": "test_orders_without_obligations_are_unchanged",
+      "kind": "failure"
+    }
+  ],
+  "skips": [
+    {
+      "classname": "factory.python.tests.test_afo_m3_reconcile",
+      "name": "test_checkpoints_from_a_real_passing_workspace"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_bundles_from_real_failed_runs_and_none_for_a_passing_one"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]"
+    },
+    {
+      "classname": "factory.python.tests.test_afo_m4_recovery",
+      "name": "test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_new_oracle_is_reverified_with_its_frozen_domain_family"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_new_formal_obligations_reach_independent_downstream_checks"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_mutation_operators_come_from_reverified_new_source"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[profile-downgrade]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[missing-engine]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[stale-configuration]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[corrupt-operation]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[wrong-oracle-family]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_downstream_oracle_never_accepts_stale_mixed_or_rehashed_records[rehashed-wrong-oracle]"
+    },
+    {
+      "classname": "factory.python.tests.test_da014_v02_consumers",
+      "name": "test_mixed_engine_on_obligations_is_refused_even_with_valid_inner_payload"
+    },
+    {
+      "classname": "factory.python.tests.test_line_conductor_m1",
+      "name": "test_replay_live_state_with_its_persisted_feed"
+    },
+    {
+      "classname": "factory.python.tests.test_line_conductor_m1",
+      "name": "test_replay_today_the_first_live_feeds_stale_noise_is_not_open"
+    },
+    {
+      "classname": "factory.python.tests.test_line_conductor_m1",
+      "name": "test_classification_replay_over_a_copy_of_the_omniverse2_line_state"
+    },
+    {
+      "classname": "factory.python.tests.test_line_conductor_m3",
+      "name": "test_act_dry_run_replay_over_todays_line_state"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_drill",
+      "name": "test_an_interrupted_engine_leaves_nothing_admissible_and_recovers"
+    },
+    {
+      "classname": "factory.python.tests.test_lrtx_p3",
+      "name": "test_inspection_packets_fit_and_carry_the_full_criterion[SWE.2]"
+    },
+    {
+      "classname": "factory.python.tests.test_safec_bridge_obligations",
+      "name": "test_real_engine_obligations_are_bound_and_agree_with_forge_c"
+    },
+    {
+      "classname": "factory.python.tests.test_t009_workflow_gates",
+      "name": "test_installed_fabro_validates_generated_workflow"
+    }
+  ],
+  "xml_sha256": "42f1da712afdd802167e2ad596390fe72b41b9b0279fde02bd323e4e2cbc50a1",
+  "duration_s": 2601.52,
+  "state": "ACTUAL_TERMINAL_BASELINE_NO_CANDIDATE_COMPARISON_YET"
+}

@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "files_checked": 8,
+  "checks": [
+    "private_key_markers",
+    "provider_token_markers",
+    "hidden_reasoning_content_keys"
+  ],
+  "limitations": "Pattern scan only; exports manually limited to test outcomes, source hashes and operational status",
+  "model_requests": 0
+}

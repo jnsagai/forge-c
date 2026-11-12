@@ -1,0 +1,101 @@
+{
+ "CAPA-089": {
+  "history": [
+   {
+    "at": "2026-11-01T15:53:13.583758Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[\"fabro-swe3-crck-01-contract-compiles-late\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE3-CRCK-20261101-01: carried SWE.2 api_calls.json did not compile; SWE.3 rejected 3x, STUCK",
+    "seq": 673,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T15:53:13.691017Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 674,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T15:53:13.832964Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-089 assigned",
+    "seq": 675,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T15:53:18.617192Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[\"reproducer-run:rr-765f301bb2aa0f1da7bc\", \"reproducer-run:rr-25eaab50b5ee8e36598a\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 676,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T15:53:18.649353Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[\"git:20ca687af658..b9ff12cc1ae7\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix b9ff12cc1ae7 (patch 5866 bytes)",
+    "seq": 677,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T15:55:57.779724Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[\"reproducer-run:rr-cb3f366a77427819f680\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-089 absent at b9ff12cc1ae7",
+    "seq": 678,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T15:55:57.792208Z",
+    "capa_id": "CAPA-089",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 679,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4bdf2a3fcdfb8f72b586749e403bc71da09fa6d4",
+   "20ca687af658f5bf59c58aa0337b84c3195ba396",
+   "b9ff12cc1ae71480284e2d2dd14331d8dcc5fd00",
+   "pd-1134bf28d3e98d8879ee"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<b9ff12cc1ae7"
+   ],
+   "candidate_patch_sha256": "f9cec5a3cd07120d7fa9678b3585954f391e0842e422a74b9121fbec8a5223ca",
+   "capa_id": "CAPA-089",
+   "created_at": "2026-11-01T15:53:13.583758Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe3-crck-01-contract-compiles-late"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-089",
+   "reproducer_id": "RPR-089",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-765f301bb2aa0f1da7bc",
+    "reproducer-run:rr-25eaab50b5ee8e36598a"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The call contract is compiled first at SWE.3, which may not edit SWE.2 files",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T15:55:57.792208Z"
+  }
+ }
+}

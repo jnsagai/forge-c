@@ -1,0 +1,61 @@
+......................F.......................................           [100%]
+=================================== FAILURES ===================================
+________ test_case_exposes_exact_controller_profile_not_incident_claim _________
+
+case = {'allow': ['factory/python/forge_factory/**', 'factory/python/tests/afo_candidate/**'], 'base': '4381f51299c53fca052b7...sdk.py', 'factory/python/forge_factory/mcp/servers/maintainer.py', 'factory/python/forge_factory/repair/**', ...], ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76d9b0eb3620>
+
+    def test_case_exposes_exact_controller_profile_not_incident_claim(case, monkeypatch):
+        import json
+    
+        from forge_factory.common import REPO_ROOT, sha256_file
+        from forge_factory.lrtx.profile import load
+        from forge_factory.mcp.sdk import ToolContext
+    
+        monkeypatch.setenv('FORGE_AFO_MAINT_CASE', str(M.case_dir(case['proposal_id']) / 'case.json'))
+        monkeypatch.setenv('FORGE_LRTX_PROFILE', 'local-rtx-v2-omniverse2-q38-aspice-max-mtp')
+        case['incident']['profile'] = 'INJECTED_PROFILE'
+        case_path = M.case_dir(case['proposal_id']) / 'case.json'
+        case_path.chmod(0o600)
+        case_path.write_text(json.dumps(case))
+        ctx = ToolContext('forge-maintainer-mcp', 'read_case', 'afo-factory-maintainer', None, Path(case['src']), 'fixture')
+>       out = server.read_case(ctx, server.NoIn())
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_source_edits.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/mcp/servers/maintainer.py:101: in read_case
+    body["runtime_profile"] = {"id": p["id"], "path": str(Path(p["_path"]).relative_to(REPO_ROOT)),
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('config/factory/profiles/local-rtx-v2-omniverse2-q38-aspice-max-mtp.yaml')
+other = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028')
+walk_up = False, _deprecated = (), step = 0
+
+    def relative_to(self, other, /, *_deprecated, walk_up=False):
+        """Return the relative path to another path identified by the passed
+        arguments.  If the operation is not possible (because this is not
+        related to the other path), raise ValueError.
+    
+        The *walk_up* parameter controls whether `..` may be used to resolve
+        the path.
+        """
+        if _deprecated:
+            msg = ("support for supplying more than one positional argument "
+                   "to pathlib.PurePath.relative_to() is deprecated and "
+                   "scheduled for removal in Python 3.14")
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
+            other = self.with_segments(other, *_deprecated)
+        elif not isinstance(other, PurePath):
+            other = self.with_segments(other)
+        for step, path in enumerate(chain([other], other.parents)):
+            if path == self or path in self.parents:
+                break
+            elif not walk_up:
+>               raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+E               ValueError: 'config/factory/profiles/local-rtx-v2-omniverse2-q38-aspice-max-mtp.yaml' is not in the subpath of '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:385: ValueError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_source_edits.py::test_case_exposes_exact_controller_profile_not_incident_claim

@@ -1,0 +1,101 @@
+{
+ "CAPA-155": {
+  "history": [
+   {
+    "at": "2026-11-04T14:52:21.738121Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[\"isolated-bubblewrap-m7-parallel-fence\"]",
+    "from_state": null,
+    "reason": "Actual managed VerificationJobs worker and parallel bubblewrap namespaces plus detached child sessions; capacity2/role leaves explicitfixtures, no production or role qualification claim",
+    "seq": 1144,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T14:52:21.863693Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1145,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T14:52:22.017384Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-155 assigned",
+    "seq": 1146,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T14:52:33.575250Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[\"reproducer-run:rr-4a4524b6830d60ec5625\", \"reproducer-run:rr-46cec240354e88412ad4\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1147,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T14:52:33.600731Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[\"git:c247d107c2a3..3e6fc5105d41\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 3e6fc5105d41 (patch 16461 bytes)",
+    "seq": 1148,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T14:54:55.662447Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[\"reproducer-run:rr-dc171a11d1c54c817fd3\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-155 absent at 3e6fc5105d41",
+    "seq": 1149,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T14:54:55.702396Z",
+    "capa_id": "CAPA-155",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1150,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-5cd16599d81647a1b73ead7884bcd7fb21767a81",
+   "c247d107c2a39207d5111e0da5f9b39c7b3eb294",
+   "3e6fc5105d4148615d454f615d010b5954c84ac0",
+   "pd-0ea1f8495b5cf4ad4195"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<3e6fc5105d41"
+   ],
+   "candidate_patch_sha256": "ae26256afc2045f436f7edb178c4572ccf973bc4b82cf4bc520c795fe636b737",
+   "capa_id": "CAPA-155",
+   "created_at": "2026-11-04T14:52:21.738121Z",
+   "event_ids": [],
+   "incident_ids": [
+    "isolated-bubblewrap-m7-parallel-fence"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-155",
+   "reproducer_id": "RPR-155",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-4a4524b6830d60ec5625",
+    "reproducer-run:rr-46cec240354e88412ad4"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "ThreadPoolExecutor waits for child backend commands after SIGALRM; privateintent is checked only before/after independent work; exact owned process containment must quiesce at the deadline or intent fence",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T14:54:55.702396Z"
+  }
+ }
+}

@@ -1,0 +1,22 @@
+.........................................................F...s.......... [ 46%]
+............................s........................................... [ 93%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+___________ test_isolated_worktree_os_hardening_and_canonical_writes ___________
+
+factory = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-paging-979dcb4-v1/tmp/pytest-of-root/pytest-0/test_isolated_worktree_os_hard0/factory-repo')
+
+    def test_isolated_worktree_os_hardening_and_canonical_writes(factory):
+        case = _case(factory)
+        src = Path(case["src"])
+        assert case["base"] == _head(factory) and src != factory and case["hardened_files"] >= 4
+>       assert not os.access(src / "tests/reliability/reproducers/manifest.yaml", os.W_OK)    # OS read-only
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert not True
+E        +  where True = <built-in function access>((PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-afo-paging-979dcb4-v1/tmp/afo-mnt-abcd-a1-guk6z0mw/src') / 'tests/reliability/reproducers/manifest.yaml'), 2)
+E        +    where <built-in function access> = os.access
+E        +    and   2 = os.W_OK
+
+factory/python/tests/test_afo_m5_maintainer.py:97: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_m5_maintainer.py::test_isolated_worktree_os_hardening_and_canonical_writes

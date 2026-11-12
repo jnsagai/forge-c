@@ -1,0 +1,18 @@
+schema: forge-c/lrtx-campaign/1
+tag: st3
+# Owner 2026-10-27 ("Drivers first"): the three new ST LL work orders (WWDG, RNG, LPTIM1; ST code FROZEN, owner scopes
+# ASIL B, OD-2026-10-27-01) run as normal local work orders on Omniverse2, one at a time to completion, before the formal
+# operation-24 campaign (which needs a reboot/mount window and an independent fault observer). Frozen before running.
+model: qwen3.6:35b-a3b
+profile: local-rtx-v2-omniverse2-q36-noreason
+target: >-
+  Pilot product evidence for local Qwen on delivered ST code: every attempt is recorded with its package status, gaps
+  and first failing phase; READY_FOR_OFFLINE_REVIEW additionally needs the owner-signed SSA/TAA (SC-ST-CAMPAIGN-2026-10-27),
+  so attempts before the signature package BLOCKED on the missing documents.
+stochastic: >-
+  One attempt per driver; the inspector samples with temperature 0.6 / top_p 0.95 (profile) and no factory seed, so a
+  repeat can differ.
+cases:
+  - {id: WWDG-LL, example: examples/0016c-st-cube-wwdg, repeat: 1, profile: local-rtx-v2-omniverse2-q36-noreason}
+  - {id: RNG-LL, example: examples/0017c-st-cube-rng, repeat: 1, profile: local-rtx-v2-omniverse2-q36-noreason}
+  - {id: LPTIM-LL, example: examples/0018c-st-cube-lptim, repeat: 1, profile: local-rtx-v2-omniverse2-q36-noreason}

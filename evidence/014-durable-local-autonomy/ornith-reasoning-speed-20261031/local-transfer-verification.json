@@ -1,0 +1,9 @@
+{
+  "archive_sha256": "bdbff40dda6f64cc9493ce145889abdfa9c2b2d3623fa51cfa86df7f879fb00d",
+  "file_hashes_verified": 205,
+  "unique_trials": 36,
+  "native_timing_matches": 36,
+  "oracle_controls": "PASS",
+  "generated_C_executed_locally": false,
+  "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/ornith-speed-20261031"
+}

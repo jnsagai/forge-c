@@ -1,0 +1,260 @@
+{
+  "captured_utc": "2026-10-29T16:27:48.498573Z",
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "order_id": "afo-774900b297bdde37",
+  "parent_order_state": "RUNNING",
+  "terminal_reason": null,
+  "native": [
+    {
+      "run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+      "status": "FAILED",
+      "labels_match_job_and_nonce": true,
+      "event_count_observed": 2224,
+      "latest_node_events": [
+        {
+          "seq": 2213,
+          "ts": "2026-10-29T16:25:19.064966603Z",
+          "event": "agent.llm.started",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2214,
+          "ts": "2026-10-29T16:26:48.702519318Z",
+          "event": "agent.error",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2215,
+          "ts": "2026-10-29T16:26:48.705528825Z",
+          "event": "agent.processing.end",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2216,
+          "ts": "2026-10-29T16:26:48.708343448Z",
+          "event": "agent.session.deactivated",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2217,
+          "ts": "2026-10-29T16:26:48.708448008Z",
+          "event": "agent.session.ended",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2218,
+          "ts": "2026-10-29T16:26:48.825240557Z",
+          "event": "run.cancel.requested",
+          "node_id": null,
+          "node_label": null
+        },
+        {
+          "seq": 2219,
+          "ts": "2026-10-29T16:26:49.190202479Z",
+          "event": "stage.failed",
+          "node_id": "swe6_author",
+          "node_label": "SWE.6 author"
+        },
+        {
+          "seq": 2220,
+          "ts": "2026-10-29T16:26:49.191036868Z",
+          "event": "edge.selected",
+          "node_id": null,
+          "node_label": null
+        },
+        {
+          "seq": 2221,
+          "ts": "2026-10-29T16:26:49.191229417Z",
+          "event": "checkpoint.completed",
+          "node_id": "swe6_author",
+          "node_label": "swe6_author"
+        },
+        {
+          "seq": 2222,
+          "ts": "2026-10-29T16:26:49.415226289Z",
+          "event": "run.failed",
+          "node_id": null,
+          "node_label": null
+        },
+        {
+          "seq": 2223,
+          "ts": "2026-10-29T16:26:49.415259332Z",
+          "event": "sandbox.stop.started",
+          "node_id": null,
+          "node_label": null
+        },
+        {
+          "seq": 2224,
+          "ts": "2026-10-29T16:26:52.425813051Z",
+          "event": "sandbox.stop.completed",
+          "node_id": null,
+          "node_label": null
+        }
+      ],
+      "event_types": [
+        "agent.error",
+        "agent.input",
+        "agent.llm.first_output",
+        "agent.llm.started",
+        "agent.mcp.server.ready",
+        "agent.memory.loaded",
+        "agent.message",
+        "agent.processing.end",
+        "agent.session.activated",
+        "agent.session.deactivated",
+        "agent.session.ended",
+        "agent.session.started",
+        "agent.skill.activated",
+        "agent.skills.discovered",
+        "agent.tool.completed",
+        "agent.tool.started",
+        "agent.tools.available",
+        "agent.warning",
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "prompt.completed",
+        "run.cancel.requested",
+        "run.created",
+        "run.failed",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "sandbox.stop.completed",
+        "sandbox.stop.started",
+        "stage.completed",
+        "stage.failed",
+        "stage.prompt",
+        "stage.started",
+        "todo.created"
+      ],
+      "event_shapes": [
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "actor": "dict",
+          "properties": "dict"
+        },
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "actor": "dict",
+          "properties": "dict"
+        }
+      ]
+    }
+  ],
+  "execution": [
+    {
+      "native_run_ids": [
+        "01M63ZTJ5QM1R96484Y2KN97H6"
+      ],
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "identity_state": "CONFIRMED",
+      "last_reconciled_at": "2026-10-29T16:27:21.449020Z"
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 0,
+    "requests": 345,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "unique_executions": 4,
+    "unbounded_historical_usage": false
+  },
+  "nonquiescent_requests": [],
+  "settlement": [
+    {
+      "settled": true,
+      "unresolved_native_jobs": [],
+      "serving_settlement": {
+        "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+        "instance_sha256": "d0cbdf4611652ee460d22483759596ae4f788301290a48427bda473d02237038",
+        "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+        "observed_at": "2026-10-29T16:27:20.929956Z"
+      }
+    },
+    {
+      "intent": {
+        "mode": "STOPPED",
+        "epoch": 33,
+        "effective_stop": true,
+        "stop_settlement": {
+          "serving_settlement": {
+            "instance_sha256": "d0cbdf4611652ee460d22483759596ae4f788301290a48427bda473d02237038",
+            "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+            "observed_at": "2026-10-29T16:27:20.929956Z",
+            "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+          },
+          "settled": true,
+          "unresolved_native_jobs": []
+        }
+      },
+      "provider_quiet": true
+    },
+    {
+      "gpu_processes": [],
+      "gpu_query_exit": 0
+    }
+  ],
+  "new_model_order": false,
+  "automatic_resume_authorized": false
+}

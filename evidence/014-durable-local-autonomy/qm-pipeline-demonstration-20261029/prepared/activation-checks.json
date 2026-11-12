@@ -1,0 +1,17 @@
+{
+  "scope_sha256": "252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0",
+  "scripts": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/activate-demo-15b0fa5-stage1.py",
+      "sha256": "c69a7cb65ab3a7f572137725b8f09fda41557edc930e1276afa13f6fb0541ba5",
+      "syntax": "PASS",
+      "execution": "NOT_RUN"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/activate-demo-15b0fa5-stage2.py",
+      "sha256": "dfb894474c7f56fa1d69efe9ee8e0f3665e1fd3f2beaaf2438b47780f6472f19",
+      "syntax": "PASS",
+      "execution": "NOT_RUN"
+    }
+  ]
+}

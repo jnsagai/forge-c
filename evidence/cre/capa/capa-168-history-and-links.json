@@ -1,0 +1,119 @@
+{
+  "history": [
+    {
+      "at": "2026-11-04T22:40:57.009614Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[\"CAPA-168\"]",
+      "from_state": null,
+      "reason": "Actual approved WWDG4I typed observation cannot bind current frozen preservation plan row; full copied context proves both refusals",
+      "seq": 1261,
+      "to_state": "OPEN"
+    },
+    {
+      "at": "2026-11-04T22:40:57.152180Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[]",
+      "from_state": "OPEN",
+      "reason": "triage by AGENT:Codex-independent-fullcopy-proof",
+      "seq": 1262,
+      "to_state": "TRIAGED"
+    },
+    {
+      "at": "2026-11-04T22:40:57.357678Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[]",
+      "from_state": "TRIAGED",
+      "reason": "reproducer RPR-168 assigned",
+      "seq": 1263,
+      "to_state": "REPRODUCER_PENDING"
+    },
+    {
+      "at": "2026-11-04T22:46:46.673318Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[\"reproducer-run:rr-62e6e8f16a22ca6e8820\", \"reproducer-run:rr-2c7983ee312ace01b7e3\"]",
+      "from_state": "REPRODUCER_PENDING",
+      "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+      "seq": 1264,
+      "to_state": "CAUSE_VERIFIED"
+    },
+    {
+      "at": "2026-11-04T22:46:46.703881Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[\"git:3e6c3d944b4a..27eef6a010f2\"]",
+      "from_state": "CAUSE_VERIFIED",
+      "reason": "fix 27eef6a010f2 (patch 27136 bytes)",
+      "seq": 1265,
+      "to_state": "FIX_CANDIDATE"
+    },
+    {
+      "at": "2026-11-04T22:52:07.909310Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[\"reproducer-run:rr-021453064cc9f5f1576b\"]",
+      "from_state": "FIX_CANDIDATE",
+      "reason": "prevention test prevention:RPR-168 absent at 27eef6a010f2",
+      "seq": 1266,
+      "to_state": "PREVENTION_TESTED"
+    },
+    {
+      "at": "2026-11-04T22:52:07.950284Z",
+      "capa_id": "CAPA-168",
+      "evidence": "[]",
+      "from_state": "PREVENTION_TESTED",
+      "reason": "observation window opened",
+      "seq": 1267,
+      "to_state": "EFFECTIVENESS_OBSERVING"
+    }
+  ],
+  "link_rows": [
+    {
+      "at": "2026-11-04T22:46:46.638610Z",
+      "capa_id": "CAPA-168",
+      "kind": "BASELINE_REVISION",
+      "ref": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+      "seq": 715
+    },
+    {
+      "at": "2026-11-04T22:46:46.666428Z",
+      "capa_id": "CAPA-168",
+      "kind": "FIX_REVISION",
+      "ref": "27eef6a010f239b302d96c55609da02fe345982d",
+      "seq": 716
+    },
+    {
+      "at": "2026-11-04T22:51:08.877456Z",
+      "capa_id": "CAPA-168",
+      "kind": "BASELINE_REVISION",
+      "ref": "10f9e10bbb3c8dc9b1106e81a1137cb303ac644a",
+      "seq": 717
+    },
+    {
+      "at": "2026-11-04T22:51:08.913581Z",
+      "capa_id": "CAPA-168",
+      "kind": "PRODUCTION_WORKORDER",
+      "ref": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1I",
+      "seq": 718
+    },
+    {
+      "at": "2026-11-04T22:51:08.918883Z",
+      "capa_id": "CAPA-168",
+      "kind": "PRODUCTION_RUN",
+      "ref": "01M6MA2Y67R8GW4RNEK2YF56NA",
+      "seq": 719
+    },
+    {
+      "at": "2026-11-04T22:52:07.994633Z",
+      "capa_id": "CAPA-168",
+      "kind": "PROMOTION_DECISION",
+      "ref": "pd-0853bb4fcc9796d250a3",
+      "seq": 720
+    }
+  ],
+  "links": [
+    "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+    "27eef6a010f239b302d96c55609da02fe345982d",
+    "10f9e10bbb3c8dc9b1106e81a1137cb303ac644a",
+    "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1I",
+    "01M6MA2Y67R8GW4RNEK2YF56NA",
+    "pd-0853bb4fcc9796d250a3"
+  ]
+}

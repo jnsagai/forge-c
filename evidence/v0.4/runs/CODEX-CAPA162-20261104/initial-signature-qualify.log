@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-capa162-qualify.py", line 26, in <module>
+    assert CapaRegistry(CREStore(), load()).must('CAPA-162')['state'] == 'FIX_CANDIDATE'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

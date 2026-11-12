@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-31T13:43:25.322798Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9086,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 8958,
+          "sha256": "5c02c239d571fb42e98d9e391e4c62edc0db509c6a49b81c0d5a5a03fb936d02"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2690,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7222
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 471,
+        "prompt_tokens": 1839,
+        "prompt_tokens_details": {
+          "cached_tokens": 1835
+        },
+        "total_tokens": 2310
+      },
+      "wall_ms": 3317.8
+    }
+  ],
+  "base_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "The source specifies CRC_IDR.IDR as bits 31:0 with reset value 0x0000 0000 but does not require any requirement for the reset value within this write/read slice, so no reset/startup requirement is generated here."
+    ],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_IDR_STORES",
+            "field": "IDR",
+            "op": "write",
+            "register": "CRC_IDR",
+            "value": "0x00000000"
+          }
+        ],
+        "key": "write_idr_stores_value",
+        "source_page": 1172,
+        "statement": "When the caller invokes LL_CRC_Write_IDR with a valid CRC peripheral instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+        "verification": "The test calls LL_CRC_Write_IDR with a 32-bit value on a valid accessible CRC instance and passes when CRC_IDR.IDR reads back the supplied value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_IDR_RETURNS",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": ""
+          }
+        ],
+        "key": "read_idr_returns_current_value",
+        "source_page": 1172,
+        "statement": "When the caller invokes LL_CRC_Read_IDR on a valid CRC peripheral instance, the CRC LL driver shall read the current 32-bit value of CRC_IDR.IDR and return it.",
+        "verification": "The test invokes LL_CRC_Read_IDR on a valid accessible CRC instance and passes when the returned value equals the current value of CRC_IDR.IDR.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:CRC_IDR"
+}

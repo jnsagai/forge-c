@@ -1,0 +1,101 @@
+{
+ "CAPA-134": {
+  "history": [
+   {
+    "at": "2026-11-03T15:50:22.842337Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[\"hal-bypasses-provided-ll\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L27: HAL wrote CRC registers directly instead of calling the provided ST LL",
+    "seq": 987,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T15:50:22.878935Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 988,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T15:50:23.013203Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-134 assigned",
+    "seq": 989,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T15:50:27.692941Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[\"reproducer-run:rr-08ea63dc8dd8df752b8e\", \"reproducer-run:rr-f23947f4e73ae1950a85\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 990,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T15:50:27.729144Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[\"git:65b4672752f2..2a484265da0f\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 2a484265da0f (patch 6035 bytes)",
+    "seq": 991,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T15:54:18.963794Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[\"reproducer-run:rr-978f1976b676bcc39083\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-134 absent at 2e4ee28898ff",
+    "seq": 992,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T15:54:18.984449Z",
+    "capa_id": "CAPA-134",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 993,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-bc157553f2be3c20dac7bd5b8c5046dfa986dc92",
+   "65b4672752f2c8318ee59034622c9727d1cd6f32",
+   "2a484265da0f0efc72450c01985c28e2b6fcdc24",
+   "pd-c264c0eb33518f0f5e93"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<2a484265da0f"
+   ],
+   "candidate_patch_sha256": "966a7c98fa4cfb5f5b479daca7be465cb7e6ce594e40f5ddbaf08d08e6652bbc",
+   "capa_id": "CAPA-134",
+   "created_at": "2026-11-03T15:50:22.842337Z",
+   "event_ids": [],
+   "incident_ids": [
+    "hal-bypasses-provided-ll"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-134",
+   "reproducer_id": "RPR-134",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-08ea63dc8dd8df752b8e",
+    "reproducer-run:rr-f23947f4e73ae1950a85"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T15:54:18.984449Z"
+  }
+ }
+}

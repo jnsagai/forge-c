@@ -1,0 +1,7 @@
+{
+  "reason": "Initialmanifest symptom_signature didnotexactlymatch frozenproducer SYMPTOM_PRESENTline. Baseline ERRORretained; candidateABSENT. Correctmetadata via normalUNRESOLVEDretriage, script/code/budgets unchanged.",
+  "baseline_run": "rr-4ccbabdf74c9928055e3",
+  "candidate_run": "rr-5f9dfdd7189bf3dc855c",
+  "script_sha256_unchanged": "7b05377eb4d793ef0cea0908728deb1059ed1f59f274560e87906b3b9d9205a1",
+  "corrected_signature": "buffered concurrent governor closes append multiple JSON snapshots"
+}

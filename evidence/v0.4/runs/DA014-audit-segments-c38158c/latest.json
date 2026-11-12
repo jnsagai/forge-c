@@ -1,0 +1,92 @@
+{
+  "git_head": "c38158cd687ac974056296662aa48b46e2fcdeca",
+  "status": "PASS_DETERMINISTIC",
+  "exit_code": 0,
+  "scope": "PROTECTED_BYTE_SEGMENTS_AND_CHAIN_REPLAY_NOT_NATIVE_HOST_AUDIT",
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_control_context.py",
+      "factory/python/tests/test_da014_control_observation.py",
+      "factory/python/tests/test_da014_bus_audit.py",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_audit_segments.py",
+      "factory/python/tests/test_da014_operational_work.py",
+      "factory/python/tests/test_da014_operational_report.py",
+      "factory/python/tests/test_da014_read_snapshot.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "factory/python/tests/test_da014_operational_facts.py",
+      "factory/python/tests/test_da014_qualification.py",
+      "factory/python/tests/test_da014_qualification_audit.py",
+      "factory/python/tests/test_da014_qualification_state.py",
+      "factory/python/tests/test_da014_integration.py",
+      "factory/python/tests/test_afo_m2_queue.py",
+      "factory/python/tests/test_afo_m3_reconcile.py",
+      "factory/python/tests/test_afo_m6_operations.py",
+      "factory/python/tests/test_afo_m8_acceptance.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-c38158c-affected",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-c38158c-affected.xml"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_m7_governance_release.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-c38158c-release",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-c38158c-release.xml"
+    ],
+    [
+      "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_audit_segments.py",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_bus_audit.py",
+      "--basetemp=/mnt/data/forge-c/inspector-014-b309039/audit-segments-c38158c/tmp/tests",
+      "--junitxml=/mnt/data/forge-c/inspector-014-b309039/audit-segments-c38158c/tests.xml"
+    ]
+  ],
+  "results": {
+    "affected": {
+      "tests": 435,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 434,
+      "seconds": 38.832
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.124
+    },
+    "omniverse2": {
+      "tests": 152,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 152,
+      "seconds": 46.871
+    }
+  },
+  "native_prerequisite_probe": {
+    "status": "BLOCKED",
+    "exit_code": 2,
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ]
+  },
+  "evidence": "evidence/014-durable-local-autonomy/audit-segments-c38158c/summary.json",
+  "evidence_sha256": "2e9f8b415f1fd314944311eed2519b1186ed65b28a81857e38adaebc0b4998b6",
+  "new_task_checkboxes": []
+}

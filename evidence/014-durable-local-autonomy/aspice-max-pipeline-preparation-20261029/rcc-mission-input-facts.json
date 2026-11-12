@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-29T23:01:05.024178Z",
+  "mission": {
+    "authorization_ref": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+    "created_at": "2026-10-27T22:31:02.178374Z",
+    "limits": {
+      "deadline": 1793161857.1740136,
+      "max_attempts": 3,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 120000,
+      "max_tools": 32
+    },
+    "lineage": "F014-ROLE-EXPERIMENT-20261027-RCC",
+    "mission_id": "F014-NIGHT-20261027-RCC",
+    "attempts": 2,
+    "jobs": 1,
+    "requests": 2,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 86000,
+    "usage_unknown": true,
+    "unique_executions": 3,
+    "unbounded_historical_usage": false
+  },
+  "orders": [
+    {
+      "order_id": "afo-94956895bdeb7dd7",
+      "state": "BLOCKED",
+      "terminal_reason": "ORDER_WALL_BUDGET_EXHAUSTED",
+      "driver_class": "LL",
+      "launch_ref": ".evidence-tmp/overnight-20261027-v2/rcc-launch.json",
+      "launch_sha256": "70119a9462687c5556ff544c748895493df41469cfa45aaec0d3506f12e967c6",
+      "launch_facts": {
+        "example": "examples/0002a-arm_55_rcc_ll",
+        "provided_from": null,
+        "purpose": null,
+        "profile": "local-rtx-v2-omniverse2-q36-noreason",
+        "approved_factory_revision": null,
+        "resume_from": null,
+        "mission_id": null
+      }
+    }
+  ],
+  "new_intake": false
+}

@@ -1,0 +1,281 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_real_rejected_record_is_a_rejected_review_not_a_keyerror _________
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-71/test_real_rejected_record_is_a0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x77bb66201940>
+
+    def test_real_rejected_record_is_a_rejected_review_not_a_keyerror(factory, monkeypatch):
+        store, case, sub, eff, job = setup_review(factory, monkeypatch, valid=False)
+>       result = L.review(store, job, eff)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_review_disposition.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x77bb64a10ec0>
+job = {'case': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-...eadline_epoch': 1793315285.7575774, 'job_id': 'afo-agent-111111111111111111111111', 'order_id': 'synthetic-order', ...}
+eff = namespace(sha256='same-policy', get=<function setup_review.<locals>.<lambda> at 0x77bb64a258a0>)
+verification_fence = <function <lambda> at 0x77bb656c5620>
+
+    def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
+        """Existing veto, baseline reproducer, CRE evaluator and draft-only broker. No source deployment."""
+        import signal
+    
+        from ..reliability.policy import load as cre_policy
+        from ..reliability.store import CREStore
+        from . import maintainer
+    
+        def expired(*_):
+            raise TimeoutError("MAINTAINER_REVIEW_DEADLINE")
+    
+        order = store.order(job["order_id"])
+        if (
+            job["policy_sha256"] != eff.sha256
+            or not eff.get("maintenance.enable_factory_maintainer")
+            or not authorized(order, eff)
+            or time.time() >= job["deadline_epoch"]
+        ):
+            raise RuntimeError("MAINTAINER_REVIEW_NOT_AUTHORIZED_OR_EXPIRED")
+        case = json.loads(Path(job["case"]).read_text())
+        if job.get("durable_native"):
+            from .completion_receipt import Context
+    
+            Context.from_job(store, job["job_id"])
+            maintainer.submission(case, require_receipt=True)
+        signal.signal(signal.SIGALRM, expired)
+        signal.alarm(max(1, int(job["deadline_epoch"] - time.time())))
+        try:
+            result = maintainer.process(
+                store,
+                case["proposal_id"],
+                CREStore(),
+                cre_policy(),
+                fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
+                tests_ref=f"local-agent:{job['job_id']}",
+            )
+            # Authority must still hold after the potentially long independent evaluation.
+            from .policy import load
+    
+            latest = load()
+            if (
+>               result["status"] == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                ^^^^^^^^^^^^^^^^
+                and latest.sha256 == eff.sha256
+                and authorized(order, latest)
+                and time.time() < job["deadline_epoch"]
+            ):
+E           KeyError: 'status'
+
+factory/python/forge_factory/afo/local_agent.py:824: KeyError
+_ test_real_eligible_record_reaches_existing_branch_broker_without_deployment __
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-71/test_real_eligible_record_reac0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x77bb66201a70>
+
+    def test_real_eligible_record_reaches_existing_branch_broker_without_deployment(factory, monkeypatch):
+        store, case, sub, eff, job = setup_review(factory, monkeypatch)
+        before = _head(factory, 'main')
+>       result = L.review(store, job, eff)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_review_disposition.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x77bb64913610>
+job = {'case': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-...eadline_epoch': 1793315286.1666217, 'job_id': 'afo-agent-111111111111111111111111', 'order_id': 'synthetic-order', ...}
+eff = namespace(sha256='same-policy', get=<function setup_review.<locals>.<lambda> at 0x77bb64a48b80>)
+verification_fence = <function <lambda> at 0x77bb656c5620>
+
+    def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
+        """Existing veto, baseline reproducer, CRE evaluator and draft-only broker. No source deployment."""
+        import signal
+    
+        from ..reliability.policy import load as cre_policy
+        from ..reliability.store import CREStore
+        from . import maintainer
+    
+        def expired(*_):
+            raise TimeoutError("MAINTAINER_REVIEW_DEADLINE")
+    
+        order = store.order(job["order_id"])
+        if (
+            job["policy_sha256"] != eff.sha256
+            or not eff.get("maintenance.enable_factory_maintainer")
+            or not authorized(order, eff)
+            or time.time() >= job["deadline_epoch"]
+        ):
+            raise RuntimeError("MAINTAINER_REVIEW_NOT_AUTHORIZED_OR_EXPIRED")
+        case = json.loads(Path(job["case"]).read_text())
+        if job.get("durable_native"):
+            from .completion_receipt import Context
+    
+            Context.from_job(store, job["job_id"])
+            maintainer.submission(case, require_receipt=True)
+        signal.signal(signal.SIGALRM, expired)
+        signal.alarm(max(1, int(job["deadline_epoch"] - time.time())))
+        try:
+            result = maintainer.process(
+                store,
+                case["proposal_id"],
+                CREStore(),
+                cre_policy(),
+                fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
+                tests_ref=f"local-agent:{job['job_id']}",
+            )
+            # Authority must still hold after the potentially long independent evaluation.
+            from .policy import load
+    
+            latest = load()
+            if (
+>               result["status"] == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                ^^^^^^^^^^^^^^^^
+                and latest.sha256 == eff.sha256
+                and authorized(order, latest)
+                and time.time() < job["deadline_epoch"]
+            ):
+E           KeyError: 'status'
+
+factory/python/forge_factory/afo/local_agent.py:824: KeyError
+________ test_eligible_review_still_requires_current_verification_fence ________
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-71/test_eligible_review_still_req0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x77bb64a869f0>
+
+    def test_eligible_review_still_requires_current_verification_fence(factory, monkeypatch):
+        store, case, sub, eff, job = setup_review(factory, monkeypatch)
+        with pytest.raises(RuntimeError, match='VERIFICATION_PUBLICATION_FENCED'):
+>           L.review(store, job, eff, verification_fence=lambda: False)
+
+factory/python/tests/test_afo_review_disposition.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x77bb649134d0>
+job = {'case': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-...deadline_epoch': 1793315286.574613, 'job_id': 'afo-agent-111111111111111111111111', 'order_id': 'synthetic-order', ...}
+eff = namespace(sha256='same-policy', get=<function setup_review.<locals>.<lambda> at 0x77bb649ee980>)
+verification_fence = <function test_eligible_review_still_requires_current_verification_fence.<locals>.<lambda> at 0x77bb649eede0>
+
+    def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
+        """Existing veto, baseline reproducer, CRE evaluator and draft-only broker. No source deployment."""
+        import signal
+    
+        from ..reliability.policy import load as cre_policy
+        from ..reliability.store import CREStore
+        from . import maintainer
+    
+        def expired(*_):
+            raise TimeoutError("MAINTAINER_REVIEW_DEADLINE")
+    
+        order = store.order(job["order_id"])
+        if (
+            job["policy_sha256"] != eff.sha256
+            or not eff.get("maintenance.enable_factory_maintainer")
+            or not authorized(order, eff)
+            or time.time() >= job["deadline_epoch"]
+        ):
+            raise RuntimeError("MAINTAINER_REVIEW_NOT_AUTHORIZED_OR_EXPIRED")
+        case = json.loads(Path(job["case"]).read_text())
+        if job.get("durable_native"):
+            from .completion_receipt import Context
+    
+            Context.from_job(store, job["job_id"])
+            maintainer.submission(case, require_receipt=True)
+        signal.signal(signal.SIGALRM, expired)
+        signal.alarm(max(1, int(job["deadline_epoch"] - time.time())))
+        try:
+            result = maintainer.process(
+                store,
+                case["proposal_id"],
+                CREStore(),
+                cre_policy(),
+                fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
+                tests_ref=f"local-agent:{job['job_id']}",
+            )
+            # Authority must still hold after the potentially long independent evaluation.
+            from .policy import load
+    
+            latest = load()
+            if (
+>               result["status"] == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                ^^^^^^^^^^^^^^^^
+                and latest.sha256 == eff.sha256
+                and authorized(order, latest)
+                and time.time() < job["deadline_epoch"]
+            ):
+E           KeyError: 'status'
+
+factory/python/forge_factory/afo/local_agent.py:824: KeyError
+_ test_changed_owner_policy_prevents_publication_but_preserves_eligible_record _
+
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-71/test_changed_owner_policy_prev0/factory-repo')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x77bb64848270>
+
+    def test_changed_owner_policy_prevents_publication_but_preserves_eligible_record(factory, monkeypatch):
+        store, case, sub, eff, job = setup_review(factory, monkeypatch)
+        monkeypatch.setattr(policy, 'load', lambda: SimpleNamespace(sha256='newer-policy'))
+>       result = L.review(store, job, eff)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_review_disposition.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x77bb64962650>
+job = {'case': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-...eadline_epoch': 1793315286.9917896, 'job_id': 'afo-agent-111111111111111111111111', 'order_id': 'synthetic-order', ...}
+eff = namespace(sha256='same-policy', get=<function setup_review.<locals>.<lambda> at 0x77bb649ef4c0>)
+verification_fence = <function <lambda> at 0x77bb656c5620>
+
+    def review(store, job: dict, eff, verification_fence=lambda: True) -> dict:
+        """Existing veto, baseline reproducer, CRE evaluator and draft-only broker. No source deployment."""
+        import signal
+    
+        from ..reliability.policy import load as cre_policy
+        from ..reliability.store import CREStore
+        from . import maintainer
+    
+        def expired(*_):
+            raise TimeoutError("MAINTAINER_REVIEW_DEADLINE")
+    
+        order = store.order(job["order_id"])
+        if (
+            job["policy_sha256"] != eff.sha256
+            or not eff.get("maintenance.enable_factory_maintainer")
+            or not authorized(order, eff)
+            or time.time() >= job["deadline_epoch"]
+        ):
+            raise RuntimeError("MAINTAINER_REVIEW_NOT_AUTHORIZED_OR_EXPIRED")
+        case = json.loads(Path(job["case"]).read_text())
+        if job.get("durable_native"):
+            from .completion_receipt import Context
+    
+            Context.from_job(store, job["job_id"])
+            maintainer.submission(case, require_receipt=True)
+        signal.signal(signal.SIGALRM, expired)
+        signal.alarm(max(1, int(job["deadline_epoch"] - time.time())))
+        try:
+            result = maintainer.process(
+                store,
+                case["proposal_id"],
+                CREStore(),
+                cre_policy(),
+                fingerprints=[case["incident"]["fingerprint"]] if case.get("incident", {}).get("fingerprint") else [],
+                tests_ref=f"local-agent:{job['job_id']}",
+            )
+            # Authority must still hold after the potentially long independent evaluation.
+            from .policy import load
+    
+            latest = load()
+            if (
+>               result["status"] == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                ^^^^^^^^^^^^^^^^
+                and latest.sha256 == eff.sha256
+                and authorized(order, latest)
+                and time.time() < job["deadline_epoch"]
+            ):
+E           KeyError: 'status'
+
+factory/python/forge_factory/afo/local_agent.py:824: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_review_disposition.py::test_real_rejected_record_is_a_rejected_review_not_a_keyerror
+FAILED factory/python/tests/test_afo_review_disposition.py::test_real_eligible_record_reaches_existing_branch_broker_without_deployment
+FAILED factory/python/tests/test_afo_review_disposition.py::test_eligible_review_still_requires_current_verification_fence
+FAILED factory/python/tests/test_afo_review_disposition.py::test_changed_owner_policy_prevents_publication_but_preserves_eligible_record

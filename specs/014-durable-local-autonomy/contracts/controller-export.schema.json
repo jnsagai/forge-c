@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:controller-export:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "classification",
+    "native_run",
+    "case_sha256",
+    "report_sha256",
+    "stripped_keys",
+    "redactions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/controller-export/1"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^case-[0-9a-f]{24}$"
+    },
+    "classification": {
+      "const": "CONTROLLER_FAILURE_UNDIAGNOSED"
+    },
+    "native_run": {
+      "const": "NOT_RECORDED"
+    },
+    "case_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "report_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stripped_keys": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "redactions": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "case_id",
+        "classification",
+        "native_run",
+        "order_id",
+        "attempt_id",
+        "job_id",
+        "failure_type",
+        "source_revision",
+        "gaps",
+        "records",
+        "artifacts"
+      ],
+      "properties": {
+        "schema": {
+          "const": "forge-c/controller-case/1"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^case-[0-9a-f]{24}$"
+        },
+        "classification": {
+          "const": "CONTROLLER_FAILURE_UNDIAGNOSED"
+        },
+        "native_run": {
+          "const": "NOT_RECORDED"
+        },
+        "order_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "attempt_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "job_id": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "failure_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,127}$"
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{40}|UNKNOWN)$"
+        },
+        "gaps": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "maxLength": 160
+          }
+        },
+        "records": {
+          "type": "object"
+        },
+        "artifacts": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object"
+          }
+        },
+        "execution": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

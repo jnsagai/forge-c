@@ -1,0 +1,215 @@
+{
+  "captured_utc": "2026-10-29T10:24:41.414268Z",
+  "order_id": "afo-5ab4a2eb3e9de743",
+  "order_state": "BLOCKED",
+  "terminal_reason": "DEFERRED_BY_DEVELOPMENT_POLICY",
+  "source_revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
+  "native": [
+    {
+      "run_id": "01M63JC0YCPJFPSGHW04NG2W32",
+      "status": "SUCCEEDED",
+      "labels_match_job_and_nonce": true,
+      "event_count_first_page": 143,
+      "event_types": [
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "run.completed",
+        "run.created",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "sandbox.stop.completed",
+        "sandbox.stop.started",
+        "stage.completed",
+        "stage.failed",
+        "stage.started"
+      ],
+      "event_shapes": [
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "actor": "dict",
+          "properties": "dict"
+        },
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "actor": "dict",
+          "properties": "dict"
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-54f35fe686e081461fe58ead",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-5ab4a2eb3e9de743-a1/workspace",
+      "execution": {
+        "native_run_ids": [
+          "01M63JC0YCPJFPSGHW04NG2W32"
+        ],
+        "execution_liveness": "QUIESCENT",
+        "resource_lease": "RELEASED",
+        "task_outcome": "BLOCKED",
+        "identity_state": "CONFIRMED",
+        "last_reconciled_at": "2026-10-29T10:23:40.128684Z"
+      },
+      "requests": [
+        {
+          "request_id": "structured-request-a80977a5a50b41209eb553617f86ba1c",
+          "state": "QUIESCENT",
+          "charge": 10969,
+          "reported_tokens": 10969
+        },
+        {
+          "request_id": "structured-request-dbdc9181603144e1bf02ebf358b2cf4c",
+          "state": "QUIESCENT",
+          "charge": 12933,
+          "reported_tokens": 12933
+        },
+        {
+          "request_id": "structured-request-36dc85729bfd4cb0b332c0ae49be9e3e",
+          "state": "QUIESCENT",
+          "charge": 12193,
+          "reported_tokens": 12193
+        },
+        {
+          "request_id": "structured-request-5d8a79573ae74f7f8b2c81afcf5306b0",
+          "state": "QUIESCENT",
+          "charge": 7574,
+          "reported_tokens": 7574
+        },
+        {
+          "request_id": "structured-request-8c734d40550d4961850dbd8e8c5eb00d",
+          "state": "QUIESCENT",
+          "charge": 9956,
+          "reported_tokens": 9956
+        },
+        {
+          "request_id": "structured-request-80229ca2d746403f8cbf5b8b86a196b7",
+          "state": "QUIESCENT",
+          "charge": 9416,
+          "reported_tokens": 9416
+        }
+      ],
+      "inspections": {
+        "SWE.1": {
+          "count": 2,
+          "latest": [
+            {
+              "inspection_id": "INS-SWE.1-001",
+              "recorded_at": "2026-10-29T10:23:22.153515Z",
+              "verdict": "FAIL",
+              "findings": [
+                {
+                  "detail": "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+                  "id": "SWE1-03",
+                  "severity": "major"
+                }
+              ],
+              "baseline_hash": "112600eefffb6f360c6cde033a6f5757485b8bd1314d493c620b7565f2a46d07",
+              "stale_reason": null
+            },
+            {
+              "inspection_id": "INS-SWE.1-002",
+              "recorded_at": "2026-10-29T10:23:25.730654Z",
+              "verdict": "FAIL",
+              "findings": [
+                {
+                  "detail": "workproducts/SWE.1/software_requirements.md, Open points, states no safe-state allocation is assessed or invented, and safety/software_safety_requirements.md states safety assurance is not assessed; S",
+                  "id": "SWE1-03",
+                  "severity": "major"
+                }
+              ],
+              "baseline_hash": "112600eefffb6f360c6cde033a6f5757485b8bd1314d493c620b7565f2a46d07",
+              "stale_reason": null
+            }
+          ]
+        },
+        "SWE.2": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.3": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.4": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.5": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.6": {
+          "count": 0,
+          "latest": []
+        }
+      },
+      "structured_result_files": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 2,
+    "jobs": 0,
+    "requests": 12,
+    "tools": 68,
+    "corrections": 0,
+    "charged_tokens": 200000000,
+    "usage_unknown": true,
+    "unique_executions": 2,
+    "unbounded_historical_usage": false
+  },
+  "read_only_snapshot": true,
+  "request_or_restart_performed": false
+}

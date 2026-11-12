@@ -1,0 +1,150 @@
+{
+  "attempts": [
+    {
+      "name": "provider-wiring-first",
+      "private_junit_sha256": "0c22be91bfdcb85a89d063a06e896e2e170e460ee8edd4e31dd3aff40f97a644",
+      "private_log_sha256": "ddc3d9f1cf00f769a1ed8e6e5d487701daf649ab1ed0cf685fdfe072a3be7d8b",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 8.803,
+        "skipped": 0,
+        "tests": 75,
+        "timestamp": "2026-10-25T12:37:27.265647+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-recovery-first",
+      "private_junit_sha256": "8b46504fd37a8e12926e4bd6ef03846f8df700649cbbaa7e2c3109e275c2349d",
+      "private_log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 2.554,
+        "skipped": 0,
+        "tests": 8,
+        "timestamp": "2026-10-25T12:38:33.356384+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-recovery-second",
+      "private_junit_sha256": "2ab97ce209bcfe23e60176670ccef7aaab9f715ed316e56d2975f72820f8188f",
+      "private_log_sha256": "75bd2bdc2155266f4aa05c024158736b61326397c04f79f06a8cd0ea42e580eb",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 3.017,
+        "skipped": 1,
+        "tests": 35,
+        "timestamp": "2026-10-25T12:39:34.498361+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-final-check",
+      "private_junit_sha256": "3020dabb022857e905642c94cb43d8f69e3b65200c7f8607fb28ab2231946549",
+      "private_log_sha256": "9fc92b646b0c4968c850daeb0d2998f6590f5e01268a53963ae738c9127bb4db",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 10.281,
+        "skipped": 1,
+        "tests": 92,
+        "timestamp": "2026-10-25T12:40:35.358943+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-final-races",
+      "private_junit_sha256": "b93291aa7bcad660822e8783da6c0162f4a599986bf50b8f8ac89ad904eeaca6",
+      "private_log_sha256": "986dbc9a5d6b6525242d1315dd44f9f5e97162596004680091f1927df955e4ea",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 8.987,
+        "skipped": 0,
+        "tests": 43,
+        "timestamp": "2026-10-25T12:41:59.208981+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-final-delegate-valid",
+      "private_junit_sha256": "1c80f59506731abaac47274bc54a9a31e937cb341079897b8cd7b83274434136",
+      "private_log_sha256": "18cdbfa61490d5eac087a742bfb881f4b0044c3dae2b34f7a43d8d18f0403bc1",
+      "results": {
+        "errors": 0,
+        "failures": 1,
+        "seconds": 17.629,
+        "skipped": 0,
+        "tests": 43,
+        "timestamp": "2026-10-25T12:42:45.853844+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-final-delegate-fixed",
+      "private_junit_sha256": "c44c720c12041247923b2c4b9e3401530842afe9aa8f837b5e436481049d3067",
+      "private_log_sha256": "325b7cf7b0d6ead544ebb7e833a08009fa10cf90ce29b8f9021e2ede461488f5",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 8.01,
+        "skipped": 0,
+        "tests": 47,
+        "timestamp": "2026-10-25T12:43:48.535361+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-boot-first",
+      "private_junit_sha256": "d0a77c3da82cbf9321b860b8bfda58300d92b90fc39cb6865791c810e3ad08fe",
+      "private_log_sha256": "8c2cfe4714e6badc57f62f9a509fea35c250fb637b4a4954b2effbf6dbd75d40",
+      "results": {
+        "errors": 0,
+        "failures": 0,
+        "seconds": 10.536,
+        "skipped": 1,
+        "tests": 55,
+        "timestamp": "2026-10-25T12:46:12.317254+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-e73cbad-core",
+      "private_junit_sha256": "974829cd057ee12898b7787308046b7e7868b30eac4232784e112d00f7d03861",
+      "private_log_sha256": "3650e721cf896395e7b73c09e3c8ae5288b8b85bdcb73d6f2e88e259278011b7",
+      "results": {
+        "errors": 42,
+        "failures": 6,
+        "seconds": 70.074,
+        "skipped": 1,
+        "tests": 419,
+        "timestamp": "2026-10-25T12:44:58.954298+00:00"
+      },
+      "retained_privately_on_loop10": true
+    },
+    {
+      "name": "provider-e73cbad-release",
+      "private_junit_sha256": "1e0c9161235dbbfc4a325c2964c16accb4a731aa4f01f830a29de7a4ea92edaf",
+      "private_log_sha256": "242d4890cd8924a5f42fc1b166c633141bdfbdba4869fb7e3f3574f6e71dc51e",
+      "results": {
+        "errors": 0,
+        "failures": 4,
+        "seconds": 10.275,
+        "skipped": 0,
+        "tests": 13,
+        "timestamp": "2026-10-25T12:46:10.142309+00:00"
+      },
+      "retained_privately_on_loop10": true
+    }
+  ],
+  "resolutions": {
+    "provider-e73cbad-core": "Runner omitted forge-env.sh and private vendor fixtures and inherited umask 077. Restored hash-verified fixtures, pinned environment and normal cross-UID fixture mask.",
+    "provider-e73cbad-release": "Runner omitted pinned Fabro/tool environment; rerun in separately initialized process.",
+    "provider-final-delegate-valid": "Generic continuous Conductor incorrectly delegated stop without selected local profile; production condition corrected."
+  },
+  "scope": "DEVELOPMENT_AND_RUNNER_FAILURES_RETAINED_NOT_LIVE_QUALIFICATION"
+}

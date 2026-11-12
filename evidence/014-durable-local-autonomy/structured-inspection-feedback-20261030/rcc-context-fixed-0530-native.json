@@ -1,0 +1,502 @@
+{
+  "at": "2026-10-30T05:31:07.080232Z",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 58
+  },
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "order_id": "afo-6bde501adad6a2bf",
+  "model_requests_by_observer": 0,
+  "order": {
+    "state": "RUNNING",
+    "terminal_reason": null,
+    "created_epoch": 1793333451.2753763
+  },
+  "attempts": [
+    {
+      "attempt_id": "afo-6bde501adad6a2bf-a1",
+      "seq": 1,
+      "state": "RUNNING",
+      "record": {
+        "workspace_ref": "workorder:WO-AFO-6bde501adad6a2bf-a1",
+        "factory_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+        "fabro_run_id": "01M65G3CG47YKS11GRQEATNB10"
+      }
+    }
+  ],
+  "products": [
+    {
+      "job_id": "afo-product-4855f18721196dcca4107ca6",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-6bde501adad6a2bf-a1/workspace",
+      "model": "qwen3.8:27b-q8_0",
+      "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+      "reserved_tokens": 1000000000,
+      "deadline_epoch": 1793347916,
+      "execution": {
+        "execution_liveness": "LIVE",
+        "resource_lease": "HELD",
+        "native_run_ids": [
+          "01M65G3CG47YKS11GRQEATNB10"
+        ],
+        "task_outcome": "ACTIVE",
+        "terminal_reason": null
+      },
+      "request_states": {
+        "QUIESCENT": 28,
+        "SENT": 1
+      },
+      "reported_tokens_known": 509390,
+      "requests_with_unknown_usage": 1,
+      "last_request_fields": [
+        "accounting",
+        "body_sha256",
+        "charge",
+        "created_at",
+        "input_tokens_reserved",
+        "job_id",
+        "mission_id",
+        "output_cap",
+        "provider_instance",
+        "provider_instance_sha256",
+        "reported_tokens",
+        "request_id",
+        "reserved_tokens",
+        "sent_at",
+        "state"
+      ],
+      "request_measurements": [
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 39178,
+          "output_cap": 34816,
+          "reserved_tokens": 73994,
+          "reported_tokens": 20606,
+          "created_at": "2026-10-30T05:27:05.656376Z",
+          "sent_at": "2026-10-30T05:27:05.824771Z"
+        },
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 39170,
+          "output_cap": 34816,
+          "reserved_tokens": 73986,
+          "reported_tokens": 15425,
+          "created_at": "2026-10-30T05:29:43.638023Z",
+          "sent_at": "2026-10-30T05:29:43.826869Z"
+        },
+        {
+          "state": "SENT",
+          "input_tokens_reserved": 39174,
+          "output_cap": 34816,
+          "reserved_tokens": 73990,
+          "reported_tokens": null,
+          "created_at": "2026-10-30T05:30:44.128097Z",
+          "sent_at": "2026-10-30T05:30:44.569730Z"
+        }
+      ],
+      "inspection_files": [
+        "inspection/SWE.1/INS-SWE.1-001.json",
+        "inspection/SWE.1/INS-SWE.1-002.json",
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-30T045751.389582Z.json",
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-30T051755.251471Z.json",
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-30T045751.570985Z.json",
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-30T051755.434120Z.json"
+      ],
+      "packet_progress": [
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-01.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-01",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-02.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-02",
+          "status": "INVALID",
+          "attempts": 3,
+          "error_count": 1
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-03.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-03",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-04.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-04",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-05.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-05",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__3f1de8adb287ebfb__SWE1-06.json",
+          "task": "inspect:3f1de8adb287ebfb:SWE1-06",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-01.json",
+          "task": "inspect:4790389bbe01a900:SWE1-01",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-02.json",
+          "task": "inspect:4790389bbe01a900:SWE1-02",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-03.json",
+          "task": "inspect:4790389bbe01a900:SWE1-03",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-04.json",
+          "task": "inspect:4790389bbe01a900:SWE1-04",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-05.json",
+          "task": "inspect:4790389bbe01a900:SWE1-05",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__4790389bbe01a900__SWE1-06.json",
+          "task": "inspect:4790389bbe01a900:SWE1-06",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__5d8eb20b9787d191__SWE1-01.json",
+          "task": "inspect:5d8eb20b9787d191:SWE1-01",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__5d8eb20b9787d191__SWE1-02.json",
+          "task": "inspect:5d8eb20b9787d191:SWE1-02",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__5d8eb20b9787d191__SWE1-03.json",
+          "task": "inspect:5d8eb20b9787d191:SWE1-03",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/inspect__5d8eb20b9787d191__SWE1-04.json",
+          "task": "inspect:5d8eb20b9787d191:SWE1-04",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_AHB1ENR.json",
+          "task": "requirements:RCC_AHB1ENR",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_AHB1RSTR.json",
+          "task": "requirements:RCC_AHB1RSTR",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_1.json",
+          "task": "requirements:RCC_CR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_2.json",
+          "task": "requirements:RCC_CR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_1.json",
+          "task": "requirements:RCC_SR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_2.json",
+          "task": "requirements:RCC_SR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__crosscutting.json",
+          "task": "requirements:crosscutting",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        }
+      ],
+      "inspection_packet_results": [
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-01",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 5
+        },
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-02",
+          "status": "INVALID",
+          "verdict": "FAIL",
+          "findings_count": 2,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-03",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 2,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-04",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 2,
+          "evidence_checked_count": 4
+        },
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-05",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 5
+        },
+        {
+          "task": "inspect:3f1de8adb287ebfb:SWE1-06",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-01",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-02",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-03",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-04",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 2,
+          "evidence_checked_count": 4
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-05",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:4790389bbe01a900:SWE1-06",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 5
+        },
+        {
+          "task": "inspect:5d8eb20b9787d191:SWE1-01",
+          "status": "VALID",
+          "verdict": "PASS",
+          "findings_count": 0,
+          "evidence_checked_count": 5
+        },
+        {
+          "task": "inspect:5d8eb20b9787d191:SWE1-02",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 6,
+          "evidence_checked_count": 7
+        },
+        {
+          "task": "inspect:5d8eb20b9787d191:SWE1-03",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 1,
+          "evidence_checked_count": 5
+        },
+        {
+          "task": "inspect:5d8eb20b9787d191:SWE1-04",
+          "status": "VALID",
+          "verdict": "FAIL",
+          "findings_count": 2,
+          "evidence_checked_count": 4
+        }
+      ],
+      "native_status_now": {
+        "01M65G3CG47YKS11GRQEATNB10": "RUNNING"
+      },
+      "native_metadata_keys": [
+        "ask_fabro",
+        "automation",
+        "children_count",
+        "created_by",
+        "current_question",
+        "diff",
+        "goal",
+        "id",
+        "labels",
+        "lifecycle",
+        "links",
+        "models",
+        "origin",
+        "pull_request",
+        "repository",
+        "retried_from",
+        "sandbox",
+        "size",
+        "source_directory",
+        "superseded_by",
+        "timestamps",
+        "timing",
+        "title",
+        "usage",
+        "workflow"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "resource": "inference",
+      "holder": "afo-product-4855f18721196dcca4107ca6",
+      "epoch": 55
+    },
+    {
+      "resource": "generation",
+      "holder": "structured-request-2141e782d28b419aac45865f391c40e8",
+      "epoch": 1221
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+    "created_at": "2026-10-27T22:31:02.178374Z",
+    "limits": {
+      "deadline": 1793347916,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "F014-ROLE-EXPERIMENT-20261027-RCC",
+    "mission_id": "F014-NIGHT-20261027-RCC",
+    "initial_limits": {
+      "deadline": 1793161857.1740136,
+      "max_attempts": 3,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 120000,
+      "max_tools": 32
+    },
+    "initial_authorization_ref": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793161857.1740136,
+        "deadline_epoch": 1793347916,
+        "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+        "accepted_at": "2026-10-30T00:15:57.142624Z"
+      }
+    ],
+    "capacity_amendments": [
+      {
+        "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+        "old_limits": {
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 32,
+          "max_tokens": 120000,
+          "max_tools": 32
+        },
+        "document": {
+          "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+          "limits": {
+            "max_attempts": 1000,
+            "max_corrections": 1,
+            "max_jobs": 1000,
+            "max_requests": 100000,
+            "max_tokens": 100000000000,
+            "max_tools": 1000000
+          },
+          "mission_id": "F014-NIGHT-20261027-RCC",
+          "operator_epoch": 50,
+          "reason": "Owner explicitly requested extraordinary high finite limits; same RCC lineage, old charges and uncertainty, no exhausted mission reset",
+          "request": {
+            "driver_class": "LL",
+            "model": "qwen3.8:27b-q8_0",
+            "order_id": "f014-rcc-ll-aspice-20261030-v1"
+          },
+          "schema": "forge-c/mission-capacity-amendment/1",
+          "snapshot_sha256": "2875dbb11d2de75585243868b5b0ca4fdc5c11662253455141019d75fb51b6ad"
+        },
+        "accepted_at": "2026-10-30T00:15:45.195395Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 6,
+    "requests": 100,
+    "tools": 2,
+    "corrections": 1,
+    "charged_tokens": 2004217072,
+    "usage_unknown": true,
+    "unique_executions": 10,
+    "unbounded_historical_usage": false
+  }
+}

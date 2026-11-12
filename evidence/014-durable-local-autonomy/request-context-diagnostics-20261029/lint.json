@@ -1,0 +1,107 @@
+{
+  "full_lint": "SAME_INHERITED_DIAGNOSTICS",
+  "baseline_revision": "453dde2",
+  "candidate_revision": "a1c6ae5",
+  "baseline_count": 16,
+  "candidate_count": 16,
+  "new_diagnostics": 0,
+  "selected_E9_F_B": "PASS",
+  "diagnostics": [
+    [
+      "factory/python/forge_factory/afo/request_admission.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from .product_job import resolve"
+    ],
+    [
+      "factory/python/forge_factory/afo/request_admission.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from ..lrtx.role_capability import admit_job"
+    ],
+    [
+      "factory/python/forge_factory/afo/request_admission.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from . import local_agent"
+    ],
+    [
+      "factory/python/forge_factory/afo/request_admission.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from .operations import configured, Intent"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from forge_factory.mcp import sdk"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from fastapi.testclient import TestClient"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "E731",
+      "Do not assign a `lambda` expression, use a `def`",
+      "state = lambda: {\"UnitFileState\": \"enabled\", \"ActiveState\": \"failed\", \"Result\": \"start-limit-hit\"}"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from forge_factory.mcp import sdk"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "E401",
+      "Multiple imports on one line",
+      "import os, signal, subprocess, sys"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "import os, signal, subprocess, sys"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "E731",
+      "Do not assign a `lambda` expression, use a `def`",
+      "observe = lambda: calls.append(True) or {\"ok\": False}"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "import os"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "from forge_factory.afo import qualification as Q, policy"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "import copy"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "import hashlib"
+    ],
+    [
+      "factory/python/tests/test_da014_integration.py",
+      "I001",
+      "Import block is un-sorted or un-formatted",
+      "import os"
+    ]
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "forge-c/lrtx-packet/1",
+  "prompt_version": "lrtx-prompts-1",
+  "phase": "EXTERNAL_ENGINEERING_REVIEW",
+  "task": "BUS-QUERY-HELPERS-fbd8bc8",
+  "role": "fabric-repair",
+  "skill": {
+    "path": ".fabro/skills/fabric-repair/SKILL.md",
+    "sha256": "4fa6d2192ef5c4942ed5e8c1cf9cc337acc754146583251c3bb9bf0fcdbc79e0"
+  },
+  "model": "qwen3.6:35b-a3b",
+  "instructions": "Read-only external implementation-engineer assistance, no repair incident or patch. Review only the complete query helper functions and their explicit caller contract. Find at most two concrete reproducible faults in subprocess bounds, privacy or native reply parsing. Cite an exact function name and literal source quote, with a deterministic trigger/test. Do not report documented UNKNOWN actor/continuous coverage or out-of-scope code as a bug. No tools, code changes, deployments, policy edits, lessons or correctness claims. Empty findings are valid when no concrete fault is supported.",
+  "criteria": [
+    "Treat model findings as unverified proposals",
+    "Respect the stated caller preconditions and scope",
+    "Preserve uncertainty and finite limits"
+  ],
+  "output_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "status",
+      "findings",
+      "limits"
+    ],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "FINDINGS",
+          "NO_SUPPORTED_FINDING",
+          "INSUFFICIENT_EVIDENCE"
+        ]
+      },
+      "findings": {
+        "type": "array",
+        "maxItems": 2,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "function",
+            "source_quote",
+            "trigger",
+            "expected",
+            "deterministic_test"
+          ],
+          "properties": {
+            "function": {
+              "type": "string",
+              "maxLength": 450
+            },
+            "source_quote": {
+              "type": "string",
+              "maxLength": 450
+            },
+            "trigger": {
+              "type": "string",
+              "maxLength": 450
+            },
+            "expected": {
+              "type": "string",
+              "maxLength": 450
+            },
+            "deterministic_test": {
+              "type": "string",
+              "maxLength": 450
+            }
+          }
+        }
+      },
+      "limits": {
+        "type": "array",
+        "maxItems": 3,
+        "items": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    }
+  },
+  "sources": [
+    {
+      "path": "factory/python/forge_factory/afo/bus_audit.py#complete-query-helpers",
+      "sha256": "7505da727381fe1a82d4848b706164fe1f8eebeb2dc12ace5b2ac56c5809320b"
+    },
+    {
+      "path": "input-coverage.json",
+      "sha256": "08981659e93293e474eaaa3d49bcfdfddb53ce581516a56f7d5e88690d3bed60"
+    }
+  ],
+  "artifacts": [],
+  "findings": [],
+  "repair_of": null,
+  "output_reserve": 1024,
+  "sampling": {
+    "temperature": 0
+  },
+  "accounting": {
+    "serialized_chars": 6597,
+    "estimated_prompt_tokens": 2462,
+    "output_reserve": 1024,
+    "context_tokens": 24576,
+    "fits": true,
+    "complete_serialized_request": {
+      "sha256": "bd2d84a6d5343d1f03b785efc276c66d6331e6a9aff6b4465e041abd9a64d6a2",
+      "serialized_bytes": 7960,
+      "input_tokens": 8088,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false
+    }
+  },
+  "input_hash": "2e2f9ba6cedc69514deb0b4d77c815cebc8d086b71618472cefa21b69066fae5"
+}

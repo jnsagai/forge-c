@@ -1,0 +1,182 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_native_request_context_evidence_retains_detected_role_without_body[accepted] _
+
+protocol = namespace(store=<forge_factory.afo.queue.Store object at 0x712007e83230>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...ive_request_context_ev0/case.json', 'case_sha256': '045857f64e179f54d7ffbd4c91b758fb5583c1b4433a5af51827cf01b24372e2'})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x712007c0d220>
+outcome = 'accepted'
+
+    @pytest.mark.parametrize("outcome", ["accepted", "oversized", "unidentified"])
+    def test_native_request_context_evidence_retains_detected_role_without_body(protocol, monkeypatch, outcome):
+        from forge_factory.afo import policy, request_admission
+        from forge_factory.afo.diagnosis_packet import measure_request
+        from forge_factory.lrtx import role_capability
+
+        p = protocol
+        job = ready(p, monkeypatch)
+        job.update(
+            role=None, model_digest="a" * 64, precision="Q8_0", semantic_obligations=1,
+            work_class="PRODUCT_DIAGNOSIS", factory_revision={"commit": "b" * 40},
+        )
+        identity = {
+            "role": "swe2-author", "model_digest": job["model_digest"], "precision": job["precision"],
+            "reasoning": "none", "schema_mode": "unconstrained", "adapter_revision": "b" * 40,
+            "context_tokens": 1 if outcome == "oversized" else 4096,
+            "sampling": {"temperature": 0}, "task_class": "PRODUCT_DIAGNOSIS",
+        }
+        job["role_capabilities"] = {"swe2-author": {"identity": identity, "ref": {}}}
+        L.save(p.store, job)
+        # Only the independent capability receipt is a fixture. Actual native role
+        # detection, serialization measurement and context admission run unchanged.
+        monkeypatch.setattr(policy, "load", lambda **kw: p.eff)
+        monkeypatch.setattr(role_capability, "require", lambda *a, **kw: {"qualified_fixture": True})
+        Executions(p.store).reserve(job["job_id"], job["mission_id"], job["nonce"])
+        secret = "PRIVATE_ENGINEERING_BODY_NOT_FOR_ADMISSION_LOGS"
+        body = {
+            "model": job["model"],
+            "messages": [{"role": "user", "content": secret + (
+                " skill_name swe2-author" if outcome != "unidentified" else ""
+            )}],
+            "temperature": 0, "max_tokens": 20,
+        }
+        binding = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": "context-evidence"}
+        measured = measure_request(body)
+        before = p.ledger.snapshot(job["mission_id"])
+        if outcome == "accepted":
+            rec = request_admission.reserve(p.store, binding, body, eff=p.eff)
+            assert rec["state"] == "RESERVED"
+            kind = "REQUEST_METADATA:" + binding["request_id"]
+        else:
+            with pytest.raises(Refused, match="CAPABILITY_LIMIT") as caught:
+                request_admission.reserve(p.store, binding, body, eff=p.eff)
+            kind = "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measured["sha256"]
+            assert p.ledger.snapshot(job["mission_id"]) == before
+            with p.store.tx() as c:
+                assert c.execute("SELECT COUNT(*) FROM afo_request_ledger").fetchone()[0] == 0
+        evidence = Executions(p.store)._evidence(job["job_id"], kind)
+>       assert evidence["role"] == (None if outcome == "unidentified" else "swe2-author")
+E       AssertionError: assert None == 'swe2-author'
+
+factory/python/tests/test_da014_integration.py:219: AssertionError
+_ test_native_request_context_evidence_retains_detected_role_without_body[oversized] _
+
+protocol = namespace(store=<forge_factory.afo.queue.Store object at 0x712007e33d90>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...ive_request_context_ev1/case.json', 'case_sha256': 'f550c18bcd39ddaac21cbe524632b130f9bec4aebf7e7383f8d303729e9c261c'})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x712007c0d810>
+outcome = 'oversized'
+
+    @pytest.mark.parametrize("outcome", ["accepted", "oversized", "unidentified"])
+    def test_native_request_context_evidence_retains_detected_role_without_body(protocol, monkeypatch, outcome):
+        from forge_factory.afo import policy, request_admission
+        from forge_factory.afo.diagnosis_packet import measure_request
+        from forge_factory.lrtx import role_capability
+
+        p = protocol
+        job = ready(p, monkeypatch)
+        job.update(
+            role=None, model_digest="a" * 64, precision="Q8_0", semantic_obligations=1,
+            work_class="PRODUCT_DIAGNOSIS", factory_revision={"commit": "b" * 40},
+        )
+        identity = {
+            "role": "swe2-author", "model_digest": job["model_digest"], "precision": job["precision"],
+            "reasoning": "none", "schema_mode": "unconstrained", "adapter_revision": "b" * 40,
+            "context_tokens": 1 if outcome == "oversized" else 4096,
+            "sampling": {"temperature": 0}, "task_class": "PRODUCT_DIAGNOSIS",
+        }
+        job["role_capabilities"] = {"swe2-author": {"identity": identity, "ref": {}}}
+        L.save(p.store, job)
+        # Only the independent capability receipt is a fixture. Actual native role
+        # detection, serialization measurement and context admission run unchanged.
+        monkeypatch.setattr(policy, "load", lambda **kw: p.eff)
+        monkeypatch.setattr(role_capability, "require", lambda *a, **kw: {"qualified_fixture": True})
+        Executions(p.store).reserve(job["job_id"], job["mission_id"], job["nonce"])
+        secret = "PRIVATE_ENGINEERING_BODY_NOT_FOR_ADMISSION_LOGS"
+        body = {
+            "model": job["model"],
+            "messages": [{"role": "user", "content": secret + (
+                " skill_name swe2-author" if outcome != "unidentified" else ""
+            )}],
+            "temperature": 0, "max_tokens": 20,
+        }
+        binding = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": "context-evidence"}
+        measured = measure_request(body)
+        before = p.ledger.snapshot(job["mission_id"])
+        if outcome == "accepted":
+            rec = request_admission.reserve(p.store, binding, body, eff=p.eff)
+            assert rec["state"] == "RESERVED"
+            kind = "REQUEST_METADATA:" + binding["request_id"]
+        else:
+            with pytest.raises(Refused, match="CAPABILITY_LIMIT") as caught:
+                request_admission.reserve(p.store, binding, body, eff=p.eff)
+            kind = "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measured["sha256"]
+            assert p.ledger.snapshot(job["mission_id"]) == before
+            with p.store.tx() as c:
+                assert c.execute("SELECT COUNT(*) FROM afo_request_ledger").fetchone()[0] == 0
+        evidence = Executions(p.store)._evidence(job["job_id"], kind)
+>       assert evidence["role"] == (None if outcome == "unidentified" else "swe2-author")
+               ^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+factory/python/tests/test_da014_integration.py:219: TypeError
+_ test_native_request_context_evidence_retains_detected_role_without_body[unidentified] _
+
+protocol = namespace(store=<forge_factory.afo.queue.Store object at 0x7120065a3250>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...ive_request_context_ev2/case.json', 'case_sha256': '0b07de0316d99321b684a8c67f56847e35df35de59443fb01bf21e3c34037d35'})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7120065c69f0>
+outcome = 'unidentified'
+
+    @pytest.mark.parametrize("outcome", ["accepted", "oversized", "unidentified"])
+    def test_native_request_context_evidence_retains_detected_role_without_body(protocol, monkeypatch, outcome):
+        from forge_factory.afo import policy, request_admission
+        from forge_factory.afo.diagnosis_packet import measure_request
+        from forge_factory.lrtx import role_capability
+
+        p = protocol
+        job = ready(p, monkeypatch)
+        job.update(
+            role=None, model_digest="a" * 64, precision="Q8_0", semantic_obligations=1,
+            work_class="PRODUCT_DIAGNOSIS", factory_revision={"commit": "b" * 40},
+        )
+        identity = {
+            "role": "swe2-author", "model_digest": job["model_digest"], "precision": job["precision"],
+            "reasoning": "none", "schema_mode": "unconstrained", "adapter_revision": "b" * 40,
+            "context_tokens": 1 if outcome == "oversized" else 4096,
+            "sampling": {"temperature": 0}, "task_class": "PRODUCT_DIAGNOSIS",
+        }
+        job["role_capabilities"] = {"swe2-author": {"identity": identity, "ref": {}}}
+        L.save(p.store, job)
+        # Only the independent capability receipt is a fixture. Actual native role
+        # detection, serialization measurement and context admission run unchanged.
+        monkeypatch.setattr(policy, "load", lambda **kw: p.eff)
+        monkeypatch.setattr(role_capability, "require", lambda *a, **kw: {"qualified_fixture": True})
+        Executions(p.store).reserve(job["job_id"], job["mission_id"], job["nonce"])
+        secret = "PRIVATE_ENGINEERING_BODY_NOT_FOR_ADMISSION_LOGS"
+        body = {
+            "model": job["model"],
+            "messages": [{"role": "user", "content": secret + (
+                " skill_name swe2-author" if outcome != "unidentified" else ""
+            )}],
+            "temperature": 0, "max_tokens": 20,
+        }
+        binding = {"job_id": job["job_id"], "nonce": job["nonce"], "request_id": "context-evidence"}
+        measured = measure_request(body)
+        before = p.ledger.snapshot(job["mission_id"])
+        if outcome == "accepted":
+            rec = request_admission.reserve(p.store, binding, body, eff=p.eff)
+            assert rec["state"] == "RESERVED"
+            kind = "REQUEST_METADATA:" + binding["request_id"]
+        else:
+            with pytest.raises(Refused, match="CAPABILITY_LIMIT") as caught:
+                request_admission.reserve(p.store, binding, body, eff=p.eff)
+            kind = "REQUEST_REFUSAL:" + binding["request_id"] + ":" + measured["sha256"]
+            assert p.ledger.snapshot(job["mission_id"]) == before
+            with p.store.tx() as c:
+                assert c.execute("SELECT COUNT(*) FROM afo_request_ledger").fetchone()[0] == 0
+        evidence = Executions(p.store)._evidence(job["job_id"], kind)
+>       assert evidence["role"] == (None if outcome == "unidentified" else "swe2-author")
+               ^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+factory/python/tests/test_da014_integration.py:219: TypeError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_integration.py::test_native_request_context_evidence_retains_detected_role_without_body[accepted]
+FAILED factory/python/tests/test_da014_integration.py::test_native_request_context_evidence_retains_detected_role_without_body[oversized]
+FAILED factory/python/tests/test_da014_integration.py::test_native_request_context_evidence_retains_detected_role_without_body[unidentified]

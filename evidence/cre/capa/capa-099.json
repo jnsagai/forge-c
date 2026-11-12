@@ -1,0 +1,101 @@
+{
+ "CAPA-099": {
+  "history": [
+   {
+    "at": "2026-11-02T00:48:34.849051Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[\"fabro-swe6-obl-l5-declaration-refused\"]",
+    "from_state": null,
+    "reason": "Run SWE6-OBL-L5: TEST declaration refused, undeclared test change, STUCK at 10/10",
+    "seq": 743,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T00:48:34.961810Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 744,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T00:48:35.103395Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-099 assigned",
+    "seq": 745,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T00:48:39.258926Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[\"reproducer-run:rr-62910765bf10e43c1706\", \"reproducer-run:rr-8b137cc52dc24df7a15c\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 746,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T00:48:39.290379Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[\"git:d733b0ec6c45..64d858176e71\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 64d858176e71 (patch 11781 bytes)",
+    "seq": 747,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T00:51:29.326279Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[\"reproducer-run:rr-d770a555604e1ece63cb\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-099 absent at 64d858176e71",
+    "seq": 748,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T00:51:29.344622Z",
+    "capa_id": "CAPA-099",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 749,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-3e9c620f83890c64e08046bafcd0b3bdcdc02a0c",
+   "d733b0ec6c45a9caa6f314da5d2d1c4dff7401b3",
+   "64d858176e711f645db8d64e9b76737100f1719c",
+   "pd-8c69c98b2f8dd1c08c11"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<64d858176e71"
+   ],
+   "candidate_patch_sha256": "fd78640c54681f009618294463c59c3f392af8efd207eef28582dcada43e28e5",
+   "capa_id": "CAPA-099",
+   "created_at": "2026-11-02T00:48:34.849051Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe6-obl-l5-declaration-refused"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-099",
+   "reproducer_id": "RPR-099",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-62910765bf10e43c1706",
+    "reproducer-run:rr-8b137cc52dc24df7a15c"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Triage declarations quote the model's reason, not the requirement",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T00:51:29.344622Z"
+  }
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "candidate_source": "98d066dfe519c5ea2b23cec7d8f9681aff1f71d0",
+  "deployment": "NOT_DEPLOYED",
+  "production_source": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "baseline_contract_source": "81a2c26329fa392658cd4289665a264ca8e5d576",
+  "baseline": "1 EXPECTED FAIL; exact old contract substituted in new integration fixture, not a whole-source control",
+  "local_exact": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "71",
+    "time": "102.543",
+    "timestamp": "2026-10-28T16:27:14.860488+00:00",
+    "hostname": "master"
+  },
+  "native_exact": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "124",
+    "time": "116.556",
+    "timestamp": "2026-10-28T16:26:28.356313+00:00",
+    "hostname": "omniverse2"
+  },
+  "native_qwen_requests": 0,
+  "task_ids_newly_completed": []
+}

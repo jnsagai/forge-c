@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-31T05:34:10.155137Z",
+  "candidate_execution": false,
+  "limits": "Captured normal MCP compile outcomes only; independent verifier calls and authored unit/target builds are separate. No retrospective gate change.",
+  "model_calls": 0,
+  "native_runs": [
+    {
+      "calls": [
+        {
+          "at": "2026-10-30T23:17:29.737726346Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-30T23:19:28.300093191Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-31T00:24:16.860240335Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe6_test_author",
+          "status": "BLOCKED"
+        }
+      ],
+      "counts": {
+        "BLOCKED": 3
+      },
+      "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0"
+    },
+    {
+      "calls": [
+        {
+          "at": "2026-10-31T01:11:51.855827606Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "df_author_0",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-31T01:50:47.008427695Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-31T01:52:41.211963522Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        }
+      ],
+      "counts": {
+        "BLOCKED": 3
+      },
+      "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS"
+    },
+    {
+      "calls": [
+        {
+          "at": "2026-10-31T03:22:35.126932564Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "df_author_0",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-31T03:45:46.943264027Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        },
+        {
+          "at": "2026-10-31T03:45:53.072459740Z",
+          "issues": [
+            "NO_AUTHORIZATION_TICKET:mcp__forge_build_mcp__compile"
+          ],
+          "node": "swe3_author",
+          "status": "BLOCKED"
+        }
+      ],
+      "counts": {
+        "BLOCKED": 3
+      },
+      "native_id": "01M67ZJWDYS7H33828MPTK6E6D"
+    }
+  ],
+  "read_only": true,
+  "schema": "forge-c/historical-compile-ticket-observation/1"
+}

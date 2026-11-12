@@ -1,0 +1,6 @@
+# before fix, source 7490b6d8
+E        +    where is_file = (PosixPath('/tmp/pytest-of-jefferson/pytest-253/test_copy_write_keeps_developm0/copy/workspace') / '.forge-run/lrtx/SWE.1/development-execution.json').is_file
+
+factory/python/tests/test_lrtx_scoped_write_workspace.py:31: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_lrtx_scoped_write_workspace.py::test_copy_write_keeps_development_state_in_the_copy

@@ -5,6 +5,7 @@
 No human prompt anywhere. Preflight BLOCKED => immediate BLOCKED package (no agent is started).
 Every terminal path ends in the deterministic finalizer (workflow node, or external fallback here).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,7 +18,7 @@ from pathlib import Path
 from .common import REPO_ROOT, canonical_json, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
-from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE
+from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE, UNIT_VERIFICATION
 from .mcp.preflight import fabro_mcp_config
 from .mcp.preflight import preflight as mcp_preflight
 from .registry.agents import preflight as agent_preflight
@@ -33,23 +34,46 @@ def factory_revision() -> dict:
             return subprocess.run(["git", *a], cwd=REPO_ROOT, capture_output=True, text=True, timeout=20).stdout.strip()
         except (OSError, subprocess.SubprocessError):
             return ""
+
     commit = git("rev-parse", "HEAD")
-    return {"commit": commit or "UNKNOWN", "dirty": bool(git("status", "--porcelain", "--untracked-files=no")),
-            "branch": git("rev-parse", "--abbrev-ref", "HEAD") or "UNKNOWN", "basis": "recorded_at_launch"}
+    return {
+        "commit": commit or "UNKNOWN",
+        "dirty": bool(git("status", "--porcelain", "--untracked-files=no")),
+        "branch": git("rev-parse", "--abbrev-ref", "HEAD") or "UNKNOWN",
+        "basis": "recorded_at_launch",
+    }
 
 
 def model_profile(model: str, provider: str, code_model: str | None, nodes: dict) -> dict:
-    return {"default": model, "provider": provider, "code_nodes": code_model,
-            "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
-            "local_only": provider == "ollama",
-            # CRE-T051 (CRE-FR-014): sampling is what the factory pins - today nothing beyond the model id
-            "sampling": {"temperature": "PROVIDER_DEFAULT (not set by the factory)",
-                         "seed": "NOT_SUPPORTED (Fabro run config has no seed)",
-                         "reproducibility": "stochastic: repeated runs of the same revision may differ"},
-            "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
-            if provider == "ollama" else "per agent registry max_stage_tokens",
-            "note": "local Ollama via gateway" if provider == "ollama" else
-            "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048"}
+    return {
+        "default": model,
+        "provider": provider,
+        "code_nodes": code_model,
+        "nodes": sorted(k for k, v in nodes.items() if v.get("model")),
+        "local_only": provider == "ollama",
+        # CRE-T051 (CRE-FR-014): sampling is what the factory pins - today nothing beyond the model id
+        "sampling": {
+            "temperature": "PROVIDER_DEFAULT (not set by the factory)",
+            "seed": "NOT_SUPPORTED (Fabro run config has no seed)",
+            "reproducibility": "stochastic: repeated runs of the same revision may differ",
+        },
+        "token_budget": "unlimited (owner decision 2026-10-15: no token limits for local qwen runs)"
+        if provider == "ollama"
+        else "per agent registry max_stage_tokens",
+        "note": "local Ollama via gateway"
+        if provider == "ollama"
+        else "CLOUD BENCHMARK (user-authorized); not local-model evidence for T048",
+    }
+
+
+def section_map(ws: Path) -> dict[str, str]:
+    """The prepared primary-source index, shared by launch and role preflight."""
+    sections = {}
+    for line in (Path(ws) / "inputs/index.md").read_text().splitlines():
+        parts = [x.strip() for x in line.split(" | ")]
+        if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in sections:
+            sections[parts[0]] = parts[3]
+    return sections
 
 
 def register_index(md: Path) -> list[dict]:
@@ -85,7 +109,7 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
         buf: list[str] = []
         for ln in cur:
             size: int = sum(len(x) + 1 for x in buf)
-            if (ln.startswith("<a id=\"p-") and size > 30_000) or size > 38_000:
+            if (ln.startswith('<a id="p-') and size > 30_000) or size > 38_000:
                 parts.append(buf)
                 buf = []
             buf.append(ln)
@@ -113,9 +137,14 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
     return files, index
 
 
-def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, dict]:
+def provided_ll(source_wo: str, peripheral: str | None = None, upto: str | None = None) -> tuple[bytes, dict]:
     """ADR-0009: the HAL work order builds on the LL header of an earlier LL work order whose six phases all passed
-    their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance."""
+    their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance.
+
+    F016 FR-027 (owner 2026-11-11, "HAL SWE.1 can use the LL SWE.1 as basis"): a HAL work order that stops at SWE.1 or
+    SWE.2 (`upto`, its --stop-after) may build on an LL work order whose gates SWE.1..`upto` pass; the record then
+    states `basis_phase` and `verified_phases`. Any other `upto` (SWE.3+: code) keeps the six-gate rule, and its
+    record is unchanged."""
     from .inspection.engine import PHASES, Store
     from .layer import layer_of, ll_header, profile
 
@@ -130,15 +159,48 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
     if layer_of(src) != "LL":
         raise ValueError(f"PROVIDED_LL_NOT_FROM_LL_WORK_ORDER:{source_wo}:{layer_of(src)}")
     st = Store(src)
-    failed = [ph for ph in PHASES if st.gate(ph)["decision"] != "PASS"]
+    relaxed = upto in ("SWE.1", "SWE.2")
+    need = list(PHASES[:PHASES.index(upto) + 1]) if relaxed else list(PHASES)
+    failed = [ph for ph in need if st.gate(ph)["decision"] != "PASS"]
     if failed:
         raise ValueError(f"PROVIDED_LL_NOT_VERIFIED:{source_wo}:{','.join(failed)}")
     data = (src / LL_HEADER).read_bytes()
     pkg = src / ".forge-run/package.json"
-    return data, {"path": LL_HEADER, "role": "provided_ll_driver", "sha256": sha256_bytes(data),
-                  "source_work_order": source_wo,
-                  "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
-                  "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)"}
+    from .brownfield import code_mode, manifest_of
+
+    delivered = code_mode(manifest_of(src))  # CAPA-130: a delivered LL (ST code) keeps its code mode for the HAL
+    return data, {
+        "path": LL_HEADER,
+        "role": "provided_ll_driver",
+        "sha256": sha256_bytes(data),
+        "source_work_order": source_wo,
+        "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
+        "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)",
+        **({"delivered_code_mode": delivered} if delivered else {}),
+        **({"basis_phase": upto, "verified_phases": need,
+            "basis_rule": "F016 FR-027 (owner 2026-11-11): a HAL work order stopping at "
+                          f"{upto} builds on an LL work order whose gates {need[0]}..{upto} pass; SWE.3+ needs all six"}
+           if relaxed else {}),
+    }
+
+
+def ll_basis_for(stop_after: str | None, source_manifest: dict | None = None) -> str | None:
+    """F016 FR-027: a HAL work order that stops at SWE.1 or SWE.2 may build on an LL work order verified up to its last
+    phase (provided_ll `upto`); None keeps the six-gate rule (code phases SWE.3+).
+    CAPA-228 (owner SWE.2 review 2026-11-11: the SPI/TIM HAL keep their LL SWE.1 basis through SWE.2): an order that
+    continues a HAL order keeps the LL basis that order recorded (its provided basis_phase), so the continuation builds
+    on the same verified LL instead of requiring LL gates the basis order never ran."""
+    if stop_after not in ("SWE.1", "SWE.2"):
+        return None
+    from .inspection.engine import PHASES
+
+    recorded = {r.get("basis_phase") for r in (source_manifest or {}).get("provided") or []
+                if r.get("role") == "provided_ll_driver" and r.get("basis_phase")}
+    if len(recorded) == 1:
+        basis = recorded.pop()
+        if basis in PHASES and PHASES.index(basis) <= PHASES.index(stop_after):
+            return basis
+    return stop_after
 
 
 def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[dict]:
@@ -148,16 +210,60 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
     from .common import load_yaml
 
     p = Path(repo) / "config/factory/verification-dispositions.yaml"
-    ods = [d for d in ((load_yaml(p) or {}).get("dispositions") or [] if p.is_file() else [])
-           if example_name in (d.get("examples") or [])]
+    ods = [
+        d
+        for d in ((load_yaml(p) or {}).get("dispositions") or [] if p.is_file() else [])
+        if example_name in (d.get("examples") or [])
+    ]
     bad = [d.get("id") for d in ods if not (_human(d.get("approved_by")) and d.get("approved_at"))]
     if bad:
         raise ValueError(f"OWNER_DISPOSITION_NOT_HUMAN_APPROVED:{bad}")
     return ods
 
 
-def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
+def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
+            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None,
+            quality: dict | None = None, cmsis_gtest: bool = True, ll_basis: str | None = None) -> tuple[Path, dict]:
+    from .release import aspice, qm
+    from .release.development import binding
+
+    if type(cmsis_gtest) is not bool:
+        raise ValueError("CMSIS_HOST_TEST_LINKAGE_SELECTION_INVALID")
+
+    aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
+    qm_scope = qm.binding() if purpose == qm.PURPOSE else None
+    development = binding(purpose) if aspice_scope is None and qm_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
+    onboarded = None
+    from .onboarding.factory_hal import block as factory_hal_block
+
+    fhal = factory_hal_block(spec)  # F016 OB-T070: a factory HAL on the factory's own LL (HAL_ON_LL)
+    if (spec.get("delivery") or {}).get("onboarding") or fhal:  # feature 016: only from an owner-approved package
+        from .onboarding import admit, delivery_from_package, derive, onboarding_dir
+
+        key = Path(example).name
+        derive(example, key)  # re-derived at every launch: any changed input voids the approval (FR-017)
+        ob_pkg, ob_appr, ob_prof = admit(key, spec)
+        if fhal:  # the generated scope and the owner-confirmed budgets; no delivery of its own (FR-025, FR-026)
+            from .onboarding.factory_hal import apply as factory_hal_apply
+
+            spec = factory_hal_apply(spec, ob_pkg, ob_appr)
+        else:
+            spec["delivery"] = delivery_from_package(spec, ob_pkg)
+        spec["peripheral"] = f"onboarded:{key}"
+        onboarded = {"key": key, "package": f"state/onboarding/{key}/onboarding/package.json",
+                     "sha256": ob_pkg["sha256"], "approval_id": ob_appr["approval_id"],
+                     "profile_sha256": sha256_bytes((onboarding_dir(key) / "onboarding/profile.json").read_bytes()),
+                     **({"driver_style": ob_pkg["driver_style"],
+                         "ll_lineage": next(f["value"] for f in ob_pkg["facts"] if f["name"] == "ll_lineage")}
+                        if fhal else {})}
+    from .development_execution import binding as execution_binding
+
+    execution = execution_binding(execution_policy or spec.get("development_execution_policy"), purpose)
+    from .operation_scope import validate as validate_operation_scope
+
+    if "operation_scope" in spec:
+        validate_operation_scope(spec["operation_scope"], delivery=spec.get("delivery"))
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
     inputs: dict[str, bytes] = {}
@@ -169,6 +275,21 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         dst = f"inputs/{src.name}"
         inputs[dst] = src.read_bytes()
         listed.append({"path": dst, "role": item["role"], "sha256": sha256_file(src), "bytes": src.stat().st_size})
+    if "instance" in (spec.get("operation_scope") or {}):  # instance mode: pinned typed interface + LL layer only
+        from .operation_scope import validate_instance_inputs
+
+        if layer != "LL" or spec.get("delivery_first") is not None or spec.get("delivery"):
+            raise ValueError("OPERATION_SCOPE_INSTANCE_REQUIRES_GREENFIELD_LL")
+        validate_instance_inputs(spec["operation_scope"]["instance"], listed)
+    assisted = None
+    if spec.get("provided_requirements"):
+        src = (example / spec["provided_requirements"]).resolve()
+        if REPO_ROOT not in src.parents or not src.is_file():
+            raise ValueError("PROVIDED_REQUIREMENTS_INPUT_UNAVAILABLE")
+        rel = "inputs/provided-requirements.json"
+        inputs[rel] = src.read_bytes()
+        assisted = {"path": rel, "sha256": sha256_file(src), "authorship": "EXTERNALLY_PREPARED"}
+        listed.append({**assisted, "role": "provided_requirements", "bytes": src.stat().st_size})
     index_lines = ["# Input section index (one line per section: number | title | page | file to read_file)", ""]
     for item in list(listed):
         if item["path"].startswith("inputs/RM") and item["path"].endswith(".md"):
@@ -180,22 +301,63 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
     from .upstream import UPSTREAM_FILE, load_upstream
 
     upstream = load_upstream(example)  # human-approved HSI/safety allocation/budgets, else NOT_PROVIDED
+    from .upstream import OUT_OF_CONTEXT, out_of_context
+
+    upstream = out_of_context(upstream, layer=spec.get("layer", "LL+HAL"), purpose=purpose)  # owner 2026-11-09
     target, budgets = dict(spec["target"]), dict(spec["budgets"])
+    if upstream["status"] == OUT_OF_CONTEXT:
+        target["safety_allocation"] = ("OUT_OF_CONTEXT: no software safety requirement is allocated (driver developed "
+                                       f"out of context, purpose {purpose}, owner 2026-11-09)")
+    from . import simulation_performance
+
+    performance, performance_note = simulation_performance.prepared(spec, upstream["status"])  # CAPA-206
     if upstream["status"] == "APPROVED":
         d = upstream["data"]
         inputs["inputs/upstream-inputs.yaml"] = (example / UPSTREAM_FILE).read_bytes()
-        listed.append({"path": "inputs/upstream-inputs.yaml", "role": "approved_upstream_inputs",
-                       "sha256": upstream["sha256"], "bytes": len(inputs["inputs/upstream-inputs.yaml"])})
+        listed.append(
+            {
+                "path": "inputs/upstream-inputs.yaml",
+                "role": "approved_upstream_inputs",
+                "sha256": upstream["sha256"],
+                "bytes": len(inputs["inputs/upstream-inputs.yaml"]),
+            }
+        )
         who = f"approved by {d['approval']['approved_by']} on {d['approval']['approved_on']}"
-        target.update({"hsi_contract": f"PROVIDED {d['hsi_contract']['contract_id']} ({who})",
-                       "safety_allocation": f"PROVIDED ASIL {d['safety_allocation']['asil']} ({who})",
-                       "part_number": d["target"]["part_number"], "silicon_revision": d["target"]["silicon_revision"]})
+        target.update(
+            {
+                "hsi_contract": f"PROVIDED {d['hsi_contract']['contract_id']} ({who})",
+                "safety_allocation": f"PROVIDED ASIL {d['safety_allocation']['asil']} ({who})",
+                "part_number": d["target"]["part_number"],
+                "silicon_revision": d["target"]["silicon_revision"],
+            }
+        )
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
-    provided = []
-    if layer == "HAL":
+    provided, provided_build = [], None
+    standalone = layer == "HAL" and (spec.get("delivery") or {}).get("provided_ll") is False  # F015: ST classic HAL
+    if layer == "HAL" and not standalone:
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
-        data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
+        if execution and execution.get("demonstration_only") and purpose == "QM":
+            from .development_demonstration import provided_ll as demonstration_ll
+
+            data, rec = demonstration_ll(provided_from, spec.get("peripheral") or "rcc")
+        else:
+            # F016: an onboarded order's provided LL is the package's peripheral (its derived profile id)
+            data, rec = provided_ll(provided_from, ob_prof["id"] if onboarded else (spec.get("peripheral") or "rcc"),
+                                    upto=ll_basis)
+            if fhal:  # OB-T070: the provided LL header is the LL lineage's delivered header (same bytes)
+                lineage = {i["path"]: i["sha256"] for i in ob_pkg["inputs"] if i["role"] == "delivered_code"}
+                if lineage.get(rec["path"]) != rec["sha256"]:
+                    raise ValueError(f"PROVIDED_LL_NOT_THE_PACKAGE_LINEAGE:{provided_from}:{rec['path']}")
+            from .brownfield.cmsis import provided_inputs
+
+            # CAPA-128: a provided CMSIS LL (ST code) needs its work order's vendor includes, hash-bound to its manifest
+            # (a delivered HAL brings its own build inputs with its delivery)
+            vendor = None if spec.get("delivery") else provided_inputs(
+                state_dir() / "workorders" / provided_from / "workspace")
+            if vendor is not None:
+                inputs.update(vendor[0])
+                provided_build = vendor[1]
         inputs[rec["path"]] = data
         provided.append(rec)
     intake = None
@@ -203,32 +365,84 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         from .brownfield import delivery as BD
 
         intake = BD.intake(spec, example, wo, {r["path"]: inputs[r["path"]] for r in provided})
+        from .brownfield import interface as BI  # CAPA-112: the frozen API's argument constants, not the code
+
+        api = BI.extract(BD.stored(wo), intake["files"], spec["delivery"]["scope"]["functions"])
+        if api is not None:  # bound like any declared input (hashed into the scope binding and the resume identity)
+            data = BI.render(api)
+            inputs[BI.OUT] = data
+            listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
+    from .quality import resolve as resolve_quality
+
+    if quality is not None:  # autonomous line M3: the campaign's order quality block replaces the example's
+        spec = {**spec, "quality": quality}
+    quality_block, quality_source = resolve_quality(spec, purpose)  # refused before the workspace is used
+    if quality is not None:
+        quality_source = "campaign"
     head = create_workspace(ws, inputs)
+    from .inspection.provided_changes import save_original
+
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
+        save_original(ws, rec["path"], inputs[rec["path"]])  # owner 2026-11-03: the hash-bound original for diffs
+    for f in (provided_build or {}).get("files") or []:  # CAPA-128: read-only vendor build inputs of the provided LL
+        (ws / f["path"]).chmod(0o444)
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
-    manifest = {"schema": "forge-c/work-order/0.4", "work_order": wo, "created_at": utc_now(),
-                "input_baseline_commit": head, "factory_revision": factory_revision(),
-                "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
-                "trace_profile": TRACE_PROFILE,
-                "register_contract": REGISTER_CONTRACT,
-                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
-                "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
-                "scope": spec["scope"], "budgets": budgets, "inputs": listed,
-                "guideline": spec.get("guideline"), "system_names": spec["system_names"],
-                "outputs": {"SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/"
-                                     "requirements_to_tests.csv + safety/software_safety_requirements.md",
-                            "SWE.2": "workproducts/SWE.2/software_architecture.md",
-                            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
-                            "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
-                            "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
-                            "SWE.6": "workproducts/SWE.6/software_verification_report.md"},
-                "section_index_files": {k: f".forge-run/index/{Path(k).stem}.json" for k in idx},
-                "rules": ["Cite source as DOC p.N for every hardware fact", "Never invent registers or bits",
-                          "Final reply: compact JSON only"]}
+    revision = factory_revision()
+    manifest = {
+        "schema": "forge-c/work-order/0.4",
+        "purpose": purpose,
+        **({"provided_requirements": assisted} if assisted else {}),
+        **({"development_execution": execution} if execution else {}),
+        **({"operation_scope": spec["operation_scope"]} if "operation_scope" in spec else {}),
+        **({"delivery_first": spec["delivery_first"]} if "delivery_first" in spec else {}),
+        **({"aspice_development": aspice_scope, "aspice_resume_contract_version": 2} if aspice_scope else {}),
+        **({"qm_development": qm_scope, "qm_resume_contract_version": 1, "safety_target": "QM"} if qm_scope else {}),
+        **({"development_safety": development} if development else {}),
+        "work_order": wo,
+        "created_at": utc_now(),
+        "input_baseline_commit": head,
+        "factory_revision": revision,
+        "tool_versions": {"forge-factory": revision["commit"]},
+        "driver": spec["driver"],
+        "layer": layer,
+        "provided": provided,
+        **({"provided_build": provided_build} if provided_build else {}),  # CAPA-128 (brownfield/cmsis.py)
+        "target": target,
+        "trace_profile": TRACE_PROFILE,
+        "register_contract": REGISTER_CONTRACT,
+        "unit_verification": UNIT_VERIFICATION,
+        "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
+        **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" and not standalone else {}),
+        **({"hal_standalone": True} if standalone else {}),  # F015: the delivered HAL needs no provided LL
+        "upstream": {k: upstream[k] for k in ("status", "issues", "sha256", "context") if k in upstream},
+        "scope": spec["scope"],
+        "budgets": ({**budgets, "status": f"{budgets.get('status', '')}; {performance_note}".lstrip("; ")}
+                    if performance_note else budgets),
+        **({simulation_performance.FIELD: performance} if performance else {}),
+        "inputs": listed,
+        "guideline": spec.get("guideline"),
+        "system_names": spec["system_names"],
+        "outputs": {
+            "SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/"
+            "requirements_to_tests.csv + safety/software_safety_requirements.md",
+            "SWE.2": "workproducts/SWE.2/software_architecture.md",
+            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h"
+            + ("" if standalone else " + software/ll/*.h"),
+            "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
+            "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
+            "SWE.6": "workproducts/SWE.6/software_verification_report.md",
+        },
+        "section_index_files": {k: f".forge-run/index/{Path(k).stem}.json" for k in idx},
+        "rules": [
+            "Cite source as DOC p.N for every hardware fact",
+            "Never invent registers or bits",
+            "Final reply: compact JSON only",
+        ],
+    }
     (ws / ".forge-run/index").mkdir(parents=True, exist_ok=True)
     for k, v in idx.items():
         (ws / f".forge-run/index/{Path(k).stem}.json").write_text(json.dumps(v))
@@ -239,11 +453,24 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
 
     ods = owner_dispositions_for(example.name)
     if ods:  # owner dispositions of known input issues (never written by an agent)
-        manifest["owner_dispositions"] = [{"id": d["id"], "disposition": d["disposition"],
-                                           "limitation": " ".join(str(d["limitation"]).split())} for d in ods]
+        manifest["owner_dispositions"] = [
+            {"id": d["id"], "disposition": d["disposition"], "limitation": " ".join(str(d["limitation"]).split())} for d in ods
+        ]
         (ws / DISPOSITIONS).write_text(pretty_json(ods))
         (ws / DISPOSITIONS).chmod(0o444)
-    if sc:
+    if aspice_scope:
+        # Preserve the prior allocation as provenance, without assessing or reclassifying it.
+        manifest["historical_safety_scope"] = sc
+        manifest["target"]["safety_allocation"] = "NOT_ASSESSED: " + aspice.STATEMENT
+        manifest["rules"].append(aspice.STATEMENT)
+    if qm_scope:
+        manifest["historical_safety_scope"] = sc
+        manifest["target"]["safety_allocation"] = qm.STATEMENT
+        manifest["rules"].append(qm.STATEMENT)
+        current_scope = qm.scope_record(wo, sha256_bytes(canonical_json(sorted((i["path"], i.get("sha256")) for i in listed))))
+        (ws / ".forge-run/safety_scope.json").write_text(pretty_json(current_scope))
+        (ws / ".forge-run/safety_scope.json").chmod(0o444)
+    if sc and not aspice_scope and not qm_scope:
         from .assurance.scope import allocation_status
 
         manifest["safety_target"] = sc["scope"]["target_asil"]
@@ -253,7 +480,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         (ws / ".forge-run/safety_scope.json").write_text(pretty_json(sc))
         (ws / ".forge-run/safety_scope.json").chmod(0o444)
         # OD-2026-10-19-11: owner-signed safety documents enter the work order read-only, hash-checked; unsigned
-        # drafts never do (the issues are recorded and the package stays BLOCKED on the missing document)
+        # drafts never do. Formal review keeps signature gaps; the separately bound development policy can defer them.
         for doc in sc.get("documents") or []:
             data = (REPO_ROOT / doc["source"]).read_bytes()
             if sha256_bytes(data) != doc["sha256"]:
@@ -264,39 +491,88 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         manifest["owner_safety_documents"] = sc.get("documents") or []
         manifest["owner_safety_document_issues"] = sc.get("document_issues") or []
     if spec.get("peripheral"):  # feature 009: the peripheral profile this work order builds (RCC when absent)
+        from .operation_scope import scoped
         from .peripheral import load as load_profile
 
-        prof = load_profile(spec["peripheral"])
+        prof = scoped(load_profile(spec["peripheral"]), spec.get("operation_scope"))
         have = {ln.split(" | ")[0] for ln in index_lines if " | " in ln}
         missing = [x for x in prof["rm"]["key_sections"] if x not in have]
         if missing:
             raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
-        manifest["peripheral"] = prof["id"]
+        manifest["peripheral"] = spec["peripheral"] if onboarded else prof["id"]  # F016: onboarded:<WO>
         manifest["peripheral_profile_sha256"] = prof["sha256"]
+        if "semantic_required_operations" in prof:
+            manifest["semantic_required_operations"] = prof["semantic_required_operations"]
+    if onboarded:
+        manifest["onboarding"] = onboarded
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 
         manifest["delivery"] = spec["delivery"]
         manifest["code_mode"] = spec["delivery"]["code_mode"]
         manifest["delivered"] = intake["files"]
-        manifest["delivery_intake"] = {"status": intake["status"], "build_check": intake["build_check"]["status"],
-                                       "store": str(BD.store_dir(wo))}
+        manifest["delivery_intake"] = {
+            "status": intake["status"],
+            "build_check": intake["build_check"]["status"],
+            "store": str(BD.store_dir(wo)),
+        }
+        if cmsis_gtest and (spec["delivery"].get("build") or {}).get("style") == "cmsis":
+            from .brownfield.cmsis import GTEST_LINKAGE, GTEST_LINKAGE_FIELD
+
+            manifest[GTEST_LINKAGE_FIELD] = GTEST_LINKAGE
+            manifest["outputs"]["SWE.4"] = (
+                "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.cpp")
+    from .inspection import assessment_context
+
+    if aspice_scope or qm_scope:
+        manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+    from .delivery_first import contract as delivery_first_contract
+
+    delivery_first_contract(manifest)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 
     (ws / ".forge-run/checklists").mkdir(parents=True, exist_ok=True)
     for ph in PHASES:  # read-only copy of the resolved (hash-pinned) checklist for inspectors
-        cl = load_checklist(ph, brownfield=bool(spec.get("delivery")))
-        (ws / f".forge-run/checklists/{ph}.json").write_text(pretty_json(
-            {"phase": ph, "version": cl["version"], "sha256": cl["sha256"],
-             "checks": [{k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}
-                        for c in cl["checks"]]}))
+        cl = assessment_context.checklist(manifest, load_checklist(ph, brownfield=bool(spec.get("delivery"))))
+        (ws / f".forge-run/checklists/{ph}.json").write_text(
+            pretty_json(
+                {
+                    "phase": ph,
+                    "version": cl["version"],
+                    "sha256": cl["sha256"],
+                    **({"assessment_context": cl["assessment_context"]} if "assessment_context" in cl else {}),
+                    **({"qm_tailoring": cl["qm_tailoring"]} if "qm_tailoring" in cl else {}),
+                    "checks": [
+                        {k: c.get(k) for k in ("id", "required", "severity_if_failed", "criterion", "deterministic_check")}
+                        for c in cl["checks"]
+                    ],
+                }
+            )
+        )
     (ws / "configuration").mkdir(exist_ok=True)
     (ws / "configuration/system_names.json").write_text(json.dumps(spec["system_names"]))
-    (ws / "configuration/target_baseline.json").write_text(pretty_json(spec["target"]))
+    (ws / "configuration/target_baseline.json").write_text(pretty_json(manifest["target"] if qm_scope else spec["target"]))
+    if intake:
+        from .brownfield.resume import initialize
+
+        initialize(ws, manifest, resume_limits)
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
-    subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",
-                    "forge: work order configuration"], cwd=ws, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.email=factory@forge-c.local",
+            "-c",
+            "user.name=forge-factory",
+            "commit",
+            "-qm",
+            "forge: work order configuration",
+        ],
+        cwd=ws,
+        check=True,
+    )
     return ws, manifest
 
 
@@ -304,12 +580,99 @@ RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "eviden
 TARGET_BUILD = "build/target-cm55-gcc"
 
 
-def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None) -> list[str]:
+# CAPA-090 (run WO-F014-SWE3-IWDG-20261101-01): later structured phases read the validated checkpoints of earlier ones
+# (SWE.3 the SWE.2 interface task, SWE.6 the SWE.1 requirement map). A resume carries them for the passed phases; the
+# run state of the source (visit state, repair budget, locks, visit logs) stays behind.
+CHECKPOINT_FILES = ("assembly.json", "inventory.json", "generated-header.h", "code-assembly.json", "tests-assembly.json",
+                    "generated-harness.c")
+
+
+def carry_test_snapshots(src: Path, ws: Path) -> int:
+    """CAPA-105 (packages of WO-F014-SWE6-OBL-20261101-L6 and WO-F014-SWE6-IWDG-20261101-L6): a greenfield resume
+    carried evidence/test-integrity.jsonl (in `evidence`) but not the content-addressed test snapshots it references,
+    so every package of a resumed lineage was BLOCKED (TEST_HISTORY_INTEGRITY: TEST_SNAPSHOT_MISSING_OR_UNREADABLE).
+    The snapshots are collected from the source and its resume ancestors (manifest resumed_from); a file is copied only
+    if its content hashes to its name, and existing files are never overwritten."""
+    from .brownfield.resume import source_workspace
+    from .inspection.defects import SNAPSHOTS
+
+    dst, n, seen, cur = ws / SNAPSHOTS, 0, set(), Path(src)
+    while cur is not None and cur.resolve() not in seen:
+        seen.add(cur.resolve())
+        d = cur / SNAPSHOTS
+        for f in sorted(d.iterdir()) if d.is_dir() else []:
+            if f.is_file() and not f.is_symlink() and not (dst / f.name).exists() and sha256_file(f) == f.name:
+                dst.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, dst / f.name)
+                n += 1
+        try:
+            parent = (json.loads((cur / ".forge-run/manifest.json").read_text()).get("resumed_from") or {})
+        except (OSError, ValueError):
+            parent = {}
+        wo = parent.get("source_work_order")
+        cur = source_workspace(wo) if wo else None
+    return n
+
+
+def carry_checkpoints(src: Path, ws: Path, phases: list[str]) -> list[str]:
+    copied = []
+    for ph in phases:
+        s, d = Path(src) / ".forge-run/lrtx" / ph, Path(ws) / ".forge-run/lrtx" / ph
+        for f in sorted((s / "packets").glob("*.json")) if (s / "packets").is_dir() else []:
+            try:
+                if json.loads(f.read_text()).get("status") != "VALID":
+                    continue  # only validated task answers are carried
+            except (OSError, ValueError):
+                continue
+            (d / "packets").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(f, d / "packets" / f.name)
+            copied.append(f"{ph}/packets/{f.name}")
+        for name in CHECKPOINT_FILES:
+            if (s / name).is_file():
+                d.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(s / name, d / name)
+                copied.append(f"{ph}/{name}")
+    return copied
+
+
+def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None, *,
+                target_proof_carry_promotion: dict | None = None) -> list[str]:
     """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
     non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
     (AFO-T040: a return to the owning upstream phase reruns that phase and everything after it). Returns the phases
     still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
+    from .brownfield.resume import ResumeRefused, resume, source_workspace
     from .inspection.engine import PHASE_PATHS, PHASES, Store
+    from .workflow.unit_target_carry import bind_resume
+
+    if manifest.get("delivery"):
+        remaining = resume(ws, manifest, source_wo, upto)
+        bind_resume(source_workspace(source_wo), ws, PHASES[:len(PHASES) - len(remaining)], target_proof_carry_promotion)
+        subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                "user.email=factory@forge-c.local",
+                "-c",
+                "user.name=forge-factory",
+                "commit",
+                "--allow-empty",
+                "-qm",
+                f"forge: validated brownfield resume from {source_wo}",
+            ],
+            cwd=ws,
+            check=True,
+        )
+        return remaining
+    source_manifest = source_workspace(source_wo) / ".forge-run/manifest.json"
+    if source_manifest.is_file() and json.loads(source_manifest.read_text()).get("delivery"):
+        raise ResumeRefused("RESUME_BROWNFIELD_TO_GREENFIELD_REFUSED")
+    # instance mode: carried phases were made for one register access (register-block array or caller-supplied
+    # instance); a resume across modes, or onto a different instance declaration, would mix the two
+    src_scope = (json.loads(source_manifest.read_text()).get("operation_scope") or {}) if source_manifest.is_file() else {}
+    if src_scope.get("instance") != (manifest.get("operation_scope") or {}).get("instance"):
+        raise ResumeRefused("RESUME_INSTANCE_DECLARATION_MISMATCH")
 
     src = state_dir() / "workorders" / source_wo / "workspace"
     if not src.is_dir():
@@ -324,8 +687,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
     # they are never overwritten, and the source's copy must be byte-identical or its carried phases do not apply
     provided = {r["path"]: r["sha256"] for r in manifest.get("provided") or []}
+    from .workflow.provided_input_identity import prepare_resume, validate_resumed
+
+    corrected_provided = prepare_resume(src, ws, manifest, stable)
     for rel, sha in provided.items():
-        if (src / rel).is_file() and sha256_file(src / rel) != sha:
+        if rel not in corrected_provided and (src / rel).is_file() and sha256_file(src / rel) != sha:
             raise ValueError(f"RESUME_PROVIDED_MISMATCH:{rel}:{source_wo} built on a different provided file")
     copied = []
     for ph in stable:
@@ -334,20 +700,28 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
                 (ws / rel).parent.mkdir(parents=True, exist_ok=True)
                 if (src / rel).is_dir():
                     base = src / rel
-                    shutil.copytree(base, ws / rel, dirs_exist_ok=True, ignore=lambda d, names, base=base, rel=rel: [
-                        n for n in names if f"{rel}/{(Path(d) / n).relative_to(base)}" in provided])
+                    shutil.copytree(
+                        base,
+                        ws / rel,
+                        dirs_exist_ok=True,
+                        ignore=lambda d, names, base=base, rel=rel: [
+                            n for n in names if f"{rel}/{(Path(d) / n).relative_to(base)}" in provided
+                        ],
+                    )
                 elif rel not in provided:
                     shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
     if stable:
+        carry_checkpoints(src, ws, stable)
         for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
             if (src / rel).is_dir():
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+        carry_test_snapshots(src, ws)
         # r57: the target ELF/map are the build of the carried-over SWE.3 sources (byte-identical) and are referenced by
         # the carried tool evidence; without them the package lacks software/build/*.elf|*.map
         if "SWE.3" in stable and (src / TARGET_BUILD).is_dir():
             shutil.copytree(src / TARGET_BUILD, ws / TARGET_BUILD, dirs_exist_ok=True)
-        for ph in PHASES[len(stable):]:  # nothing of a non-stable phase is carried over as passed
+        for ph in PHASES[len(stable) :]:  # nothing of a non-stable phase is carried over as passed
             for rel in (f"configuration/baselines/{ph}", f"inspection/{ph}"):
                 if (ws / rel).exists():
                     shutil.rmtree(ws / rel)
@@ -355,17 +729,38 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     for ph in stable:  # carried-over phases must still pass in the new workspace (integrity check)
         if d.gate(ph)["decision"] != "PASS":
             raise ValueError(f"carried-over {ph} does not pass in the new workspace: {d.gate(ph)}")
-    remaining = PHASES[len(stable):]
+    validate_resumed(ws, corrected_provided)
+    remaining = PHASES[len(stable) :]
     rid = src / ".forge-run" / "fabro_run_id"
     manifest["resumed_from"] = {
-        "source_work_order": source_wo, "source_fabro_run_id": rid.read_text().strip() if rid.is_file() else None,
-        "stable_phases": {ph: st.gate(ph)["reason"] for ph in stable}, "restart_phase": remaining[0] if remaining else None,
+        "source_work_order": source_wo,
+        "source_fabro_run_id": rid.read_text().strip() if rid.is_file() else None,
+        "stable_phases": {ph: st.gate(ph)["reason"] for ph in stable},
+        "restart_phase": remaining[0] if remaining else None,
         "rule": "leading phases with gate PASS on an intact baseline are carried over byte-identical; the workflow "
-                "restarts at the first phase that did not pass"}
+        "restarts at the first phase that did not pass",
+    }
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    bind_resume(src, ws, stable, target_proof_carry_promotion)
+    from .inspection.provided_early_code import carry as carry_early_provided_code
+
+    carry_early_provided_code(src, ws, stable)
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
-    subprocess.run(["git", "-c", "user.email=factory@forge-c.local", "-c", "user.name=forge-factory", "commit", "-qm",
-                    f"forge: resume from {source_wo} (stable: {', '.join(stable) or 'none'})"], cwd=ws, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.email=factory@forge-c.local",
+            "-c",
+            "user.name=forge-factory",
+            "commit",
+            "--allow-empty",
+            "-qm",
+            f"forge: resume from {source_wo} (stable: {', '.join(stable) or 'none'})",
+        ],
+        cwd=ws,
+        check=True,
+    )
     return remaining
 
 
@@ -374,7 +769,10 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
     Fabro run labels (AFO-T026: afo_attempt/afo_nonce identify an AFO attempt for crash reconciliation)."""
     import os
 
+    from .brownfield.resume import remaining_seconds
     from .reliability.production import JournalRefused, enforcing, guarded
+
+    remaining_seconds(ws)
 
     prior = ws / ".forge-run/fabro_run_id"
 
@@ -383,9 +781,21 @@ def launch_run(ws: Path, wo: str, toml: Path, fab: str, labels: dict[str, str] |
         if enforcing() and prior.is_file() and prior.read_text().strip():
             return {"fabro_run_id": prior.read_text().strip(), "reused": True}
         extra = [x for k, v in sorted((labels or {}).items()) for x in ("--label", f"{k}={v}")]
-        out = subprocess.run([fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local",
-                              "--label", f"forge={wo}", *extra], cwd=ws, env=fabro_env(), capture_output=True,
-                             text=True, timeout=180)
+        from .afo.operations import fenced_call
+
+        binding_path = ws / ".forge-run/durable-binding.json"
+        operations_epoch = json.loads(binding_path.read_text()).get("operations_epoch") if binding_path.is_file() else None
+        out = fenced_call(
+            operations_epoch,
+            lambda: subprocess.run(
+                [fab, "run", str(toml), "--detach", "--auto-approve", "--environment", "local", "--label", f"forge={wo}", *extra],
+                cwd=ws,
+                env=fabro_env(),
+                capture_output=True,
+                text=True,
+                timeout=30 if binding_path.is_file() else 180,
+            ),
+        )
         rid = (out.stdout.strip().splitlines() or [""])[-1]
         if out.returncode != 0 or not rid:  # r58: a rejected workflow used to leave an empty run id silently
             emit("human", "ERROR", f"{wo} Fabro launch failed (exit {out.returncode})", correlation_id=wo)
@@ -417,6 +827,13 @@ def suspension(provider: str, path: Path | None = None) -> dict | None:
     return None
 
 
+# CAPA-086 (run WO-F014-SWE1-RCC-20261101-02): Fabro ends a node that reports no activity for 1800 s, and a command
+# node reports activity only when it exits. The structured time box ends a node after the call in progress and the
+# continuation node resumes it, so the box plus the longest measured call (448 s, Ornith thinking) must stay below
+# 1800 s. Profiles asking for more (21600) are capped; the requested value is recorded.
+MAX_VISIT_TIME_S = 1200
+
+
 def local_profile_structured(local: dict | None, manifest: dict, model: str) -> dict | None:
     """Feature 010: the structured-author phases the selected local profile defines for this layer (None without a
     profile, which keeps the existing graph unchanged)."""
@@ -424,26 +841,130 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         return None
     from .lrtx.profile import load
 
-    st = load(local["id"]).get("structured") or {}
+    prof = load(local["id"])
+    st = prof.get("structured") or {}
     layer = manifest.get("layer", "LL+HAL")
-    out = {"phases": (st.get("phases_by_layer") or {}).get(layer) or [],
-           "inspect_phases": (st.get("inspect_phases_by_layer") or {}).get(layer) or [],
-           "reinspect": bool(st.get("reinspect_direct")), "model": model, "timeout_s": st.get("timeout_s", 3600),
-           "visit_time_s": st.get("visit_time_s", 1200)}
-    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] else None
+    phases = (st.get("phases_by_layer") or {}).get(layer) or []
+    inspect = (st.get("inspect_phases_by_layer") or {}).get(layer) or []
+    keep = st.get("brownfield_structured_phases")
+    if keep is not None and (manifest.get("delivery") or {}).get("code_mode"):
+        # F011-T036 (owner 2026-10-24, delivered-code run): the structured SWE.3-SWE.6 tasks render design and tests
+        # from the code tasks of a local code author, which a delivered-code work order has none of; phases outside
+        # the profile's list run as the existing agent nodes (as a HAL work order does). Without the key: unchanged.
+        phases, inspect = [x for x in phases if x in keep], [x for x in inspect if x in keep]
+    if manifest.get("development_execution") and (manifest.get("delivery") or {}).get("build", {}).get("style") == "cmsis":
+        # The legacy structured interface schema permits integer-only parameters.
+        # The existing native MCP role supports the pinned vendor pointer signatures.
+        phases = [x for x in phases if x != "SWE.2"]
+        # The legacy structured inspector also carries the generated-array note;
+        # preserve its frozen context and select the existing CMSIS-aware native inspector.
+        inspect = [x for x in inspect if x != "SWE.2"]
+    out = {
+        "phases": phases,
+        "inspect_phases": inspect,
+        "reinspect": bool(st.get("reinspect_direct")),
+        "model": model,
+        "timeout_s": st.get("timeout_s", 3600),
+        "visit_time_s": min(int(st.get("visit_time_s", 1200)), MAX_VISIT_TIME_S),
+    }
+    if int(st.get("visit_time_s", 1200)) > MAX_VISIT_TIME_S:
+        out["visit_time_requested_s"] = int(st["visit_time_s"])
+    from .lrtx.swe1_quality import enabled as two_phase_enabled
+
+    if two_phase_enabled(prof) and "SWE.1" in phases and "SWE.1" in inspect:  # feature 018 (owner 2026-11-09)
+        out["two_phase_inspection"] = True
+    if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
+        out["author_model"] = st["role_models"]["author"]
+        out["inspector_model"] = st["role_models"]["inspector"]
+    from .lrtx.c_language_context import selected as c_language_selected
+
+    if c_language_selected({"structured": st}):
+        out["c_parameter_list_note"] = True
+    from .development_execution import DEMO, DEMO_REPAIR
+
+    if (manifest.get("development_execution") or {}).get("name") in (DEMO, DEMO_REPAIR):
+        return {**out, "demonstration": True, "reinspect": False}
+    if st.get("advisory_continue"):  # only when enabled, so records of profiles without it stay byte-identical (v1)
+        out["advisory"] = True
+    return out if (out["phases"] or out["inspect_phases"] or out["reinspect"] or out.get("advisory")
+                   or out.get("c_parameter_list_note")) else None
 
 
-def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600, code_model: str | None = None,
-        model: str = "qwen3:8b", provider: str = "ollama", resume: str | None = None,
-        provided_from: str | None = None, acp_authors: str | None = None, acp_inspectors: str | None = None,
-        labels: dict[str, str] | None = None, resume_upto: str | None = None, intake_only: bool = False,
-        timeout_scale: float = 1.0, profile: str | None = None) -> dict:
+def _provided_api_arg(ws: Path) -> dict:
+    """CAPA-131: the provided ST LL's instance API for the HAL prompts; no argument otherwise (graph byte-identical)."""
+    from .brownfield.cmsis import provided_api
+
+    api = provided_api(ws)
+    return {"provided_api": api} if api else {}
+
+
+def run(
+    example: Path,
+    wo: str,
+    detach: bool = False,
+    timeout_s: int = 6 * 3600,
+    code_model: str | None = None,
+    model: str = "qwen3:8b",
+    provider: str = "ollama",
+    resume: str | None = None,
+    provided_from: str | None = None,
+    acp_authors: str | None = None,
+    acp_inspectors: str | None = None,
+    labels: dict[str, str] | None = None,
+    resume_upto: str | None = None,
+    intake_only: bool = False,
+    timeout_scale: float = 1.0,
+    profile: str | None = None,
+    resume_max_attempts: int | None = None,
+    resume_max_wall_seconds: int | None = None,
+    recovery_plan: dict | None = None,
+    fresh_recovery_from: str | None = None,
+    revalidate_author_tasks: bool = False,
+    line_retry: bool = False,
+    durable_binding: dict | None = None,
+    before_native_launch=None,
+    recovery_exhausted: dict | None = None,
+    purpose: str = "DEVELOPMENT",
+    evaluation_holdout: bool = False,
+    stop_after: str | None = None,
+    quality: dict | None = None,
+    rework_context: dict | None = None,
+    target_proof_carry_promotion: dict | None = None,
+) -> dict:
+    from .release import qm
+    from .release.aspice import PURPOSE as ASPICE_PURPOSE
+    from .release.aspice import validate_profile
+    from .release.development import PURPOSES
+    if rework_context is not None:
+        from .rework_context import request
+
+        rework_context = request(rework_context, stop_after, resume)
+
+    if purpose not in (*PURPOSES, ASPICE_PURPOSE, qm.PURPOSE):
+        raise ValueError("WORK_ORDER_PURPOSE_INVALID")
+    if type(revalidate_author_tasks) is not bool:
+        raise ValueError("AUTHOR_TASK_REVALIDATION_FLAG_INVALID")
+    if revalidate_author_tasks and not (fresh_recovery_from or resume):
+        raise ValueError("AUTHOR_TASK_REVALIDATION_SOURCE_REQUIRED")
+    if line_retry and not (fresh_recovery_from and revalidate_author_tasks):
+        raise ValueError("LINE_RETRY_SOURCE_REQUIRED")
+    if type(evaluation_holdout) is not bool:
+        raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
+    from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
+
     local = None
+    native_aspice = (purpose == ASPICE_PURPOSE and profile is None
+                     and acp_authors == "codex" and acp_inspectors == "claude")
+    if purpose in (ASPICE_PURPOSE, qm.PURPOSE) and not profile and not native_aspice:
+        raise ValueError("ASPICE_SCOPE_PROFILE_MISMATCH")
     if profile:  # feature 010 (LRTX-FR-002): explicit local profile, refused before anything is prepared
         from .lrtx import profile as local_profile
 
-        local = local_profile.select(profile, model=model, provider=provider, code_model=code_model,
-                                     acp_authors=acp_authors, acp_inspectors=acp_inspectors)
+        selected_profile = local_profile.load(profile)
+        (qm.validate_profile if purpose == qm.PURPOSE else validate_profile)(purpose, selected_profile)
+        local = local_profile.select(
+            profile, model=model, provider=provider, code_model=code_model, acp_authors=acp_authors, acp_inspectors=acp_inspectors
+        )
         if timeout_scale == 1:
             timeout_scale = float(local["timeout_scale"])
     if not 1 <= timeout_scale <= 10:  # checked before anything is prepared
@@ -466,34 +987,198 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
             raise RuntimeError(f"{claude_home.home()} is not logged in (run: CLAUDE_CONFIG_DIR=<it> claude auth login)")
     suspended = suspension(provider)
     if suspended and not (acp_authors and acp_inspectors):  # OD-2026-10-20-03: no agent node on a suspended model
-        raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes would run on the "
-                           "suspended run model; use --acp-authors codex --acp-inspectors claude")
-    if resume and json.loads((example / "workorder.json").read_text()).get("delivery"):
-        raise ValueError("BROWNFIELD_RESUME_NOT_SUPPORTED: start a new brownfield work order (the delivered code must "
-                         "enter after a SWE.1 frozen in the same work order)")
-    ws, manifest = prepare(example, wo, provided_from)
+        raise RuntimeError(
+            f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes would run on the "
+            "suspended run model; use --acp-authors codex --acp-inspectors claude"
+        )
+    # Preserve provider/profile/auth refusal order before touching a delivery or source workspace.
+    spec = json.loads((example / "workorder.json").read_text())
+    fresh_origin = None
+    if fresh_recovery_from:
+        from .brownfield.resume import source_workspace
+        from .fabro.client import client_for_workspace, run_status
+
+        if resume:
+            raise ValueError("FRESH_RECOVERY_CANNOT_CARRY_PHASES")
+        source = source_workspace(fresh_recovery_from)
+        source_manifest = source / ".forge-run/manifest.json"
+        old = json.loads(source_manifest.read_text())
+        if (
+            source.is_symlink()
+            or not source.resolve().is_relative_to((state_dir() / "workorders").resolve())
+            or old.get("work_order") != fresh_recovery_from
+        ):
+            raise ValueError("FRESH_RECOVERY_SOURCE_IDENTITY_INVALID")
+        rid = (source / ".forge-run/fabro_run_id").read_text().strip()
+        if run_status(client_for_workspace(source).get_run(rid)) not in {"SUCCEEDED", "FAILED", "CANCELLED", "CANCELED", "DEAD"}:
+            raise ValueError("FRESH_RECOVERY_SOURCE_NOT_TERMINAL")
+        fresh_origin = {
+            "work_order": fresh_recovery_from,
+            "source_manifest_sha256": sha256_file(source_manifest),
+            "source_fabro_run_id": rid,
+            "basis": "fresh revalidation after externally approved factory change; "
+            "no prior phase evidence or delivered-code corrections carried",
+        }
+        if revalidate_author_tasks:
+            fresh_origin["revalidate_author_tasks"] = True
+            fresh_origin["basis"] = (
+                "fresh independent phase validation after externally approved factory change; "
+                "no old phase artifacts, inspections, PASS verdicts or delivered-code corrections carried; "
+                "individual author task proposals may be reused only after exact input/schema/task revalidation"
+            )
+        if line_retry:  # CAPA-209
+            fresh_origin["kind"] = "LINE_RETRY"
+            fresh_origin["basis"] = (
+                "line retry of a failed attempt of the same lineage and first phase; no phase artifacts, set "
+                "inspections, baselines, gates or PASS verdicts of the phase carried; an author task proposal or a "
+                "passed phase-1 requirement verdict is reused only when its packet is identical and it revalidates"
+            )
+        evaluation_holdout = evaluation_holdout or bool(old.get("evaluation_holdout"))
+    resume_limits = {
+        "max_attempts": resume_max_attempts or DEFAULT_LIMITS["max_attempts"],
+        "max_wall_seconds": resume_max_wall_seconds or DEFAULT_LIMITS["max_wall_seconds"],
+    }
+    if (
+        resume_max_attempts is not None
+        and resume_max_attempts < 1
+        or resume_max_wall_seconds is not None
+        and resume_max_wall_seconds < 1
+    ):
+        raise ResumeRefused("RESUME_LIMITS_INVALID")
+    if resume and resume == wo:
+        raise ResumeRefused("RESUME_SOURCE_EQUALS_DESTINATION")
+    if resume_upto and not resume:
+        raise ResumeRefused("RESUME_UPTO_NEEDS_SOURCE")
+    if spec.get("delivery") and (state_dir() / "workorders" / wo).exists():
+        raise ResumeRefused("RESUME_DESTINATION_EXISTS: use a new work-order ID")
+    if resume and spec.get("delivery"):
+        _, source = check_source(resume, wo)
+        inherited = source["resume_identity"]["limits"]
+        if (resume_max_attempts is not None and resume_max_attempts != inherited["max_attempts"]) or (
+            resume_max_wall_seconds is not None and resume_max_wall_seconds != inherited["max_wall_seconds"]
+        ):
+            raise ResumeRefused("RESUME_LIMIT_CHANGE_REFUSED")
+        resume_limits = inherited
+    if resume and intake_only:
+        raise ResumeRefused("RESUME_INTAKE_ONLY_COMBINATION_REFUSED")
+    if resume:
+        from .brownfield.resume import source_workspace
+
+        source_scope = json.loads((source_workspace(resume) / ".forge-run/manifest.json").read_text())
+        evaluation_holdout = evaluation_holdout or bool(source_scope.get("evaluation_holdout"))
+    purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
+    if resume and ((source_scope.get("delivery") or {}).get("build") or {}).get("style") == "cmsis":
+        from .brownfield.cmsis import gtest_linkage
+
+        # A resume inherits its source's ABI. Fresh intake alone acquires the new
+        # binding, so a passed legacy C baseline is never reinterpreted as C++.
+        purpose_args["cmsis_gtest"] = gtest_linkage(source_scope)
+    if profile and selected_profile.get("development_execution_policy"):
+        purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
+    if quality is not None:
+        purpose_args["quality"] = quality
+    basis = ll_basis_for(stop_after, source_scope if resume else None)  # F016 FR-027, CAPA-228
+    if basis is not None:
+        purpose_args["ll_basis"] = basis
+    ws, manifest = (
+        prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
+        if spec.get("delivery")
+        else prepare(example, wo, provided_from, **purpose_args)
+    )
+    if evaluation_holdout:
+        manifest["evaluation_holdout"] = True
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if durable_binding:
+        from .afo.product_job import install
+
+        install(ws, durable_binding)
+        if __import__("os").environ.get("FORGE_OWNER_DEVELOPMENT_RECORD"):
+            manifest["execution_scope"] = "OWNER_SUPERVISED_DEVELOPMENT"
+            manifest["qualification_only"] = True
+            manifest["qualification_acceptance"] = "UNACCEPTED"
+            (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if (labels or {}).get("afo_attempt") or recovery_exhausted:
+        # DA-FR-054: the route gate reads here that the run executes under AFO (so a phase BLOCKs for AFO recovery
+        # first) and for which phases AFO recovery was already exhausted (advisory continuation allowed)
+        manifest["afo"] = {"attempt_id": (labels or {}).get("afo_attempt"),
+                           **({"recovery_exhausted": recovery_exhausted} if recovery_exhausted else {})}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
         manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
+        from .policy.governor import profile_inspector_capacity_binding
+
+        inspector_budget = profile_inspector_capacity_binding(selected_profile)
+        if inspector_budget is not None:
+            manifest["profile_inspector_budget"] = inspector_budget
+        if "semantic_profile" in local:
+            manifest["local_profile"]["semantic_profile"] = local["semantic_profile"]
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
         return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
-    phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
+    phases = resume_from(ws, manifest, resume, resume_upto,
+                         **({"target_proof_carry_promotion": target_proof_carry_promotion}
+                            if target_proof_carry_promotion is not None else {})) if resume else None
+    if rework_context is not None and (not phases or phases[0] != stop_after):
+        from .rework_context import ReworkRefused
+
+        raise ReworkRefused("REWORK_CONTEXT_RESTART_PHASE_MISMATCH")
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
-    secmap = {}
-    for line in (ws / "inputs/index.md").read_text().splitlines():
-        parts = [x.strip() for x in line.split(" | ")]
-        if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
-            secmap[parts[0]] = parts[3]
-    graph, nodes = build(wo, goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
-                         sections=secmap, code_model=code_model, chunk_lines=40 if provider == "ollama" else 150,
-                         phases=phases, layer=manifest.get("layer", "LL+HAL"),
-                         trace=manifest.get("trace_profile") == TRACE_PROFILE,
-                         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
-                         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
-                         peripheral=manifest.get("peripheral"),
-                         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
-                         structured=local_profile_structured(local, manifest, model))
+    secmap = section_map(ws)
+    if recovery_plan is not None:
+        from .afo.recovery_context import install
+
+        if not resume and fresh_origin is None:
+            raise ValueError("RECOVERY_PLAN_REQUIRES_SOURCE_ATTEMPT")
+        install(ws, manifest, recovery_plan)
+    if fresh_origin is not None:
+        manifest["fresh_recovery_from"] = fresh_origin
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if stop_after is not None:  # owner 2026-10-31: phase-scoped run, recorded in the manifest
+        manifest["phase_scope"] = {"stop_after": stop_after, "rule": "later phases are not run; the finalizer "
+                                   "reports them as gaps (no READY package from a phase-scoped run)"}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if rework_context is not None:
+        from .rework_context import install
+
+        install(ws, manifest, rework_context, stop_after)
+    if resume and stop_after == "SWE.6":
+        from .afo.owner_supervised_development import carry_orders
+
+        orders = carry_orders(wo)
+        if orders:
+            from .attempt_carry import install as carry_attempt
+
+            carried = carry_attempt(ws, wo, orders)
+            if carried:
+                manifest["attempt_carry"] = carried
+                (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    from .inspection.provided_early_code import enabled as early_provided_code_enabled
+
+    graph, nodes = build(
+        wo,
+        goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
+        sections=secmap,
+        code_model=code_model,
+        chunk_lines=40 if provider == "ollama" else 150,
+        phases=phases,
+        layer=manifest.get("layer", "LL+HAL"),
+        trace=manifest.get("trace_profile") == TRACE_PROFILE,
+        isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+        hal_standalone=bool(manifest.get("hal_standalone")),
+        uspec_gtest=manifest.get("unit_verification") == UNIT_VERIFICATION,
+        provided_code_handoff=early_provided_code_enabled(ws),
+        brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
+        peripheral=manifest.get("peripheral"),
+        operation_scope=manifest.get("operation_scope"),
+        execution_policy=manifest.get("development_execution"),
+        assessment_manifest=manifest,
+        delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
+        structured=local_profile_structured(local, manifest, model),
+        recovery_plan=recovery_plan,
+        stop_after=stop_after,
+        **_provided_api_arg(ws),
+    )
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
 
@@ -510,9 +1195,14 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         from .acp import codex_home
 
         graph, acp_nodes = acp.attach(graph, nodes, ws)
-        prof["acp_authors"] = {"nodes": acp_nodes, "model": codex_home.MODEL, "reasoning_effort": codex_home.EFFORT,
-                               "provider": acp.ACP_PROVIDER, "codex": codex_home.CODEX,
-                               "note": "author roles on Codex; inspectors and every other node on the run model"}
+        prof["acp_authors"] = {
+            "nodes": acp_nodes,
+            "model": codex_home.MODEL,
+            "reasoning_effort": codex_home.EFFORT,
+            "provider": acp.ACP_PROVIDER,
+            "codex": codex_home.CODEX,
+            "note": "author roles on Codex; inspectors and every other node on the run model",
+        }
         manifest["acp_authors"] = acp_nodes
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if acp_inspectors:
@@ -520,42 +1210,69 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
         from .acp import claude_home
 
         graph, ins_nodes = acp.attach(graph, nodes, ws, roles=acp.NON_AUTHOR_ROLES, agent="claude")
-        prof["acp_inspectors"] = {"nodes": ins_nodes, "model": claude_home.MODEL, "provider": acp.CLAUDE_PROVIDER,
-                                  "adapter": claude_home.ADAPTER,
-                                  "note": "inspectors and the Release Manager on Claude; deterministic nodes unchanged"}
+        prof["acp_inspectors"] = {
+            "nodes": ins_nodes,
+            "model": claude_home.MODEL,
+            "provider": acp.CLAUDE_PROVIDER,
+            "adapter": claude_home.ADAPTER,
+            "note": "inspectors and the Release Manager on Claude; deterministic nodes unchanged",
+        }
         manifest["acp_inspectors"] = ins_nodes
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
-    if suspended:  # CAPA-051: every agent node must have left the run model, multi-line prompts included
+    if suspended or native_aspice:  # Every agent in the explicit native ASPICE control must use the requested ACP pair.
         from . import acp
 
         native = acp.native_agent_nodes(graph)
         if native:
-            raise RuntimeError(f"MODEL_SUSPENDED:{provider} ({suspended['decision']}): agent nodes left on the run "
-                               f"model: {', '.join(native)}")
-        prof["run_model_note"] = (f"{model} ({provider}) is suspended ({suspended['decision']}); it serves no agent "
-                                  "node in this run")
+            reason = f"MODEL_SUSPENDED:{provider} ({suspended['decision']})" if suspended else "NATIVE_ASPICE_ACP_INCOMPLETE"
+            raise RuntimeError(f"{reason}: agent nodes left on the run model: {', '.join(native)}")
+        prof["run_model_note"] = (
+            f"{model} ({provider}) serves no agent node; every model stage uses the explicit ACP backend"
+        )
+        if native_aspice:
+            from .policy.governor import native_capacity_binding
+
+            manifest["native_aspice_backends"] = {"authors": "codex", "inspectors": "claude",
+                                                 "native_model_agent_nodes": [], "local_inference_requests": 0,
+                                                 "tool_budget": native_capacity_binding()}
+            (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    from .workflow.unit_target_carry import seal_after_setup
+
+    seal_after_setup(ws)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
     mp = mcp_preflight(roles, live=True)
-    pre = {"agents": {k: ap[k] for k in ("status", "issues")}, "mcp": {k: mp[k] for k in ("status", "issues",
-                                                                                          "disabled_optional_ops")}}
+    pre = {
+        "agents": {k: ap[k] for k in ("status", "issues")},
+        "mcp": {k: mp[k] for k in ("status", "issues", "disabled_optional_ops")},
+    }
     (ws / ".forge-run/preflight.json").write_text(pretty_json(pre))
     emit("human", "INFO", f"{wo} preflight agents={ap['status']} mcp={mp['status']}", correlation_id=wo)
     if ap["status"] != "PASS" or mp["status"] != "PASS":
         emit("human", "WARN", f"{wo} preflight BLOCKED; no agent started; packaging BLOCKED", correlation_id=wo)
         return {"work_order": wo, "preflight": pre, "package": finalize(ws, wo)}
-    toml = write_run(ws, graph, f"{wo} {manifest['driver']}", binding_for(wo, str(ws), nodes),
-                     fabro_mcp_config(mp["servers"]), model=model, provider=provider)
+    toml = write_run(
+        ws,
+        graph,
+        f"{wo} {manifest['driver']}",
+        binding_for(wo, str(ws), nodes),
+        fabro_mcp_config(mp["servers"]),
+        model=model,
+        provider=provider,
+    )
     fab = shutil.which("fabro") or str(Path.home() / ".fabro/bin/fabro")
     import os
 
     fab = os.environ.get("FORGE_FABRO_BIN", fab)
+    if before_native_launch is not None:
+        before_native_launch()
     fabro_run_id = launch_run(ws, wo, toml, fab, labels)
     # which Fabro server holds the run (local :32290 or the cloud benchmark :32291); no secrets, the token stays in
     # that server's storage. The supervisor's external finalizer uses it to seal packages for runs on either server.
-    (ws / ".forge-run/fabro_server.json").write_text(json.dumps(
-        {"url": os.environ.get("FORGE_FABRO_URL", ""), "storage": os.environ.get("FORGE_FABRO_STORAGE", "")}))
+    (ws / ".forge-run/fabro_server.json").write_text(
+        json.dumps({"url": os.environ.get("FORGE_FABRO_URL", ""), "storage": os.environ.get("FORGE_FABRO_STORAGE", "")})
+    )
     emit("human", "INFO", f"{wo} started Fabro run {fabro_run_id}", correlation_id=wo, run_id=fabro_run_id)
     if detach:
         return {"work_order": wo, "fabro_run_id": fabro_run_id, "workspace": str(ws), "preflight": pre}
@@ -568,43 +1285,186 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--example", type=Path, required=True)
+    ap.add_argument("--purpose", choices=("DEVELOPMENT", "FORMAL_REVIEW", "ASPICE_ONLY", "QM"), default="DEVELOPMENT",
+                    help="development defers SSA/TAA signatures; QM selects owner-classified quality management; ASPICE_ONLY excludes safety assurance; "
+                         "formal review retains strict policy")
     ap.add_argument("--wo", required=True)
+    ap.add_argument("--stop-after", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"), default=None,
+                    help="owner 2026-10-31: phase-scoped run; after this phase the run is finalized (later phases = gaps)")
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
     ap.add_argument("--provider", default="ollama", help="Fabro provider; non-ollama = user-authorized cloud benchmark")
     ap.add_argument("--resume-from", default=None, help="carry over the leading PASSED phases of this work order")
-    ap.add_argument("--provided-from", default=None,
-                    help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on")
-    ap.add_argument("--acp-authors", choices=["codex"], default=None,
-                    help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates")
-    ap.add_argument("--acp-inspectors", choices=["claude"], default=None,
-                    help="OD-2026-10-19-08: inspectors + Release Manager on Claude (owner account) via the same gates")
-    ap.add_argument("--timeout-scale", type=float, default=1.0,
-                    help="multiply every node timeout (1..10) for a slower model, e.g. local Qwen; recorded in the manifest")
-    ap.add_argument("--profile", default=None,
-                    help="feature 010: explicit local profile (e.g. local-rtx-v1); refuses ACP, cloud providers and "
-                         "runtime roots/endpoints shared with the existing deployment")
-    ap.add_argument("--intake-only", action="store_true",
-                    help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop")
+    ap.add_argument(
+        "--resume-upto",
+        choices=[f"SWE.{i}" for i in range(1, 7)],
+        help="restart at this phase or the first invalid phase, whichever is earlier",
+    )
+    ap.add_argument("--resume-max-attempts", type=int, help="brownfield lineage attempt limit (default 6; inherited on resume)")
+    ap.add_argument(
+        "--resume-max-wall-seconds", type=int, help="brownfield lineage elapsed-time limit (default 86400; inherited on resume)"
+    )
+    ap.add_argument(
+        "--provided-from",
+        default=None,
+        help="HAL layer (ADR-0009): the verified LL work order whose LL header this HAL builds on",
+    )
+    ap.add_argument(
+        "--acp-authors",
+        choices=["codex"],
+        default=None,
+        help="owner decision 2026-10-18: author roles on Codex via the forge ACP proxy and policy gates",
+    )
+    ap.add_argument(
+        "--acp-inspectors",
+        choices=["claude"],
+        default=None,
+        help="OD-2026-10-19-08: inspectors + Release Manager on Claude (owner account) via the same gates",
+    )
+    ap.add_argument(
+        "--timeout-scale",
+        type=float,
+        default=1.0,
+        help="multiply every node timeout (1..10) for a slower model, e.g. local Qwen; recorded in the manifest",
+    )
+    ap.add_argument(
+        "--profile",
+        default=None,
+        help="feature 010: explicit local profile (e.g. local-rtx-v1); refuses ACP, cloud providers and "
+        "runtime roots/endpoints shared with the existing deployment",
+    )
+    ap.add_argument(
+        "--quality",
+        type=Path,
+        default=None,
+        help="autonomous line M3: the order's quality block (JSON, owner rule 2026-11-03) from the approved campaign; "
+        "it replaces the example's block and is validated like it (an invalid block is refused, never repaired)",
+    )
+    ap.add_argument(
+        "--intake-only",
+        action="store_true",
+        help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop",
+    )
+    ap.add_argument("--durable-launch", type=Path, help="explicit immutable line product context; no inferred authority")
+    ap.add_argument("--durable-launch-sha256")
+    ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
+    ap.add_argument("--retry-of", help="CAPA-209: failed attempt of the same lineage and first phase to revalidate")
+    ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
+    ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
+    ap.add_argument("--rework-source-phase", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"),
+                    help="terminal detecting order phase for a bound upstream rework")
+    ap.add_argument("--rework-upstream-sha256",
+                    help="full canonical upstream defect/review snapshot hash; requires --rework-source-phase")
+    ap.add_argument("--target-proof-carry-promotion", type=Path,
+                    help="explicit bounded JSON reference to an exact eligible creator-to-consumer CRE registry row; not a decision document")
     a = ap.parse_args(argv)
+    quality = json.loads(a.quality.read_text()) if a.quality else None
+    from .afo.durable import Refused
+    from .afo.line_liveness import ClaimUncertain
     from .brownfield.delivery import DeliveryBlocked
+    from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
+    from .rework_context import ReworkRefused
+    from .workflow.unit_target_carry import CarryRefused
+
+    refused_hook = []  # CAPA-237: the durable launch's pre-native refusal callback, when this is a line product launch
+
+    def pre_native(stage):
+        if refused_hook:
+            refused_hook[0](stage)
 
     try:
-        res = run(a.example.resolve(), a.wo, a.detach, code_model=a.code_model, model=a.model, provider=a.provider,
-                  resume=a.resume_from, provided_from=a.provided_from, acp_authors=a.acp_authors,
-                  acp_inspectors=a.acp_inspectors, intake_only=a.intake_only, timeout_scale=a.timeout_scale,
-                  profile=a.profile)
+        carry_promotion = None
+        if a.target_proof_carry_promotion is not None:
+            from .workflow.unit_target_carry import promotion_reference
+
+            carry_promotion = promotion_reference(a.target_proof_carry_promotion)
+        rework = None
+        if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256,
+                                        a.rework_source_phase, a.rework_upstream_sha256)):
+            from .rework_context import request
+
+            value = {"source_work_order": a.rework_from, "phase": a.stop_after,
+                     "inspection_sha256": a.rework_inspection_sha256, "gate_log_sha256": a.rework_gates_sha256}
+            if a.rework_source_phase is not None or a.rework_upstream_sha256 is not None:
+                value.update(source_phase=a.rework_source_phase, upstream_sha256=a.rework_upstream_sha256)
+            rework = request(value, a.stop_after, a.resume_from)
+        durable = {}
+        if a.durable_launch is not None or a.durable_launch_sha256 is not None:
+            from .afo.line_recovery_product import native_parameters
+
+            expected = {"wo": a.wo, "model": a.model, "profile": a.profile, "purpose": a.purpose,
+                        "stop_after": a.stop_after, "resume_from": a.resume_from, "provided_from": a.provided_from,
+                        "resume_upto": a.resume_upto, "quality": quality}
+            if rework is not None:
+                expected["rework_context"] = rework
+            if a.retry_of:
+                expected["retry_of"] = a.retry_of
+            durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
+            hook = durable.pop("refused_before_native", None)
+            if hook is not None:
+                refused_hook.append(hook)
+        res = run(
+            a.example.resolve(),
+            a.wo,
+            a.detach,
+            code_model=a.code_model,
+            model=a.model,
+            provider=a.provider,
+            resume=a.resume_from,
+            provided_from=a.provided_from,
+            **({"fresh_recovery_from": a.retry_of, "revalidate_author_tasks": True, "line_retry": True}
+               if a.retry_of else {}),
+            acp_authors=a.acp_authors,
+            acp_inspectors=a.acp_inspectors,
+            intake_only=a.intake_only,
+            timeout_scale=a.timeout_scale,
+            profile=a.profile,
+            resume_upto=a.resume_upto,
+            resume_max_attempts=a.resume_max_attempts,
+            resume_max_wall_seconds=a.resume_max_wall_seconds,
+            purpose=a.purpose,
+            stop_after=a.stop_after,
+            quality=quality,
+            **({"rework_context": rework} if rework is not None else {}),
+            **({"target_proof_carry_promotion": carry_promotion} if carry_promotion is not None else {}),
+            **durable,
+        )
+    except CarryRefused as exc:
+        pre_native("target_proof_carry")
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "target_proof_carry", "issues": [str(exc)]}))
+        return 2
+    except ReworkRefused as exc:
+        pre_native("bound_rework_context")
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "bound_rework_context",
+                          "issues": [str(exc)]}))
+        return 2
+    except Refused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "durable_line_product", "issues": [exc.code]}))
+        return 2
+    except ClaimUncertain:
+        print(json.dumps({"work_order": a.wo, "status": "UNKNOWN", "stage": "durable_line_product",
+                          "issues": ["LINE_PRODUCT_NATIVE_PREPARATION_ALREADY_CLAIMED"]}))
+        return 3
+    except ResumeRefused as exc:
+        pre_native("validated_resume")
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
+        return 2
     except DeliveryBlocked as exc:  # FR-003..FR-005: refused before any agent ran; the record is in the store
-        print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake",
-                          "issues": str(exc).split(";")}))
+        pre_native("delivery_intake")
+        print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake", "issues": str(exc).split(";")}))
         return 2
     except ProfileRefused as exc:  # LRTX-FR-002: a refused local profile is reported, never silently changed
+        pre_native("local_profile")
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "local_profile", "issues": exc.issues}))
         return 2
-    print(json.dumps({k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace", "intake")}
-                     | {"status": (res.get("package") or {}).get("package_status")}))
+    print(
+        json.dumps(
+            {k: res.get(k) for k in ("work_order", "fabro_run_id", "workspace", "intake")}
+            | {"status": (res.get("package") or {}).get("package_status")}
+        )
+    )
     return 0
 
 

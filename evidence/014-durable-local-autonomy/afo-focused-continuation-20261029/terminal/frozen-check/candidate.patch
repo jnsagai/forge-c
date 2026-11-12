@@ -1,0 +1,258 @@
+diff --git a/factory/python/forge_factory/fabro/runconfig.py b/factory/python/forge_factory/fabro/runconfig.py
+index 6134e5913..14223f00d 100644
+--- a/factory/python/forge_factory/fabro/runconfig.py
++++ b/factory/python/forge_factory/fabro/runconfig.py
+@@ -14,7 +14,7 @@ import sys
+ from collections.abc import Mapping
+ from pathlib import Path
+ 
+-from ..common import REPO_ROOT, state_dir
++from ..common import REPO_ROOT, data_root, state_dir
+ from ..policy.authz import Binding
+ 
+ GIT_ENV = {"GIT_AUTHOR_NAME": "forge-factory", "GIT_AUTHOR_EMAIL": "factory@forge-c.local",
+@@ -62,14 +62,24 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
+                   "command = [" + ", ".join(toml_str(c) for c in [py, "-m", spec["module"]]) + "]",
+                   f'startup_timeout = "{spec.get("startup_timeout", "20s")}"',
+                   f'tool_timeout = "{spec.get("tool_timeout", "200s")}"',
+-                  f"[run.agent.mcps.{key}.env]", f"PYTHONPATH = {toml_str(pp)}",
+-                  f"FORGE_STATE_DIR = {toml_str(str(state_dir()))}",
+-                  f"FORGE_BINDING_ID = {toml_str(binding_id)}",
+-                  f"PATH = {toml_str(os.environ.get('PATH', '/usr/bin:/bin'))}"]
+-        for k, v in sorted(spec.get("env", {}).items()):
+-            lines.append(f"{k} = {toml_str(str(v))}")
+-    hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
+-           f"--binding {binding_path}"
++                  f"[run.agent.mcps.{key}.env]"]
++        # The isolated MCP child gets exactly this env table (it does not inherit the host process
++        # environment), so the tool context must be pinned here: FORGE_DATA_ROOT defaults to the
++        # host's declared root, and a value declared in the server spec overrides that default.
++        # Each key is emitted exactly once so strict tomllib never sees a duplicate key
++        # ('Cannot overwrite a value').
++        env = {"PYTHONPATH": pp,
++               "FORGE_STATE_DIR": str(state_dir()),
++               "FORGE_DATA_ROOT": str(data_root()),
++               "FORGE_BINDING_ID": binding_id,
++               "PATH": os.environ.get('PATH', '/usr/bin:/bin')}
++        for k in sorted(spec.get("env", {})):
++            env[k] = str(spec["env"][k])
++        for k, v in env.items():
++            lines.append(f"{k} = {toml_str(v)}")
++    hook = (f"PYTHONPATH={pp} FORGE_STATE_DIR={shlex.quote(str(state_dir()))} "
++            f"FORGE_DATA_ROOT={shlex.quote(str(data_root()))} "
++            f"{py} -m forge_factory.policy.fabro_hook --binding {shlex.quote(str(binding_path))}")
+     if hook_env:
+         hook = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(hook_env.items())) + " " + hook
+     lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
+diff --git a/factory/python/tests/afo_candidate/test_swe3_10_data_root.py b/factory/python/tests/afo_candidate/test_swe3_10_data_root.py
+new file mode 100644
+index 000000000..47ba093b9
+--- /dev/null
++++ b/factory/python/tests/afo_candidate/test_swe3_10_data_root.py
+@@ -0,0 +1,206 @@
++"""SWE3-10 reproducer: PLANTUML_NOT_AVAILABLE for the declared unit diagrams.
++
++Root cause: render_run_toml pinned PYTHONPATH/FORGE_STATE_DIR for the generated isolated
++MCP servers but omitted FORGE_DATA_ROOT from the env table. An isolated MCP child gets
++exactly that env table (it does not inherit the host process environment), so it resolved
++the data root to the default instead of the host's declared root and the installed
++plantuml jar (data_root()/toolchains/plantuml/*.jar) was invisible to the SWE.3 inspection:
++render_ok reported PLANTUML_NOT_AVAILABLE although java and the jar are installed on the
++host (observed: isolated_mcp_children_observed=9, children_with_data_root=0,
++plantuml_jar_installed=true). Removing the generated default instead of fixing the key
++collision is not a repair: a per-server declared FORGE_DATA_ROOT then produced a duplicate
++TOML key that strict tomllib rejects ('Cannot overwrite a value').
++
++Fix under test: the generated env table pins FORGE_DATA_ROOT to the host's declared root;
++a value declared in the server spec overrides that default; each key is emitted exactly
++once, so the generated config always parses with strict tomllib.
++
++Script mode (baseline reproducer check):
++    python test_swe3_10_data_root.py
++      exit 1, stdout's last nonblank line exactly SYMPTOM_PRESENT:<signature> while the defect exists
++      exit 0, stdout's last nonblank line exactly SYMPTOM_ABSENT once fixed
++    (diagnostics, if any, go to stderr, never after the signature on stdout)
++pytest mode: the test_* functions below verify the fix.
++"""
++from __future__ import annotations
++
++import os
++import shlex
++import subprocess
++import sys
++import tempfile
++import tomllib
++from pathlib import Path
++
++REPO_ROOT = Path(__file__).resolve().parents[4]
++sys.path.insert(0, str(REPO_ROOT / "factory" / "python"))  # script mode from any cwd
++
++SERVER = "forge-tests-mcp"
++KEY = SERVER.replace("-", "_")
++SIG = "SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED"
++
++# Resolves the tool context exactly the way the frozen inspection does
++# (forge_factory.inspection.swtrace._plantuml_jar / render_ok), from a subprocess whose
++# environment is exactly the env table the generated run config declares for the isolated
++# MCP server.
++CHILD_SCRIPT = (
++    "import forge_factory.common as c\n"
++    "jar = sorted((c.data_root() / 'toolchains' / 'plantuml').glob('*.jar'))\n"
++    "print(c.data_root())\n"
++    "print('JAR' if jar else 'NOJAR')\n"
++)
++
++
++def _new_host() -> Path:
++    # a space in the path: data/state/binding paths with spaces must keep working
++    return Path(tempfile.mkdtemp(prefix="afo-swe310 "))
++
++
++def _host(tmp: Path) -> None:
++    """Host side: FORGE_DATA_ROOT declared (non-default, with a space in the path) and the
++    plantuml jar installed under it."""
++    os.environ["FORGE_DATA_ROOT"] = str(tmp)
++    os.environ.pop("FORGE_STATE_DIR", None)  # state dir derives from the data root
++    (tmp / "toolchains" / "plantuml").mkdir(parents=True)
++    (tmp / "toolchains" / "plantuml" / "plantuml.jar").write_bytes(b"fake-plantuml-jar")
++
++
++def _render(tmp: Path, spec_env: dict[str, str] | None) -> str:
++    from forge_factory.fabro.runconfig import render_run_toml
++
++    spec: dict = {"module": "forge_factory.mcp.servers.tests"}
++    if spec_env is not None:
++        spec["env"] = spec_env
++    return render_run_toml("workflow.fabro", "goal", tmp / "run" / "binding.json", {SERVER: spec})
++
++
++def _doc(toml_text: str) -> dict | None:
++    """Strict parse, exactly like the independent oracle; duplicate keys are a TOML error."""
++    try:
++        return tomllib.loads(toml_text)
++    except tomllib.TOMLDecodeError:
++        return None
++
++
++def _mcp_env(toml_text: str) -> dict[str, str] | None:
++    doc = _doc(toml_text)
++    if doc is None:
++        return None
++    return doc["run"]["agent"]["mcps"][KEY]["env"]
++
++
++def _hook_script(toml_text: str) -> str:
++    doc = _doc(toml_text)
++    if doc is None:
++        return ""
++    return doc["run"]["hooks"][0]["script"]
++
++
++def _child_view(env: dict[str, str]) -> tuple[str, str]:
++    """Run the child with exactly the env the generated run config declares for the MCP server."""
++    r = subprocess.run([sys.executable, "-c", CHILD_SCRIPT], env=dict(env), cwd=str(REPO_ROOT),
++                       capture_output=True, text=True, timeout=60)
++    lines = r.stdout.splitlines()
++    return (lines[0] if len(lines) > 0 else ""), (lines[1] if len(lines) > 1 else "")
++
++
++def main() -> int:
++    problems: list[str] = []
++
++    host = _new_host()
++    _host(host)
++    from forge_factory.common import data_root
++
++    host_root = str(data_root())
++    toml_text = _render(host, None)
++    env = _mcp_env(toml_text)
++    if env is None:
++        problems.append("generated run config fails the strict tomllib parse")
++    if env is not None and env.get("FORGE_DATA_ROOT") != host_root:
++        problems.append("generated MCP env block does not pin the host FORGE_DATA_ROOT")
++    hook = _hook_script(toml_text)
++    if f"FORGE_DATA_ROOT={shlex.quote(host_root)}" not in hook:
++        problems.append("generated policy hook does not pin the host FORGE_DATA_ROOT")
++    if env is not None:
++        child_root, jar = _child_view(env)
++        if child_root != host_root:
++            problems.append(f"isolated MCP child resolves a different data root ({child_root or '<none>'})")
++        if jar != "JAR":
++            problems.append("plantuml jar invisible to the child -> PLANTUML_NOT_AVAILABLE")
++
++    override = str(host / "declared-override")
++    oenv = _mcp_env(_render(host, {"FORGE_DATA_ROOT": override}))
++    if oenv is None:
++        problems.append("explicit declared FORGE_DATA_ROOT override breaks the strict tomllib parse")
++    elif oenv.get("FORGE_DATA_ROOT") != override:
++        problems.append("declared FORGE_DATA_ROOT override does not win over the generated default")
++    else:
++        oroot, _ = _child_view(oenv)
++        if oroot != override:
++            problems.append(f"isolated child ignores the declared override ({oroot or '<none>'})")
++
++    if problems:
++        for p in problems:
++            print(f"  - {p}", file=sys.stderr)
++        print(f"SYMPTOM_PRESENT:{SIG}")
++        return 1
++    print("SYMPTOM_ABSENT")
++    return 0
++
++
++def test_default_env_pins_host_data_root_and_parses():
++    host = _new_host()
++    _host(host)
++    from forge_factory.common import data_root
++
++    env = _mcp_env(_render(host, None))
++    assert env is not None, "strict tomllib parse of the generated run config failed"
++    assert env["FORGE_DATA_ROOT"] == str(data_root())
++
++
++def test_hook_pins_host_data_root():
++    host = _new_host()
++    _host(host)
++    from forge_factory.common import data_root
++
++    hook = _hook_script(_render(host, None))
++    assert f"FORGE_DATA_ROOT={shlex.quote(str(data_root()))}" in hook
++    assert "forge_factory.policy.fabro_hook" in hook
++
++
++def test_isolated_child_resolves_host_data_root_and_sees_jar():
++    host = _new_host()
++    _host(host)
++    from forge_factory.common import data_root
++
++    env = _mcp_env(_render(host, None))
++    assert env is not None
++    child_root, jar = _child_view(env)
++    assert child_root == str(data_root())
++    assert jar == "JAR"
++
++
++def test_declared_override_wins_and_config_still_parses():
++    host = _new_host()
++    _host(host)
++    override = str(host / "declared-override")
++    toml_text = _render(host, {"FORGE_DATA_ROOT": override})
++    assert _doc(toml_text) is not None, "duplicate TOML key: strict parse failed"
++    env = _mcp_env(toml_text)
++    assert env is not None
++    assert env["FORGE_DATA_ROOT"] == override
++    child_root, _ = _child_view(env)
++    assert child_root == override
++
++
++def test_script_mode_reports_symptom_absent_once_fixed():
++    r = subprocess.run([sys.executable, str(Path(__file__).resolve())], capture_output=True,
++                       text=True, timeout=180)
++    assert r.returncode == 0, f"script mode exited {r.returncode}\n{r.stdout}\n{r.stderr}"
++    lines = [ln for ln in r.stdout.splitlines() if ln.strip()]
++    assert lines and lines[-1] == "SYMPTOM_ABSENT"
++    assert "SYMPTOM_PRESENT" not in r.stdout
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

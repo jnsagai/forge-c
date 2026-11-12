@@ -1,0 +1,238 @@
+{
+  "at": "2026-10-31T04:11:40.230084Z",
+  "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+  "observations": [
+    {
+      "at": "2026-10-31T04:06:16.597404724Z",
+      "node": "swe4_test_author",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "native_event_sha256": "74cccea9c0fcebbc8133eb5cc95092650b355b60f8c46c451dca88255bbc33b9",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "FAIL",
+        "summary": "unit: 1 passed, 1 failed (HOST)",
+        "artifact_refs": [
+          "artifact:sha256:c06f9e2e054864b5536a59ea14012ac5804612dc37bf66f823521e4b0bd85cce"
+        ],
+        "issues": [
+          "DUPLICATE_TEST_ID:UT-003:used by 4 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-004:used by 4 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-005:used by 2 checks - give each check its own id",
+          "DUPLICATE_TEST_ID:UT-006:used by 4 checks - give each check its own id"
+        ],
+        "provenance": {
+          "tool": "clang+self-checking tests",
+          "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+          "invocation_id": "inv-7cb143c083984bf2",
+          "output_sha256": "c06f9e2e054864b5536a59ea14012ac5804612dc37bf66f823521e4b0bd85cce",
+          "exit_code": 1,
+          "duration_ms": 3.6
+        },
+        "metrics": {
+          "passed": 1,
+          "failed": 1,
+          "executables": 1,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:07:57.581533425Z",
+      "node": "swe4_test_author",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "native_event_sha256": "0b0b8b399d9270cd6d57a32bcdcd8fa0cd77ea2a1f679cbd2b6a7e057f504117",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "FAIL",
+        "summary": "unit: 1 passed, 1 failed (HOST)",
+        "artifact_refs": [
+          "artifact:sha256:2fbc028fe84249083017fcc83cf6afcd8230835e38355a9875a159e73c6b867d"
+        ],
+        "issues": [
+          "DUPLICATE_TEST_ID:UT-006:used by 2 checks - give each check its own id"
+        ],
+        "provenance": {
+          "tool": "clang+self-checking tests",
+          "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+          "invocation_id": "inv-e979fa7fe57b41bd",
+          "output_sha256": "2fbc028fe84249083017fcc83cf6afcd8230835e38355a9875a159e73c6b867d",
+          "exit_code": 1,
+          "duration_ms": 2.7
+        },
+        "metrics": {
+          "passed": 1,
+          "failed": 1,
+          "executables": 1,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:08:38.261605048Z",
+      "node": "swe4_test_author",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "native_event_sha256": "67ffcd127d6603ac8f8962aa637f9c64a7bc40b598cb4a7de076f77571e8f2f3",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "PASS",
+        "summary": "unit: 1 passed, 0 failed (HOST)",
+        "artifact_refs": [
+          "artifact:sha256:75d1245b3278879de4564a9952a532e5117309877330b643725ebf4092d912c6"
+        ],
+        "issues": [],
+        "provenance": {
+          "tool": "clang+self-checking tests",
+          "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+          "invocation_id": "inv-16f1eb9566484764",
+          "output_sha256": "75d1245b3278879de4564a9952a532e5117309877330b643725ebf4092d912c6",
+          "exit_code": 0,
+          "duration_ms": 2.7
+        },
+        "metrics": {
+          "passed": 1,
+          "failed": 0,
+          "executables": 1,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:08:45.840526818Z",
+      "node": "swe4_test_author",
+      "tool": "mcp__forge_tests_mcp__llvm_coverage",
+      "native_event_sha256": "7cd864692363a54345169136a69cc35b41c05445ed2831a7b1a889313c03d36d",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "PASS",
+        "summary": "line 100.0% branch None% MC/DC None% (host)",
+        "artifact_refs": [
+          "artifact:sha256:3a1c7eb72912bcd6a86ca454ba38407a3842fd27e3baf5e83916fc2e0596975d",
+          "artifact:sha256:309ef2b1ca581bdd250f6d65b3a075090e3885bac50cb3e18313a54e896d7844",
+          "artifact:sha256:8fa38764c008f418194db998303741a760caf6dc513cd3443698008841e6ceb6"
+        ],
+        "issues": [],
+        "provenance": {
+          "tool": "llvm-cov",
+          "version": "LLVM (http://llvm.org/):",
+          "invocation_id": "inv-6f764b63d01a4318",
+          "input_sha256": "1900c8b35970d67e11f2e442c743fb21c0938a5032d36e1581feea6576e803b7",
+          "output_sha256": "3a1c7eb72912bcd6a86ca454ba38407a3842fd27e3baf5e83916fc2e0596975d",
+          "exit_code": 0,
+          "duration_ms": 9.5
+        },
+        "metrics": {
+          "line_pct": 100,
+          "branch_pct": null,
+          "function_pct": 100,
+          "region_pct": 100,
+          "mcdc_pct": null,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:11:02.483240038Z",
+      "node": "swe4_author",
+      "tool": "mcp__forge_tests_mcp__run_unit",
+      "native_event_sha256": "2efff657cf50b2f833ae7adb33e08d2e37c2fda7e4d842878612fd2e5983659a",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "PASS",
+        "summary": "unit: 1 passed, 0 failed (HOST)",
+        "artifact_refs": [
+          "artifact:sha256:75d1245b3278879de4564a9952a532e5117309877330b643725ebf4092d912c6"
+        ],
+        "issues": [],
+        "provenance": {
+          "tool": "clang+self-checking tests",
+          "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+          "invocation_id": "inv-49813bed760a4a31",
+          "output_sha256": "75d1245b3278879de4564a9952a532e5117309877330b643725ebf4092d912c6",
+          "exit_code": 0,
+          "duration_ms": 2.6
+        },
+        "metrics": {
+          "passed": 1,
+          "failed": 0,
+          "executables": 1,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:11:06.214149118Z",
+      "node": "swe4_author",
+      "tool": "mcp__forge_tests_mcp__llvm_coverage",
+      "native_event_sha256": "49e670cd26a44f23c4f2405108a77a8353ca7abbd724433b40a60b549405f5fc",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "PASS",
+        "summary": "line 100.0% branch None% MC/DC None% (host)",
+        "artifact_refs": [
+          "artifact:sha256:3a1c7eb72912bcd6a86ca454ba38407a3842fd27e3baf5e83916fc2e0596975d",
+          "artifact:sha256:309ef2b1ca581bdd250f6d65b3a075090e3885bac50cb3e18313a54e896d7844",
+          "artifact:sha256:8fa38764c008f418194db998303741a760caf6dc513cd3443698008841e6ceb6"
+        ],
+        "issues": [],
+        "provenance": {
+          "tool": "llvm-cov",
+          "version": "LLVM (http://llvm.org/):",
+          "invocation_id": "inv-5ef7ab04802649cc",
+          "input_sha256": "1900c8b35970d67e11f2e442c743fb21c0938a5032d36e1581feea6576e803b7",
+          "output_sha256": "3a1c7eb72912bcd6a86ca454ba38407a3842fd27e3baf5e83916fc2e0596975d",
+          "exit_code": 0,
+          "duration_ms": 8.2
+        },
+        "metrics": {
+          "line_pct": 100,
+          "branch_pct": null,
+          "function_pct": 100,
+          "region_pct": 100,
+          "mcdc_pct": null,
+          "environment": "host",
+          "target_evidence": false
+        }
+      }
+    },
+    {
+      "at": "2026-10-31T04:11:15.519635483Z",
+      "node": "swe4_author",
+      "tool": "mcp__forge_evidence_mcp__validate_trace",
+      "native_event_sha256": "e903b498ec8c83b76a0297c67e31cb0a5969d53d3d8eb0745850d5871db6107d",
+      "omitted_output_bytes": 0,
+      "tool_transport_error": false,
+      "result": {
+        "status": "PASS",
+        "summary": "11/11 requirements traced; 5 test links planned (test files are due at SWE.4)",
+        "artifact_refs": [],
+        "issues": [],
+        "provenance": {
+          "tool": "forge-trace-gate",
+          "version": "0.4.0",
+          "invocation_id": "inv-f5b34c2e16b44473",
+          "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "metrics": {
+          "requirements": 11,
+          "traced": 11,
+          "rows": 11,
+          "planned_test_links": 5,
+          "test_files_required": true
+        }
+      }
+    }
+  ],
+  "read_only": true,
+  "model_calls": 0
+}

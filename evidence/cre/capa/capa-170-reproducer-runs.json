@@ -1,0 +1,134 @@
+[
+  {
+    "at": "2026-11-04T23:20:40.281448Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "BASELINE",
+    "run_id": "rr-6c52c81c45fe6ffafe7d",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:20:41.501992Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+    "role": "BASELINE",
+    "run_id": "rr-2d381493137c7ce2a0db",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:46:28.281814Z",
+    "exit_code": 2,
+    "log_sha256": "1fcf1f2e4e53113c5333e3868db0d9bf677f203351f2dc6257358e2d8c0f140f",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "CANDIDATE",
+    "run_id": "rr-86b94c3232c7af4bf343",
+    "signature": "REPRODUCER_ERROR:RuntimeError:NORMAL_REGISTERED_DISPATCH_SCENARIO_NOT_REACHED:[{'command_id': 'afo-cmd-cf3c0b9f1edec46c5b97', 'action': 'launch_outcome_unknown', 'error': 'QueueError: DURABLE_DATA_VOL",
+    "verdict": "ERROR"
+  },
+  {
+    "at": "2026-11-04T23:48:19.201886Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "BASELINE",
+    "run_id": "rr-21412ca9cf2cc8529d87",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:48:20.199184Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+    "role": "BASELINE",
+    "run_id": "rr-e14f1226e79d5865acdc",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:48:21.316566Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "CANDIDATE",
+    "run_id": "rr-9c0279c3daac0a36ec17",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:48:23.229424Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "BASELINE",
+    "run_id": "rr-acf6e1b8d58133a05d50",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:48:23.918138Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "CANDIDATE",
+    "run_id": "rr-34b603c32ca76824db9e",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:49:50.240734Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "PREVENTION",
+    "run_id": "rr-c4470940aac94aa7d29b",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:50:51.470188Z",
+    "exit_code": 1,
+    "log_sha256": "5ca785f272b523ff577c636ad35ccc92fb649b90144fbe96a7f81ba4d0c4c730",
+    "reproducer_id": "RPR-170",
+    "revision": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "role": "BASELINE",
+    "run_id": "rr-270ff556c4d6efc08b9f",
+    "signature": "line-local product launch cannot prepare its owned provider without global shutdown",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-04T23:50:52.204552Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "CANDIDATE",
+    "run_id": "rr-69b2860d055ae5f4d728",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-04T23:52:14.452713Z",
+    "exit_code": 0,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "reproducer_id": "RPR-170",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "PREVENTION",
+    "run_id": "rr-84639a84fdd0e35884c8",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  }
+]

@@ -1,0 +1,89 @@
+{
+  "schema": "forge-c/m9-preparation-state/1",
+  "agent": "/root/omniverse_autonomy/m9_soak_preparation",
+  "base_revision": "6b04e665914288c96e724443314d61d8daf763cb",
+  "candidate_revision": "045a7f0be4a826ffa395f5a1367c629648cf948b",
+  "status": "PREPARATION_INCREMENT_ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "live_24h": "NOT_RUN",
+  "live_72h": "NOT_RUN",
+  "live_168h": "NOT_RUN",
+  "thirty_day_slo": "NOT_RUN",
+  "live_start_blocker": "LINE_AUTONOMY_PREREQUISITES_NOT_QUALIFIED",
+  "implemented": [
+    "fixed current LineConductor unit/PID/heartbeat observation",
+    "explicit line-local M3 queue read-only DB",
+    "own Fabro relay and actual namespace stack status health",
+    "clean exact source revision/profile/collector/verifier pins",
+    "existing immutable observer receipts and monotonic/wall/boot-aware soak report",
+    "shared campaign entrypoint refuses unqualified line-runtime start",
+    "existing work/fault/continuity proof requirements retained"
+  ],
+  "missing_live_prerequisites": [
+    "Actual M5 automatic external watchdog authority/integration and independent real recovery qualification",
+    "Actual M6/M7/M8 qualified roles/evidence and exact prerequisite validator integration; fixture or source CRE eligibility cannot substitute",
+    "Inventoried Omniverse authoritative data volume UUID and required sentinel/preflight",
+    "Authenticated persistent RUNNING operations intent outside application data; no inferred initialization",
+    "Clean final integrated candidate and separately frozen 24h/72h/168h manifests at exact same revision",
+    "Separately valid owner-signed campaign/fault runbook matching each frozen manifest, service/fault scope, and finite budget",
+    "Preprovisioned admitted real jobs with mission/request/native execution lineage usable by existing independent product verifier",
+    "Frozen fault/load schedule, independent segmented host observation and recovery/expiry/post-window/later-intake evidence",
+    "Real wall-time campaign execution, complete source receipts and report meeting all bounds; gaps remain UNKNOWN"
+  ],
+  "expected_host_layout_for_review_only": {
+    "unit": "forge-line-conductor-local.service",
+    "data_root": "/mnt/data/forge-c",
+    "launch_dir": "/mnt/data/forge-c/swe1-fabro-20261031",
+    "database": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/supervisor/line-queue.sqlite3",
+    "heartbeat": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/supervisor/line-conductor.heartbeat",
+    "fabro_health": "http://127.0.0.1:32397/health",
+    "gateway_probe": "existing lrtx.stack status inside the line namespace",
+    "mount_uuid": null,
+    "external_intent": null,
+    "external_evidence_root": null
+  },
+  "operator_workflow": [
+    "Use a fresh clean checkout of the final integrated candidate; do not reuse consumed or live worktrees",
+    "Run python -m forge_factory.afo.line_soak prepare with explicitly inventoried --data-root --launch-dir --intent --evidence-root --mount-uuid --profile --out; this writes only a plan, never starts services or a campaign",
+    "Freeze the existing authored operation-24/72/168 qualification campaign with this observer input, exact preprovisioned jobs and separate segmented host/fault plans; no clocks accelerated",
+    "Run line_soak preflight with --manifest and --observer-plan; preparation is not authority or live qualification",
+    "Keep live start closed until prerequisite validators and actual M5\u2013M8 evidence are integrated and separate owner-signed campaign/fault authority is valid",
+    "Use existing operational_campaign collector/report and independent work/fault/continuity verifiers when qualified; invocation ending never stops factory supervision or renews authority"
+  ],
+  "validation_logs": [
+    "autonomy-m9-line-soak-tests-final.log",
+    "autonomy-m9-design.log",
+    "autonomy-m9-line-soak-change-gate.log"
+  ],
+  "actions_performed": {
+    "remote_mutations": 0,
+    "model_calls": 0,
+    "gpu_operations": 0,
+    "service_changes": 0,
+    "fault_injections": 0,
+    "live_soak_starts": 0
+  },
+  "tests": {
+    "targeted_compatibility_pass": 129,
+    "static_design_pass": 14
+  },
+  "clean_candidate_prepare_result": "autonomy-m9-local-preparation-result.json",
+  "preparation_scope": "LOCAL_ISOLATED_PLAN_GENERATION_ONLY_NOT_OMNIVERSE_QUALIFICATION",
+  "cre_decision": "pd-483c29347496f66dbdcf",
+  "cre_decision_path": "evidence/cre/decisions/pd-483c29347496f66dbdcf.json",
+  "source_complete": false,
+  "live_complete": false,
+  "validation_artifacts": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m9-line-soak-tests-final.log",
+      "sha256": "7e2b353babc25aa865aa5a86246d725bcaca27108bc30c5a5c5b0fd8fa3ef55d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m9-design.log",
+      "sha256": "382669cbfa05717086095993a224d640490dad86333c92e96e0c2ba959625717"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m9-line-soak-change-gate.log",
+      "sha256": "207dee6b28aba23b4569a2f85854754162c7ed6818c87c79d7dbe0a2b320bad7"
+    }
+  ]
+}

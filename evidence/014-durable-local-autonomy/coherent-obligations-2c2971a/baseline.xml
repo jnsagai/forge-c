@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.114" timestamp="2026-10-28T15:05:46.846554+00:00" hostname="master"><testcase classname="factory.python.tests.test_lrtx_coherent_obligations" name="test_actual_crc_coupled_reversal_fields_cannot_cross_packet_boundaries" time="0.017"><failure message="AssertionError: [{'REV_OUT', 'RTYPE_IN', 'RTYPE_OUT'}, {'POLYSIZE', 'RESET', 'REV_IN'}]&#10;assert False&#10; +  where False = any(&lt;generator object test_actual_crc_coupled_reversal_fields_cannot_cross_packet_boundaries.&lt;locals&gt;.&lt;genexpr&gt; at 0x72ae9ff5bd30&gt;)">def test_actual_crc_coupled_reversal_fields_cannot_cross_packet_boundaries():
+        # RM field order, as present in the observed live inventory.
+        names = ["RTYPE_OUT", "RTYPE_IN", "REV_OUT", "REV_IN", "POLYSIZE", "RESET"]
+        inv = inventory(names, [("CRC_CR.REV_OUT", "CRC_CR.RTYPE_OUT"), ("CRC_CR.REV_IN", "CRC_CR.RTYPE_IN")])
+        parts = [set(g["fields"]) for g in swe1.groups(inv)]
+&gt;       assert any({"REV_IN", "RTYPE_IN"} &lt;= p for p in parts), parts
+E       AssertionError: [{'REV_OUT', 'RTYPE_IN', 'RTYPE_OUT'}, {'POLYSIZE', 'RESET', 'REV_IN'}]
+E       assert False
+E        +  where False = any(&lt;generator object test_actual_crc_coupled_reversal_fields_cannot_cross_packet_boundaries.&lt;locals&gt;.&lt;genexpr&gt; at 0x72ae9ff5bd30&gt;)
+
+factory/python/tests/test_lrtx_coherent_obligations.py:20: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_lrtx_coherent_obligations" name="test_an_oversized_joint_obligation_blocks_instead_of_being_silently_split" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">def test_an_oversized_joint_obligation_blocks_instead_of_being_silently_split():
+        names = [f"F{i}" for i in range(swe1.MAX_FIELDS + 1)]
+        inv = inventory(names, [[f"DEV_CR.{f}" for f in names]], "DEV_CR")
+&gt;       with pytest.raises(ValueError, match="COHERENT_SCOPE_GROUP_EXCEEDS_FIELD_LIMIT"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+factory/python/tests/test_lrtx_coherent_obligations.py:29: Failed</failure></testcase></testsuite></testsuites>

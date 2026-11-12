@@ -27,6 +27,18 @@ def layer_of(ws: Path) -> str:
 TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
 HAL_UNIT_ISOLATION = "ll-fake-v1"  # CAPA-038: HAL unit tests run on a generated test double of the provided LL API
 REGISTER_CONTRACT = "rc-v1"  # owner decision 2026-10-19 (option B): machine-readable register contract feeds the oracle
+# owner decision 2026-11-03 (V-model): SWE.4 unit tests derive from and trace to the SWE.3 USPEC items (UT ids assigned
+# by SWE.4, GoogleTest/GoogleMock 1.11.0); SWE.1 allocates only the SWE.6 qualification tests. Older work orders keep
+# the SWE.1 UT allocation and the self-checking C harness (never reinterpreted).
+UNIT_VERIFICATION = "uspec-gtest-v1"
+
+
+def uspec_gtest(ws: Path) -> bool:
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("unit_verification") == \
+            UNIT_VERIFICATION
+    except (OSError, ValueError):
+        return False
 
 
 def hal_unit_isolation(ws: Path) -> bool:
@@ -36,6 +48,16 @@ def hal_unit_isolation(ws: Path) -> bool:
     except (OSError, ValueError):
         return False
     return m.get("layer") == "HAL" and m.get("hal_unit_isolation") == HAL_UNIT_ISOLATION
+
+
+def hal_standalone(ws: Path) -> bool:
+    """Feature 015 (ST HAL): a delivered HAL that accesses the registers itself (ST's classic, handle-based HAL) - no
+    provided LL, no LL test double; the manifest says so (workorder.prepare, delivery provided_ll: false)."""
+    try:
+        m = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    except (OSError, ValueError):
+        return False
+    return m.get("layer") == "HAL" and bool(m.get("hal_standalone"))
 
 
 def register_contract_enabled(ws: Path) -> bool:
@@ -67,6 +89,26 @@ def profile(ws: Path | None = None) -> dict:
     from .peripheral import load, of_ws
 
     return of_ws(ws) if ws is not None else load()
+
+
+def ll_instance(ws: Path | None = None) -> dict | None:
+    """Instance mode: the validated caller-supplied instance declaration of the work order's operation scope (parameter,
+    macro, host object, typed register interface, API-contract signatures); None without the declaration. A declared
+    but invalid contract raises ValueError, never a silent fallback to the register-block array."""
+    if ws is None:
+        return None
+    from .operation_scope import instance_of
+
+    return instance_of(ws)
+
+
+def instance_flags(ws: Path | None, host: bool) -> list[str]:
+    """Instance mode compiler flags: the pinned device/API headers in inputs/ are system headers (their diagnostics are
+    not the author's), and a host build maps the instance macro to the device header's RAM object (FORGE_HOST_BUILD).
+    [] without the declaration, so every other work order compiles with its unchanged flags."""
+    if ll_instance(ws) is None:
+        return []
+    return ["-isystem", str(Path(ws).resolve() / "inputs"), *(["-DFORGE_HOST_BUILD=1"] if host else [])]
 
 
 def ll_header(ws: Path | None = None) -> str:
@@ -104,14 +146,37 @@ def api_prefix(layer: str, ws: Path | None = None) -> str:
     return p["ll"]["function_prefix"] if layer == "LL" else p["hal"]["function_prefix"]
 
 
+# CAPA-124: the profile prompt texts that state the HAL's wait behaviour (each replaces the waiting RCC text)
+HAL_WAIT_TEXTS = ("hal_wait_rule", "hal_failure_responses", "hal_dynamic_view")
+
+
+def hal_waits(ws: Path | None = None) -> bool:
+    """CAPA-124: whether the work order's HAL has a bounded wait, and so a HAL_TIMEOUT path. True with a time base
+    (`hal.time_base`, e.g. IWDG), for RCC and for every profile that leaves one of HAL_WAIT_TEXTS to the RCC default
+    (oscillator enables wait for the ready flag), and when one of those texts names HAL_TIMEOUT. False only when the
+    profile states all of them and none names HAL_TIMEOUT (CRC: no wait, RM0486 26.3.3)."""
+    return hal_waits_of(profile(ws))
+
+
+def hal_waits_of(p: dict) -> bool:
+    """hal_waits() for a loaded peripheral profile (the prompt builder holds the profile, not a workspace)."""
+    if p["hal"].get("time_base") or p["id"] == "rcc":
+        return True
+    t = p.get("prompt") or {}
+    texts = [t.get(k) for k in HAL_WAIT_TEXTS]
+    return any(not x or "HAL_TIMEOUT" in str(x) for x in texts)
+
+
 def components(layer: str, ws: Path | None = None) -> tuple[str, ...]:
     p = profile(ws)
     ll, hal = Path(p["ll"]["header"]).stem, Path(p["hal"]["header"]).stem
+    if layer != "LL" and ws is not None and hal_standalone(ws):  # F015: ST's classic HAL, no LL component
+        return (hal,)
     return (ll,) if layer == "LL" else (hal, ll)
 
 
 def ll_measure_unit(header_text: str, ws: Path | None = None) -> str | None:
-    """CAPA-013/016/018: a build-only C unit with one non-inline instance per LL static inline function, whatever its
+    """CAPA-013/016/018: a build-only C unit with one non-inline instance per LL static header function, whatever its
     parameter list (r84 used `(volatile uint32_t *rcc)`), so size and stack tools measure the header-only LL."""
     import re
 
@@ -121,7 +186,7 @@ def ll_measure_unit(header_text: str, ws: Path | None = None) -> str | None:
            f'#include "{prof["ll"]["header"]}"']
     n = 0
     fn = re.escape(prof["ll"]["function_prefix"])
-    for m in re.finditer(r"static\s+inline\s+([A-Za-z_][\w\s]*?[\w*])\s*\b(" + fn + r"\w+)\s*\(([^)]*)\)\s*\{", code):
+    for m in re.finditer(r"static\s+(?:inline\s+)?([A-Za-z_][\w\s]*?[\w*])\s*\b(" + fn + r"\w+)\s*\(([^)]*)\)\s*\{", code):
         ret, name, params = " ".join(m.group(1).split()), m.group(2), m.group(3).strip()
         args = [] if params in ("", "void") else [
             re.search(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*$", p.strip()).group(1) for p in params.split(",")]

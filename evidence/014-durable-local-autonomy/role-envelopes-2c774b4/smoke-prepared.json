@@ -1,0 +1,81 @@
+{
+  "captured_utc": "2026-10-28T10:46:02.666712Z",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 7
+  },
+  "trial": "obligation-counterexample:0",
+  "order": {
+    "order_id": "afo-39c86c2270b4cf1a",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "provisioning": {
+    "status": "PROVISIONING_IN_PROGRESS",
+    "provisioned_this_call": 1,
+    "inference_requests": 0
+  },
+  "records": [
+    {
+      "job": {
+        "job_id": "afo-agent-14b99411ece11c4e260560b4",
+        "state": "PREPARED",
+        "run_id": null,
+        "error": null,
+        "deadline_epoch": 1793187962.0790026,
+        "reserved_tokens": 65536,
+        "reported_tokens": null,
+        "receipt_id": null,
+        "initial_request_measurement": {
+          "sha256": "1afa59f778cbd6688b6c9f7d20be7fa0d00e087639cccdc2aee1f31c355e67ba",
+          "serialized_bytes": 9745,
+          "input_tokens": 9873,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "wire_request_sha256": "b90865127b0b1477bf71fb5c941ad9445baae279b725ffa49378a36cc99ea343",
+          "profile_sha256": "d9b03f1128dce9cc23784a7fb1f942bd067762bbbe028a0ac570cb01c401d4a8",
+          "effective_reasoning_effort": "xhigh",
+          "effective_output_cap": 34816,
+          "requested_output_cap": 2048,
+          "gateway_transformation_count": 1,
+          "evidence_ref_aliases": 5
+        }
+      },
+      "execution": null,
+      "requests": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-Q38-PROTOCOL-SMOKE-20261028-V1",
+    "created_at": "2026-10-28T10:45:00.800456Z",
+    "limits": {
+      "deadline": 1793196391.0,
+      "max_attempts": 0,
+      "max_corrections": 0,
+      "max_jobs": 1,
+      "max_requests": 1,
+      "max_tokens": 65536,
+      "max_tools": 0
+    },
+    "lineage": "owner:q38-first-protocol-generation:20261028",
+    "mission_id": "qualification-014-q38-quality-smoke-20261028",
+    "attempts": 0,
+    "jobs": 1,
+    "requests": 0,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 65536,
+    "usage_unknown": true,
+    "unique_executions": 1,
+    "unbounded_historical_usage": false
+  },
+  "heartbeat": {
+    "ts": "2026-10-28T10:45:59.538781Z",
+    "epoch": 1793184359.5390143,
+    "pid": 45961,
+    "cycle": 40,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  }
+}

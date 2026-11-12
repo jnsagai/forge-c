@@ -1,0 +1,102 @@
+{
+  "by_model": {
+    "qwen3.8:27b-q8_0": {
+      "attempts": 2,
+      "calls_median": 3.5,
+      "gate_frozen": 2,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:CRC_IDR": {
+          "attempts": 2,
+          "call_wall_ms_median": 197879.19999999998,
+          "calls_median": 1.5,
+          "first_call_valid": 1,
+          "tokens_median": 14504.0,
+          "valid": 2
+        },
+        "requirements:crosscutting": {
+          "attempts": 2,
+          "call_wall_ms_median": 264131.45,
+          "calls_median": 2.0,
+          "first_call_valid": 0,
+          "tokens_median": 18377.0,
+          "valid": 2
+        }
+      },
+      "visit_pass": 2,
+      "wall_s_median": 464.6
+    }
+  },
+  "generated_at": "2026-10-31T16:00:36.619431Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3.8:27b-q8_0"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 2,
+  "rows": [
+    {
+      "calls": 4,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3.8:27b-q8_0",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 287921.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 16322,
+          "prompt_tokens": 4469,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 300777.0,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 17126,
+          "prompt_tokens": 3405,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 589.4,
+      "workspace": "/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031/report-workspaces/qwen3.8_27b-q8_0-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3.8:27b-q8_0",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 107836.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 6342,
+          "prompt_tokens": 1875,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 227485.9,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 12866,
+          "prompt_tokens": 3357,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 339.8,
+      "workspace": "/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031/report-workspaces/qwen3.8_27b-q8_0-02/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031/start-ws"
+}

@@ -1,0 +1,6 @@
+{
+  "status": "PASS_SCOPED_PATTERN_AND_JSON_KEY_SCAN",
+  "files_scanned": 90,
+  "findings": 0,
+  "scope": "Selected new evidence; no universal privacy guarantee"
+}

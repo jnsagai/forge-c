@@ -32,7 +32,13 @@ def _validator(name: str):
 
 
 def errors(name: str, obj) -> list[str]:
-    return [f"{name}:{'/'.join(map(str, e.path)) or '<root>'}: {e.message}"[:200] for e in _validator(name).iter_errors(obj)]
+    out = []
+    for e in _validator(name).iter_errors(obj):
+        # Put the violated limit before any untrusted value: MCP issues are capped at 120 characters.
+        detail = (f"{e.validator}={e.validator_value}; actual_length={len(e.instance)}"
+                  if e.validator in ("maxLength", "minLength") else e.message)
+        out.append(f"{name}:{'/'.join(map(str, e.path)) or '<root>'}: {detail}"[:200])
+    return out
 
 
 def require(name: str, obj) -> None:

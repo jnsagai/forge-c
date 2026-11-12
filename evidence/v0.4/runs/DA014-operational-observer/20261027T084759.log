@@ -1,0 +1,3 @@
+Exact clean c72992a: 662 core PASS / 11 SKIP; release 13 PASS; private-fixture kernel rerun 2 PASS.
+History and seven local transient-systemd semantics PASS. Independent CRE REJECTED/PROTECTED_PATH_CHANGE retained.
+Scope: deterministic observer implementation only. Remote long campaigns, full inherited suite on c72992a and deployment NOT_RUN/NOT_ACTIVATED. No new task tick.

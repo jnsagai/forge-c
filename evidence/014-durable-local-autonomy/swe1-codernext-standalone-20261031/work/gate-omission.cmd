@@ -1,0 +1,1 @@
+PYTHONPATH=/mnt/data/forge-c/operations/swe1-qwen-20261031/repo/factory/python FORGE_STATE_DIR=/mnt/data/forge-c/operations/swe1-codernext-20261031/inspect-state-omission FORGE_DATA_ROOT=/mnt/data/forge-c FORGE_LRTX_PROFILE=local-rtx-v2-omniverse2-q38-delivery-first /mnt/data/forge-c/venv/bin/python -m forge_factory.inspection.gate --workspace . --phase SWE.1 --step inspect

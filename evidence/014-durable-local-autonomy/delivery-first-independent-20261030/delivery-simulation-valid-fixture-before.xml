@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="0.427" timestamp="2026-10-30T20:56:06.105649+00:00" hostname="master"><testcase classname="factory.python.tests.test_simulation_declared_headers" name="test_static_header_functions_can_be_instrumented_without_rewriting_driver" time="0.071"><failure message="ValueError: SIMULATION_PERFORMANCE_AUTHORED_SCOPE_UNSUPPORTED_OR_INCOMPLETE">static_header = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu... 64, 'microseconds_per_call': 100, 'performance_mips': 100, 'schema': 'forge-c/simulation-performance-budget/1', ...}})
+
+    def test_static_header_functions_can_be_instrumented_without_rewriting_driver(static_header):
+        ws, header, _ = static_header
+        original = header.read_bytes()
+&gt;       assert F.symbols(ws) == ["forge_measure_LL_CRC_Write_IDR", "forge_measure_LL_CRC_Read_IDR"]
+               ^^^^^^^^^^^^^
+
+factory/python/tests/test_simulation_declared_headers.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/simulation_performance.py:81: in symbols
+    kind, public, _ = _authored_scope(ws)
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-234/test_static_header_functions_c0')
+
+    def _authored_scope(ws):
+        """Reuse the driver profile and C index; unsupported APIs refuse rather than disappear from coverage."""
+        from . import layer
+        from .brownfield.scope import FUNC_HEAD, _blank_directives, _skip_if0, index, strip_comments
+    
+        ws = Path(ws)
+        kind = layer.layer_of(ws)
+        if kind not in ("LL", "HAL"):
+            raise ValueError("SIMULATION_PERFORMANCE_AUTHORED_SCOPE_LAYER_UNSUPPORTED")
+        header = layer.api_header(kind, ws)
+        text = (ws / header).read_text()
+        prefix = layer.api_prefix(kind, ws)
+        definitions = [d for d in index(text, header) if d.name.startswith(prefix)]
+        code = _blank_directives(_skip_if0(strip_comments(text)))
+        declaration_rx = re.compile(FUNC_HEAD.pattern.removesuffix(r"\{") + ";")
+        declarations = [m for m in declaration_rx.finditer(code) if m["name"].startswith(prefix)]
+        candidates = set(re.findall(r"\b(" + re.escape(prefix) + r"\w+)\s*\(", code))
+        if kind == "LL":
+            names = [d.name for d in definitions if d.kind == "static_inline"]
+            valid = not declarations and all(d.kind == "static_inline" for d in definitions)
+        else:
+            names = [m["name"] for m in declarations]
+            source = layer.hal_c(ws)
+            impl = _blank_directives(_skip_if0(strip_comments((ws / source).read_text())))
+            implemented = [m["name"] for m in FUNC_HEAD.finditer(impl)
+                           if not re.search(r"\bstatic\b", m["quals"])]
+            valid = (not definitions and all(not re.search(r"\bstatic\b", m["quals"]) for m in declarations)
+                     and all(implemented.count(name) == 1 for name in names))
+        if not valid or not names or len(names) != len(set(names)) or set(names) != candidates:
+&gt;           raise ValueError("SIMULATION_PERFORMANCE_AUTHORED_SCOPE_UNSUPPORTED_OR_INCOMPLETE")
+E           ValueError: SIMULATION_PERFORMANCE_AUTHORED_SCOPE_UNSUPPORTED_OR_INCOMPLETE
+
+factory/python/forge_factory/simulation_performance.py:66: ValueError</failure></testcase><testcase classname="factory.python.tests.test_simulation_declared_headers" name="test_missing_declared_api_cannot_shrink_cost_scope" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">static_header = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu... 64, 'microseconds_per_call': 100, 'performance_mips': 100, 'schema': 'forge-c/simulation-performance-budget/1', ...}})
+
+    def test_missing_declared_api_cannot_shrink_cost_scope(static_header):
+        ws, header, _ = static_header
+        header.write_text('#include &lt;stdint.h&gt;\nstatic inline void LL_CRC_Write_IDR(volatile uint32_t *reg, '
+                          'uint32_t value) { *reg = value; }\n')
+&gt;       with pytest.raises(ValueError, match="SIMULATION_PERFORMANCE_DECLARED_SCOPE_MISMATCH"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+factory/python/tests/test_simulation_declared_headers.py:45: Failed</failure></testcase><testcase classname="factory.python.tests.test_simulation_declared_headers" name="test_device_build_input_is_bound_in_delivery_first_measurement" time="0.273"><failure message="AssertionError: assert 'inputs/forge_crc_device.h' in {}">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-234/test_device_build_input_is_bou0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7771f555b0b0&gt;
+
+    def test_device_build_input_is_bound_in_delivery_first_measurement(tmp_path, monkeypatch):
+        # A real prepared work-order contract; no model inference or vendor candidate.
+        from forge_factory import development_execution as E
+        from forge_factory import workorder as W
+    
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        ws, _ = W.prepare(REPO_ROOT / "examples/0014g-st-crc-idr-qwen-delivery", "WO-MEASURE-INPUT-FIXTURE",
+                          purpose="QM", execution_policy=E.DEMO)
+        before = F.source_files(ws)
+&gt;       assert "inputs/forge_crc_device.h" in before
+E       AssertionError: assert 'inputs/forge_crc_device.h' in {}
+
+factory/python/tests/test_simulation_declared_headers.py:58: AssertionError</failure></testcase></testsuite></testsuites>

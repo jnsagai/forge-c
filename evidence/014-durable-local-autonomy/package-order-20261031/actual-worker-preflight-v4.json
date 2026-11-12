@@ -1,0 +1,26 @@
+{
+  "worker_configuration": [
+    {
+      "pid": 2564469,
+      "identity": {
+        "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+        "start_ticks": "316016097",
+        "state": "S",
+        "uid": 1000,
+        "pid_namespace": "pid:[4026533792]",
+        "namespace_pid": 140
+      },
+      "env": {
+        "FORGE_AFO_POLICY": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/policy-v4.yaml",
+        "FORGE_DURABLE_AUTONOMY": "1",
+        "FORGE_DURABLE_NATIVE_HEADER": "1",
+        "FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT": "262144"
+      }
+    }
+  ],
+  "api_bridge": {
+    "api_bridge": "UP",
+    "url": "http://127.0.0.1:32404/api/v1"
+  },
+  "holder_pid": 2564275
+}

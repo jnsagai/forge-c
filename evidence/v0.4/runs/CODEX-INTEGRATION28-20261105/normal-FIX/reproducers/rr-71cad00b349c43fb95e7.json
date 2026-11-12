@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-71cad00b349c43fb95e7",
+  "reproducer_id": "AFO-LAUNCH-REFUSAL-CAUSE-20261105",
+  "revision": "2e1ddd5cdaeb3871b2af62c55a98aa01f61f7c01",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "typed pre-native refusal cause erased as generic Refused",
+  "log_sha256": "0b9eb991aedd9708a28f9ad9bc2abc52e9c8fb05ef292990552fed286b1f8729",
+  "at": "2026-11-05T23:36:28.093252Z"
+}

@@ -1,0 +1,34 @@
+{
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "specs/014-durable-local-autonomy/validate_spec.py"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "specs/014-durable-local-autonomy/contracts/validate_contracts.py"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "tests/spec/validate_design.py"
+    ]
+  ],
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "46312afadf310aa6a2ee1d6310a11509e96ad743",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-docs/20261025T144101.log",
+  "log_sha256": "8e226e237172be13959cd2375faaa4993e83712c868e0b737b62fd34e9cd4c15",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "STATIC_SPEC_CONTRACT_AND_DESIGN_ONLY_NOT_RUNTIME_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-docs",
+  "tested_clean_documentation_revision": "46312afadf310aa6a2ee1d6310a11509e96ad743",
+  "ts_utc": "2026-10-25T14:41:01.641467+00:00"
+}

@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-28T14:37:58.537784Z",
+  "intent": {
+    "epoch": 16,
+    "mode": "RUNNING"
+  },
+  "no_phase_or_product_pass_inferred": true,
+  "orders": [
+    {
+      "attempts": [
+        {
+          "attempt_id": "afo-533cd9ba25e792a5-a1",
+          "seq": 1,
+          "state": "RUNNING"
+        }
+      ],
+      "jobs": [
+        {
+          "execution": {
+            "authorization_state": "VALID",
+            "execution_liveness": "LIVE",
+            "native_run_ids": [
+              "01M61F40BHTFTDTXW16WGVRN9Q"
+            ],
+            "resource_lease": "HELD",
+            "task_outcome": "ACTIVE"
+          },
+          "job_id": "afo-product-2350a09769eeed9c90ee142b",
+          "native_handles": [
+            {
+              "native_id": "01M61F40BHTFTDTXW16WGVRN9Q",
+              "status": "RUNNING"
+            }
+          ],
+          "requests": [
+            {
+              "charge": 46946,
+              "created_at": "2026-10-28T14:37:42.614670Z",
+              "reported_input_tokens": null,
+              "reported_output_tokens": null,
+              "request_id": "structured-request-b7347c0a1b594007b16941087dec4ffe",
+              "reserved_tokens": 46946,
+              "state": "SENT",
+              "updated_at": null
+            }
+          ],
+          "reserved_tokens": 400000
+        }
+      ],
+      "mission": {
+        "attempts": 2,
+        "authorization_ref": "AUTH-014-Q38-E2E-WINDOW-20261028-V3",
+        "charged_tokens": 1800000,
+        "corrections": 0,
+        "created_at": "2026-10-28T12:46:05.636011Z",
+        "jobs": 0,
+        "limits": {
+          "deadline": 1793204952.0,
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 512,
+          "max_tokens": 2000000,
+          "max_tools": 1024
+        },
+        "lineage": "F014-OWNER-E2E-ACCEPTANCE-20261028-CRC",
+        "mission_id": "F014-E2E5H-20261028-CRC",
+        "requests": 21,
+        "tools": 0,
+        "unbounded_historical_usage": false,
+        "unique_executions": 2,
+        "usage_unknown": true
+      },
+      "order": {
+        "created_epoch": 1793198030.4980652,
+        "order_id": "afo-533cd9ba25e792a5",
+        "state": "RUNNING",
+        "terminal_reason": null
+      }
+    }
+  ],
+  "resources": "32891 MiB, 99 %",
+  "units": {
+    "forge-afo-watchdog-014-omniverse2.timer": "active",
+    "forge-aspice-expiry-20261028.timer": "active",
+    "forge-conductor-local-omniverse2.service": "active",
+    "forge-qwen-golive-20261028.service": "active"
+  }
+}

@@ -44,3 +44,9 @@ def reference_paths(manifest: dict | None) -> list[str]:
     if not is_brownfield(manifest):
         return []
     return delivered_paths(manifest, None) + [p["path"] for p in manifest.get("provided") or []]
+
+
+def provided_frozen_paths(manifest: dict | None) -> list[str]:
+    """CAPA-130: provided files of a (HAL) work order that are FROZEN delivered code of their source work order (ST's
+    LL): findings located in them are delivered-code findings for the owner, never the HAL author's issues."""
+    return [p["path"] for p in (manifest or {}).get("provided") or [] if p.get("delivered_code_mode") == "FROZEN"]

@@ -1,0 +1,51 @@
+{
+  "schema": "forge-c/offline-export/1",
+  "factory": {
+    "revision": "0000000000000000000000000000000000000000",
+    "dirty": false
+  },
+  "rules": {
+    "included": [
+      ".forge-run/gates/"
+    ],
+    "never_content": [
+      "inputs/"
+    ],
+    "stripped_keys": [
+      "prompt"
+    ]
+  },
+  "runs": [
+    {
+      "run_key": "WO-0009B-X-0123456789ab",
+      "workorder": "WO-0009B-X",
+      "profile": "local-rtx-v2",
+      "model": "qwen3.6:35b-a3b",
+      "files": [
+        {
+          "path": ".forge-run/gates/gate-log.jsonl",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 10,
+          "content": "INCLUDED",
+          "exported_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "stripped_keys": 0,
+          "redactions": 0
+        },
+        {
+          "path": "inputs/RM0486.md",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 99,
+          "content": "NEVER_CONTENT",
+          "exported_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "runs": 1,
+    "files": 2,
+    "included": 1,
+    "stripped_keys": 0,
+    "redactions": 0
+  }
+}

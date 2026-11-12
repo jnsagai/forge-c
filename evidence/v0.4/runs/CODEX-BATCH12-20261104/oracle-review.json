@@ -1,0 +1,29 @@
+{
+  "source_revision": "4158dd453d12ee4e6349bf8196234f9122a20e3a",
+  "original_full_suite_source": "796d662a450b243843f7637c15bba29b57adf2f1",
+  "combined_CHANGE": "pd-f7cfa18e61dd49279166",
+  "prior_combined_CHANGE": "pd-eea0be8e57dce38f0482",
+  "fixture_CHANGE": "pd-98d16e064c3e8a278483",
+  "clean_bundle_verification": "PENDING_POST_ORACLE_BEFORE_PUSH; exactcleanHEAD test required beforelanding",
+  "causal_method": "Original exact eligible FIX154..159 causal receipts plus full frozen159 combined prevention; not redundant cross-history FIX qualification.",
+  "retained_rejections": {
+    "pd-ded642c0af430906ca5d": "9a predates M7 and does not reproduce154",
+    "pd-cc8cdcd9666be032c8cd": "historical7da predates accepted protected125/144+ prefix, rejected protected-path delta"
+  },
+  "separate_oracle_contract": "Explicit cloud-only WO-F014-CMP allOf; local CMP remains rejected and WO-F014 remains accepted; original controls retained.",
+  "operational_limits": "M5 automatic recovery, actual M6 qualified dispatch, real M7 patch outcome, later M8 benefit and real24/72/168h M9 campaigns are NOT_RUN/incomplete. No owner grant/signature, live activation, main merge or production release.",
+  "frozen159_copy_verified_files": 377,
+  "rework_context_verified_files": 20,
+  "manifest_prefix": 159,
+  "excludes_CAPA160": true,
+  "static_design": "14PASS; not runtime validation",
+  "contract_validation": {
+    "result": "PASS",
+    "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+    "schemas": 15,
+    "fixtures": 59,
+    "positive": 23,
+    "negative": 36,
+    "errors": []
+  }
+}

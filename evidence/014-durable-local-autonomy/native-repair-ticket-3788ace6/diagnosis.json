@@ -1,0 +1,142 @@
+{
+  "at": "2026-10-31T06:21:01.884497Z",
+  "candidate_execution_by_observer": false,
+  "candidate_sha256": "70d5558762d299a8ce664dc0aa589b42c77425e969ec365e5430badbbaced689",
+  "declaration_calls": [
+    {
+      "argument_keys": [
+        "kind",
+        "requirement_ids",
+        "requirement_quote",
+        "summary",
+        "test_files"
+      ],
+      "at": "2026-10-31T06:15:51.651255956Z",
+      "event_sha256": "a9cc3b17c08738a5ed8a5736cd59761902327384a4b6b4a706f470a52821035c",
+      "expanded_digest": "ccaaca216b0e0b7d17d888d911c0bdce783b898809015f08103824d7cf968323",
+      "hashes_equal": false,
+      "hook_digest": "394cfc5ba2d4e2235295ae24e9b073757f5bf53399e5d6d1c65053431df5aa0a",
+      "injected_factory_fields": [
+        "evidence_refs"
+      ],
+      "issues": [
+        "NO_AUTHORIZATION_TICKET:mcp__forge_evidence_mcp__report_defect"
+      ],
+      "node": "swe5_target_author",
+      "status": "BLOCKED"
+    },
+    {
+      "argument_keys": [
+        "kind",
+        "requirement_ids",
+        "requirement_quote",
+        "summary",
+        "test_files"
+      ],
+      "at": "2026-10-31T06:17:27.255663641Z",
+      "event_sha256": "e2934743c1510d6b88ef06b4fdb678cdb3f8909903e71df0b9f560c3238b032c",
+      "expanded_digest": "2d734297a353c992f4cb9f72833d2dfe891ecc0182bff8bd1250ed968eee6e31",
+      "hashes_equal": false,
+      "hook_digest": "719cebb5fdeb71ee497f64317d428bf68abbc5e6019d737451c75d6c14c0b8ad",
+      "injected_factory_fields": [
+        "evidence_refs"
+      ],
+      "issues": [
+        "NO_AUTHORIZATION_TICKET:mcp__forge_evidence_mcp__report_defect"
+      ],
+      "node": "swe5_target_author",
+      "status": "BLOCKED"
+    },
+    {
+      "argument_keys": [
+        "kind",
+        "requirement_ids",
+        "requirement_quote",
+        "summary",
+        "test_files"
+      ],
+      "at": "2026-10-31T06:20:13.130423337Z",
+      "event_sha256": "8699eb887f646a3804e1b3c345169f7334557913badacbf7dec7b48ef47825f6",
+      "expanded_digest": "f8e110dbfb83eb83330fafa00a65b6db36a9a45cfd7d5793ce7d1600568ad718",
+      "hashes_equal": false,
+      "hook_digest": "cd93adc5e2d37135fed4a82c0659a6b17239d1765dff40a0a466aea328fd0fc1",
+      "injected_factory_fields": [
+        "evidence_refs"
+      ],
+      "issues": [
+        "NO_AUTHORIZATION_TICKET:mcp__forge_evidence_mcp__report_defect"
+      ],
+      "node": "swe5_target_author",
+      "status": "BLOCKED"
+    }
+  ],
+  "limits": "Captured native tool failures and read-only runtime argument hashes; no declaration/repair incident or new model/test execution created.",
+  "model_calls_by_observer": 0,
+  "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+  "schema": "forge-c/native-defect-ticket-diagnosis/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "target_integrity_history": [
+    {
+      "assert_failed": [],
+      "code_sha": "5110e14399c8be1696e07ed9b07bd4718abab14edf3c28cc7ff9154ce770767e",
+      "files": {
+        "software/tests/integration/test_crc_integration.c": "c5634a770da69787d9cd7e934b3543d25b60f14cf9963df9e5cf196991df9143"
+      },
+      "op": "run_integration",
+      "phase": "SWE.5",
+      "status": "PASS",
+      "ts_utc": "2026-10-31T06:13:13.483357Z"
+    },
+    {
+      "assert_failed": [],
+      "code_sha": "5110e14399c8be1696e07ed9b07bd4718abab14edf3c28cc7ff9154ce770767e",
+      "files": {
+        "software/tests/target/test_crc_target.c": "fbde79a6983dfa967f93154c98a6e2f0cef3bec255fdc216dae12cbe1d4264a5",
+        "software/tests/target/test_performance.c": "5c93d70e0d1e92f5e74371af85504956c3ce84728ca900368ac429b453ac4658"
+      },
+      "op": "run_renode",
+      "phase": "SWE.5",
+      "status": "FAIL",
+      "ts_utc": "2026-10-31T06:13:14.109631Z"
+    },
+    {
+      "assert_failed": [
+        "software/tests/target/test_crc_target.c"
+      ],
+      "code_sha": "5110e14399c8be1696e07ed9b07bd4718abab14edf3c28cc7ff9154ce770767e",
+      "files": {
+        "software/tests/target/test_crc_target.c": "44e38d3d951426176af8d262eed80d9f8a7af4b45d8d95fc2904f3757a591805",
+        "software/tests/target/test_performance.c": "31cba34efac3818aeb5defcf84f4df39366c84688debc10dfe97dd96d501f6a4"
+      },
+      "op": "run_renode",
+      "phase": "SWE.5",
+      "status": "FAIL",
+      "ts_utc": "2026-10-31T06:14:38.967585Z"
+    },
+    {
+      "assert_failed": [],
+      "code_sha": "5110e14399c8be1696e07ed9b07bd4718abab14edf3c28cc7ff9154ce770767e",
+      "files": {
+        "software/tests/target/test_crc_target.c": "4b0b299d347fc92521630392e909c86bc2fea2a89da22c7d859671ae5ec1eef7",
+        "software/tests/target/test_performance.c": "1364737213dc2a7b89c774b28cb8a8cdb96246596f233968d5787264416ccce8"
+      },
+      "op": "run_renode",
+      "phase": "SWE.5",
+      "status": "PASS",
+      "ts_utc": "2026-10-31T06:15:37.970936Z"
+    },
+    {
+      "assert_failed": [],
+      "code_sha": "5110e14399c8be1696e07ed9b07bd4718abab14edf3c28cc7ff9154ce770767e",
+      "files": {
+        "software/tests/target/test_crc_target.c": "4b0b299d347fc92521630392e909c86bc2fea2a89da22c7d859671ae5ec1eef7",
+        "software/tests/target/test_performance.c": "1364737213dc2a7b89c774b28cb8a8cdb96246596f233968d5787264416ccce8"
+      },
+      "op": "run_renode",
+      "phase": "SWE.5",
+      "status": "PASS",
+      "ts_utc": "2026-10-31T06:16:21.816861Z"
+    }
+  ],
+  "workspace_written_by_observer": false
+}

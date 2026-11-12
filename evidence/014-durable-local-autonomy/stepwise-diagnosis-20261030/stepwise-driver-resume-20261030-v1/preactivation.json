@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-30T13:21:38.292102Z",
+  "deadline_renewed": false,
+  "operator_epoch": 98,
+  "qwen_self_healing_claim": false,
+  "reason": "sqlite BEGIN IMMEDIATE timeout in qualification.provision; original driver-exit retained",
+  "same_jobs_and_mission": true,
+  "scope_sha256": "9cf7adf3572919604790f1cdbf11716bafde346a30454c41def21f58b73ddf35",
+  "source_or_tools_changed": false,
+  "source_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "status": "EXTERNAL_COORDINATOR_RESUME_SAME_FROZEN_SCOPE"
+}

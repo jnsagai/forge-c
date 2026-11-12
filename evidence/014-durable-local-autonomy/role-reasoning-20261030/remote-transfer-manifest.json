@@ -1,0 +1,235 @@
+{
+  "scope": "SELECTED_RECEIPTS_AND_NUMERIC_OR_DESIGNATED_OUTPUTS_NO_PROMPTS_HIDDEN_REASONING_OR_CREDENTIALS",
+  "at": "2026-10-30T14:57:42.757894Z",
+  "status": "ALL_REMOTE_MEMBER_HASHES_VERIFIED",
+  "files": {
+    "aspice-stepwise-product-20261030/records/scope.json": {
+      "bytes": 4624,
+      "sha256": "bf55764e2affc33ef45341b29287d62a32fb337a1b72f976d4db3d65a93d61f5"
+    },
+    "aspice-stepwise-product-20261030/records/owner-approval.json": {
+      "bytes": 327,
+      "sha256": "525b7756db47955165881d0cf2ef4a7051a82d53769339f6766f1b6bd3a574e1"
+    },
+    "aspice-stepwise-product-20261030/records/trial.json": {
+      "bytes": 85731,
+      "sha256": "bdea6c6c29e49318c33454e19490832e9ceb8e0ecad21487999b758a451a6a82"
+    },
+    "aspice-stepwise-product-20261030/records/trial-ref.json": {
+      "bytes": 180,
+      "sha256": "49c43e59633a831b8222a4452e1f1f7543939e935235edf2355c3e8cd7d4d8c7"
+    },
+    "aspice-stepwise-product-20261030/records/time-document.json": {
+      "bytes": 555,
+      "sha256": "5ba66a057712e7d15c61cd4c5c92c5a03fd3f3970bd32674400c76ecabcd5676"
+    },
+    "aspice-stepwise-product-20261030/records/time-extension-receipt.json": {
+      "bytes": 1076,
+      "sha256": "f898dbc362f1aadf207301626308633e34332faf5d3b8e33a222d4cac441ff43"
+    },
+    "aspice-stepwise-product-20261030/records/proposed-policy.yaml": {
+      "bytes": 1988,
+      "sha256": "0717fd003dbc9f963face6711ab9681ff6f26a4ca908d4eb8b5bd2d6912691f8"
+    },
+    "aspice-stepwise-product-20261030/records/envelope.json": {
+      "bytes": 848,
+      "sha256": "35009373369b2b900c85ad0ebdd0237941928a18fc879caa3e2919b9e154e827"
+    },
+    "aspice-stepwise-product-20261030/records/entry.json": {
+      "bytes": 1437,
+      "sha256": "0e77d78bc2d4206be448a887e834a3b8bf582350d48718d199336632cb2469ff"
+    },
+    "aspice-stepwise-product-20261030/records/launch.json": {
+      "bytes": 11798,
+      "sha256": "a78cca46d5f3198bed7db88023df35abc02f65eca1d562dc5fefe6df0b6269e3"
+    },
+    "aspice-stepwise-product-20261030/records/activation.json": {
+      "bytes": 1241,
+      "sha256": "95ba33206aca1405574150a6741a3a5b0d71efa26b3d0e96de234673f5bc16ec"
+    },
+    "aspice-stepwise-product-20261030/records/intake.json": {
+      "bytes": 547,
+      "sha256": "0dd57463aced8e6135a776eb438cb592c68494a8412c1d0689a6ca9c6c62a933"
+    },
+    "aspice-stepwise-product-20261030/records/initial-request-preflight.json": {
+      "bytes": 2691,
+      "sha256": "6168a65758803c607e9fc2dd846c2019476868e705dfd6c69ad31deb406f1d1c"
+    },
+    "aspice-stepwise-product-20261030/records/global-scope-inventory-audit.json": {
+      "bytes": 1269,
+      "sha256": "c8a867bacc46c34d7eb456ce294795700f467f5fa7d84ac2b4115ae6f75b30fb"
+    },
+    "aspice-stepwise-product-20261030/records/global-scope-inventory-audit-v2.json": {
+      "bytes": 1514,
+      "sha256": "f945ea840fe97d7fb140b717abc498b47aa945447874b1d848600984aae35a59"
+    },
+    "aspice-stepwise-product-20261030/records/scoped-swe2-repair-check.json": {
+      "bytes": 932,
+      "sha256": "6731dfbb870245e12f4f9fd85f74b1a84c2208ca198807ec9319567b0757d1d1"
+    },
+    "aspice-stepwise-product-20261030/records/mixed-role-supersession.json": {
+      "bytes": 2101,
+      "sha256": "ff4ddef21e6d3abb962c515f9085715fa8248f6eab8ec6e103d4cec5e5b01891"
+    },
+    "aspice-stepwise-product-20261030/records/mixed-role-maintenance-pause.json": {
+      "bytes": 213,
+      "sha256": "65ace9bdea1b98160c647a84ddd6c6021b608dae99ba914accd1d790098dd5d4"
+    },
+    "aspice-stepwise-product-20261030/records/diagnosis-supersession-erratum.json": {
+      "bytes": 802,
+      "sha256": "58abbcb18c9736dc0b8e58dade149a44de01c17fcbe6d19886a22df8eb3aacdd"
+    },
+    "aspice-stepwise-product-20261030/records/recorder.json": {
+      "bytes": 368,
+      "sha256": "7cf787d65371339407a64ef709cebee13c53130ef7ca9345e44f83178bf686f1"
+    },
+    "aspice-stepwise-product-20261030/records/recorder-branch-correction.json": {
+      "bytes": 293,
+      "sha256": "d7f7ba0dff566be84e9d95d3531e4612d00f117cc9832399e9c518eaf87e1e65"
+    },
+    "aspice-stepwise-product-20261030/records/progress-plan-observer.json": {
+      "bytes": 457,
+      "sha256": "8010cac9889be22e5df2d24d345f0c0c28b87dfcfa545c49591308f21673bab7"
+    },
+    "aspice-stepwise-product-20261030/records/primary-authorization.json": {
+      "bytes": 906,
+      "sha256": "9dc1ada4ad05be1b3db7fa144b6baaef9a8be9319bf29eec8f1ce9d1eab036ae"
+    },
+    "aspice-stepwise-product-20261030/records/primary-authorization-message.bin.sig": {
+      "bytes": 322,
+      "sha256": "6bf6894847199a72d9483457591cabdc93792bc00989dddb34fee0184fb919a0"
+    },
+    "aspice-stepwise-product-20261030/records/roles-authorization.json": {
+      "bytes": 855,
+      "sha256": "26f0e0a4596b86a86c02605fe51cd69e801f824ae301fc0bfe9c0c57dd65ecf7"
+    },
+    "aspice-stepwise-product-20261030/records/roles-authorization-message.bin.sig": {
+      "bytes": 322,
+      "sha256": "2efdf2330325245cdb074cca39a43d15343ca654f83ed06f20d4c39e8bb1e5de"
+    },
+    "aspice-stepwise-product-20261030/records/time-authorization.json": {
+      "bytes": 858,
+      "sha256": "c1df14124396be99c2e5bd84149d9e49ae65415314eee3db356b84373dc910af"
+    },
+    "aspice-stepwise-product-20261030/records/time-authorization-message.bin.sig": {
+      "bytes": 322,
+      "sha256": "3bd019a9699faaa9ec18bac25c55b09f6a64ec2a85c7125fdf61a93e71d13b7e"
+    },
+    "role-reasoning-20261030/records/scope.json": {
+      "bytes": 4963,
+      "sha256": "7a3aa5041f60f51edd91a3458406fe463ff7b38a80de7c0a5550dfc028007533"
+    },
+    "role-reasoning-20261030/records/owner-approval.json": {
+      "bytes": 321,
+      "sha256": "025b85c7fb575e27029502a85a00da0d54a6c152cf8e25793e02da76c464a16d"
+    },
+    "role-reasoning-20261030/records/trial.json": {
+      "bytes": 85651,
+      "sha256": "e6f765832d730285b0a5c50b9fd947d816a3d1aabc43e7d085915df30886c7bd"
+    },
+    "role-reasoning-20261030/records/trial-ref.json": {
+      "bytes": 180,
+      "sha256": "5ba2c1d8d5daee31e22cbb2e4c3ab4998d37c62332e3e42a45dab9f918583663"
+    },
+    "role-reasoning-20261030/records/proposed-policy.yaml": {
+      "bytes": 1990,
+      "sha256": "0845019479dbf70b138c5b8aecca77edfee510a39901e95417aa3802330d58da"
+    },
+    "role-reasoning-20261030/records/envelope.json": {
+      "bytes": 854,
+      "sha256": "bd0f28175d05277f0656ed941de14645f33820b9375973e08b019387409f3054"
+    },
+    "role-reasoning-20261030/records/entry.json": {
+      "bytes": 1447,
+      "sha256": "5b19950da86571584911f4e583635087531391f2682aaa5491c37f417382c3e6"
+    },
+    "role-reasoning-20261030/records/launch.json": {
+      "bytes": 11812,
+      "sha256": "049d9cc04a52911967f6e35347fbe991974089fe80bfd2167dd0d98c279a4e57"
+    },
+    "role-reasoning-20261030/records/activation.json": {
+      "bytes": 1448,
+      "sha256": "e526e8def21b65fd5d3f0602625ac9d3284c3b757b3c5ba6667d81a42a9f4c1b"
+    },
+    "role-reasoning-20261030/records/intake.json": {
+      "bytes": 561,
+      "sha256": "516f4660b578847753cc12a54ea5e303f303ff99972f29a6e2697692153c460f"
+    },
+    "role-reasoning-20261030/records/initial-request-preflight.json": {
+      "bytes": 23457,
+      "sha256": "4ab4a2a46ff4328364a39d384976c7ebc94eff1b92d862e823d6ba7dc586d496"
+    },
+    "role-reasoning-20261030/records/recorder.json": {
+      "bytes": 370,
+      "sha256": "aee28b43789750d911faaa6851f8775c81683435d5b84d85a6a2401ea68d74d8"
+    },
+    "role-reasoning-20261030/records/progress-plan-observer.json": {
+      "bytes": 461,
+      "sha256": "a0094c910ee9814616fa88e2f5def905a0596028ac29f1d171b5bcd32ae8d810"
+    },
+    "role-reasoning-20261030/records/primary-authorization.json": {
+      "bytes": 914,
+      "sha256": "30c17fde5bd6424cec6e02c49c68558ae3c7487b2e801e49777c698b4159a0af"
+    },
+    "role-reasoning-20261030/records/primary-authorization-message.bin.sig": {
+      "bytes": 322,
+      "sha256": "d5d9c9d215855e3e546c58c90fae1393718ec01d20920a8dfd550d1366931dae"
+    },
+    "role-reasoning-20261030/records/roles-authorization.json": {
+      "bytes": 863,
+      "sha256": "8d19862e07dc860c0022e86e1d0e3266ac6dd383a6037999aa2477747a0a86fb"
+    },
+    "role-reasoning-20261030/records/roles-authorization-message.bin.sig": {
+      "bytes": 322,
+      "sha256": "2000016d047d9c6ee6c5b05d75e1180aaa77c183fa49939d8e6f8739828f8647"
+    },
+    "scope-inventory-20261030/native380/provenance.json": {
+      "bytes": 3486,
+      "sha256": "ff68018a5a07e8ad97cb41349159a1f6dcd4e77d00826b0dbc7c064cdeba8f40"
+    },
+    "scope-inventory-20261030/native380/receipts/pytest.xml": {
+      "bytes": 64484,
+      "sha256": "c8a66c5182eaad00b218ecbf811621f32710366f1120433154cb2e8c67b8530a"
+    },
+    "scope-inventory-20261030/native380/pytest.log": {
+      "bytes": 54953,
+      "sha256": "6f35e15ec67f10c8ea3272243d11c4a9414f9f31baed65725fad778956598f2e"
+    },
+    "role-reasoning-20261030/native-original-failure/provenance.json": {
+      "bytes": 3574,
+      "sha256": "7f4186c1f56c958ef3e58d918eccb1e9fb81f64dff89fd9adc998d55057311dd"
+    },
+    "role-reasoning-20261030/native-original-failure/receipts/pytest.xml": {
+      "bytes": 77910,
+      "sha256": "b253cc3adc3d5f4e9f78a6ae2d55e9a94fa8e681d452ea9b79b3907d320d0746"
+    },
+    "role-reasoning-20261030/native-original-failure/pytest.log": {
+      "bytes": 66930,
+      "sha256": "9f923106253aa2d66a13b3ef4fde12d1a0413bce5074d0719710ded15b29d7e0"
+    },
+    "role-reasoning-20261030/native443/provenance.json": {
+      "bytes": 3575,
+      "sha256": "da78cb6464b96d4d787b516f87202807f4fcfcfa30da68942287c4698d2a7d92"
+    },
+    "role-reasoning-20261030/native443/receipts/pytest.xml": {
+      "bytes": 74734,
+      "sha256": "02281c75dc2f580e54bef0a27b080716107eb787b0532799e5c28206175ed6e8"
+    },
+    "role-reasoning-20261030/native443/pytest.log": {
+      "bytes": 63561,
+      "sha256": "2802e82ae25e9777b9af91d8ef18acad7df594a399aed21795f9095469d76c1e"
+    },
+    "aspice-stepwise-product-20261030/recovery-evidence.json": {
+      "bytes": 21206,
+      "sha256": "4c5168f81b965c6d6aae2c4b372d9384ad747b769b6dad5529b01af525f24487"
+    },
+    "role-reasoning-20261030/live-request-metadata.json": {
+      "bytes": 5279,
+      "sha256": "b20973c30201325d7188097c2ecb8f16e70c30e8ca690334c22b39997bd2ae33"
+    },
+    "role-reasoning-20261030/progress.json": {
+      "bytes": 844,
+      "sha256": "c9468c4c0adc289ee3c0cfffd35fcc9c1033792a049e38bad7a8f9995c7e9165"
+    }
+  }
+}

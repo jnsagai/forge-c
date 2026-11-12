@@ -1,0 +1,77 @@
+[
+  {
+    "op": "run_robot",
+    "phase": "SWE.6",
+    "result": {
+      "artifact_refs": [
+        "artifact:sha256:1b87e776ae9a7163c7901daf55b21962f112e402d3e22c8dc2b77d7e3338d164"
+      ],
+      "issues": [
+        "ROBOT_FAIL:SWR-001:SIM_PERF_WRONG_SCENARIO: Run Target Scenario    software/tests/target/test_performance.c; only the de",
+        "ROBOT_FAIL:SWR-002:SIM_PERF_WRONG_SCENARIO: Run Target Scenario    software/tests/target/test_performance.c; only the de",
+        "UNCOVERED_REQUIREMENT:SWR-001",
+        "UNCOVERED_REQUIREMENT:SWR-002"
+      ],
+      "metrics": {
+        "environment": "robotframework 6.1 + renode 1.17.0 (simulated cortex-m55)",
+        "failed": 2,
+        "passed": 0,
+        "requirements": 2,
+        "requirements_verified": 0,
+        "silicon_verified": false,
+        "simulation_performance_contract": "{\"instructions_per_call\":64,\"microseconds_per_call\":100,\"performance_mips\":100,\"schema\":\"forge-c/simulation-performance-budget/1\",\"test_source\":\"software/tests/target/test_performance.c\",\"budget_sha256\":\"c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a\",\"scope\":\"DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT\"}",
+        "tests": 2
+      },
+      "provenance": {
+        "duration_ms": 5123.4,
+        "exit_code": 2,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-79d6857f13c44108",
+        "output_sha256": "320a128500f4ca8b5c9cd2376d9f2249931985bf541429989ae992fe6879b5cc",
+        "tool": "robotframework",
+        "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+      },
+      "status": "FAIL",
+      "summary": "robot: 0/2 tests passed; 0/2 requirements verified (Renode STM32N6 model + host measurements)"
+    },
+    "role": "swe6-author",
+    "run_id": "local",
+    "server": "forge-tests-mcp",
+    "ts_utc": "2026-10-29T16:35:10.864635Z"
+  },
+  {
+    "op": "run_robot",
+    "phase": "SWE.6",
+    "result": {
+      "artifact_refs": [
+        "artifact:sha256:a671271dbb04c27f8fed4ebb2b45db76c56bdc09c4d1ffd7e400778d869060d7"
+      ],
+      "issues": [],
+      "metrics": {
+        "environment": "robotframework 6.1 + renode 1.17.0 (simulated cortex-m55)",
+        "failed": 0,
+        "passed": 2,
+        "requirements": 2,
+        "requirements_verified": 2,
+        "silicon_verified": false,
+        "simulation_performance_contract": "{\"instructions_per_call\":64,\"microseconds_per_call\":100,\"performance_mips\":100,\"schema\":\"forge-c/simulation-performance-budget/1\",\"test_source\":\"software/tests/target/test_performance.c\",\"budget_sha256\":\"c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a\",\"scope\":\"DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT\"}",
+        "tests": 2
+      },
+      "provenance": {
+        "duration_ms": 5317.2,
+        "exit_code": 0,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-0859cec1754f4b3a",
+        "output_sha256": "0590b9e38f5d302aaa4b4999517f379b1289aefe81105f5faf84a2c8cbda11b1",
+        "tool": "robotframework",
+        "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+      },
+      "status": "PASS",
+      "summary": "robot: 2/2 tests passed; 2/2 requirements verified (Renode STM32N6 model + host measurements)"
+    },
+    "role": "swe6-author",
+    "run_id": "local",
+    "server": "forge-tests-mcp",
+    "ts_utc": "2026-10-29T16:35:17.875449Z"
+  }
+]

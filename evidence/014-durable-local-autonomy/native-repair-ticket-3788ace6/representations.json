@@ -1,0 +1,15 @@
+{
+  "diagnosis": {
+    "original_sha256": "649953588f010e48624fdfcbae8170eea77cb4c6529549fee343c4d14bc6ff38",
+    "view_sha256": "1c051172fe59a80072f0b5dfb27f1eb7964ddf5d61d864e0e5540132b8f881f7"
+  },
+  "mcp-defect-default.xml": {
+    "decompressed_sha256": "c360b8102ad304686f10716bdd490ffc425c4f743545b8c99b501b65febc5257"
+  },
+  "mcp-defect-default-green.xml": {
+    "decompressed_sha256": "bb5817ff289a215fa482ce8dfb22bdd7dfe4f1ceb2d0f50d19b9931b550f1654"
+  },
+  "mcp-defect-exact.xml": {
+    "decompressed_sha256": "7b889250ef717712e57d9ec6a40ddebb5aa8adee611b16a04fa439c6f3106c5e"
+  }
+}

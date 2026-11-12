@@ -1,0 +1,101 @@
+{
+ "CAPA-093": {
+  "history": [
+   {
+    "at": "2026-11-01T20:03:26.910862Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[\"fabro-swe4-iwdg-l1-static-finding-routing\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE4-IWDG-20261101-L1: SWE4-04 MISRA finding routed to all test tasks, ~1.5 h of ineffective repair, cancelled",
+    "seq": 699,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T20:03:26.935735Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 700,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T20:03:27.027851Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-093 assigned",
+    "seq": 701,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T20:03:30.559419Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[\"reproducer-run:rr-08285b18e6e937da0f4c\", \"reproducer-run:rr-d2b63093461e0eb3ef5f\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 702,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T20:03:30.580031Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[\"git:d5abd1443e71..c780dadc96dc\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix c780dadc96dc (patch 5006 bytes)",
+    "seq": 703,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T20:06:23.011531Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[\"reproducer-run:rr-eb14310dac79b8d2da04\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-093 absent at c780dadc96dc",
+    "seq": 704,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T20:06:23.027165Z",
+    "capa_id": "CAPA-093",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 705,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4cd6be05083692ed1d2c4139ccc18c6551fe9476",
+   "d5abd1443e71cd07f671777f190ed904de7d7368",
+   "c780dadc96dc2b12aed5ecb6341b3c700df49f44",
+   "pd-7f2fcf4fb0dda99d4051"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<c780dadc96dc"
+   ],
+   "candidate_patch_sha256": "9c88e539d8845c45a82dce30dbffd383a7f98fab55a7e15f20b074d0c8b99298",
+   "capa_id": "CAPA-093",
+   "created_at": "2026-11-01T20:03:26.910862Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe4-iwdg-l1-static-finding-routing"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-093",
+   "reproducer_id": "RPR-093",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-08285b18e6e937da0f4c",
+    "reproducer-run:rr-d2b63093461e0eb3ef5f"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "A finding without a UT id is routed to every test task, also when no test can address it",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T20:06:23.027165Z"
+  }
+ }
+}

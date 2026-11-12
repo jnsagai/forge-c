@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-31T03:20:34.990771Z",
+  "binding_ref": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/admission-binding.json",
+  "binding_sha256": "8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "inference_calls_by_this_script": 0,
+  "mission_after": {
+    "attempts": 4,
+    "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+    "charged_tokens": 265814016,
+    "corrections": 0,
+    "created_at": "2026-10-30T22:02:18.150036Z",
+    "jobs": 0,
+    "limits": {
+      "deadline": 1793433479,
+      "max_attempts": 10,
+      "max_corrections": 20,
+      "max_jobs": 1,
+      "max_requests": 8000,
+      "max_tokens": 1073741824,
+      "max_tools": 100000
+    },
+    "lineage": "CRC-IDR-native-20261030-shared-lineage",
+    "mission_id": "mission-feature014-delivery-first-20261030",
+    "requests": 875,
+    "tools": 1493,
+    "unbounded_historical_usage": false,
+    "unique_executions": 4,
+    "usage_unknown": true
+  },
+  "mission_before": {
+    "attempts": 4,
+    "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+    "charged_tokens": 265814016,
+    "corrections": 0,
+    "created_at": "2026-10-30T22:02:18.150036Z",
+    "jobs": 0,
+    "limits": {
+      "deadline": 1793433479,
+      "max_attempts": 10,
+      "max_corrections": 20,
+      "max_jobs": 1,
+      "max_requests": 8000,
+      "max_tokens": 1073741824,
+      "max_tools": 100000
+    },
+    "lineage": "CRC-IDR-native-20261030-shared-lineage",
+    "mission_id": "mission-feature014-delivery-first-20261030",
+    "requests": 875,
+    "tools": 1493,
+    "unbounded_historical_usage": false,
+    "unique_executions": 4,
+    "usage_unknown": true
+  },
+  "no_deployment": true,
+  "no_grant_change": true,
+  "orders": [
+    {
+      "binding_sha256": "8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4",
+      "created": true,
+      "launch_sha256": "3d0db25cf2c139b22cd72b8c70e24269930db75e198020a60807824e8dc68607",
+      "order_id": "afo-7f71565db57f0a76",
+      "request_id": "DF-AFO-CRC-IDR-20261030-06"
+    },
+    {
+      "binding_sha256": "8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4",
+      "created": true,
+      "launch_sha256": "3d0db25cf2c139b22cd72b8c70e24269930db75e198020a60807824e8dc68607",
+      "order_id": "afo-f83452175591716f",
+      "request_id": "DF-AFO-CRC-IDR-20261030-07"
+    },
+    {
+      "binding_sha256": "8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4",
+      "created": true,
+      "launch_sha256": "3d0db25cf2c139b22cd72b8c70e24269930db75e198020a60807824e8dc68607",
+      "order_id": "afo-48b5f7eb60495e69",
+      "request_id": "DF-AFO-CRC-IDR-20261030-08"
+    }
+  ],
+  "status": "EXISTING_AFO_INTAKE_COMPLETED"
+}

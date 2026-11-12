@@ -1,0 +1,55 @@
+{
+  "actual_remote_effects": false,
+  "controls": {
+    "final_private_FAIL": 0,
+    "final_private_PASS": 28,
+    "initial_FAIL": 1,
+    "initial_PASS": 16,
+    "initial_failure": "Fixture teardown indexed already-reaped holderNone after success; preserved."
+  },
+  "files": [
+    {
+      "bytes": 13755,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/check-private-controls-r2.py",
+      "sha256": "c13e7582806801ffbb767ee4e751370d2b934eacf1b71743ef6f18e295b45394"
+    },
+    {
+      "bytes": 9031,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/check-private-controls.py",
+      "sha256": "0f0b35d46c1abf92f61ebf073afde735db225c069186615323958cbeac26c175"
+    },
+    {
+      "bytes": 20321,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/cleanup-exact-partial-bootstrap.py",
+      "sha256": "9618939cbbce1d121324c18d4219f6897ebd0a14667bbddba3e04bad61bfbedf"
+    },
+    {
+      "bytes": 24193,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/exact-partial-expectation.json",
+      "sha256": "07bf5790f02faccbb68ada34fbff224e6515b81ddbb27348c52260bde2f75322"
+    },
+    {
+      "bytes": 2218,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/private-controls-r1.json",
+      "sha256": "4efed070fb4f986068349387ac08b793fc67546868d8f82440cc33e997da6ed9"
+    },
+    {
+      "bytes": 1815,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/private-controls-r1.log",
+      "sha256": "33aebdf20cb8f7fdcfc7afd96a43fd597dca86eeae9191150b44d02f6c251dda"
+    },
+    {
+      "bytes": 3192,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/private-controls-r2.json",
+      "sha256": "fbe8a5098558047fba2915de87d3725da54826a96f9e08bc46d9452931cd684c"
+    },
+    {
+      "bytes": 2553,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/private-controls-r2.log",
+      "sha256": "839206ce6f1d7735f354523e8126786e74fcb8402a5287cc901bc7f3b7e5665a"
+    }
+  ],
+  "review_blocker": "False guardian_alive also means unreadable/mapped/mismatch; not proof issuerdead. Explicit originalkernel lifetime-ended predicate required in freshV2.",
+  "schema": "forge-c/partial-bootstrap-cleanup-review-index/1",
+  "status": "V1_FROZEN_REVIEW_BLOCKER_NOT_USABLE"
+}

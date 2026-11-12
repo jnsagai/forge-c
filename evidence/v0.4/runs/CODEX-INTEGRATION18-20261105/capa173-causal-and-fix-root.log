@@ -1,0 +1,7 @@
+{"phase": "BASELINE", "record": {"run_id": "rr-6274a0a846ad9ce772d7", "reproducer_id": "RPR-173", "revision": "afa651a717f391f4c1e689516c626141d0f205b1", "role": "BASELINE", "exit_code": 1, "verdict": "ERROR", "signature": "--- stderr ---", "log_sha256": "b756e71648a27d1de1026d0af4cbe20b6a2e77f3ef4ed2bd596bef0f51d4b222", "at": "2026-11-05T09:15:53.374129Z"}}
+{"phase": "CANDIDATE", "record": {"run_id": "rr-c12db63f40628e659343", "reproducer_id": "RPR-173", "revision": "63a3a91d10932d8693b2f144b5d425424e0311a3", "role": "CANDIDATE", "exit_code": 1, "verdict": "ERROR", "signature": "--- stderr ---", "log_sha256": "acedc6b5fa5939ab48e295c781a1e910eecea1d6d311f701c21164395ea90155", "at": "2026-11-05T09:15:53.627856Z"}}
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa173-causal-and-fix-root.py", line 54, in <module>
+    assert baseline['verdict'] == 'SYMPTOM_PRESENT' and candidate['verdict'] == 'SYMPTOM_ABSENT'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,71 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 general-purpose timer (TIM2) HAL driver (on the verified TIM LL driver)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 54 (TIM2/TIM3/TIM4/TIM5) + memory map p.181"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.54 TIM2-5 register interface + memory map p.181 (TIM2 secure base 0x50000000)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the TIM HAL work orders",
+    "instance": "TIM2"
+  },
+  "system_names": [
+    "TIM HAL driver",
+    "TIM driver",
+    "STM32N6 TIM HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "owner inputs proposed for confirmation in the onboarding approval (the values of the factory HAL orders 0016m/0014m); the approved values replace them"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0013-tim-st/inputs/RM0486-rev4-ch54-tim2-5.md",
+      "role": "reference_manual_tim_chapter"
+    },
+    {
+      "path": "../0013-tim-st/inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0013-tim-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "Owner 2026-11-11 ('Extend 016 to factory HAL'): a factory HAL on the verified TIM LL lineage (0013l-st-cube-tim-swe1-gen, ST CubeN6 stm32n6xx_ll_tim.h, --provided-from); the scope, prompt texts and peripheral profile are derived by the onboarding stage and owner-approved, never hand-written",
+  "onboarding": {
+    "style": "HAL_ON_LL",
+    "ll_example": "0013l-st-cube-tim-swe1-gen"
+  },
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

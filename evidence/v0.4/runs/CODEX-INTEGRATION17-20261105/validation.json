@@ -1,0 +1,72 @@
+{
+  "schema": "forge-c/integration17-independent-validation/1",
+  "at": "2026-11-05T05:53:24.019183+00:00",
+  "candidate": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "baseline": "2035280de096a6f1107aa052db196c0a6c091ffc",
+  "tests": 433,
+  "passed": 432,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    "test_act_dry_run_replay_over_todays_line_state"
+  ],
+  "skip_reason": "Existing historical M3 replay requires original snapshot. No new skip/waiver/replaced observation.",
+  "design_checks": 14,
+  "ruff_python_files": 5,
+  "tracked_clean": true,
+  "inputs_before_any_test": true,
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-independent.xml",
+      "sha256": "1ef6413635b8f2d0c62a590e2d795ae296d2f96be46669da30a87595bdc631db",
+      "bytes": 71240
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-independent.log",
+      "sha256": "1debe1f241350465a53d8df3108d4f0485be05964ea7ea6088f63c1643a1f3e7",
+      "bytes": 560
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139",
+      "bytes": 1514
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-source-prepared.json",
+      "sha256": "fb88bac0856d8e91be0a32ab32dda6f63e48a8ad7bc25f09d0ea251e92c29472",
+      "bytes": 3762
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-before-tests-inputs.json",
+      "sha256": "336103968dda6556f21c4c34deeed01c36cf682284fdabf302ac24a1710ab1d2",
+      "bytes": 2546
+    }
+  ],
+  "runtime_or_role_qualification": "NOT_RUN",
+  "status": "ELIGIBLE_FOR_OFFLINE_REVIEW_ONLY",
+  "decisions": {
+    "source": "pd-4ed512a08bf972ef2344",
+    "native": "pd-ffd009c24f31217bd65b",
+    "controller": "pd-38f29c1b388bcf5f9319"
+  },
+  "prevention_per_candidate": 171,
+  "all_raw_reproducer_logs_hash_verified": true,
+  "causal_baseline": "SYMPTOM_PRESENT",
+  "causal_candidate": "SYMPTOM_ABSENT",
+  "native_candidate": "38acc88c549e3713665542474385999822cdd3d4",
+  "controller_candidate": "62fce0a4b2dbcae8dbcd7e5f5952d5ee8acb7fa9",
+  "model_calls": 0,
+  "actual_mission_extension": false,
+  "actual_trial_activation": false,
+  "limits": [
+    "Current human signatures and credible host UTC are independently required for live work.",
+    "Normal runtime policy keeps its 86400-second order wall; operator-only extension policy requires its own signature.",
+    "Role competence, repair/learning benefit and real 24/72/168-hour endurance are not established.",
+    "No main merge, safety approval, certification or production release."
+  ]
+}

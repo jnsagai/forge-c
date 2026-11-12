@@ -53,6 +53,22 @@ def _ok(findings: list[str]) -> str:
     return "FAIL" if [f for f in findings if not f.startswith(("LIMITATION", "NOT_APPLICABLE"))] else "PASS"
 
 
+def _instance(ws: Path) -> dict | None:
+    from ..layer import ll_instance
+
+    return ll_instance(ws)
+
+
+def _views(ws: Path) -> dict[str, str]:
+    """The driver code as the register-block scans read it (instance mode: typed member accesses resolved to their
+    register words through the declared layout and the RM offsets; identity otherwise)."""
+    from ..layer import register_block
+
+    inst = _instance(ws)
+    return {k: hardware.instance_view(v, inst, _idx(ws), register_block(ws)) for k, v in _code(ws).items()} \
+        if inst is not None else _code(ws)
+
+
 def v_requirements(ws: Path) -> dict:
     r = swe12.check_requirements(ws)
     return {"status": r["verdict"], "findings": r["major_findings"]}
@@ -86,9 +102,13 @@ def v_register_semantics(ws: Path) -> dict:
     if not _hdr(ws):  # feature 009: never a PASS from an empty (wrong-peripheral) header
         return {"status": "NOT_SUPPORTED", "findings": [f"no LL header {ll_header(ws)} in the workspace"]}
     f = hardware.check_defines(_hdr(ws), idx)
-    for text in _code(ws).values():
+    for text in _views(ws).values():
         f += [x for x in hardware.check_writes(text, _hdr(ws), idx, register_block(ws))
               if not x.startswith("NON_ATOMIC_RMW")]
+    if _instance(ws) is not None:  # plus the typed layout of the declared device header against the RM
+        from ..inspection.typed_registers import check_selected
+
+        f += (check_selected(ws) or {"major_findings": ["TYPED_REGMAP:NOT_SELECTED"]})["major_findings"]
     return {"status": _ok(f), "findings": f}
 
 
@@ -110,7 +130,7 @@ def v_concurrency(ws: Path) -> dict:
     from ..layer import register_block
 
     rcc = register_block(ws) == "ll_rcc_regs"  # feature 009: other peripherals also poll IsActive/IsActiveFlag_*
-    f = swe3.invariant_findings(_code(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
+    f = swe3.invariant_findings(_views(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
                                 "IsReady|IsEnabled" if rcc else "IsReady|IsEnabled|IsActive")
     return {"status": _ok(f), "findings": f, "mitigation_stated": stated}
 
@@ -145,16 +165,23 @@ def v_mutation(ws: Path) -> dict:
     ut = _unit_test(ws)
     if ut is None:
         return {"status": "NOT_RUN", "findings": ["no unit test"]}
-    from ..layer import hal_c, ll_header, ll_tu, register_prefix
+    from ..layer import hal_c, instance_flags, ll_header, ll_tu, register_prefix
+
+    inst = _instance(ws)
 
     layer = layer_of(ws)
     target = (ll_header(ws) if layer == "LL" else hal_c(ws)).removeprefix("software/")
     used = set(re.findall(rf"\b({_api_rx(ws)}\w+)\s*\(", "\n".join(_code(ws).values()) + ut.read_text()))
     c = mutation.run_campaign(ws / "software", target, [ut], used_symbols=used,
                               extra_sources=[] if layer == "LL" else [], prefix=register_prefix(ws),
-                              ll_unit=Path(ll_tu(ws)).name, extra_ops=mutation.register_ops(ws))
+                              ll_unit=Path(ll_tu(ws)).name,
+                              extra_ops=mutation.register_ops(ws) + mutation.instance_ops(inst),
+                              extra_flags=instance_flags(ws, host=True) or None)  # instance mode: pinned device header
     surv = [f"SURVIVOR:{m['op']}@{m['line']}:{m['original'][:50]}" for m in c["mutants"] if m["outcome"] == "SURVIVED"]
     r = c["record"]
+    if inst is not None and not r["eligible"]:  # no mutant built and ran: never a PASS of a campaign that tested nothing
+        return {"status": "NOT_SUPPORTED", "findings": [f"no eligible mutant (invalid {r['invalid']})"],
+                "campaign": {k: r[k] for k in ("campaign_id", "eligible", "killed", "survived", "equivalent", "invalid")}}
     return {"status": "FAIL" if surv else "PASS", "findings": surv,
             "campaign": {k: r[k] for k in ("campaign_id", "eligible", "killed", "survived", "equivalent", "invalid")}}
 
@@ -174,13 +201,18 @@ def v_api_execution(ws: Path) -> dict:
     if not srcs:
         return {"status": "NOT_RUN", "findings": ["no compile unit for the code under test"]}
     fake = ws / "software/tests/unit/ll_fake"  # CAPA-038: HAL unit tests on the LL test double
+    from ..layer import instance_flags
+
     r = coverage.measure(srcs, ut, ([fake] if fake.is_dir() else []) + [ws / "software/hal", ws / "software/ll",
-                                                                        ws / "software/include"])
+                                                                        ws / "software/include"],
+                         defines=instance_flags(ws, host=True) or None)  # instance mode: the pinned device header
     if r["status"] != "MEASURED":
         return {"status": "NOT_SUPPORTED", "findings": [str(r.get("reason", ""))[:160]]}
     counts: dict[str, int] = {}
+    from ..gtest_toolchain import c_name
+
     for name, n in r["function_counts"].items():  # static (inline) functions are exported as "<file>:<name>"
-        key = name.split(":")[-1]
+        key = c_name(name)  # (mangled in a GoogleTest C++ unit)
         counts[key] = max(counts.get(key, 0), n)
     defined = sorted(set(re.findall(rf"^[\w\s\*]*?\b({_api_rx(ws)}\w+)\s*\([^;{{)]*\)\s*\{{",
                                     "\n".join(_code(ws).values()), re.M)))
@@ -210,6 +242,8 @@ def _target_oracle_findings(ws: Path) -> list[str]:
 
     if layer_of(ws) != "LL" or not SO.present(ws):
         return []
+    if _instance(ws) is not None:  # the SafeC target images are register-block words
+        return ["LIMITATION:TARGET_ORACLE_NOT_APPLICABLE:INSTANCE_MODE"]
     hdr = Path(api_header("LL", ws)).name
     r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], hdr)
     if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
@@ -228,7 +262,7 @@ def v_integration(ws: Path) -> dict:
           for p in (ws / "software/tests" / d).glob("*.c")}
     from ..layer import register_prefix
 
-    c = T.integration_categories(tt, ops, register_prefix(ws))
+    c = T.integration_categories(tt, ops, register_prefix(ws), T.boundary_rule(ws))  # CAPA-127: per-profile boundary
     return {"status": "FAIL" if c["missing"] else "PASS",
             "findings": [f"INTEGRATION_CATEGORY_MISSING:{m}" for m in c["missing"]]}
 
@@ -268,6 +302,8 @@ def oracle_cross_check(ws: Path, verified: set[str]) -> list[str]:
 
     if layer_of(ws) != "LL" or not SO.present(ws):
         return []
+    if _instance(ws) is not None:  # the SafeC target images are register-block words
+        return [f"LIMITATION:NO_INDEPENDENT_TARGET_OBSERVATION:{s}:INSTANCE_MODE" for s in sorted(verified)]
     r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], Path(api_header("LL", ws)).name)
     if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
         return [f"LIMITATION:TARGET_ORACLE_{r['status']}:{r.get('reason', '')}"[:200]]

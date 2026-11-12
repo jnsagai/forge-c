@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="13" skipped="0" tests="13" time="0.195" timestamp="2026-10-31T01:27:23.622189+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[none]" time="0.011"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu0')
+fault = 'none'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[json_args]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu1')
+fault = 'json_args'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[failed_edit]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu2')
+fault = 'failed_edit'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[pending]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu3')
+fault = 'pending'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_role]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu4')
+fault = 'wrong_role'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_target]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu5')
+fault = 'wrong_target'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[ambiguous]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu6')
+fault = 'ambiguous'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[tampered_final]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu7')
+fault = 'tampered_final'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[malformed_args]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu8')
+fault = 'malformed_args'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[opaque_patch]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu9')
+fault = 'opaque_patch'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_completion]" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_replay_requires_successfu10')
+fault = 'wrong_completion'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+&gt;       result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:48: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_partial_edit_without_a_whole_source_anchor_does_not_prove_authorship" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_partial_edit_without_a_wh0')
+
+    def test_partial_edit_without_a_whole_source_anchor_does_not_prove_authorship(tmp_path):
+        events = call("edit", "edit_file", {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"})
+&gt;       out = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(AFTER.encode())})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:64: AttributeError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_later_successful_whole_write_anchors_the_actual_final_bytes" time="0.001"><failure message="AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-278/test_later_successful_whole_wr0')
+
+    def test_later_successful_whole_write_anchors_the_actual_final_bytes(tmp_path):
+        events = call("bad", "edit_file", {"file_path": REL, "old_string": "not present", "new_string": "x"})
+        events += call("write", "write_file", {"file_path": REL, "content": AFTER})
+&gt;       out = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(AFTER.encode())})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.delivery_first' has no attribute 'native_source_provenance'
+
+factory/python/tests/test_delivery_first_edit_provenance.py:71: AttributeError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "scope": "EXACT_CONTEXT_HASH_REPLAY_NO_INFERENCE",
+  "packet_input_hash": "2e2f9ba6cedc69514deb0b4d77c815cebc8d086b71618472cefa21b69066fae5",
+  "complete_serialized_request": {
+    "sha256": "bd2d84a6d5343d1f03b785efc276c66d6331e6a9aff6b4465e041abd9a64d6a2",
+    "serialized_bytes": 7960,
+    "input_tokens": 8088,
+    "method": "utf8_byte_upper_bound",
+    "native_measured": false
+  },
+  "new_model_calls": 0,
+  "source_role_hash": {
+    "path": ".fabro/skills/fabric-repair/SKILL.md",
+    "sha256": "4fa6d2192ef5c4942ed5e8c1cf9cc337acc754146583251c3bb9bf0fcdbc79e0"
+  },
+  "replay_revision": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1"
+}

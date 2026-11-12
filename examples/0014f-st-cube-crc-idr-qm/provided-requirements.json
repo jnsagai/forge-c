@@ -1,0 +1,109 @@
+{
+  "crosscutting": {
+    "not_covered": [],
+    "open_points": [
+      "No safety assurance, safe-state allocation or error-return contract is assessed or invented. Caller-owned access setup and the invocation domain are part of this prospective development scope."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "startup",
+        "source_page": 1172,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any CRC register.",
+        "verification": "Target startup observation passes when no driver write occurs before an explicit IDR call.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "no_polling",
+        "source_page": 1172,
+        "statement": "When either scoped IDR function is invoked with a valid accessible CRC instance, the CRC LL driver shall complete without polling a status flag.",
+        "verification": "Source/control-flow review and bounded host/target execution pass when the IDR functions contain no status-polling loop.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "groups": {
+    "CRC_IDR": {
+      "not_covered": [],
+      "open_points": [
+        "Caller must provide a valid accessible CRC instance. This slice specifies no behavior for invalid pointers or inaccessible hardware."
+      ],
+      "requirements": [
+        {
+          "effects": [
+            {
+              "case": "WRITE_IDR",
+              "field": "IDR",
+              "op": "write",
+              "register": "CRC_IDR",
+              "value": "0x12345678"
+            }
+          ],
+          "key": "write_idr",
+          "source_page": 1172,
+          "statement": "When the caller invokes write-IDR with a value and a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+          "verification": "Host and target tests pass when zero, all ones and alternating values reach all 32 CRC_IDR.IDR bits without changing unrelated registers.",
+          "verified_by": "host_unit_test"
+        },
+        {
+          "effects": [
+            {
+              "case": "READ_IDR",
+              "field": "IDR",
+              "op": "no_write",
+              "register": "CRC_IDR",
+              "value": ""
+            }
+          ],
+          "key": "read_idr",
+          "source_page": 1172,
+          "statement": "When the caller invokes read-IDR with a valid accessible CRC instance, the CRC LL driver shall return the current 32-bit value of CRC_IDR.IDR.",
+          "verification": "Independent read tests preset IDR without the write API and pass when all 32 bits are returned and no register changes.",
+          "verified_by": "host_unit_test"
+        }
+      ]
+    }
+  },
+  "origin": {
+    "basis": "Same functional IDR payload; add owner-selected simulation-only CPU/timing development targets.",
+    "kind": "EXTERNALLY_PREPARED_SIMULATION_ALLOCATION_EXTENSION",
+    "prepared_by": "Codex external implementation engineer",
+    "prepared_on": "2026-10-29",
+    "prior_functional_review": {
+      "payload_sha256": "09aa9891c58759059484cedbedb7f922ff2013d8350d72206245207968f1d1a4",
+      "record_ref": "evidence/014-durable-local-autonomy/m1-owner-review-20261028.json",
+      "reviewed_at": "2026-10-28T20:49:52Z",
+      "reviewed_by": "Jefferson Nascimento",
+      "status": "REVIEWED"
+    }
+  },
+  "review": {
+    "kind": "COMPOSITE_UNCHANGED_FUNCTIONAL_REVIEW_AND_OWNER_QM_SCOPE",
+    "original_functional_review": {
+      "payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+      "record_ref": "evidence/014-durable-local-autonomy/m1-owner-review-simulation-20261029.json",
+      "reviewed_at": "2026-10-29T07:30:49.470801Z",
+      "reviewed_by": "Jefferson Nascimento",
+      "status": "REVIEWED"
+    },
+    "payload_sha256": "76226b5a1f79c02ae21214e61e3d00df3a0c918aefd7522ca3897dc9e55550c7",
+    "record_ref": "evidence/014-durable-local-autonomy/m1-owner-qm-reclassification-20261029.json",
+    "reviewed_at": "2026-10-29",
+    "reviewed_by": "Jefferson Nascimento",
+    "scope_decision": "OWNER-20261029-QM-DEVELOPMENT",
+    "status": "REVIEWED"
+  },
+  "schema": "forge-c/provided-requirements/1",
+  "scope_sha256": "b913a8c37a91d35371c585e23934044719b545129897700cbac4569e534a6b11",
+  "sources": [
+    {
+      "pages": [
+        1172
+      ],
+      "path": "inputs/RM0486-rev4-ch26-crc.md",
+      "section": "26.4.2",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    }
+  ]
+}

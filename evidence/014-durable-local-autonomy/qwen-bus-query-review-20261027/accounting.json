@@ -1,0 +1,70 @@
+{
+  "schema": "forge-c/external-engineering-study/1",
+  "started_at": "2026-10-27T12:13:20.277538Z",
+  "source_revision": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "authority": "owner remote Qwen engineering-work request 2026-10-27",
+  "scope": "READ_ONLY_BUS_QUERY_HELPER_REVIEW_NOT_REPAIR_OR_ROLE_QUALIFICATION",
+  "model": "qwen3.6:35b-a3b",
+  "max_calls": 1,
+  "calls_attempted": 1,
+  "output_reserve": 1024,
+  "input_plus_output_bound": 16000,
+  "query_wall_bound_seconds": 180,
+  "product_success": "NOT_MEASURED",
+  "max_upstream_attempts": 3,
+  "conservative_total_token_bound": 48000,
+  "learning_benefit": "NOT_MEASURED",
+  "deployment": "NOT_ACTIVATED",
+  "harness_events": [
+    {
+      "at": "2026-10-27T12:17:20.426836Z",
+      "event": "RESUME_ZERO_CALL_PREFLIGHT_FAILURE",
+      "prior_calls_retained": 0
+    }
+  ],
+  "gateway_identity_observation": {
+    "namespace": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "start_ticks": "277955338",
+      "netns": "net:[4026533211]",
+      "uid": 0
+    },
+    "host_normalized": {
+      "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+      "start_ticks": "277955338",
+      "netns": "net:[4026533211]",
+      "uid": 1000
+    },
+    "uid_map_sha256": "6a4f47f26e85c1eb08bdf31d899e731f8df6251083ec6458beb97c827a964c52"
+  },
+  "observed_gateway_retry_limit": 2,
+  "accounting": {
+    "serialized_chars": 6597,
+    "estimated_prompt_tokens": 2462,
+    "output_reserve": 1024,
+    "context_tokens": 24576,
+    "fits": true,
+    "complete_serialized_request": {
+      "sha256": "bd2d84a6d5343d1f03b785efc276c66d6331e6a9aff6b4465e041abd9a64d6a2",
+      "serialized_bytes": 7960,
+      "input_tokens": 8088,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false
+    }
+  },
+  "ended_at": "2026-10-27T12:17:29.889894Z",
+  "status": "INVALID_OR_BLOCKED_PROPOSAL",
+  "reference_check": "FAIL",
+  "usage": {
+    "prompt_tokens": 1819,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens": 793,
+    "total_tokens": 2612
+  },
+  "wall_ms": 9433.4,
+  "elapsed_seconds": 9.434,
+  "errors": [],
+  "correctness": "INDEPENDENT_CHECK_REQUIRED"
+}

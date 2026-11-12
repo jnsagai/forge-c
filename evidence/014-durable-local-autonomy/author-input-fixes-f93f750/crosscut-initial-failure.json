@@ -1,0 +1,32 @@
+{
+  "attempt_results": [
+    {
+      "errors": [
+        "[reset_startup_no_register_write] EARS_NOT_ATOMIC_2_SHALL: the statement has 2 'shall': split it into 2 requirements with one 'shall' each",
+        "[reset_startup_no_register_write] verification has no pass criterion ('passes when ...')",
+        "[failure_no_status_flag_wait] verification has no pass criterion ('passes when ...')",
+        "[all_functions_preserve_untouched_bits] verification has no pass criterion ('passes when ...')"
+      ],
+      "n": 0,
+      "usage": {
+        "completion_tokens": 6903,
+        "prompt_tokens": 1925,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 8828
+      },
+      "wall_ms": 248898.2
+    }
+  ],
+  "effect_fields": [],
+  "effects": 0,
+  "excluded_fields": [],
+  "file": "requirements__crosscutting.json",
+  "recomputed_local_finding_codes": [],
+  "recorded_error_count": 4,
+  "requirements": 3,
+  "sha256": "31f9190b933898d12bdf3772ca68ba997bdf77edb1c2c988577c5370f7d6d64b",
+  "status": "INVALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,0 +1,27 @@
+{
+  "affected_versions": [
+    "forge-c@5b08fef7c1f44bb100f1a01883130f37f5364137",
+    "forge-c@<3e6c3d944b4a"
+  ],
+  "candidate_patch_sha256": "5b75844476e773a2331337306df20343fd3bb8ae5c2968a9e3d81e7baa4e84a3",
+  "capa_id": "CAPA-167",
+  "created_at": "2026-11-04T21:25:46.377545Z",
+  "event_ids": [],
+  "incident_ids": [
+    "INC-M1:WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H:EARLY_CODE_OWNER_UNREACHABLE"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-167",
+  "reproducer_id": "RPR-167",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-9c76e5d207bac1c879c0",
+    "reproducer-run:rr-50f396ade9915977b5ed"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Brownfield-only early ownership drops the existing provided-LL correction route. Exact provided/original/item/location/requirement binding, genuine passed1/2 carry and deterministic3 claim allow normal reviewed correction, actual4 verification and5/6 resume without future PASS, forward upstream, policy or original-source changes.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-04T21:32:33.348839Z"
+}

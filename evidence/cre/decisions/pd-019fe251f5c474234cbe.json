@@ -1,0 +1,79 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "1d0ee6bb5ae9de04c9ed7661ff6f2fc0fe30fe47",
+  "baseline_sha256": "7f812659ea6d90a6d23905e023527eee0d85a256a739c96b103a11940cfa0594",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "9e79bf1c62fc01a4b1f159ab78b18ffdedba43cb",
+  "candidate_sha256": "d8d20ef7924f22ae8dd428b204dbc46dff4a1aa9104459dd37d1553df0a6e7a4",
+  "decision": "REJECTED",
+  "decision_id": "pd-019fe251f5c474234cbe",
+  "evaluated_at": "2026-10-24T14:11:47.010788Z",
+  "evaluator_id": "cre-promotion-runner@9e79bf1c62fc",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:1d0ee6bb5ae9..9e79bf1c62fc"
+      ],
+      "name": "protected_files",
+      "reason_code": "PROTECTED_PATH_CHANGE",
+      "result": "FAIL"
+    },
+    {
+      "evidence_refs": [
+        "gate:policy_integrity"
+      ],
+      "name": "policy_integrity",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:reproducer"
+      ],
+      "name": "reproducer",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:prevention"
+      ],
+      "name": "prevention",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:quality_process"
+      ],
+      "name": "quality_process",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:golden_benchmark"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    },
+    {
+      "evidence_refs": [
+        "gate:holdout"
+      ],
+      "name": "holdout",
+      "reason_code": "SKIPPED_AFTER_HARD_FAIL",
+      "result": "NOT_RUN"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "protected paths changed: A:evidence/v0.4/runs/F011-T045-trial-qwen3-6-35b-a3b/20261024T072229.json, A:evidence/v0.4/runs/F011-T045-trial-qwen3-6-35b-a3b/20261024T072229.log, A:evidence/v0.4/runs/F011-T045-trial-qwen3-6-35b-a3b/latest.json, A:evidence/v0.4/runs/F011-T045-trial2-qwen3-6-35b-a3b/20261024T083558.json, A:evidence/v0.4/runs/F011-T045-trial2-qwen3-6-35b-a3b/20261024T083558.log",
+    "sandbox: 6025 protected paths read-only (OS) in the candidate/baseline worktrees"
+  ],
+  "reproducer_evidence_refs": [],
+  "schema_version": "1.0"
+}

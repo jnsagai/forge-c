@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/line-campaign/1",
+  "title": "Line Conductor production campaign",
+  "description": "Owner decision 3 (2026-11-03): a production campaign of the autonomous line, config/factory/campaigns/*.yaml, approved by the owner once by commit and bound by sha256 when loaded (forge_factory.afo.line_campaign; its code-level checks are authoritative, this contract is checked too). Inside a campaign the Line Conductor chains SWE.n PASS -> SWE.n+1 and, through depends_on, LL SWE.6 PASS -> HAL SWE.1. A new lineage or example is a new campaign entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "campaign_id",
+    "line",
+    "lineages"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/line-campaign/1"
+    },
+    "campaign_id": {
+      "type": "string",
+      "pattern": "^CMP-[A-Z0-9][A-Z0-9-]{2,62}$"
+    },
+    "line": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{1,32}$"
+    },
+    "wo_prefix": {
+      "type": "string",
+      "pattern": "^WO(-F\\d{1,4})?(-CMP)?$",
+      "default": "WO-F014"
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 400
+    },
+    "lineages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/lineage"
+      }
+    }
+  },
+  "$defs": {
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "minimum"
+      ],
+      "properties": {
+        "target": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "minimum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Owner rule 2026-11-03 (decision 15): the order's expected quality, passed into every phase order (forge_factory.quality validates minimum <= target <= 100 and MC/DC for a safety purpose).",
+      "required": [
+        "structural_coverage",
+        "requirements_coverage",
+        "misra"
+      ],
+      "properties": {
+        "structural_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "line",
+            "branch"
+          ],
+          "properties": {
+            "line": {
+              "$ref": "#/$defs/pair"
+            },
+            "branch": {
+              "$ref": "#/$defs/pair"
+            },
+            "mcdc": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        "requirements_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uspec_tested",
+            "swr_verified_swe6"
+          ],
+          "properties": {
+            "uspec_tested": {
+              "$ref": "#/$defs/pair"
+            },
+            "swr_verified_swe6": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        "misra": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "open_violations_max",
+            "undeviated_rules_max",
+            "deviation_owner_approval"
+          ],
+          "properties": {
+            "open_violations_max": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "undeviated_rules_max": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deviation_owner_approval": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "example",
+        "tag",
+        "series",
+        "driver_class",
+        "factory_revision",
+        "profile",
+        "run_model",
+        "phases"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "ON_HOLD",
+            "DONE"
+          ],
+          "default": "ACTIVE"
+        },
+        "example": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$"
+        },
+        "tag": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,16}$",
+          "description": "Part tag of the order names; unique on the line."
+        },
+        "series": {
+          "type": "string",
+          "pattern": "^\\d{8}-[A-Za-z0-9]{1,12}$",
+          "description": "Order names <wo_prefix>-SWE<n>-<tag>-<series>; retries append B, C, ..."
+        },
+        "driver_class": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9_]{2,63}$",
+          "description": "Checked against the PILOT grant scope.driver_classes."
+        },
+        "factory_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{7,40}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "A run-branch revision (decision 4: never a merge or promotion); null = the lineage waits for one. A newer revision resumes a FACTORY_DEFECT wait."
+        },
+        "profile": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,120}$",
+          "description": "Checked against the PILOT grant scope.models."
+        },
+        "run_model": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$"
+        },
+        "purpose": {
+          "enum": [
+            "ASPICE_ONLY",
+            "QM",
+            "DEVELOPMENT",
+            "FORMAL_REVIEW"
+          ],
+          "default": "ASPICE_ONLY"
+        },
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "SWE.1",
+              "SWE.2",
+              "SWE.3",
+              "SWE.4",
+              "SWE.5",
+              "SWE.6"
+            ]
+          },
+          "description": "Contiguous ascending phases; each passed phase chains the next."
+        },
+        "start": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resume_from",
+            "at"
+          ],
+          "properties": {
+            "resume_from": {
+              "type": "string",
+              "pattern": "^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$"
+            },
+            "at": {
+              "enum": [
+                "SWE.2",
+                "SWE.3",
+                "SWE.4",
+                "SWE.5",
+                "SWE.6"
+              ]
+            }
+          }
+        },
+        "provided_from": {
+          "type": "string",
+          "pattern": "^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$"
+        },
+        "depends_on": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lineage",
+            "phase",
+            "verdict"
+          ],
+          "properties": {
+            "lineage": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+            },
+            "phase": {
+              "enum": [
+                "SWE.1",
+                "SWE.2",
+                "SWE.3",
+                "SWE.4",
+                "SWE.5",
+                "SWE.6"
+              ]
+            },
+            "verdict": {
+              "const": "PASS"
+            }
+          },
+          "description": "Auto-chaining inside the campaign (decision 3): the lineage starts when that lineage passed that phase; --provided-from is that passing order."
+        },
+        "after": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lineage",
+            "phase",
+            "verdict"
+          ],
+          "properties": {
+            "lineage": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+            },
+            "phase": {
+              "enum": [
+                "SWE.1",
+                "SWE.2",
+                "SWE.3",
+                "SWE.4",
+                "SWE.5",
+                "SWE.6"
+              ]
+            },
+            "verdict": {
+              "const": "PASS"
+            }
+          },
+          "description": "Feature 019 (owner 2026-11-09): the lineage waits until that lineage passed that phase and builds on nothing (no --provided-from); the driver ladder's next peripheral."
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50
+        },
+        "quality": {
+          "$ref": "#/$defs/quality"
+        },
+        "completed_by": {
+          "type": "string",
+          "pattern": "^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 400
+        }
+      },
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "provided_from",
+              "depends_on"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DONE"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "completed_by"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "completed_by"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "wo_prefix"
+        ],
+        "properties": {
+          "wo_prefix": {
+            "pattern": "-CMP$"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "line": {
+            "const": "cloud"
+          }
+        }
+      }
+    }
+  ]
+}

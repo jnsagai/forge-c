@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="0" skipped="0" tests="22" time="9.954" timestamp="2026-11-05T13:15:22.358863+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_default_unsigned_production_still_observe" time="0.058" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_explicit_owner_context_is_unaccepted_not_auth_ok" time="0.461" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request0]" time="0.442" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request1]" time="0.441" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request2]" time="0.439" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request3]" time="0.440" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forbidden_action_never_admitted" time="0.462" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[hash]" time="0.426" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[source]" time="0.437" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[epoch]" time="0.420" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[guardian]" time="0.419" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[private_mode]" time="0.429" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_retry_and_restart_never_reset_accounting" time="0.465" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_control_binding_requires_exact_document" time="0.501" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_agent_context_cannot_issue_record" time="0.420" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_role_request_ledger_and_nonce_integration" time="0.654"><error message="failed on setup with &quot;forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:&quot;">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388482...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_existing_role_request_led0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_existing_role_request_led0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x733134650d60&gt;
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+        job=product_job.prepare(store,store.order(oid),attempt,'c'*32,manifest,eff)
+        (ws/'.forge-run/workflow.fabro').write_text('digraph G {\ninspect_serve [script="python -m forge_factory.lrtx.stack --model qwen3.8:27b-q8_0"];\ninspect [prompt="PRIVATE TEST",model="qwen3.8:27b-q8_0"];\ninspect_serve -&gt; inspect [condition="outcome=succeeded"]\n}\n')
+        (ws/'.forge-run/binding.json').write_text(json.dumps(dict(workspace=str(ws),nodes=dict(inspect=dict(role='swe6-inspector')))))
+        (ws/'.forge-run/model-profile.json').write_text(json.dumps(dict(default=model)))
+&gt;       job['line_product_context']=line_product_context.capture(ws,job,load(control['profile']))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+workspace = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_existing_role_request_led0/state/workorders/WO-F014-SWE6-AFOQUAL-20261104-L90B/workspace')
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-112/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793884828.8252878, ...}
+profile = {'_path': 'config/factory/profiles/local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104.yaml', '_sha256': '...wait_s': 21600}, 'afo': {'role_job_tokens': {'afo-factory-maintainer': 1048576, 'afo-recovery-planner': 1048576}}, ...}
+
+    def capture(workspace, job, profile):
+        from .fault_observer import read_bytes, read_json
+    
+        ws = Path(workspace).resolve()
+        paths = {name: ws / ".forge-run" / name for name in ("workflow.fabro", "binding.json", "model-profile.json")}
+        if any(path.is_symlink() for path in paths.values()):
+            raise Refused("LINE_PRODUCT_CONTEXT_SOURCE_SYMLINK")
+        graph = read_bytes(paths["workflow.fabro"]).decode()
+        binding = read_json(paths["binding.json"])
+        recorded = read_json(paths["model-profile.json"])
+        if binding.get("workspace") != str(ws) or recorded.get("default") != job["model"]:
+            raise Refused("LINE_PRODUCT_CONTEXT_WORKSPACE_OR_DEFAULT_CHANGED")
+        parsed = list(statements(graph))
+        attrs = {name: _attrs(raw) for _, _, _, name, raw in parsed}
+        if len(attrs) != len(parsed):
+            raise Refused("LINE_PRODUCT_DUPLICATE_GRAPH_NODE")
+        nodes, roles = {}, {}
+        allowed = profile["models"]["allowed"]
+        for name, value in attrs.items():
+            native = "prompt" in value and value.get("backend") != "acp"
+            if "prompt" in value and value.get("backend") == "acp":
+                raise Refused("LINE_PRODUCT_NONLOCAL_NATIVE_BACKEND")
+            structured = _command_model(value.get("script", ""), "forge_factory.lrtx.runner")
+            if not native and structured is None:
+                continue
+            role = (binding.get("nodes", {}).get(name) or {}).get("role")
+            if not role and structured is not None and name.endswith("_more"):
+                parent = name.removesuffix("_more")
+                parent_script = (attrs.get(parent) or {}).get("script", "")
+                parent_args = [x for x in shlex.split(parent_script) if x != "--resume"]
+                actual_args = [x for x in shlex.split(value["script"]) if x != "--resume"]
+                if parent_args == actual_args:
+                    # The existing factory continuation repeats the same role/task;
+                    # arbitrary helpers never inherit this binding.
+                    role = (binding.get("nodes", {}).get(parent) or {}).get("role")
+            if not role:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL_NODE", name)
+            model = value.get("model", job["model"]) if native else structured
+            if model not in allowed:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL", name)
+            routing = (profile.get("structured") or {}).get("role_models") or {}
+            expected = routing.get("inspector" if role.endswith("-inspector") else "author", job["model"])
+            if routing and model != expected:
+                raise Refused("LINE_PRODUCT_PROFILE_ROLE_MODEL_MISMATCH", name)
+            served = _command_model((attrs.get(name + "_serve") or {}).get("script", ""), "forge_factory.lrtx.stack")
+            edge = re.search(
+                r"^\s*" + re.escape(name + "_serve") + r"\s*-&gt;\s*" + re.escape(name) + r'\s*\[condition="outcome=succeeded"\]\s*$',
+                graph,
+                re.M,
+            )
+            if served != model or not edge:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BINDING_MISMATCH", name)
+            incoming = re.findall(r"^\s*(\w+)\s*-&gt;\s*" + re.escape(name) + r"(?:\s*\[|\s*$)", graph, re.M)
+            if set(incoming) != {name + "_serve"}:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BYPASS", name)
+            nodes[name] = {"role": role, "model": model, "served_model": served, "native": native}
+            roles.setdefault(role, set()).add(model)
+        if not nodes:
+&gt;           raise Refused("LINE_PRODUCT_MODEL_CONTEXT_EMPTY")
+E           forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:
+
+factory/python/forge_factory/afo/line_product_context.py:100: Refused</error></testcase><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_guardian_exit_between_reservation_and_effect_refuses_and_holds" time="0.565"><error message="failed on setup with &quot;forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:&quot;">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388482...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_guardian_exit_between_res0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_guardian_exit_between_res0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7331346468f0&gt;
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+        job=product_job.prepare(store,store.order(oid),attempt,'c'*32,manifest,eff)
+        (ws/'.forge-run/workflow.fabro').write_text('digraph G {\ninspect_serve [script="python -m forge_factory.lrtx.stack --model qwen3.8:27b-q8_0"];\ninspect [prompt="PRIVATE TEST",model="qwen3.8:27b-q8_0"];\ninspect_serve -&gt; inspect [condition="outcome=succeeded"]\n}\n')
+        (ws/'.forge-run/binding.json').write_text(json.dumps(dict(workspace=str(ws),nodes=dict(inspect=dict(role='swe6-inspector')))))
+        (ws/'.forge-run/model-profile.json').write_text(json.dumps(dict(default=model)))
+&gt;       job['line_product_context']=line_product_context.capture(ws,job,load(control['profile']))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+workspace = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_guardian_exit_between_res0/state/workorders/WO-F014-SWE6-AFOQUAL-20261104-L90B/workspace')
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-112/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793884829.5013335, ...}
+profile = {'_path': 'config/factory/profiles/local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104.yaml', '_sha256': '...wait_s': 21600}, 'afo': {'role_job_tokens': {'afo-factory-maintainer': 1048576, 'afo-recovery-planner': 1048576}}, ...}
+
+    def capture(workspace, job, profile):
+        from .fault_observer import read_bytes, read_json
+    
+        ws = Path(workspace).resolve()
+        paths = {name: ws / ".forge-run" / name for name in ("workflow.fabro", "binding.json", "model-profile.json")}
+        if any(path.is_symlink() for path in paths.values()):
+            raise Refused("LINE_PRODUCT_CONTEXT_SOURCE_SYMLINK")
+        graph = read_bytes(paths["workflow.fabro"]).decode()
+        binding = read_json(paths["binding.json"])
+        recorded = read_json(paths["model-profile.json"])
+        if binding.get("workspace") != str(ws) or recorded.get("default") != job["model"]:
+            raise Refused("LINE_PRODUCT_CONTEXT_WORKSPACE_OR_DEFAULT_CHANGED")
+        parsed = list(statements(graph))
+        attrs = {name: _attrs(raw) for _, _, _, name, raw in parsed}
+        if len(attrs) != len(parsed):
+            raise Refused("LINE_PRODUCT_DUPLICATE_GRAPH_NODE")
+        nodes, roles = {}, {}
+        allowed = profile["models"]["allowed"]
+        for name, value in attrs.items():
+            native = "prompt" in value and value.get("backend") != "acp"
+            if "prompt" in value and value.get("backend") == "acp":
+                raise Refused("LINE_PRODUCT_NONLOCAL_NATIVE_BACKEND")
+            structured = _command_model(value.get("script", ""), "forge_factory.lrtx.runner")
+            if not native and structured is None:
+                continue
+            role = (binding.get("nodes", {}).get(name) or {}).get("role")
+            if not role and structured is not None and name.endswith("_more"):
+                parent = name.removesuffix("_more")
+                parent_script = (attrs.get(parent) or {}).get("script", "")
+                parent_args = [x for x in shlex.split(parent_script) if x != "--resume"]
+                actual_args = [x for x in shlex.split(value["script"]) if x != "--resume"]
+                if parent_args == actual_args:
+                    # The existing factory continuation repeats the same role/task;
+                    # arbitrary helpers never inherit this binding.
+                    role = (binding.get("nodes", {}).get(parent) or {}).get("role")
+            if not role:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL_NODE", name)
+            model = value.get("model", job["model"]) if native else structured
+            if model not in allowed:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL", name)
+            routing = (profile.get("structured") or {}).get("role_models") or {}
+            expected = routing.get("inspector" if role.endswith("-inspector") else "author", job["model"])
+            if routing and model != expected:
+                raise Refused("LINE_PRODUCT_PROFILE_ROLE_MODEL_MISMATCH", name)
+            served = _command_model((attrs.get(name + "_serve") or {}).get("script", ""), "forge_factory.lrtx.stack")
+            edge = re.search(
+                r"^\s*" + re.escape(name + "_serve") + r"\s*-&gt;\s*" + re.escape(name) + r'\s*\[condition="outcome=succeeded"\]\s*$',
+                graph,
+                re.M,
+            )
+            if served != model or not edge:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BINDING_MISMATCH", name)
+            incoming = re.findall(r"^\s*(\w+)\s*-&gt;\s*" + re.escape(name) + r"(?:\s*\[|\s*$)", graph, re.M)
+            if set(incoming) != {name + "_serve"}:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BYPASS", name)
+            nodes[name] = {"role": role, "model": model, "served_model": served, "native": native}
+            roles.setdefault(role, set()).add(model)
+        if not nodes:
+&gt;           raise Refused("LINE_PRODUCT_MODEL_CONTEXT_EMPTY")
+E           forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:
+
+factory/python/forge_factory/afo/line_product_context.py:100: Refused</error></testcase><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_wrong_nonce_and_changed_role_config_reserve_nothing" time="0.552"><error message="failed on setup with &quot;forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:&quot;">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388483...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_wrong_nonce_and_changed_r0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_wrong_nonce_and_changed_r0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x733133188550&gt;
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+        job=product_job.prepare(store,store.order(oid),attempt,'c'*32,manifest,eff)
+        (ws/'.forge-run/workflow.fabro').write_text('digraph G {\ninspect_serve [script="python -m forge_factory.lrtx.stack --model qwen3.8:27b-q8_0"];\ninspect [prompt="PRIVATE TEST",model="qwen3.8:27b-q8_0"];\ninspect_serve -&gt; inspect [condition="outcome=succeeded"]\n}\n')
+        (ws/'.forge-run/binding.json').write_text(json.dumps(dict(workspace=str(ws),nodes=dict(inspect=dict(role='swe6-inspector')))))
+        (ws/'.forge-run/model-profile.json').write_text(json.dumps(dict(default=model)))
+&gt;       job['line_product_context']=line_product_context.capture(ws,job,load(control['profile']))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+workspace = PosixPath('/tmp/pytest-of-jefferson/pytest-112/test_wrong_nonce_and_changed_r0/state/workorders/WO-F014-SWE6-AFOQUAL-20261104-L90B/workspace')
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-112/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793884830.0782804, ...}
+profile = {'_path': 'config/factory/profiles/local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104.yaml', '_sha256': '...wait_s': 21600}, 'afo': {'role_job_tokens': {'afo-factory-maintainer': 1048576, 'afo-recovery-planner': 1048576}}, ...}
+
+    def capture(workspace, job, profile):
+        from .fault_observer import read_bytes, read_json
+    
+        ws = Path(workspace).resolve()
+        paths = {name: ws / ".forge-run" / name for name in ("workflow.fabro", "binding.json", "model-profile.json")}
+        if any(path.is_symlink() for path in paths.values()):
+            raise Refused("LINE_PRODUCT_CONTEXT_SOURCE_SYMLINK")
+        graph = read_bytes(paths["workflow.fabro"]).decode()
+        binding = read_json(paths["binding.json"])
+        recorded = read_json(paths["model-profile.json"])
+        if binding.get("workspace") != str(ws) or recorded.get("default") != job["model"]:
+            raise Refused("LINE_PRODUCT_CONTEXT_WORKSPACE_OR_DEFAULT_CHANGED")
+        parsed = list(statements(graph))
+        attrs = {name: _attrs(raw) for _, _, _, name, raw in parsed}
+        if len(attrs) != len(parsed):
+            raise Refused("LINE_PRODUCT_DUPLICATE_GRAPH_NODE")
+        nodes, roles = {}, {}
+        allowed = profile["models"]["allowed"]
+        for name, value in attrs.items():
+            native = "prompt" in value and value.get("backend") != "acp"
+            if "prompt" in value and value.get("backend") == "acp":
+                raise Refused("LINE_PRODUCT_NONLOCAL_NATIVE_BACKEND")
+            structured = _command_model(value.get("script", ""), "forge_factory.lrtx.runner")
+            if not native and structured is None:
+                continue
+            role = (binding.get("nodes", {}).get(name) or {}).get("role")
+            if not role and structured is not None and name.endswith("_more"):
+                parent = name.removesuffix("_more")
+                parent_script = (attrs.get(parent) or {}).get("script", "")
+                parent_args = [x for x in shlex.split(parent_script) if x != "--resume"]
+                actual_args = [x for x in shlex.split(value["script"]) if x != "--resume"]
+                if parent_args == actual_args:
+                    # The existing factory continuation repeats the same role/task;
+                    # arbitrary helpers never inherit this binding.
+                    role = (binding.get("nodes", {}).get(parent) or {}).get("role")
+            if not role:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL_NODE", name)
+            model = value.get("model", job["model"]) if native else structured
+            if model not in allowed:
+                raise Refused("LINE_PRODUCT_UNDECLARED_MODEL", name)
+            routing = (profile.get("structured") or {}).get("role_models") or {}
+            expected = routing.get("inspector" if role.endswith("-inspector") else "author", job["model"])
+            if routing and model != expected:
+                raise Refused("LINE_PRODUCT_PROFILE_ROLE_MODEL_MISMATCH", name)
+            served = _command_model((attrs.get(name + "_serve") or {}).get("script", ""), "forge_factory.lrtx.stack")
+            edge = re.search(
+                r"^\s*" + re.escape(name + "_serve") + r"\s*-&gt;\s*" + re.escape(name) + r'\s*\[condition="outcome=succeeded"\]\s*$',
+                graph,
+                re.M,
+            )
+            if served != model or not edge:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BINDING_MISMATCH", name)
+            incoming = re.findall(r"^\s*(\w+)\s*-&gt;\s*" + re.escape(name) + r"(?:\s*\[|\s*$)", graph, re.M)
+            if set(incoming) != {name + "_serve"}:
+                raise Refused("LINE_PRODUCT_MODEL_SERVE_BYPASS", name)
+            nodes[name] = {"role": role, "model": model, "served_model": served, "native": native}
+            roles.setdefault(role, set()).add(model)
+        if not nodes:
+&gt;           raise Refused("LINE_PRODUCT_MODEL_CONTEXT_EMPTY")
+E           forge_factory.afo.durable.Refused: LINE_PRODUCT_MODEL_CONTEXT_EMPTY:
+
+factory/python/forge_factory/afo/line_product_context.py:100: Refused</error></testcase><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_copied_forged_record_cannot_be_attested_by_real_guardian" time="0.414" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors" time="0.432" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_compiled_host_artifact_cannot_write_host_or_connect_control_socket" time="0.470" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_missing_scoped_backend_never_uses_plain_host_subprocess" time="0.425" /></testsuite></testsuites>

@@ -1,0 +1,119 @@
+{
+  "at": "2026-10-31T13:43:16.443981Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7281,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7153,
+          "sha256": "85e7917d9fe01c7b9fa0e4a23ee28cbbbe52b359eaa2e32c459b5b2fa85b18f4"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2048,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5457
+      },
+      "errors": [
+        "[idr_write_shall_store_supplied_value] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [idr_write_shall_store_supplied_value] from the cross-cutting task",
+        "[idr_read_shall_return_current_value] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [idr_read_shall_return_current_value] from the cross-cutting task",
+        "[idr_write_changes_only_named_bits] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [idr_write_changes_only_named_bits] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "83c37ec6024a8a79e53269a3b895fff0de6b7156d7f5bb8186ac575ddcd56b07",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 887,
+        "prompt_tokens": 1353,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 2240
+      },
+      "wall_ms": 6054.1
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 11266,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 11138,
+          "sha256": "396246b7233234e1a7a987d228d01619302205e0469e4c74af49747ef9af7752"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3415,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 9217
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "ed0aae4535cb410ff0d5ffe51f4d3b326fbfac23d42c9951f0c29c030ea7829d",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 604,
+        "prompt_tokens": 2396,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 3000
+      },
+      "wall_ms": 4389.0
+    }
+  ],
+  "base_hash": "83c37ec6024a8a79e53269a3b895fff0de6b7156d7f5bb8186ac575ddcd56b07",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "The source does not document any status-flag mechanism for the IDR access path, so no polling bound or error-return contract is specified beyond the absence of waiting.",
+      "The RM0486 section does not indicate whether CRC_IDR is readable during a halted CPU state, so whether the read-back verification applies while the CPU is halted is left open."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "startup_shall_not_write_idr",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "The test resets the CRC peripheral to its startup state and observes its registers; the test passes when no write to any register occurs during the observed window before any LL function is called.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "idr_read_no_polling_of_status_flag",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Read_IDR with a valid CRC peripheral instance, the CRC LL driver shall not wait on any status flag of the CRC peripheral.",
+        "verification": "The test invokes LL_CRC_Read_IDR with a valid peripheral instance and times the call; the test passes when the call returns without blocking on a status flag.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "idr_read_no_error_return_on_valid_call",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Read_IDR with a valid CRC peripheral instance, the CRC LL driver shall not return an error code for the valid accessible call.",
+        "verification": "The test invokes LL_CRC_Read_IDR with a valid peripheral instance and a readable register state; the test passes when no error value is returned.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "idr_write_changes_only_idr_bits",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Write_IDR with a valid CRC peripheral instance, the CRC LL driver shall change only the IDR field of CRC_IDR and no other field of the register.",
+        "verification": "The test invokes LL_CRC_Write_IDR with a known 32-bit argument; the test passes when only the IDR field of CRC_IDR is modified and no other register field changes.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

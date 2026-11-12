@@ -22,7 +22,7 @@ from pathlib import Path
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 CALLS = "workproducts/SWE.2/api_calls.json"
 OPS = ("set", "clear", "no_write", "write")  # write (feature 009): the field holds "value" after the call
-STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
+STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR", "HAL_BUSY")  # HAL_BUSY: ST's classic HAL (handle locked/state)
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
 FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
 SAFE_ARG = re.compile(r"^[A-Za-z0-9_&(){}.=, +\-*/\[\]]*$")
@@ -48,10 +48,11 @@ def _load(ws: Path, rel: str) -> tuple[dict | None, list[str]]:
 
 
 def _rm_index(ws: Path) -> dict:
+    from ..layer import profile, register_prefix
     from .hardware import index
 
-    d = Path(ws) / "inputs/sections/RM0486"
-    return index(d) if d.is_dir() else {}
+    d = Path(ws) / "inputs/sections" / profile(ws)["rm"]["doc"]
+    return index(d, register_prefix(ws)) if d.is_dir() else {}
 
 
 def _field_rx(ws: Path) -> re.Pattern:
@@ -93,6 +94,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             continue
         if layer == "HAL" and e.get("status") not in STATUSES:
             out.append(f"CONTRACT_STATUS:{where}:{e.get('status')} (HAL_OK|HAL_TIMEOUT|HAL_ERROR)")
+        if op != "write" and requested_problem(e, None):
+            out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, None)}")
         if op == "no_write" and not (e.get("register") or e.get("field")):
             continue  # no register access at all (e.g. a NULL configuration rejected before any access)
         reg, fld = e.get("register"), e.get("field")
@@ -105,6 +108,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             if v is None or not 0 <= v < (1 << width):
                 out.append(f"CONTRACT_WRITE_VALUE:{where}:{e.get('value')!r} (an integer that fits {reg}.{fld}, "
                            f"{width} bits)")
+            elif requested_problem(e, width, r["fields"][fld]["lsb"]):
+                out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, width, r['fields'][fld]['lsb'])}")
         elif swr in reqs and f"{reg}.{fld}" not in reqs[swr] and not (reg in reqs[swr] and fld in reqs[swr]):
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
@@ -125,7 +130,7 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
     from ..layer import register_prefix
 
     pfx = register_prefix(ws)
-    out += [f"CONTRACT_SWR_NOT_COVERED:{s} (it sets or clears a register bit: add its effects)"
+    out += [f"CONTRACT_SWR_NOT_COVERED:{s} (declare its register-effect case; use no_write for a read/query)"
             for s, t in sorted(reqs.items()) if _needs_contract(t, pfx) and s not in covered]
     return out[:15]
 
@@ -149,6 +154,52 @@ def _value(v) -> int | None:
         return int(str(v), 0)
     except (TypeError, ValueError):
         return None
+
+
+def requested_problem(e: dict, width: int | None, lsb: int = 0) -> str | None:
+    """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): a write may record the caller's requested input apart from the
+    field value it leaves, for a truncating write ("write only bits 11:0 of the requested value": requested 0x1234,
+    value 0x234). Absent or "" means the call passes the value itself. The requested input is a 32-bit number that
+    does not fit the field and whose low `width` bits are the value; None when the entry is consistent.
+
+    WO-F014-SWE1-WWDGL-20261109-L44E (SWR-006): an ST LL setter often takes a constant already at the field's position
+    (LL_WWDG_SetPrescaler: MODIFY_REG(CFR, WDGTB, Prescaler); requested 0x5000 leaves WDGTB = 0x2). For a field above
+    bit 0 (`lsb`) the value may also be the requested input's bits at the field position."""
+    r = e.get("requested")
+    if r in (None, ""):
+        return None
+    if e.get("op") != "write":
+        return f'requested must be "" for op {e.get("op")}'
+    rv, v = _value(r), _value(e.get("value"))
+    if rv is None or not 0 <= rv <= 0xFFFFFFFF:
+        return f"requested {r!r} must be a 32-bit number"
+    if width is None:
+        return None
+    low = rv & ((1 << width) - 1)
+    if rv < (1 << width):
+        return f'requested {r!r} fits the {width}-bit field: write it as the value and leave requested ""'
+    placed = (rv >> lsb) & ((1 << width) - 1) if lsb else None
+    if v != low and v != placed:
+        if placed is None:
+            return f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X})"
+        return (f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X}) or, for a "
+                f"constant at the field position (bits {lsb + width - 1}:{lsb}), those bits (0x{placed:X})")
+    return None
+
+
+def call_input(e: dict):
+    """The input a write case's call passes: the requested input when the effect records one (CAPA-120), else the
+    field value."""
+    return e["requested"] if e.get("requested") not in (None, "") else e.get("value")
+
+
+def value_text(e: dict) -> str:
+    """' value <v>' for an author's case listing (unchanged without a requested input)."""
+    if e.get("value") is None:
+        return ""
+    if e.get("requested") in (None, ""):
+        return f" value {e['value']}"
+    return f" value {e['value']} (the call passes the requested input {e['requested']}; the field keeps {e['value']})"
 
 
 def check_calls(ws: Path) -> list[str]:
@@ -240,14 +291,28 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     cs, notes = cases(ws)
     if not cs:
         return []
-    from ..brownfield import delivered_paths, is_brownfield, manifest_of
+    from ..brownfield import cmsis, delivered_paths, is_brownfield, manifest_of
+    from ..layer import instance_flags, ll_instance
 
     m = manifest_of(ws)
     compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]
+    if ll_instance(ws) is not None:  # instance mode: the pinned device/API headers, host mapping of the instance macro
+        compiler, extra = ["gcc", "-std=c11"], instance_flags(ws, host=True)
+    elif cmsis.provided_build(ws) is not None:
+        # CAPA-135 (run WO-F014-SWE3-CRCHAL-20261103-L31): a HAL on a provided ST (CMSIS) LL compiles its call contract
+        # with the provided LL's build inputs, as its host build and tests do (CAPA-128): host device directory with
+        # the host CMSIS stub, forced host mapping of the instance, defines - the LL header includes stm32n6xx.h
+        compiler, extra = ["gcc", "-std=c11"], cmsis.host_flags(ws)
     if is_brownfield(m):  # feature 008: all delivered headers, vendor includes and the delivery's build settings
         b = m["delivery"].get("build") or {}
         headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
         include_dirs = [*include_dirs, Path(ws) / "inputs/vendor/include"]
+        # Use the same vendor HAL include context as delivery.build_check. Standalone
+        # module headers can need types from earlier modules in the configured umbrella
+        # (e.g. SPI's DMA handles); the delivered code itself remains unchanged.
+        if any(x.startswith("software/hal/") for x in delivered_paths(m)) and \
+                (Path(ws) / "inputs/vendor/include/stm32n6xx_hal.h").is_file():
+            headers = ["stm32n6xx_hal.h", *headers]
         extra = [f"-D{d}" for d in b.get("defines") or []]
         if b.get("style") == "cmsis":
             compiler = ["arm-none-eabi-gcc", "-std=c11", "-mcpu=cortex-m55", "-mthumb"] + \
@@ -264,3 +329,197 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
         return []
     errs = [ln.split(" error: ", 1)[1][:120] for ln in r.stderr.splitlines() if " error: " in ln]
     return [f"CONTRACT_CALL_DOES_NOT_COMPILE:{CALLS}:{e}" for e in errs[:6]] or ["CONTRACT_CALL_DOES_NOT_COMPILE:" + CALLS]
+
+
+# ---- CAPA-137: the SWE.3 call-contract compile check, applied where SWE.2 writes the contract -------------------------
+# A greenfield HAL/LL (also a HAL on a provided ST LL, CAPA-128) gets its interface header only at SWE.3, so SWE.2 cannot
+# compile its calls. What it can decide: an argument identifier that neither the SWE.2 interface nor a header the work
+# order already has declares can never compile at SWE.3 (run WO-F014-SWE3-CRCHAL-20261103-L31B: `&crc`, no `crc`).
+_C_WORDS = frozenset("""auto break case char const continue default do double else enum extern float for goto if inline int
+long register restrict return short signed sizeof static struct switch typedef union unsigned void volatile while _Bool
+_Alignof _Alignas _Static_assert _Generic bool true false NULL size_t ptrdiff_t uintptr_t intptr_t offsetof SIZE_MAX""".split())
+_STD_INT = re.compile(r"^u?int(?:8|16|32|64|ptr|max)_t$|^U?INT(?:8|16|32|64|PTR|MAX)_(?:MAX|MIN|C)$")
+_ARG_TOK = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|\b0[xX][0-9A-Fa-f]+[uUlL]*\b'
+                      r"|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[uUlLfF]*\b|(?P<id>[A-Za-z_]\w*)|(?P<member>->|\.)|\S")
+_COMMENTS = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+
+_STRINGS = re.compile(r'"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'')
+_C_TOK = re.compile(r"[A-Za-z_]\w*|[{}()\[\];,=*]|\S")
+_FENCE = re.compile(r"^```[ \t]*([A-Za-z0-9_+-]*)[^\n]*\n(.*?)^```", re.S | re.M)
+_INLINE = re.compile(r"`([^`\n]+)`")
+_CONST_OR_TYPE = re.compile(r"^(?:[A-Z][A-Z0-9_]*[A-Z0-9]|[A-Za-z_]\w*_t)$")
+
+
+def _file_scope_names(code: str) -> set[str]:
+    """CAPA-140: the names C code declares at file scope - macros, typedef names, struct/union/enum tags, enum
+    constants, function names and file-scope variables. Not parameter names, struct members, locals or comments: a
+    contract argument can only use what a translation unit sees at file scope (WO-F014-SWE3-WWDGHAL-20261103-L32:
+    `&flag`, where "flag" was only a parameter/prose word)."""
+    code = _STRINGS.sub(" STR ", _COMMENTS.sub(" ", code))
+    names: set[str] = set()
+    body = []
+    for line in code.splitlines():
+        m = re.match(r"\s*#\s*define\s+([A-Za-z_]\w*)", line)
+        if m:
+            names.add(m.group(1))
+        if not line.lstrip().startswith("#"):
+            body.append(line)
+    toks = _C_TOK.findall("\n".join(body))
+    stack: list[str] = []  # brace kinds: "extern" (transparent), "enum", "aggregate", "body"
+    paren, stmt, i = 0, [], 0
+    expect_enum = False
+    while i < len(toks):
+        t = toks[i]
+        depth = sum(1 for k in stack if k != "extern")
+        if t == "{":
+            prev = stmt[-1] if stmt else None
+            prev2 = stmt[-2] if len(stmt) > 1 else None
+            if prev == "STR" and prev2 == "extern":
+                stack.append("extern")
+                stmt = []
+            elif expect_enum or prev == "enum" or (prev2 == "enum" and prev is not None):
+                stack.append("enum")
+                expect_enum = False
+            elif prev in ("struct", "union") or prev2 in ("struct", "union") or (depth > 0 and stack[-1] == "aggregate"):
+                stack.append("aggregate")
+            elif prev == ")" and depth == 0:
+                stack.append("body")  # function definition: locals are not file scope
+            else:
+                stack.append("aggregate")  # initialiser or other braces: nothing declared inside
+            i += 1
+            continue
+        if t == "}":
+            if stack:
+                k = stack.pop()
+                if k == "body" and not any(x != "extern" for x in stack):
+                    stmt = []  # a function definition ends the top-level statement
+                    i += 1
+                    continue
+            stmt.append(t)
+            i += 1
+            continue
+        inside = [k for k in stack if k != "extern"]
+        if inside and inside[-1] == "body":
+            i += 1
+            continue
+        if inside and inside[-1] == "enum":  # enum constants are file-scope names wherever the enum is
+            if re.match(r"[A-Za-z_]\w*$", t) and (toks[i - 1] in ("{", ",")):
+                names.add(t)
+            i += 1
+            continue
+        if t in ("struct", "union", "enum") and i + 1 < len(toks) and re.match(r"[A-Za-z_]\w*$", toks[i + 1]) \
+                and toks[i + 1] not in _C_WORDS:
+            names.add(toks[i + 1])  # tag
+        if t == "enum":
+            expect_enum = True
+        elif t != "{" and expect_enum and not re.match(r"[A-Za-z_]\w*$", t):
+            expect_enum = False
+        if inside:  # inside a struct/union/initialiser: members are not file-scope names
+            stmt.append(t)
+            i += 1
+            continue
+        if t == "(":
+            if paren == 0 and stmt and re.match(r"[A-Za-z_]\w*$", stmt[-1]) and stmt[-1] not in _C_WORDS \
+                    and "typedef" not in stmt:
+                names.add(stmt[-1])  # function name of a prototype or definition
+            paren += 1
+        elif t == ")":
+            paren = max(0, paren - 1)
+        elif paren == 0 and t in (";", ",", "=", "["):
+            ids = [x for x in stmt if re.match(r"[A-Za-z_]\w*$", x) and x not in _C_WORDS and x != "STR"]
+            if stmt and stmt[0] == "typedef":
+                fp = [stmt[j + 2] for j in range(len(stmt) - 2) if stmt[j] == "(" and stmt[j + 1] == "*"
+                      and re.match(r"[A-Za-z_]\w*$", stmt[j + 2])]
+                if fp:
+                    names.add(fp[0])
+                elif ids:
+                    names.add(ids[-1])
+            elif ids and stmt[-1] == ids[-1]:
+                names.add(ids[-1])  # declarator of a file-scope variable
+            if t == ";":
+                stmt = []
+                i += 1
+                continue
+            if t == "=":  # skip the initialiser up to the next , or ; at this level
+                lvl, i = 0, i + 1
+                while i < len(toks) and not (lvl == 0 and toks[i] in (",", ";")):
+                    lvl += toks[i] in ("(", "{", "[")
+                    lvl -= toks[i] in (")", "}", "]")
+                    i += 1
+                if i < len(toks) and toks[i] == ";":
+                    stmt = []
+                    i += 1
+                    continue
+            if t == ",":  # next declarator of the same declaration (a typedef stays a typedef)
+                stmt = ["typedef"] if stmt[:1] == ["typedef"] else []
+            i += 1
+            continue
+        stmt.append(t)
+        i += 1
+    return names
+
+
+def _declared_words(ws: Path) -> set[str]:
+    """Identifiers the work order can declare at SWE.3 (CAPA-140 replaces CAPA-137's "every word"): the file-scope
+    declarations of the SWE.2 interface's C code blocks and of the headers the work order already has
+    (provided/delivered LL, vendor and host device headers), plus the constant-like (UPPER_CASE) and type-like (*_t)
+    names the SWE.2 text sets in inline code - SWE.3 declares those in the interface header it writes. A parameter
+    name, a struct member or a prose word ("flag") is not a declaration a contract argument can use."""
+    ws, words = Path(ws), set()
+    for p in sorted((ws / "workproducts/SWE.2").glob("*.md")):
+        if not p.is_file():
+            continue
+        text = p.read_text(errors="replace")
+        for m in _FENCE.finditer(text):
+            if m.group(1).lower() in ("", "c", "h", "cpp", "c++"):
+                words |= _file_scope_names(m.group(2))
+        prose = _FENCE.sub(" ", text)
+        for m in _INLINE.finditer(prose):
+            words |= {w for w in re.findall(r"[A-Za-z_]\w*", m.group(1)) if _CONST_OR_TYPE.match(w)}
+    for root in (ws / "software", ws / "inputs/vendor/include"):
+        for h in sorted(root.rglob("*.h")) if root.is_dir() else []:
+            words |= _file_scope_names(h.read_text(errors="replace"))
+    return words
+
+
+def check_args_declared(ws: Path) -> list[str]:
+    """SWE.2 (CAPA-137): every identifier of a contract call argument is declared by the SWE.2 interface or a header the
+    work order has (member designators after `.`/`->`, C keywords and <stdint.h>/<stddef.h> names excepted)."""
+    cs, _notes = cases(ws)
+    if not cs:
+        return []
+    known, out = _declared_words(ws), []
+    for c in cs:
+        undeclared, prev = [], None
+        for m in _ARG_TOK.finditer(" , ".join(a.replace("{timeout}", "10U") for a in c["args"])):
+            ident = m.group("id")
+            if ident and prev != "member" and ident not in _C_WORDS and not _STD_INT.match(ident) \
+                    and ident not in known and ident not in undeclared:
+                undeclared.append(ident)
+            prev = "member" if m.group("member") else "other"
+        out += [f"CONTRACT_CALL_DOES_NOT_COMPILE:{CALLS}:'{i}' undeclared in case {c['case']} ({c['function']}) - neither "
+                "the SWE.2 interface nor a header of the work order declares it; a contract argument is a self-contained C "
+                "expression (e.g. &(uint32_t){0U} for an output pointer)" for i in undeclared]
+    return out[:6]
+
+
+def swe2_compile_findings(ws: Path, layer: str) -> list[str]:
+    """The call-contract compile part of the SWE.2 checks (inspection gate, lrtx SWE.2 self-check, upstream triage):
+    instance mode (an LL) compiles against the declared API contract; a brownfield delivery compiles against its
+    delivered headers (CAPA-089); every other work order gets the identifier check (CAPA-137)."""
+    from ..brownfield import is_brownfield, manifest_of
+    from ..layer import hal_h, ll_header, ll_instance
+
+    inst = ll_instance(ws) if layer == "LL" else None
+    if inst is not None:
+        return check_compiles(ws, [], inst["api_contract"])
+    if is_brownfield(manifest_of(ws)):
+        hdr = Path(ll_header(ws) if layer == "LL" else hal_h(ws)).name
+        return check_compiles(ws, [Path(ws) / "software/hal", Path(ws) / "software/ll"], hdr)
+    return check_args_declared(ws)
+
+
+def swe2_contract_findings(ws: Path, layer: str) -> list[str]:
+    """Every deterministic register-contract finding SWE.2 owns (the SWE.2 inspection gate's own set)."""
+    return check_calls(ws) + swe2_compile_findings(ws, layer)

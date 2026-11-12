@@ -1,0 +1,101 @@
+{
+ "CAPA-133": {
+  "history": [
+   {
+    "at": "2026-11-03T15:45:43.511822Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[\"checklist-edit-invalidates-verdicts\"]",
+    "from_state": null,
+    "reason": "a88b61a5 SWE2-08 wording invalidated the verified ST CRC LL L24 (whole-file checklist binding)",
+    "seq": 980,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T15:45:43.540944Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 981,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T15:45:43.684184Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-133 assigned",
+    "seq": 982,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T15:45:48.062942Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[\"reproducer-run:rr-885dce8426b285da0b99\", \"reproducer-run:rr-fdae7f9909ad3dc1cbd4\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 983,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T15:45:48.084248Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[\"git:a88b61a5efc0..4629f6d223b7\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 4629f6d223b7 (patch 24692 bytes)",
+    "seq": 984,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T15:50:22.500376Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[\"reproducer-run:rr-c1f556e92d439eb95b32\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-133 absent at 2e4ee28898ff",
+    "seq": 985,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T15:50:22.559503Z",
+    "capa_id": "CAPA-133",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 986,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-bdaa38caca0216544de30b1fcff5bf5c37701923",
+   "a88b61a5efc0a49d6d7f52d88c0b7c47f75caa96",
+   "4629f6d223b7af31ceeb7b322ae3e55d87e072d5",
+   "pd-b1538adb408d39afbb02"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<4629f6d223b7"
+   ],
+   "candidate_patch_sha256": "32fa945db3c2586aa99967453f7a38cf5ade2c5adb21f110260598ccf39ee2b8",
+   "capa_id": "CAPA-133",
+   "created_at": "2026-11-03T15:45:43.511822Z",
+   "event_ids": [],
+   "incident_ids": [
+    "checklist-edit-invalidates-verdicts"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-133",
+   "reproducer_id": "RPR-133",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-885dce8426b285da0b99",
+    "reproducer-run:rr-fdae7f9909ad3dc1cbd4"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T15:50:22.559503Z"
+  }
+ }
+}

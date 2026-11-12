@@ -39,6 +39,7 @@ PRODUCT_PATHS = ["software/**", "workproducts/**", "safety/**", "traceability/**
                  "drivers/**", "inspection/**"]
 
 ROLE_WRITE_PREFIXES: dict[str, list[str]] = {
+    "onboard-model-author": ["onboarding/model/"],
     "swe1-author": ["workproducts/SWE.1/", "safety/software_safety_requirements.md", "traceability/"],
     "swe2-author": ["workproducts/SWE.2/"],
     "swe3-author": ["workproducts/SWE.3/", "software/src/", "software/include/", "software/hal/", "software/ll/"],
@@ -82,6 +83,12 @@ class Binding:
                                     "nodes": self.nodes}, indent=2, sort_keys=True), encoding="utf-8")
 
 
+# CAPA-142 (run WO-F014-SWE5-WWDGHAL-20261103-L32): headers the factory build provides to target images
+# (factory/sim/stm32n6/forge_target_test.h; forge_performance_calls.h is generated into the build directory). A workspace
+# copy precedes them on the include path and silently replaces the harness.
+FACTORY_HARNESS_HEADERS = ("forge_target_test.h", "forge_performance_calls.h")
+
+
 def _match(rel: str, globs: list[str]) -> bool:
     return any(fnmatch.fnmatchcase(rel, g) or fnmatch.fnmatchcase(rel + "/", g) or rel == g.rstrip("/*")
                for g in globs)
@@ -102,7 +109,9 @@ class Authorizer:
         # Feature 005 overlay roles (afo-*) and their MCP servers exist only for a binding that binds one of them
         # (the afo-recovery-planner's single-node run); SWE work-order bindings see the base registry, unchanged
         afo = any(str(n.get("role", "")).startswith("afo-") for n in binding.nodes.values())
-        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo)[0])}
+        onboarding = any(n.get("role") in ("onboard-model-author", "onboard-model-inspector")
+                         for n in binding.nodes.values())
+        self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo, include_onboarding=onboarding)[0])}
         self.registry = load_registry(include_afo=afo)
         self.protected = list(ALWAYS_PROTECTED)
         # Supervisor protected paths (incl. workproducts/**, evidence/**) bind infrastructure-repair roles;
@@ -158,6 +167,10 @@ class Authorizer:
         if rel not in code:  # no new driver source next to the delivered code (it would escape verification)
             return "BROWNFIELD_NEW_CODE_FILE" if rel.startswith(("software/ll/", "software/hal/", "software/src/",
                                                                    "software/include/")) else None
+        from ..inspection.provided_changes import allowed as provided_change_allowed
+
+        if code_mode(m) == "FROZEN" and role_id == "swe3-author" and provided_change_allowed(self.workspace, rel):
+            return None  # owner 2026-11-03 (revised): a linked CODE defect in fix; reported in the diff report
         if code_mode(m) != "FIX_ALLOWED":
             return "DELIVERED_CODE_FROZEN"
         if role_id != "swe3-author":
@@ -166,6 +179,43 @@ class Authorizer:
 
         if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d, code) for d in _code_defects(self.workspace)):
             return "DELIVERED_CODE_NO_DEFECT"
+        return None
+
+    def _provided_write(self, role_id: str, rel: str) -> str | None:
+        """The provided (read-only) LL of a HAL work order: refused, except - work orders with unit_verification - for
+        the SWE.3 author while a CODE defect naming the file is open or in fix; the workspace copy is then made
+        writable (the hash-bound original and the source work order are never touched)."""
+        provided = {r.get("path") for r in self._manifest().get("provided") or []}
+        if rel not in provided:
+            return None
+        from ..inspection.provided_changes import allowed, unlock
+
+        if role_id == "swe3-author" and allowed(self.workspace, rel):
+            unlock(self.workspace)
+            return None
+        return "PROVIDED_COMPONENT_READ_ONLY"
+
+    def _delivery_first_write(self, node_id: str, rel: str) -> str | None:
+        """Only the three existing graph visits can mutate a delivery-first candidate."""
+        cfg = self._manifest().get("delivery_first")
+        if not cfg:
+            return None
+        code = rel.startswith(("software/ll/", "software/hal/", "software/src/", "software/include/"))
+        if not code:
+            return "DELIVERY_FIRST_AUTHOR_SCOPE" if node_id.startswith("df_author_") else None
+        if rel not in cfg.get("candidate_files", []):
+            return "DELIVERY_FIRST_UNDECLARED_CODE"
+        match = re.fullmatch(r"df_author_([0-2])", node_id)
+        root = self.workspace / ".forge-run/delivery-first"
+        if not match or not (root / "initial.json").is_file():
+            return "DELIVERY_FIRST_CANDIDATE_FROZEN"
+        attempt = int(match[1])
+        if (root / f"attempt-{attempt}/intent.json").exists():
+            return "DELIVERY_FIRST_AUTHOR_VISIT_COMPLETED"
+        if attempt:
+            previous = root / f"attempt-{attempt - 1}/result.json"
+            if not previous.is_file() or json.loads(previous.read_text()).get("status") != "FAIL":
+                return "DELIVERY_FIRST_CORRECTION_NOT_ELIGIBLE"
         return None
 
     # -- decision -----------------------------------------------------------------------
@@ -195,6 +245,8 @@ class Authorizer:
             if role.phase and phase and role.phase != phase:
                 return Decision(False, "PHASE_MISMATCH", f"{role.phase}!={phase}", role_id, op)
             return Decision(True, "ALLOW_MCP", op, role_id, op)
+        if role_id.startswith("afo-") and tool in READ_TOOLS | WRITE_TOOLS:
+            return Decision(False, "AFO_NATIVE_FILESYSTEM_DENIED", tool, role_id)
         if tool in READ_TOOLS:
             hidden = self._hidden_from(role_id, phase)
             for raw in self._paths(tool, tin):
@@ -227,10 +279,30 @@ class Authorizer:
                     else self.protected
                 if _match(rel, protected):
                     return Decision(False, "PROTECTED_PATH_DENIED", rel, role_id)
+                denied = self._delivery_first_write(node_id or "", rel)
+                if denied:
+                    return Decision(False, denied, rel, role_id)
                 denied = self._delivered_write(role_id, rel)
                 if denied:  # feature 008 (FR-013/FR-014): delivered code is frozen or changes only for a CODE defect
                     return Decision(False, denied, rel, role_id)
-                if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
+                denied = self._provided_write(role_id, rel)
+                if denied:  # ADR-0009 + owner 2026-11-03 (revised): provided LL only for a linked CODE defect
+                    return Decision(False, denied, rel, role_id)
+                # CAPA-138 (run WO-F014-SWE1-WWDGHAL-20261103-L32B): a directory prefix (".../") admits only paths
+                # strictly inside it. Its own path, or any existing directory, is never written as a file - an empty
+                # file "workproducts/SWE.1" blocked every later write below it ("File exists") for the whole run.
+                if rel.startswith("software/") and Path(rel).name in FACTORY_HARNESS_HEADERS:
+                    return Decision(False, "HARNESS_SHADOW_DENIED", f"{rel}: {Path(rel).name} is provided by the factory "
+                                    f"build; include it with #include \"{Path(rel).name}\" and call FORGE_TEST_BEGIN() "
+                                    "first - do not write a copy", role_id)
+                if any(p.endswith("/") and rel == p.rstrip("/") for p in prefixes) or (self.workspace / rel).is_dir():
+                    return Decision(False, "PATH_IS_DIRECTORY", f"{rel} is a directory: write the file inside it "
+                                    f"({rel}/<name>); write_file creates missing parent directories", role_id)
+                if not any(rel == p or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
+                from ..development_execution import mutation_allowed
+
+                if not mutation_allowed(self.workspace, phase, role_id, rel):
+                    return Decision(False, "DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", rel, role_id)
             return Decision(True, "ALLOW_WRITE", tool, role_id)
         return Decision(False, "UNKNOWN_TOOL_DENIED", tool, role_id)

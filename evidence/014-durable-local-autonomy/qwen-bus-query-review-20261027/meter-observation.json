@@ -1,0 +1,30 @@
+{
+  "source": "/mnt/data/forge-c/inspector-014-b309039/lrtx/state/llm-gateway/usage.jsonl",
+  "device": 2049,
+  "inode": 78259530,
+  "offset": 126410313,
+  "length": 2481,
+  "sha256": "619f7597a34a783138bec02d19231f05d8d492ac8d6ec52a75e574618a21aec9",
+  "records": [
+    {
+      "ts_utc": "2026-10-27T12:17:29.864322Z",
+      "model": "qwen3.6:35b-a3b",
+      "tokens_input": 1819,
+      "tokens_output": 793,
+      "tokens_cache_hit": null,
+      "basis": "reported",
+      "latency_ms": 4688.7,
+      "attempt": 0,
+      "finish_reason": "stop",
+      "content_chars": 2924
+    },
+    {
+      "ts_utc": "2026-10-27T12:17:29.883884Z",
+      "model": "qwen3.6:35b-a3b"
+    }
+  ],
+  "upstream_attempts_observed": 1,
+  "reported_input_tokens": 1819,
+  "reported_output_tokens": 793,
+  "native_liveness": "UNKNOWN_ON_ANY_CALL_ERROR; no lease or capacity release performed by study"
+}

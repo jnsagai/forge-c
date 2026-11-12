@@ -1,0 +1,32 @@
+{
+  "receipt_id": "historical-tools-2512cfb3232db0012c87ea415e0dac4510df4a69d0f307bb02fa8761f5805a69",
+  "charged_historical_operations": 66,
+  "mission_id": "F014-IDR-M1-HIGH-20261028",
+  "mission_snapshot": {
+    "authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "attempts": 1,
+    "jobs": 0,
+    "requests": 6,
+    "tools": 66,
+    "corrections": 0,
+    "charged_tokens": 100000000,
+    "usage_unknown": true,
+    "unique_executions": 1,
+    "unbounded_historical_usage": false
+  },
+  "model_requests": 0,
+  "deadline_changed": false,
+  "authorization_created_or_renewed": false
+}

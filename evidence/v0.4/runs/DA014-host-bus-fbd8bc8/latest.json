@@ -1,0 +1,78 @@
+{
+  "git_head": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "scope": "FINITE_NATIVE_BUS_HEADER_AND_VISIBILITY_SOURCE_NOT_FULL_HOST_AUDIT",
+  "status": "PASS_DETERMINISTIC",
+  "exit_code": 0,
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_bus_audit.py",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_operational_work.py",
+      "factory/python/tests/test_da014_operational_report.py",
+      "factory/python/tests/test_da014_read_snapshot.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "factory/python/tests/test_da014_operational_facts.py",
+      "factory/python/tests/test_da014_qualification.py",
+      "factory/python/tests/test_da014_qualification_audit.py",
+      "factory/python/tests/test_da014_qualification_state.py",
+      "factory/python/tests/test_da014_integration.py",
+      "factory/python/tests/test_afo_m2_queue.py",
+      "factory/python/tests/test_afo_m3_reconcile.py",
+      "factory/python/tests/test_afo_m6_operations.py",
+      "factory/python/tests/test_afo_m8_acceptance.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-fbd8bc8-affected",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-fbd8bc8-affected.xml"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_m7_governance_release.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-fbd8bc8-release",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-fbd8bc8-release.xml"
+    ]
+  ],
+  "results": {
+    "affected": {
+      "tests": 319,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 318,
+      "seconds": 31.083
+    },
+    "release": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 8.794
+    }
+  },
+  "evidence": "evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json",
+  "evidence_sha256": "272d2dc4c947c19e8e6c1675bdbd4b2d86e0497876ee3d12df899372801e9ad3",
+  "new_task_checkboxes": [],
+  "native_preflights": [
+    {
+      "label": "kernel",
+      "exit_code": 2,
+      "status": "BLOCKED"
+    },
+    {
+      "label": "user-bus",
+      "exit_code": 0,
+      "status": "BUS_VISIBILITY_AND_HEADERS_CAPTURED"
+    },
+    {
+      "label": "system-bus",
+      "exit_code": 2,
+      "status": "BLOCKED"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-157": {
+  "history": [
+   {
+    "at": "2026-11-04T15:15:38.385304Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[\"isolated-m3-runtime-missing-authoritative-store\"]",
+    "from_state": null,
+    "reason": "Independent source review and actual10-runtime-consumer missingDB construction contrast; privatefixtures only, zero model calls, no production incident claim",
+    "seq": 1161,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T15:15:38.422046Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1162,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T15:16:29.262410Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "Corrected caller YAML list indentation after manifest parse error; source and frozen RPR157 bytes unchanged",
+    "seq": 1163,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T15:16:32.104108Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[\"reproducer-run:rr-db7082b5bc2aa5eeedbf\", \"reproducer-run:rr-1d9aa78d549bbc4c1eff\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1164,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T15:16:32.122889Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[\"git:0def06430174..f47ed125d617\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix f47ed125d617 (patch 17713 bytes)",
+    "seq": 1165,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T15:19:24.559640Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[\"reproducer-run:rr-8a8f9aed2479a4f54273\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-157 absent at f47ed125d617",
+    "seq": 1166,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T15:19:24.579273Z",
+    "capa_id": "CAPA-157",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1167,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-c16fefd3f99270ff52d3e65a4ee72fd164f52522",
+   "0def06430174c4de67c58ef05ca8a6043e1fa4fa",
+   "f47ed125d6173fc57fb653e920493f8873f61c79",
+   "pd-7948e056ee1f7af61756"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<f47ed125d617"
+   ],
+   "candidate_patch_sha256": "804691a4cd0b2e59005ff35238bf64237610193a085d8f2578dcecc46b7c506e",
+   "capa_id": "CAPA-157",
+   "created_at": "2026-11-04T15:15:38.385304Z",
+   "event_ids": [],
+   "incident_ids": [
+    "isolated-m3-runtime-missing-authoritative-store"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-157",
+   "reproducer_id": "RPR-157",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-db7082b5bc2aa5eeedbf",
+    "reproducer-run:rr-1d9aa78d549bbc4c1eff"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Runtimeconsumers initialize normal Store before binding to an already admitted command/job; missing authority can become a newly migrated empty SQLite database",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T15:19:24.579273Z"
+  }
+ }
+}

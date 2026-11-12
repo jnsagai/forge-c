@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-04T22:41:06.500172Z",
+  "exit_code": 1,
+  "log_sha256": "8ff514237fcf62109338c619b59a9e1f80470606f6b1dfa3c131dc3d27bba237",
+  "reproducer_id": "RPR-168",
+  "revision": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+  "role": "BASELINE",
+  "run_id": "rr-62e6e8f16a22ca6e8820",
+  "signature": "frozen approved preservation case cannot bind its actual plan identifiers",
+  "verdict": "SYMPTOM_PRESENT"
+}

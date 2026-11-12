@@ -1,0 +1,97 @@
+{
+ "at": "2026-10-31T13:43:17.149897Z",
+ "case": {
+  "READ_IDR_RETURNS_CURRENT_VALUE": "SWR-002",
+  "WRITE_IDR_STORES_VALUE": "SWR-001"
+ },
+ "files": [
+  "safety/software_safety_requirements.md",
+  "traceability/requirements_to_tests.csv",
+  "traceability/upstream_gaps.md",
+  "workproducts/SWE.1/register_effects.json",
+  "workproducts/SWE.1/software_requirements.md"
+ ],
+ "open_points": {
+  "OP-2e788f3a39f26b77": {
+   "packet_input_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+   "record_sha256": "e702d5f5a3c0abcf6c91f7662618957f450f00a19652a4cfa2802952eae5bd7e",
+   "register": "CRC_IDR",
+   "source_file": "inputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md",
+   "source_section": "26.4.2",
+   "task": "requirements:CRC_IDR",
+   "text": "The RM0486 source does not specify whether LL_CRC_Write_IDR returns any value or status, so the return-value contract of the write function is unresolved.",
+   "text_sha256": "40ce2eca72510376ff3b15e1ea615cf99df89d33d4be5e461af774f3b4fe2d91"
+  },
+  "OP-5ebd70d5104715fa": {
+   "packet_input_hash": "4e340e03227ef913785357d8b8ad38a0200ae6d88648cf62cd79a935ab6d8f9b",
+   "record_sha256": "e702d5f5a3c0abcf6c91f7662618957f450f00a19652a4cfa2802952eae5bd7e",
+   "register": "CRC_IDR",
+   "source_file": "inputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md",
+   "source_section": "26.4.2",
+   "task": "requirements:CRC_IDR",
+   "text": "The RM0486 source does not specify whether LL_CRC_Read_IDR returns the value directly or via an out-parameter, so the read return mechanism is unresolved.",
+   "text_sha256": "74309c73c32bacaac8a7b38c88e77751d086d704862d1d54cc3308aa1a6e285f"
+  },
+  "OP-ac98837b08aa9fb4": {
+   "packet_input_hash": "83c37ec6024a8a79e53269a3b895fff0de6b7156d7f5bb8186ac575ddcd56b07",
+   "record_sha256": "c1ac42b686f9690b60d52413becdf1f60f7cfd4387c7fededf637b46a1916d23",
+   "task": "requirements:crosscutting",
+   "text": "The source does not document any status-flag mechanism for the IDR access path, so no polling bound or error-return contract is specified beyond the absence of waiting.",
+   "text_sha256": "a1bd7de641d47216a6f5b3c5042851df5c99c8857f139c3ca13d70c2d1cac953"
+  },
+  "OP-bd0ba872695d0794": {
+   "packet_input_hash": "83c37ec6024a8a79e53269a3b895fff0de6b7156d7f5bb8186ac575ddcd56b07",
+   "record_sha256": "c1ac42b686f9690b60d52413becdf1f60f7cfd4387c7fededf637b46a1916d23",
+   "task": "requirements:crosscutting",
+   "text": "The RM0486 section does not indicate whether CRC_IDR is readable during a halted CPU state, so whether the read-back verification applies while the CPU is halted is left open.",
+   "text_sha256": "d11d8de1c4ac9b508b6ed977d2318d0b97742618cb28f7ec4569180ef4889e47"
+  }
+ },
+ "schema": "forge-c/lrtx-swe1-assembly/1",
+ "swr": {
+  "SWR-001": {
+   "key": "write_idr_shall_store_supplied_value",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-002": {
+   "key": "read_idr_shall_return_current_value",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-003": {
+   "key": "startup_shall_not_write_idr",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-004": {
+   "key": "idr_read_no_polling_of_status_flag",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-005": {
+   "key": "idr_read_no_error_return_on_valid_call",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-006": {
+   "key": "idr_write_changes_only_idr_bits",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-007": {
+   "key": "budget_flash",
+   "task": "budgets"
+  },
+  "SWR-008": {
+   "key": "budget_static_ram",
+   "task": "budgets"
+  },
+  "SWR-009": {
+   "key": "budget_stack",
+   "task": "budgets"
+  },
+  "SWR-010": {
+   "key": "budget_simulation_cpu",
+   "task": "budgets"
+  },
+  "SWR-011": {
+   "key": "budget_simulation_time",
+   "task": "budgets"
+  }
+ }
+}

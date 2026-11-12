@@ -1,0 +1,77 @@
+{
+  "schema": "forge-c/014-semantic-engine-qualification/1",
+  "source_commit": "c241a9a7ca7f04270b8de182719ec64555f04207",
+  "engine_binary_sha256": "d1df63cea412d672fbe042b1a2b0e31f5167cfd1ea21c717c4dfcbdf81e8ef72",
+  "profile": "register-io-0.2",
+  "domain_schema": "forge-c/register-io-domain/3",
+  "opt_in_build_feature": "register-io-v02",
+  "rust_core": {
+    "passed": 31,
+    "failed": 0,
+    "default_ignored": 1
+  },
+  "legacy_bridge": {
+    "passed": 33,
+    "failed": 0,
+    "default_ignored": 0
+  },
+  "opt_in_bridge": {
+    "passed": 33,
+    "failed": 0,
+    "default_ignored": 0
+  },
+  "formal": {
+    "tool": "CBMC 6.11.0",
+    "correct_cases_proved": 5,
+    "semantic_and_frame_mutants_rejected": 10,
+    "results_sha256": "c86ecb3f11b851aa89f92880e8c7b482ea31851cae647d81d995a27830e87f14",
+    "model": "one-call 32-bit register images, no concurrent hardware transitions, reserved reset assumptions; no silicon/timing qualification"
+  },
+  "affected_format_and_clippy": "PASS_WARNINGS_DENIED",
+  "root_workspace_test": "FAIL_ONE_RETAINED_EVIDENCE_REPLAY",
+  "root_failure_sources": "Initial Linux lint source matched private base; subsequently fixed without changing key checks. Immutable retained payloads lack16 original log inputs; no replacement/fabrication.",
+  "private_logs": {
+    "safec014-c241-core.log": "8857ce8ce4707a407494e2f3783ca2cba7d31dbb6bbaa16c9328ef5abaa2e70f",
+    "safec014-c241-legacy.log": "84b5e16f4e7016ab89d82d9079ddea70bddda91f09fdc574b8891a307877dfaa",
+    "safec014-c241-v02.log": "497f5cb23c95bd3f4431269f3d121e4fee9c1921d1d517d879693891d28ee3ff",
+    "safec014-c241-formal.log": "bc9c9184c918a2a15314928d0092312d01964d23d36b5e6ae1e93b5b682aa96d",
+    "safec014-c241-build.log": "f3c6094349bdc1bb4efdd0fbb518a2d9533bb9f5ba18e06ee6b5bfc7d6537b67",
+    "safec014-c241-check.log": "3c8b713c126aa3b01ade4b0a565c73575fff0a1dc9ab9403db5b238912ef6618",
+    "safec014-c241-workspace.log": "73700f7e3d143552cb2b17e8a2839db16893464d72e1b93f97120492195022cc",
+    "safec014-c241-isolated-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "safec014-c241-core-clippy.log": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc",
+    "safec014-c241-v02-clippy.log": "a13905646e2aed93ec6ea9ed6ac91490a4e01f91af0215c3965279a910612149",
+    "safec014-cli-lint-fix-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "safec014-cli-lint-fix-clippy.log": "e9e248cee70d0a44a1fdd9e66738f4d1c8703c4f4453ab95eec344eb1681d866",
+    "safec014-3256cb6-workspace-all.log": "1d035d0e71c0cdaebf2cc1938c6ee419d3a3d5538b1d74286390ec9e3fab7c97",
+    "safec014-3256cb6-check.log": "f687e0617605070d12cf3143898aae3117b81f08c51768a1a309b89c4d9e2bf9"
+  },
+  "raw_private_source_or_engine_implementation_output": "NOT_PUBLISHED",
+  "public_interfaces": "separate register-io-v02 schemas only",
+  "qualification_limit": "SCOPED_ENGINE_AND_CLIENT_ONLY_NOT_WHOLE_PRIVATE_PRODUCT",
+  "whole_private_workspace_remainder": {
+    "source_revision": "30bea772de5b96e65b1464a027a69f151f02f6d1",
+    "semantic_source": "c241a9a7ca7f04270b8de182719ec64555f04207",
+    "command": "cargo test --workspace --no-fail-fast --locked --offline",
+    "passed": 264,
+    "failed": 1,
+    "ignored": 0,
+    "exit_code": 101,
+    "result": "FAIL_ONE_RETAINED_EVIDENCE_REPLAY",
+    "log_sha256": "317ea74da7e03880901553a8ac3f1495c0b4c46525e70f672428e283ede0c0fd"
+  },
+  "private_draft_pr": "https://github.com/jnsagai/safeC_forge/pull/4",
+  "historical_root_tools_check": "FAIL_BASE_CLI_LINUX_UNUSED_MUT",
+  "root_tools_check": "FAIL_RETAINED_EVIDENCE_REPLAY_AFTER_FMT_AND_CLIPPY_PASS",
+  "current_private_workspace": {
+    "source_revision": "3256cb623d9cd819b443ea74a8efa508cc0b2288",
+    "fmt": "PASS",
+    "clippy_warnings_denied": "PASS",
+    "passed": 264,
+    "failed": 1,
+    "ignored": 0,
+    "missing_retained_original_inputs": 16,
+    "command": "cargo test --workspace --no-fail-fast --locked --offline",
+    "exit_code": 101
+  }
+}

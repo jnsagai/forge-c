@@ -9,8 +9,8 @@ metadata:
   readonly: false
   output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
   model: qwen3:8b
-  max_stage_tokens: 32000
-  max_turns: 35
+  max_stage_tokens: 50000000
+  max_turns: 4096
   max_mcp_output_bytes: 2048
 ---
 
@@ -57,9 +57,17 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 1. Produce the outputs, then freeze them with `forge-evidence-mcp.freeze_baseline`.
 2. On REWORK input, address each finding ID and refreeze; never edit inspection records.
 3. Report UNSUPPORTED when no target/simulator MCP is available; never fabricate target results.
+4. If the input manifest declares `simulation_performance`, also author its bound `test_source` in the existing
+   target-test output directory. Include `forge_performance_calls.h` and the usual mailbox harness. For authored
+   LL, call each public API through `forge_measure_<API>` with the original parameters/return type; for authored
+   HAL, call the public HAL functions directly. Use valid bounded inputs and setup from the requirements and
+   declared target model, with a functional TCHECK. `run_renode` generates build-only declarations/wrappers and
+   measures every scoped API's completed calls. Missing/unsupported scope, absent calls or excess measured cost
+   blocks acceptance; do not invent an allocation or a timing TCHECK. These measurements describe the pinned
+   simulation only, never physical hardware WCET. Keep all ordinary functional/integration tests.
 
 ## Constraints
-Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 32000-token / 35-turn budget is near.
+Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 50000000-token / 4096-turn budget is near.
 
 ## Mandatory compact exit format
 Output only valid JSON matching `specs/002-self-healing-factory/contracts/agent-output.schema.json`:

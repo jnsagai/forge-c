@@ -1,0 +1,332 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0 -- /mnt/data/forge-c/production-local-014/venv/bin/python
+rootdir: /mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/repo
+configfile: pyproject.toml
+collecting ... collected 51 items
+
+factory/python/tests/test_mission_capacity.py::test_explicit_capacity_keeps_history_unknown_and_expired_time PASSED [  1%]
+factory/python/tests/test_mission_capacity.py::test_time_and_capacity_are_separate_signed_receipts_and_charge_new_work[time] PASSED [  3%]
+factory/python/tests/test_mission_capacity.py::test_time_and_capacity_are_separate_signed_receipts_and_charge_new_work[capacity] PASSED [  5%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[attempts-max_attempts] PASSED [  7%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[jobs-max_jobs] PASSED [  9%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[requests-max_requests] PASSED [ 11%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[charged_tokens-max_tokens] PASSED [ 13%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[tools-max_tools] PASSED [ 15%]
+factory/python/tests/test_mission_capacity.py::test_exhausted_non_time_allowance_cannot_be_reopened[corrections-max_corrections] PASSED [ 17%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[unbounded-NON_TIME_ALLOWANCE_EXHAUSTED] PASSED [ 19%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[snapshot-SNAPSHOT_CHANGED] PASSED [ 21%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[ordinary-grant-NOT_OWNER_SIGNED] PASSED [ 23%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[policy-EXCEEDS_POLICY] PASSED [ 25%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[smaller-NOT_PROSPECTIVE] PASSED [ 27%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[correction-NOT_PROSPECTIVE] PASSED [ 29%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[live-QUIESCENCE_REQUIRED] PASSED [ 31%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[prepared-QUIESCENCE_REQUIRED] PASSED [ 33%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[missing-AUTH_RECORD_MISSING] PASSED [ 35%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[broken-AUTH_NOT_JSON] PASSED [ 37%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[not-object-AUTH_SCHEMA_INVALID] PASSED [ 39%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[denied-FIXTURE_REVOKED] PASSED [ 41%]
+factory/python/tests/test_mission_capacity.py::test_current_authority_scope_quiescence_and_snapshot_are_required[extra-time-INPUT_INVALID] PASSED [ 43%]
+factory/python/tests/test_mission_capacity.py::test_intent_epoch_fences_pause_and_newer_resume PASSED [ 45%]
+factory/python/tests/test_mission_capacity.py::test_receipt_replay_is_historical_and_corruption_blocks_accounting PASSED [ 47%]
+factory/python/tests/test_mission_capacity.py::test_real_public_signature_is_required_for_exact_document FAILED [ 49%]
+factory/python/tests/test_mission_capacity.py::test_actual_charged_exhaustion_is_not_revived_by_a_new_grant PASSED [ 50%]
+factory/python/tests/test_mission_capacity.py::test_amendment_chain_has_a_hard_bound_and_preserves_original_caps PASSED [ 52%]
+factory/python/tests/test_mission_capacity.py::test_authenticated_cli_requires_owner_account_and_reason FAILED [ 54%]
+factory/python/tests/test_mission_capacity.py::test_rehashed_but_broken_capacity_chain_is_rejected PASSED [ 56%]
+factory/python/tests/test_mission_deadline.py::test_explicit_time_extension_keeps_history_caps_and_unknown_usage PASSED [ 58%]
+factory/python/tests/test_mission_deadline.py::test_existing_mission_registration_accepts_only_the_explicit_effective_window PASSED [ 60%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[None] PASSED [ 62%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[reset] PASSED [ 64%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[missing-mission] PASSED [ 66%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[wrong-current-authority] PASSED [ 68%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[exhausted] PASSED [ 70%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[expired] PASSED [ 72%]
+factory/python/tests/test_mission_deadline.py::test_new_policy_continuation_preserves_existing_mission_authority_and_costs[denied] PASSED [ 74%]
+factory/python/tests/test_mission_deadline.py::test_extension_does_not_bypass_existing_authorities_or_quiescence[ordinary_grant] PASSED [ 76%]
+factory/python/tests/test_mission_deadline.py::test_extension_does_not_bypass_existing_authorities_or_quiescence[stale_snapshot] PASSED [ 78%]
+factory/python/tests/test_mission_deadline.py::test_extension_does_not_bypass_existing_authorities_or_quiescence[outside_expiry] PASSED [ 80%]
+factory/python/tests/test_mission_deadline.py::test_extension_does_not_bypass_existing_authorities_or_quiescence[extra_cap] PASSED [ 82%]
+factory/python/tests/test_mission_deadline.py::test_extension_does_not_bypass_existing_authorities_or_quiescence[live_native] PASSED [ 84%]
+factory/python/tests/test_mission_deadline.py::test_new_time_cannot_refill_exhausted_product_attempts PASSED [ 86%]
+factory/python/tests/test_mission_deadline.py::test_actual_signature_scope_and_revocation_are_required_for_a_new_window FAILED [ 88%]
+factory/python/tests/test_mission_deadline.py::test_replay_is_historical_only_and_tampering_never_changes_the_window PASSED [ 90%]
+factory/python/tests/test_mission_deadline.py::test_extension_chain_is_finite_and_retains_original_counter_limits PASSED [ 92%]
+factory/python/tests/test_mission_deadline.py::test_serial_continuation_intake_uses_effective_window_and_keeps_same_history PASSED [ 94%]
+factory/python/tests/test_mission_deadline.py::test_missing_or_broken_grant_is_a_bounded_refusal[None-AUTH_RECORD_MISSING] PASSED [ 96%]
+factory/python/tests/test_mission_deadline.py::test_missing_or_broken_grant_is_a_bounded_refusal[{-AUTH_NOT_JSON] PASSED [ 98%]
+factory/python/tests/test_mission_deadline.py::test_missing_or_broken_grant_is_a_bounded_refusal[[]-AUTH_SCHEMA_INVALID] PASSED [100%]
+
+=================================== FAILURES ===================================
+__________ test_real_public_signature_is_required_for_exact_document ___________
+
+mission = namespace(store=<forge_factory.afo.queue.Store object at 0x745ce1e0b000>, ledger=<forge_factory.afo.mission_ledger.Mis...-of-unknown/pytest-0/test_real_public_signature_is_0/auth'), grant=<function mission.<locals>.grant at 0x745ce1e55da0>)
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/scratch/pytest-of-unknown/pytest-0/test_real_public_signature_is_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x745ce2059400>
+
+    def test_real_public_signature_is_required_for_exact_document(mission, tmp_path, monkeypatch):
+        m = mission
+        key = tmp_path / 'fixture-key'
+>       subprocess.run(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', str(key)], check=True)
+
+factory/python/tests/test_mission_capacity.py:208: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', ...],), kwargs = {}
+process = <Popen: returncode: 255 args: ['ssh-keygen', '-q', '-t', 'ed25519', '-N', ''...>
+stdout = None, stderr = None, retcode = 255
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', '/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/scratch/pytest-of-unknown/pytest-0/test_real_public_signature_is_0/fixture-key']' returned non-zero exit status 255.
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:577: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+No user exists for uid 2001
+___________ test_authenticated_cli_requires_owner_account_and_reason ___________
+
+    def getuser():
+        """Get the username from the environment or password database.
+    
+        First try various environment variables, then the password
+        database.  This works on Windows as long as USERNAME is set.
+        Any failure to find a username raises OSError.
+    
+        .. versionchanged:: 3.13
+            Previously, various exceptions beyond just :exc:`OSError`
+            were raised.
+        """
+    
+        for name in ('LOGNAME', 'USER', 'LNAME', 'USERNAME'):
+            user = os.environ.get(name)
+            if user:
+                return user
+    
+        try:
+            import pwd
+>           return pwd.getpwuid(os.getuid())[0]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'getpwuid(): uid not found: 2001'
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/getpass.py:173: KeyError
+
+The above exception was the direct cause of the following exception:
+
+mission = namespace(store=<forge_factory.afo.queue.Store object at 0x745ce1eb6090>, ledger=<forge_factory.afo.mission_ledger.Mis...-of-unknown/pytest-0/test_authenticated_cli_require0/auth'), grant=<function mission.<locals>.grant at 0x745ce1e82ca0>)
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/scratch/pytest-of-unknown/pytest-0/test_authenticated_cli_require0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x745ce1ceac80>
+capsys = <_pytest.capture.CaptureFixture object at 0x745ce1f1a900>
+
+    def test_authenticated_cli_requires_owner_account_and_reason(mission, tmp_path, monkeypatch, capsys):
+        from forge_factory.afo import cli
+    
+        m = mission
+        document = tmp_path / 'capacity.json'
+        document.write_text(json.dumps(m.doc))
+        monkeypatch.setattr(cli, 'Store', lambda: m.store)
+        monkeypatch.setattr(cli, 'load', lambda: m.eff)
+        monkeypatch.setattr(cli, 'operator_ok', lambda: False)
+        before = m.ledger.snapshot('rcc')
+        args = ['mission-amend-capacity', str(document), '--reason', 'Synthetic owner decision']
+        assert cli.main(args) == 3
+        assert m.ledger.snapshot('rcc') == before
+        monkeypatch.setattr(cli, 'operator_ok', lambda: True)
+        assert cli.main(args[:2]) == 3
+        assert m.ledger.snapshot('rcc') == before
+        capsys.readouterr()
+>       assert cli.main(args) == 0
+               ^^^^^^^^^^^^^^
+
+factory/python/tests/test_mission_capacity.py:280: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/cli.py:127: in main
+    actor = getpass.getuser()
+            ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def getuser():
+        """Get the username from the environment or password database.
+    
+        First try various environment variables, then the password
+        database.  This works on Windows as long as USERNAME is set.
+        Any failure to find a username raises OSError.
+    
+        .. versionchanged:: 3.13
+            Previously, various exceptions beyond just :exc:`OSError`
+            were raised.
+        """
+    
+        for name in ('LOGNAME', 'USER', 'LNAME', 'USERNAME'):
+            user = os.environ.get(name)
+            if user:
+                return user
+    
+        try:
+            import pwd
+            return pwd.getpwuid(os.getuid())[0]
+        except (ImportError, KeyError) as e:
+>           raise OSError('No username set in the environment') from e
+E           OSError: No username set in the environment
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/getpass.py:175: OSError
+___ test_actual_signature_scope_and_revocation_are_required_for_a_new_window ___
+
+mission = namespace(store=<forge_factory.afo.queue.Store object at 0x745ce1d112b0>, ledger=<forge_factory.afo.mission_ledger.Mis...-of-unknown/pytest-0/test_actual_signature_scope_an0/auth'), grant=<function mission.<locals>.grant at 0x745ce1c8b880>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x745ce1cea740>
+
+    def test_actual_signature_scope_and_revocation_are_required_for_a_new_window(mission, monkeypatch):
+        m=mission
+        key=m.root/"fixture_key"
+>       subprocess.run(["ssh-keygen","-q","-t","ed25519","-N","","-f",str(key)],check=True)
+
+factory/python/tests/test_mission_deadline.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', ...],), kwargs = {}
+process = <Popen: returncode: 255 args: ['ssh-keygen', '-q', '-t', 'ed25519', '-N', ''...>
+stdout = None, stderr = None, retcode = 255
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', '/mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/scratch/pytest-of-unknown/pytest-0/test_actual_signature_scope_an0/auth/fixture_key']' returned non-zero exit status 255.
+
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py:577: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+No user exists for uid 2001
+- generated xml file: /mnt/data/forge-c/production-local-014/deployment/qualification-mission-capacity-b713e35-v1/scratch/pytest.xml -
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_mission_capacity.py::test_real_public_signature_is_required_for_exact_document
+FAILED factory/python/tests/test_mission_capacity.py::test_authenticated_cli_requires_owner_account_and_reason
+FAILED factory/python/tests/test_mission_deadline.py::test_actual_signature_scope_and_revocation_are_required_for_a_new_window
+=================== 3 failed, 48 passed in 69.79s (0:01:09) ====================

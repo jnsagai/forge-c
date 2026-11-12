@@ -1,0 +1,41 @@
+{
+  "report": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa168-actual-20261104T223618Z/measurement.json",
+  "sha256": "04c50a6312ed30a5f0ade37827393a0cb7684777d76bbdf249009e295c0943ec",
+  "gates": {
+    "SWE.1": "PASS",
+    "SWE.2": "PASS",
+    "SWE.3": "PASS"
+  },
+  "effective_input_errors": [],
+  "cases": [
+    {
+      "label": "literal_legacy",
+      "declaration": {
+        "schema": "forge-c/swe4-wwdg-target-observation/1",
+        "ut": "UT-021",
+        "uspec": "USPEC-HAL-04-03",
+        "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+        "scenario": "wwdg-ewif-clear-v1"
+      },
+      "declaration_sha256": "05aa54e247a9c027d755d061223a76592c002b89b9b67eeb5b963fc1fa24c3c5",
+      "result": "REFUSED",
+      "error_type": "ObservationError",
+      "error": "TARGET_OBSERVATION_FROZEN_PREDICATE_UNSUPPORTED"
+    },
+    {
+      "label": "actual_frozen_row",
+      "declaration": {
+        "schema": "forge-c/swe4-wwdg-target-observation/1",
+        "ut": "UT-023",
+        "uspec": "USPEC-HAL-04-03",
+        "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+        "scenario": "wwdg-ewif-clear-v1"
+      },
+      "declaration_sha256": "49fa7d8f1da1756b4e13e65e420096cf503e93da7bcc7a89dc6381b9bec61823",
+      "result": "REFUSED",
+      "error_type": "ObservationError",
+      "error": "TARGET_OBSERVATION_SCOPE_OR_CASE_INVALID"
+    }
+  ],
+  "original_unchanged": true
+}

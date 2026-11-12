@@ -1,0 +1,101 @@
+{
+ "CAPA-074": {
+  "history": [
+   {
+    "at": "2026-10-31T12:05:06.573206Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[\"process-first-g3-packet-identity\"]",
+    "from_state": null,
+    "reason": "Process-first design EGM review 2026-10-31 (G3; docs/designs/forge-c-process-first-ornith-qwen.md, evidence/014-durable-local-autonomy/egm-pf-001): structured packet input_hash binds the model alias only, so checkpoints are reused across model digest/precision/reasoning/schema-mode/context changes; ",
+    "seq": 565,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T12:05:06.643887Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 566,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T12:05:06.769658Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-073 assigned",
+    "seq": 567,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T12:05:10.380122Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[\"reproducer-run:rr-331ac2f892a6be5a6498\", \"reproducer-run:rr-a050aa2227d99188e7bb\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 568,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T12:05:10.402256Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[\"git:876d75f638af..dc1dd0597dfc\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix dc1dd0597dfc (patch 9566 bytes)",
+    "seq": 569,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T12:10:02.074971Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[\"reproducer-run:rr-391a7ba6b1dc036d0cde\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-073 absent at dc1dd0597dfc",
+    "seq": 570,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T12:10:02.121207Z",
+    "capa_id": "CAPA-074",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 571,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-aef445e171ae16074afa5963ca442a8f6513447a",
+   "876d75f638af153ee5ecd3be4a638f40cf916521",
+   "dc1dd0597dfccc5c56161cd5cbb4af53e809fb3c",
+   "pd-31192ca1b8707be07d17"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<dc1dd0597dfc"
+   ],
+   "candidate_patch_sha256": "fc86737c3298c87697cecff4ac29a8d3a41983f9fd0fb9ddeccd4fcfe025154f",
+   "capa_id": "CAPA-074",
+   "created_at": "2026-10-31T12:05:06.573206Z",
+   "event_ids": [],
+   "incident_ids": [
+    "process-first-g3-packet-identity"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-073",
+   "reproducer_id": "RPR-073",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-331ac2f892a6be5a6498",
+    "reproducer-run:rr-a050aa2227d99188e7bb"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "structured.packet() hashes the packet dict, which names the model by alias and excludes the accounting block; the selected profile's digest, precision, reasoning, probed schema mode and context length are not hashed, so visit/inspector checkpoints keyed on input_hash (base_hash) cross model identities",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T12:10:02.121207Z"
+  }
+ }
+}

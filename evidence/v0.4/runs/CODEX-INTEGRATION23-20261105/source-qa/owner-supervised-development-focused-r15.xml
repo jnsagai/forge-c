@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="30" time="17.770" timestamp="2026-11-05T14:00:30.413274+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_default_unsigned_production_still_observe" time="0.059" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_explicit_owner_context_is_unaccepted_not_auth_ok" time="0.519" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request0]" time="0.504" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request1]" time="0.497" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request2]" time="0.502" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request3]" time="0.490" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forbidden_action_never_admitted" time="0.481" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[hash]" time="0.476" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[source]" time="0.475" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[epoch]" time="0.483" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[guardian]" time="0.465" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[private_mode]" time="0.478" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_retry_and_restart_never_reset_accounting" time="0.526" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_control_binding_requires_exact_document" time="0.543" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_agent_context_cannot_issue_record" time="0.472" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_role_request_ledger_and_nonce_integration" time="1.574" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_guardian_exit_between_reservation_and_effect_refuses_and_holds" time="1.073" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_wrong_nonce_and_changed_role_config_reserve_nothing" time="0.997" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_copied_forged_record_cannot_be_attested_by_real_guardian" time="0.490" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors" time="0.479" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_compiled_host_artifact_cannot_write_host_or_connect_control_socket" time="0.533" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_missing_scoped_backend_never_uses_plain_host_subprocess" time="0.479" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_default_placer_still_requires_signed_production_grant" time="0.491" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_native_stdio_config_explicitly_propagates_dev_confinement_marker" time="0.467" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_owner_development_uses_existing_placer_but_never_production_feed" time="0.879" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_private_pid_accepts_only_pinned_kernel_and_store_view" time="0.665"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 11, in &lt;module&gt;&#10;      assert D.current()['acceptance']=='UNACCEPTED'&#10;             ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 156, in current&#10;      instance = current_instance()&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py&quot;, line 22, in current_instance&#10;      instance = stack.serving_instance(stack.settings(profile))&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py&quot;, line 605, in serving_instance&#10;      raise Refused(&quot;SERVING_INSTANCE_REFERENCE_INVALID&quot;)&#10;  forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634210', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...fused(&quot;SERVING_INSTANCE_REFERENCE_INVALID&quot;)\nforge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388754...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_private_pid_accept0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75aadbb89320&gt;
+
+    def test_actual_private_pid_accepts_only_pinned_kernel_and_store_view(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch) as (record, instance, view):
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    assert not Path('/proc/'+str(record['guardian_pid'])).exists(), 'HOST_PROCESS_NOT_HIDDEN'
+    assert D.current()['acceptance']=='UNACCEPTED'
+    print('REAL_NESTED_PID_KERNEL_VIEW_PASS')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 11, in &lt;module&gt;
+E                 assert D.current()['acceptance']=='UNACCEPTED'
+E                        ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 156, in current
+E                 instance = current_instance()
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py", line 22, in current_instance
+E                 instance = stack.serving_instance(stack.settings(profile))
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py", line 605, in serving_instance
+E                 raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+E             forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634210', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...fused("SERVING_INSTANCE_REFERENCE_INVALID")\nforge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:\n').returncode
+
+factory/python/tests/test_owner_development_view.py:125: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_proc_mount_refuses_in_private_pid" time="0.674"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 10, in &lt;module&gt;&#10;      try:D.current()&#10;          ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 156, in current&#10;      instance = current_instance()&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py&quot;, line 22, in current_instance&#10;      instance = stack.serving_instance(stack.settings(profile))&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py&quot;, line 605, in serving_instance&#10;      raise Refused(&quot;SERVING_INSTANCE_REFERENCE_INVALID&quot;)&#10;  forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 12, in &lt;module&gt;&#10;      assert e.code=='OWNER_DEVELOPMENT_VIEW_PROC_IDENTITY_CHANGED',e.code&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError: SERVING_INSTANCE_REFERENCE_INVALID&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634219', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388754...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_fake_proc_mount_re0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_fake_proc_mount_re0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75aadbb508a0&gt;
+
+    def test_actual_fake_proc_mount_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch, fake_proc=True) as (_, instance, _):
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    try:D.current()
+    except Refused as e:
+     assert e.code=='OWNER_DEVELOPMENT_VIEW_PROC_IDENTITY_CHANGED',e.code
+     print('FAKE_PROC_REFUSED')
+    else:raise AssertionError('FAKE_PROC_ACCEPTED')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 10, in &lt;module&gt;
+E                 try:D.current()
+E                     ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 156, in current
+E                 instance = current_instance()
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py", line 22, in current_instance
+E                 instance = stack.serving_instance(stack.settings(profile))
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py", line 605, in serving_instance
+E                 raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+E             forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:
+E             
+E             During handling of the above exception, another exception occurred:
+E             
+E             Traceback (most recent call last):
+E               File "&lt;string&gt;", line 12, in &lt;module&gt;
+E                 assert e.code=='OWNER_DEVELOPMENT_VIEW_PROC_IDENTITY_CHANGED',e.code
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             AssertionError: SERVING_INSTANCE_REFERENCE_INVALID
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634219', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode
+
+factory/python/tests/test_owner_development_view.py:142: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_socket_inode_refuses_in_private_pid" time="0.675"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 10, in &lt;module&gt;&#10;      try:D.current()&#10;          ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 156, in current&#10;      instance = current_instance()&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py&quot;, line 22, in current_instance&#10;      instance = stack.serving_instance(stack.settings(profile))&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py&quot;, line 605, in serving_instance&#10;      raise Refused(&quot;SERVING_INSTANCE_REFERENCE_INVALID&quot;)&#10;  forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 12, in &lt;module&gt;&#10;      assert e.code=='OWNER_DEVELOPMENT_VIEW_SOCKET_NODE_REBOUND',e.code&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError: SERVING_INSTANCE_REFERENCE_INVALID&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634227', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388754...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_fake_socket_inode_0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_actual_fake_socket_inode_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75aad9ae82f0&gt;
+
+    def test_actual_fake_socket_inode_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch, fake_socket=True) as (_, instance, _):
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    try:D.current()
+    except Refused as e:
+     assert e.code=='OWNER_DEVELOPMENT_VIEW_SOCKET_NODE_REBOUND',e.code
+     print('FAKE_SOCKET_REFUSED')
+    else:raise AssertionError('FAKE_SOCKET_ACCEPTED')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 10, in &lt;module&gt;
+E                 try:D.current()
+E                     ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 156, in current
+E                 instance = current_instance()
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py", line 22, in current_instance
+E                 instance = stack.serving_instance(stack.settings(profile))
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py", line 605, in serving_instance
+E                 raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+E             forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:
+E             
+E             During handling of the above exception, another exception occurred:
+E             
+E             Traceback (most recent call last):
+E               File "&lt;string&gt;", line 12, in &lt;module&gt;
+E                 assert e.code=='OWNER_DEVELOPMENT_VIEW_SOCKET_NODE_REBOUND',e.code
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             AssertionError: SERVING_INSTANCE_REFERENCE_INVALID
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634227', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode
+
+factory/python/tests/test_owner_development_view.py:159: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_copied_store_even_with_exact_authority_rows_cannot_replace_canonical" time="0.471" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_guardian_shutdown_refuses_private_pid_without_new_authority" time="0.624"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 10, in &lt;module&gt;&#10;      try:D.current()&#10;          ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 156, in current&#10;      instance = current_instance()&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py&quot;, line 22, in current_instance&#10;      instance = stack.serving_instance(stack.settings(profile))&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py&quot;, line 605, in serving_instance&#10;      raise Refused(&quot;SERVING_INSTANCE_REFERENCE_INVALID&quot;)&#10;  forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 12, in &lt;module&gt;&#10;      assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError: SERVING_INSTANCE_REFERENCE_INVALID&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634236', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388754...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-119/test_guardian_shutdown_refuses0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75aad9e66cf0&gt;
+
+    def test_guardian_shutdown_refuses_private_pid_without_new_authority(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch) as (_, instance, _):
+            D.close_guardian(supervised["ref"])
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    try:D.current()
+    except Refused as e:
+     assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code
+     print('GUARDIAN_CLOSED_REFUSED')
+    else:raise AssertionError('DEAD_GUARDIAN_ACCEPTED')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 10, in &lt;module&gt;
+E                 try:D.current()
+E                     ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 156, in current
+E                 instance = current_instance()
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/provider_recovery.py", line 22, in current_instance
+E                 instance = stack.serving_instance(stack.settings(profile))
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/lrtx/stack.py", line 605, in serving_instance
+E                 raise Refused("SERVING_INSTANCE_REFERENCE_INVALID")
+E             forge_factory.afo.durable.Refused: SERVING_INSTANCE_REFERENCE_INVALID:
+E             
+E             During handling of the above exception, another exception occurred:
+E             
+E             Traceback (most recent call last):
+E               File "&lt;string&gt;", line 12, in &lt;module&gt;
+E                 assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             AssertionError: SERVING_INSTANCE_REFERENCE_INVALID
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634236', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: SERVING_INSTANCE_REFERENCE_INVALID\n').returncode
+
+factory/python/tests/test_owner_development_view.py:192: AssertionError</failure></testcase></testsuite></testsuites>

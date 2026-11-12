@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/native-permission-runner-probe/1",
+  "synthetic_fixture": true,
+  "rows": [
+    {
+      "mapping": "--map-root-user",
+      "exit_code": 0,
+      "stdout": "{\"uid\": 0, \"readonly_file_writable\": true, \"cap_eff\": [\"CapEff:\\t000001ffffffffff\"]}\n",
+      "stderr": ""
+    },
+    {
+      "mapping": "--map-current-user",
+      "exit_code": 0,
+      "stdout": "{\"uid\": 1000, \"readonly_file_writable\": false, \"cap_eff\": [\"CapEff:\\t0000000000000000\"]}\n",
+      "stderr": ""
+    }
+  ],
+  "production_mutation": false,
+  "model_requests": 0
+}

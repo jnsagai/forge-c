@@ -1,0 +1,3 @@
+234b05b2138264f8fb263c3205e85f4c290e8afe5067e280a4f6f90cdac5696b  /mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server
+NVIDIA RTX 6000 Ada Generation, 49140 MiB, 580.178.04
+fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61

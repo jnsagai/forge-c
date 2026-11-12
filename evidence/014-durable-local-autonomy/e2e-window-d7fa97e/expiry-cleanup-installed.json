@@ -1,0 +1,1 @@
+{"status": "ONE_SHOT_POLICY_EXPIRY_CLEANUP_INSTALLED", "deadline_utc": "2026-10-28T16:29:15Z", "script_sha256": "e6fa5439419815b536b5c3e0eba55635865196815cd91af6aa4b7bc979dc492b", "worker_signals": 0, "generation_requests": 0, "scope": "EXTERNAL_ADMINISTRATIVE_CLEANUP_NOT_AN_EXECUTION_SCHEDULER"}

@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/root-partial-cleanup-review/1",
+  "helper_sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33",
+  "expectation_sha256": "07bf5790f02faccbb68ada34fbff224e6515b81ddbb27348c52260bde2f75322",
+  "private_control_report_sha256": "ae062ed887da2623cebfca5b7f77714849b735a310e98f1c197903dfab5404f4",
+  "review": "NO_BLOCKER_FOUND_FOR_EXACT_STOP_ONLY_SCOPE",
+  "execution": "NOT_RUN",
+  "no_live_effect_authorization_yet": "Wait for final source FIX qualification and fully reviewed ready metadata/starter; root must run readonly full guards before actual cleanup",
+  "reviewed_invariants": [
+    "Strict original issuer kernel lifetime ended; unreadable refuses",
+    "Original canonical issuance INTENT and UNKNOWN SHA rows preserved",
+    "Whole non-independent ledger and full native history preserved",
+    "Intent GPU stack ACT serialization",
+    "Exact original Fabro and holder pidfd SIGTERM only; waiter natural exit; no escalation",
+    "No D.current on dead issuer; no new work authority; no canonical writes by cleanup",
+    "Bound holder.pid unlink only after all original lifetimes and namespace quiet",
+    "Fresh private evidence bound final source887; MONOTONIC and BOOTTIME freshness"
+  ],
+  "limitations": "Private kernel/SQL controls and source review, not yet an actual Omniverse cleanup or driver run"
+}

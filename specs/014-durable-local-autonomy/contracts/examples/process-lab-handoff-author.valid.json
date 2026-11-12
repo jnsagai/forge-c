@@ -1,0 +1,69 @@
+{
+  "schema": "forge-c/process-handoff/1",
+  "experiment_id": "crc-idr-a1",
+  "driver": "crc-idr",
+  "order_id": "afo-0123456789abcdef",
+  "seq": 1,
+  "role": "AUTHOR",
+  "process": "SWE.1",
+  "job_identity": {
+    "model_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "baseline": {
+    "id": "BL-SWE.1-001",
+    "baseline_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "gate_status": "PASSED",
+  "inputs": [
+    {
+      "path": "inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "role": "reference_manual_crc_chapter"
+    }
+  ],
+  "files": [
+    {
+      "name": "lab-handoff--software_requirements.md",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "artifact"
+    },
+    {
+      "name": "lab-handoff--group-CRC_IDR.json",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "kind": "group"
+    },
+    {
+      "name": "lab-handoff--scope.json",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "scope"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "SWR-001",
+      "task": "requirements:CRC_IDR",
+      "key": "idr-write",
+      "statement_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_refs": [
+        "RM0486 p.1172"
+      ],
+      "source_kind": "RM",
+      "criterion": "Verification: host test writes 0xA5A5A5A5 and IDR reads back 0xA5A5A5A5.",
+      "verified_by": null,
+      "inspector_outcome": "UNINSPECTED_ROLE"
+    }
+  ],
+  "ids": {
+    "requirements:CRC_IDR/idr-write": "SWR-001"
+  },
+  "retired": [],
+  "trace": [
+    {
+      "swr": "SWR-001",
+      "test_id": "UT-001"
+    }
+  ],
+  "gaps": [],
+  "downstream_constraints": [],
+  "strict_release_status": "NOT_APPLICABLE_PROCESS_LAB"
+}

@@ -1,0 +1,124 @@
+{
+  "runtime_source_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
+  "qualified_base_revision": "3bc1f10e41c24afb3db30f4b243e35df063cb721",
+  "cohorts": [
+    {
+      "name": "language",
+      "source_revision": "3bc1f10e41c24afb3db30f4b243e35df063cb721",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-vv",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-language-v1/repo",
+        "factory/python/tests/test_startup_requirement_language.py",
+        "factory/python/tests/test_lrtx_swe1.py",
+        "factory/python/tests/test_lrtx_startup_refutation_scope.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-language-v1/scratch/pytest.xml"
+      ],
+      "pytest_exit_code": 0,
+      "summary": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 46
+      },
+      "model_requests": 0,
+      "operator_epoch": 65
+    },
+    {
+      "name": "product",
+      "source_revision": "3bc1f10e41c24afb3db30f4b243e35df063cb721",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-vv",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-product-v1/repo",
+        "factory/python/tests/test_demonstration_repair.py",
+        "factory/python/tests/test_pipeline_demonstration.py",
+        "factory/python/tests/test_development_diagnostics.py",
+        "factory/python/tests/test_qm_development.py",
+        "factory/python/tests/test_layer_split.py",
+        "factory/python/tests/test_aspice_development.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-product-v1/scratch/pytest.xml"
+      ],
+      "pytest_exit_code": 0,
+      "summary": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 92
+      },
+      "model_requests": 0,
+      "operator_epoch": 65
+    },
+    {
+      "name": "measurement",
+      "source_revision": "3bc1f10e41c24afb3db30f4b243e35df063cb721",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-vv",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-measurement-v1/repo",
+        "factory/python/tests/test_simulation_performance_authored.py",
+        "factory/python/tests/test_simulation_performance.py",
+        "factory/python/tests/test_sim_renode.py",
+        "factory/python/tests/test_layer_split.py",
+        "factory/python/tests/test_peripheral_sim.py",
+        "factory/python/tests/test_lrtx_swe5.py",
+        "factory/python/tests/test_lrtx_swe6.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-qm-bounded-repair-measurement-v1/scratch/pytest.xml"
+      ],
+      "pytest_exit_code": 0,
+      "summary": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 85
+      },
+      "model_requests": 0,
+      "operator_epoch": 65
+    },
+    {
+      "name": "launch-integrity",
+      "source_revision": "899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-vv",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "/mnt/data/forge-c/production-local-014/deployment/qualification-launch-integrity-899865d-v1/repo",
+        "factory/python/tests/test_t005_t006_agents_skills.py",
+        "factory/python/tests/test_local_stack_toolchain_path.py",
+        "factory/python/tests/test_lrtx_profile.py::test_stack_environment_inherits_nothing_from_the_existing_deployment",
+        "factory/python/tests/test_lrtx_stack_cli.py",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-launch-integrity-899865d-v1/scratch/pytest.xml"
+      ],
+      "pytest_exit_code": 0,
+      "summary": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 17
+      },
+      "model_requests": 0,
+      "operator_epoch": 69
+    }
+  ],
+  "qualification_claim": "deterministic/integration only, no local-model capability/product/availability acceptance",
+  "formal_tasks_completed_this_increment": []
+}

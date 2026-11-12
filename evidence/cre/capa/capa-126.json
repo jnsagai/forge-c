@@ -1,0 +1,101 @@
+{
+ "CAPA-126": {
+  "history": [
+   {
+    "at": "2026-11-03T10:45:00.404385Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[\"crchal-swe1-prompt-rcc-timeout\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL SWE.1 L26: the SWE.1 HAL prompt asked a no-wait HAL for a 1000-iteration timeout bound (spurious SWR-018)",
+    "seq": 931,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T10:45:00.433395Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 932,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T10:45:00.557456Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-126 assigned",
+    "seq": 933,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T10:45:04.749359Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[\"reproducer-run:rr-8bc00755ea141e859caf\", \"reproducer-run:rr-6ddc6b4b2d603b888764\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 934,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T10:45:04.788238Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[\"git:454690a5fdd5..c5a79c7a8091\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix c5a79c7a8091 (patch 5443 bytes)",
+    "seq": 935,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T10:48:35.197038Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[\"reproducer-run:rr-ad167caae21012c62547\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-126 absent at 61145f64f253",
+    "seq": 936,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T10:48:35.211650Z",
+    "capa_id": "CAPA-126",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 937,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-5a2aa2e04a3f895a2aaf68719d75c036518399dd",
+   "454690a5fdd5ff116dad4a2fbe52e0600a607d2b",
+   "c5a79c7a80914c15429edc7ff44379b224f842cd",
+   "pd-f321e708830747638e92"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<c5a79c7a8091"
+   ],
+   "candidate_patch_sha256": "54a3e951f558f1261142834e166b0027739ae64e78b01fe017e4e418cf0f5cc3",
+   "capa_id": "CAPA-126",
+   "created_at": "2026-11-03T10:45:00.404385Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-swe1-prompt-rcc-timeout"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-126",
+   "reproducer_id": "RPR-126",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-8bc00755ea141e859caf",
+    "reproducer-run:rr-6ddc6b4b2d603b888764"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T10:48:35.211650Z"
+  }
+ }
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "forge-c/014-operation-binding-preparation/1",
+  "observed_at": 1793119916.06703,
+  "host": "omniverse2",
+  "scope": "READ_ONLY_EXISTING_THREE_ST3_WORKSPACES",
+  "status": "BLOCKED",
+  "rows": [
+    {
+      "run": "WWDG-LL-st301",
+      "source_manifest_sha256": "59b903d93c4dc684c649e0424fbc5d3844e198676757119815102fe67ce8ba81",
+      "durable_binding_exists": false,
+      "recorded_profile": null,
+      "recorded_model": null,
+      "package_status": "BLOCKED"
+    },
+    {
+      "run": "RNG-LL-st301",
+      "source_manifest_sha256": "97ba18d583b99b383982bbd92f5ed09ead594002e82f7cb8df0386159aae2167",
+      "durable_binding_exists": false,
+      "recorded_profile": null,
+      "recorded_model": null,
+      "package_status": "BLOCKED"
+    },
+    {
+      "run": "LPTIM-LL-st301",
+      "source_manifest_sha256": "b8a1908dd0afa19a378a33c40011f60f878d5028e73653b52234aef067a389f1",
+      "durable_binding_exists": false,
+      "recorded_profile": null,
+      "recorded_model": null,
+      "package_status": "BLOCKED"
+    }
+  ],
+  "blockers": [
+    "ST3_RUNS_ARE_NORMAL_WORKORDERS_WITHOUT_DURABLE_AFO_PRODUCT_BINDINGS",
+    "CURRENT_THREE_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "INDEPENDENT_ALL_CHANNEL_HOST_AUDIT_PREREQUISITES_MISSING",
+    "REBOOT_AND_AUTHORITATIVE_MOUNT_LOSS_FIXTURES_NOT_AVAILABLE"
+  ],
+  "campaign_frozen": false,
+  "new_model_requests": 0,
+  "authority_renewed": false,
+  "deployment": "NOT_ACTIVATED"
+}

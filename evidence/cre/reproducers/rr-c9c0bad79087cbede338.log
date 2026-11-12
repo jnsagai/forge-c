@@ -1,0 +1,4 @@
+[{"mode": "deadline", "backend": "bubblewrap", "controlled_capacity": 2, "owned_descendant_count": 8, "heartbeat_after_boundary_s": -0.012, "all_observed_owned_children_quiescent": true, "worker_returncode": -9, "queue_result_accepted": false, "fixture_only": true, "pass": true}, {"mode": "intent", "backend": "bubblewrap", "controlled_capacity": 2, "owned_descendant_count": 8, "heartbeat_after_boundary_s": 0.042, "all_observed_owned_children_quiescent": true, "worker_returncode": -9, "queue_result_accepted": false, "fixture_only": true, "pass": true}]
+SYMPTOM_ABSENT
+
+--- stderr ---

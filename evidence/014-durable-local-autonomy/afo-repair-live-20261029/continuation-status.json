@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-29T18:45:47.468546Z",
+  "trial_id": "F014-AFO-MCP-ROOT-REPAIR-20261029",
+  "source_revision": "3f1ef1b734f72e868a75488d980a2b4ac7c63998",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 36,
+    "effective_stop": false
+  },
+  "deadline_utc": "2026-10-29T22:25:58Z",
+  "order": {
+    "order_id": "afo-2cd016a83d71c57d",
+    "state": "WAITING_EXTERNAL_CHANGE",
+    "terminal_reason": "HISTORICAL_FACTORY_CODE_DEFECT_REPLAY"
+  },
+  "original_order": {
+    "order_id": "afo-3b30588ec359edad",
+    "state": "BLOCKED",
+    "terminal_reason": "INITIAL_JOB_TOKEN_ENVELOPE_EXHAUSTED"
+  },
+  "jobs": [
+    {
+      "job_id": "afo-agent-53b65adbaf6e80cb0886ded1",
+      "state": "RUNNING",
+      "role": "afo-factory-maintainer",
+      "model": "qwen3.8:27b-q8_0",
+      "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "profile": "local-rtx-v2-omniverse2-q38-afo-repair-mtp",
+      "factory_revision": {
+        "commit": "3f1ef1b734f72e868a75488d980a2b4ac7c63998",
+        "dirty": false,
+        "branch": "HEAD",
+        "basis": "recorded_at_launch"
+      },
+      "run_id": "01M64FPV6Y2DYK3BKRRJQSR0NC",
+      "receipt_id": null,
+      "reserved_tokens": 1000000,
+      "reported_tokens": null,
+      "deadline_epoch": 1793313868.297432,
+      "review_state": null,
+      "error": null,
+      "request_states": {
+        "SENT": 1
+      },
+      "candidate_uncommitted_diff_stat": "",
+      "candidate_submission_present": false,
+      "execution": {
+        "admission_state": "NATIVE_ACCEPTED",
+        "authorization_state": "VALID",
+        "cancel_attempts": 0,
+        "cancellation_state": "NOT_REQUESTED",
+        "execution_id": "execution-b0d8aab5f6d7ec21bd3120fc",
+        "execution_liveness": "LIVE",
+        "identity_state": "CONFIRMED",
+        "job_id": "afo-agent-53b65adbaf6e80cb0886ded1",
+        "last_cancel_error": null,
+        "last_reconciled_at": "2026-10-29T18:45:41.322823Z",
+        "launch_nonce": "396f0337bb9cfa3394ce170e7858f216",
+        "lease_epoch": 31,
+        "mission_id": "F014-IDR-M1-HIGH-20261028",
+        "native_run_ids": [
+          "01M64FPV6Y2DYK3BKRRJQSR0NC"
+        ],
+        "outcome_evidence_ref": null,
+        "quiescence_evidence_ref": null,
+        "resource_lease": "HELD",
+        "revision": 3,
+        "schema_version": "1.0",
+        "task_outcome": "ACTIVE",
+        "terminal_reason": null
+      },
+      "verification_state": null
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793312758,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      },
+      {
+        "old_deadline": 1793297139.0,
+        "deadline_epoch": 1793312758,
+        "authorization_ref": "AUTH-014-AFO-REPAIR-TIME-20261029-V1",
+        "accepted_at": "2026-10-29T18:28:19.647876Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 2,
+    "requests": 354,
+    "tools": 596,
+    "corrections": 0,
+    "charged_tokens": 401131072,
+    "usage_unknown": true,
+    "unique_executions": 6,
+    "unbounded_historical_usage": false
+  },
+  "proposals": [],
+  "read_only": true,
+  "model_requests_by_observer": 0,
+  "independent_frozen_candidate_verification": "NOT_RUN"
+}

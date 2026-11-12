@@ -1,0 +1,48 @@
+{
+  "schema": "forge-c/014-wwdg-client-regression/1",
+  "source_revision": "a74baa91f15383012b997461c551b1e1c066e279",
+  "source_start_end": "CLEAN_GIT_WORKTREE",
+  "results": {
+    "affected": {
+      "tests": 257,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 256,
+      "seconds": 433.012,
+      "junit_sha256": "c14ffd8bbc6ab3ec81d8bc9ac002f73e341c53a1ef24ac97d85c40327ae58543",
+      "skip_reasons": [
+        "local SPI run state not present"
+      ]
+    },
+    "release_and_legacy_gates": {
+      "tests": 29,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 29,
+      "seconds": 9.822,
+      "junit_sha256": "770975c9374f42adb21391c8ee98b817922c731afb39adb5f4ea2d6ef3f18eea",
+      "skip_reasons": []
+    },
+    "omniverse2": {
+      "tests": 35,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 35,
+      "seconds": 1.83,
+      "junit_sha256": "7170de25d1c2c85e4e3c2ac3144c76686cc6924ec5ade7dbcff783024a308ba5",
+      "skip_reasons": []
+    }
+  },
+  "root_private_product_regression": "FAIL_SEPARATELY_RECORDED_IN_ENGINE_QUALIFICATION",
+  "new_model_requests": 0,
+  "qualification_limit": "SCOPED_IMPLEMENTATION_AND_NATIVE_ENGINE_NOT_DRIVER_READY_OR_AUTONOMY",
+  "retained_earlier_failures": [
+    "test pin omitted schema; native engine not reached",
+    "brownfield check correctly refused missing PlantUML; corrected environment passed",
+    "exact command selected nonexistent test_swe1_semantic glob; no tests collected",
+    "qualification learning attempted unsupported SUCCESS label; guarded refusal followed by no-redispatch factual PASS capture"
+  ]
+}

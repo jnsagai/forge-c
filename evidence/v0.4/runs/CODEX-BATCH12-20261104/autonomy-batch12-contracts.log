@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "schemas": 15,
+  "fixtures": 59,
+  "positive": 23,
+  "negative": 36,
+  "errors": []
+}

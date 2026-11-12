@@ -1,0 +1,1 @@
+nsenter: reassociate to namespace 'ns/net' failed: Operation not permitted

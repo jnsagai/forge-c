@@ -1,0 +1,101 @@
+{
+ "CAPA-130": {
+  "history": [
+   {
+    "at": "2026-11-03T15:32:15.537510Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[\"hal-provided-st-ll-cppcheck\"]",
+    "from_state": null,
+    "reason": "HAL on ST LL: cppcheck findings inside the provided ST header counted against the HAL",
+    "seq": 959,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T15:32:15.567379Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 960,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T15:32:15.721010Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-130 assigned",
+    "seq": 961,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T15:32:22.315513Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[\"reproducer-run:rr-a158d06240e76a90738a\", \"reproducer-run:rr-5ec2d79a7b0799e63d6c\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 962,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T15:32:22.372032Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[\"git:90ff4f4abc5e..b46867263dd4\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix b46867263dd4 (patch 9542 bytes)",
+    "seq": 963,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T15:36:31.674178Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[\"reproducer-run:rr-c121987920625c75ed98\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-130 absent at 2e4ee28898ff",
+    "seq": 964,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T15:36:31.708286Z",
+    "capa_id": "CAPA-130",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 965,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-dc8e000304bdb16a2a109951627488627a60363b",
+   "90ff4f4abc5e670b470781a8c5c750639193ddf5",
+   "b46867263dd40c0ff65f6dac36352784064519c3",
+   "pd-c74f74aa09f76c473a90"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<b46867263dd4"
+   ],
+   "candidate_patch_sha256": "88eca67ac54d0f6560db0ade6c63b1e9f2e65e6b28dfa1ee7ff9e297a1a8a60a",
+   "capa_id": "CAPA-130",
+   "created_at": "2026-11-03T15:32:15.537510Z",
+   "event_ids": [],
+   "incident_ids": [
+    "hal-provided-st-ll-cppcheck"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-130",
+   "reproducer_id": "RPR-130",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-a158d06240e76a90738a",
+    "reproducer-run:rr-5ec2d79a7b0799e63d6c"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T15:36:31.708286Z"
+  }
+ }
+}

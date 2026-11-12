@@ -1,0 +1,105 @@
+{
+  "schema": "forge-c/native-cpu-qualification/1",
+  "source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "local": {
+    "cohort41": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "41",
+      "time": "197.299",
+      "timestamp": "2026-10-29T16:43:38.767162+00:00",
+      "hostname": "master"
+    },
+    "cohort89": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "89",
+      "time": "19.191",
+      "timestamp": "2026-10-29T17:07:52.454578+00:00",
+      "hostname": "master"
+    },
+    "distinct_passes": 130
+  },
+  "native": {
+    "cohort41": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "41",
+      "time": "208.095",
+      "timestamp": "2026-10-29T17:00:24.977191+00:00",
+      "hostname": "omniverse2"
+    },
+    "cohort89": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "89",
+      "time": "276.914",
+      "timestamp": "2026-10-29T17:12:36.337646+00:00",
+      "hostname": "omniverse2"
+    },
+    "distinct_passes": 130,
+    "initial_cohort89": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "89",
+      "time": "274.860",
+      "timestamp": "2026-10-29T17:05:04.456995+00:00",
+      "hostname": "omniverse2"
+    },
+    "initial_failure": "real model-free Conductor correctly refused uninitialized isolated data root; no volume guard was disabled",
+    "correction": "existing host.init on verification-only data root; actual UUID/root/fsync preflight PASS; active production sentinel unchanged"
+  },
+  "real_frozen_diagrams": {
+    "source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+    "root": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-stop-3015e47-v4/data",
+    "jar": "/mnt/data/forge-c/production-local-014/deployment/qualification-swe6-stop-3015e47-v4/data/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+    "jar_sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d",
+    "java": "/usr/bin/java",
+    "cases": [
+      {
+        "path": "SWU-LL-01.puml",
+        "sha256": "f57d475219464d8821d643d71310caad8a08126993d90b673c1787f60991f6ba",
+        "rendered": true,
+        "detail": ""
+      },
+      {
+        "path": "SWU-LL-02.puml",
+        "sha256": "af4e98b4114ee9d19801d8831d0adc4acff67575fe9ff53cdb5754e86c8b9599",
+        "rendered": true,
+        "detail": ""
+      }
+    ],
+    "generation_requests": 0,
+    "production_changed": false,
+    "scope": "Actual failed diagram syntax/render only; not new product inspection or Qwen capability",
+    "exit_code": 0
+  },
+  "same_test_ids_per_host": true,
+  "generation_requests": 0,
+  "operator_resume": false,
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "deployed": false,
+  "mission_unchanged": true,
+  "operator": {
+    "mode": "STOPPED",
+    "epoch": 33,
+    "effective_stop": true
+  },
+  "full_qwen_pipeline": "NOT_RUN_FOR_CANDIDATE; OWNER_STOPPED",
+  "product_acceptance": "NOT_ESTABLISHED",
+  "model_capability": "NOT_QUALIFIED_BY_CPU_FIXTURES",
+  "learning_benefit": "NOT_MEASURED",
+  "operational_availability": "NOT_QUALIFIED",
+  "guard_limits": "8CPU affinity/nice10/private PID+network namespaces;600s total/480s pytest; monitored STOPPED epoch33 and quiescence; forced stop-race injection NOT_RUN",
+  "next_required": "New explicit owner resume; exact candidate full-role scope/admission, applicable finite authorization/deadline and model/resource preflight; then same-mission delivery without resetting charges or relabelling old failures"
+}

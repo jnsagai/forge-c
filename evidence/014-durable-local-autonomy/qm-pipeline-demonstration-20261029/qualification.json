@@ -1,0 +1,35 @@
+{
+  "schema": "forge-c/qm-pipeline-demonstration-qualification/1",
+  "source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+  "execution_policy": "qm-pipeline-demonstration-v1",
+  "tests": {
+    "local": {
+      "passed": 16,
+      "skipped": 0,
+      "duration_seconds": 106.918
+    },
+    "omniverse2": {
+      "passed": 16,
+      "skipped": 0,
+      "duration_seconds": 101.166
+    }
+  },
+  "native_graph_validation": "PASS",
+  "native_nodes": 14,
+  "captured_bodies": 56,
+  "largest_conservative_reservation": 77481,
+  "context_limit": 131072,
+  "model_requests": 0,
+  "production_mutated": false,
+  "grant_signatures_created": 0,
+  "product_acceptance": "NOT_ACCEPTED_DEMONSTRATION_ONLY",
+  "quality_failures_stop_control_flow": false,
+  "actual_verdicts_preserved": true,
+  "scope_sha256": "252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0",
+  "deadline_utc": "2026-10-29T18:05:39Z",
+  "historical_spend_reset": false,
+  "local_outcomes": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen",
+  "collector": "ACTIVE_READ_ONLY_60_SECOND_POLL; FINITE_UNTIL_18:35:39UTC",
+  "formal_progress": "30/58 unchanged; IE-T001\u2013007 complete, IE-T008 unaccepted, IE-T009/M2\u2013M5 unrun",
+  "live_demonstration_at_qualification_checkpoint": "NOT_RUN; EXACT_SIGNING_ACTIVATION_APPROVAL_PENDING"
+}

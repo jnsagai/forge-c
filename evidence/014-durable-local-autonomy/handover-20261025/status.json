@@ -1,0 +1,408 @@
+{
+  "schema": "forge-c/014-claude-transfer/1",
+  "implementation_revision": "4f954e2ed752c0c69b71d86227959076bac4d696",
+  "completed_tasks": [
+    "DA-T001",
+    "DA-T002",
+    "DA-T003",
+    "DA-T006",
+    "DA-T008",
+    "DA-T009",
+    "DA-T011",
+    "DA-T014",
+    "DA-T015",
+    "DA-T020",
+    "DA-T022",
+    "DA-T023",
+    "DA-T030",
+    "DA-T037",
+    "DA-T038",
+    "DA-T039",
+    "DA-T043",
+    "DA-T044",
+    "DA-T045",
+    "DA-T047",
+    "DA-T048",
+    "DA-T051"
+  ],
+  "feature_complete": false,
+  "new_native_qwen_requests": 0,
+  "tests": [
+    {
+      "label": "provider-24be359",
+      "invocation": {
+        "git_head": "24be3592086cb6273097b21de19262b51b98b489",
+        "start_dirty": "",
+        "started_at": "2026-10-25T15:02:09.292556+00:00",
+        "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/native-boundary-controls",
+        "umask": "0022",
+        "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
+        "private_fixture_provenance": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fixture-provenance.json",
+        "results": [
+          {
+            "label": "core",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_da014_integration.py",
+              "factory/python/tests/test_da014_isolation.py",
+              "factory/python/tests/test_da014_learning.py",
+              "factory/python/tests/test_da014_maintenance.py",
+              "factory/python/tests/test_da014_protocol.py",
+              "factory/python/tests/test_da014_protocol_faults.py",
+              "factory/python/tests/test_da014_provider_process.py",
+              "factory/python/tests/test_da014_provider_recovery.py",
+              "factory/python/tests/test_da014_qualification.py",
+              "factory/python/tests/test_da014_qualification_inputs.py",
+              "factory/python/tests/test_da014_qualification_reservations.py",
+              "factory/python/tests/test_afo_local_autonomy.py",
+              "factory/python/tests/test_afo_m0_audit.py",
+              "factory/python/tests/test_afo_m0_contracts_status.py",
+              "factory/python/tests/test_afo_m0_policy_authz.py",
+              "factory/python/tests/test_afo_m1_services.py",
+              "factory/python/tests/test_afo_m2_queue.py",
+              "factory/python/tests/test_afo_m3_reconcile.py",
+              "factory/python/tests/test_afo_m4_recovery.py",
+              "factory/python/tests/test_afo_m5_maintainer.py",
+              "factory/python/tests/test_afo_m6_operations.py",
+              "factory/python/tests/test_afo_m7_readiness.py",
+              "factory/python/tests/test_afo_m8_acceptance.py",
+              "factory/python/tests/test_m5_lessons.py",
+              "factory/python/tests/test_inspection_lessons.py",
+              "factory/python/tests/test_lrtx_profile.py",
+              "factory/python/tests/test_lrtx_v2_profile.py",
+              "factory/python/tests/test_llm_gateway.py",
+              "factory/python/tests/test_acp_gate.py",
+              "factory/python/tests/test_acp_proxy.py",
+              "factory/python/tests/test_t009_inspection.py",
+              "factory/python/tests/test_t009_workflow_gates.py",
+              "factory/python/tests/test_t005_t006_agents_skills.py",
+              "factory/python/tests/test_brownfield_resume.py",
+              "factory/python/tests/test_bubblewrap_confinement.py",
+              "factory/python/tests/test_cre_d7_isolation.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-24be359-core",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-24be359-core.xml"
+            ],
+            "started_at": "2026-10-25T15:02:09.292664+00:00",
+            "exit_code": 0,
+            "ended_at": "2026-10-25T15:06:14.004148+00:00"
+          },
+          {
+            "label": "release",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_m7_governance_release.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-24be359-release",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-24be359-release.xml"
+            ],
+            "started_at": "2026-10-25T15:06:14.123400+00:00",
+            "exit_code": 0,
+            "ended_at": "2026-10-25T15:06:26.312765+00:00"
+          }
+        ],
+        "end_dirty": "",
+        "end_head": "24be3592086cb6273097b21de19262b51b98b489"
+      },
+      "invocation_sha256": "b851a01787c5e1231046309d4c26eb2dac68e87ecefecfeee0f3d9b7a00e30fe",
+      "junit": [
+        {
+          "file": "provider-24be359-core.xml",
+          "sha256": "0f44daac18bf50ae9ca06017f9bb5bc60b1a117835e427049a29138b84f9eeba",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "1",
+            "tests": "493",
+            "time": "243.773",
+            "timestamp": "2026-10-25T15:02:09.492039+00:00",
+            "hostname": "master"
+          }
+        },
+        {
+          "file": "provider-24be359-release.xml",
+          "sha256": "5d15ba031656a2968cdc8bc7b321991f9afdac7e6cd8277711f6eedd40a6c093",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "13",
+            "time": "11.857",
+            "timestamp": "2026-10-25T15:06:14.317805+00:00",
+            "hostname": "master"
+          }
+        }
+      ]
+    },
+    {
+      "label": "provider-354b206",
+      "invocation": {
+        "git_head": "354b206d9fe14e3d6d4414cf81a85cb05d1a01c3",
+        "start_dirty": "",
+        "started_at": "2026-10-25T15:21:00.907605+00:00",
+        "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/native-admission-followup",
+        "umask": "0022",
+        "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
+        "private_fixture_provenance": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fixture-provenance.json",
+        "results": [
+          {
+            "label": "core",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_da014_integration.py",
+              "factory/python/tests/test_da014_isolation.py",
+              "factory/python/tests/test_da014_learning.py",
+              "factory/python/tests/test_da014_maintenance.py",
+              "factory/python/tests/test_da014_protocol.py",
+              "factory/python/tests/test_da014_protocol_faults.py",
+              "factory/python/tests/test_da014_provider_process.py",
+              "factory/python/tests/test_da014_provider_recovery.py",
+              "factory/python/tests/test_da014_qualification.py",
+              "factory/python/tests/test_da014_qualification_inputs.py",
+              "factory/python/tests/test_da014_qualification_reservations.py",
+              "factory/python/tests/test_da014_qualification_scope.py",
+              "factory/python/tests/test_afo_local_autonomy.py",
+              "factory/python/tests/test_afo_m0_audit.py",
+              "factory/python/tests/test_afo_m0_contracts_status.py",
+              "factory/python/tests/test_afo_m0_policy_authz.py",
+              "factory/python/tests/test_afo_m1_services.py",
+              "factory/python/tests/test_afo_m2_queue.py",
+              "factory/python/tests/test_afo_m3_reconcile.py",
+              "factory/python/tests/test_afo_m4_recovery.py",
+              "factory/python/tests/test_afo_m5_maintainer.py",
+              "factory/python/tests/test_afo_m6_operations.py",
+              "factory/python/tests/test_afo_m7_readiness.py",
+              "factory/python/tests/test_afo_m8_acceptance.py",
+              "factory/python/tests/test_m5_lessons.py",
+              "factory/python/tests/test_inspection_lessons.py",
+              "factory/python/tests/test_lrtx_profile.py",
+              "factory/python/tests/test_lrtx_v2_profile.py",
+              "factory/python/tests/test_llm_gateway.py",
+              "factory/python/tests/test_acp_gate.py",
+              "factory/python/tests/test_acp_proxy.py",
+              "factory/python/tests/test_t009_inspection.py",
+              "factory/python/tests/test_t009_workflow_gates.py",
+              "factory/python/tests/test_t005_t006_agents_skills.py",
+              "factory/python/tests/test_brownfield_resume.py",
+              "factory/python/tests/test_bubblewrap_confinement.py",
+              "factory/python/tests/test_cre_d7_isolation.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-354b206-core",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-354b206-core.xml"
+            ],
+            "started_at": "2026-10-25T15:21:00.907670+00:00",
+            "exit_code": 0,
+            "ended_at": "2026-10-25T15:26:55.855304+00:00"
+          },
+          {
+            "label": "release",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_m7_governance_release.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-354b206-release",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-354b206-release.xml"
+            ],
+            "started_at": "2026-10-25T15:26:55.963446+00:00",
+            "exit_code": 0,
+            "ended_at": "2026-10-25T15:27:07.412156+00:00"
+          }
+        ],
+        "end_dirty": "",
+        "end_head": "354b206d9fe14e3d6d4414cf81a85cb05d1a01c3"
+      },
+      "invocation_sha256": "98588f3c46662f927d238a16e18ff70e77e82bb0320f2ce4c97c72954e6ff0e5",
+      "junit": [
+        {
+          "file": "provider-354b206-core.xml",
+          "sha256": "2eda3c1957fbe5b5717bec702cab565dfbbea339dda35bb8b094237612fde41d",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "1",
+            "tests": "508",
+            "time": "353.724",
+            "timestamp": "2026-10-25T15:21:01.195618+00:00",
+            "hostname": "master"
+          }
+        },
+        {
+          "file": "provider-354b206-release.xml",
+          "sha256": "27ac2999d54318be5023649e6a742a579d9d14c7320248efd6096bc59d21ddda",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "13",
+            "time": "11.035",
+            "timestamp": "2026-10-25T15:26:56.172358+00:00",
+            "hostname": "master"
+          }
+        }
+      ]
+    },
+    {
+      "label": "provider-fc7e6d7",
+      "invocation": {
+        "git_head": "fc7e6d74b4a54b2827ab77800e775aa5e454f8f9",
+        "start_dirty": "",
+        "started_at": "2026-10-25T16:10:09.262467+00:00",
+        "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/qualification-intake-followup",
+        "umask": "0022",
+        "environment_setup": "source scripts/forge-env.sh; export PYTHONPATH=$PWD/factory/python",
+        "private_fixture_provenance": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fixture-provenance.json",
+        "results": [
+          {
+            "label": "core",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_da014_integration.py",
+              "factory/python/tests/test_da014_isolation.py",
+              "factory/python/tests/test_da014_learning.py",
+              "factory/python/tests/test_da014_maintenance.py",
+              "factory/python/tests/test_da014_protocol.py",
+              "factory/python/tests/test_da014_protocol_faults.py",
+              "factory/python/tests/test_da014_provider_process.py",
+              "factory/python/tests/test_da014_provider_recovery.py",
+              "factory/python/tests/test_da014_qualification.py",
+              "factory/python/tests/test_da014_qualification_inputs.py",
+              "factory/python/tests/test_da014_qualification_reservations.py",
+              "factory/python/tests/test_da014_qualification_scope.py",
+              "factory/python/tests/test_da014_qualification_state.py",
+              "factory/python/tests/test_afo_local_autonomy.py",
+              "factory/python/tests/test_afo_m0_audit.py",
+              "factory/python/tests/test_afo_m0_contracts_status.py",
+              "factory/python/tests/test_afo_m0_policy_authz.py",
+              "factory/python/tests/test_afo_m1_services.py",
+              "factory/python/tests/test_afo_m2_queue.py",
+              "factory/python/tests/test_afo_m3_reconcile.py",
+              "factory/python/tests/test_afo_m4_recovery.py",
+              "factory/python/tests/test_afo_m5_maintainer.py",
+              "factory/python/tests/test_afo_m6_operations.py",
+              "factory/python/tests/test_afo_m7_readiness.py",
+              "factory/python/tests/test_afo_m8_acceptance.py",
+              "factory/python/tests/test_m5_lessons.py",
+              "factory/python/tests/test_inspection_lessons.py",
+              "factory/python/tests/test_lrtx_profile.py",
+              "factory/python/tests/test_lrtx_v2_profile.py",
+              "factory/python/tests/test_llm_gateway.py",
+              "factory/python/tests/test_acp_gate.py",
+              "factory/python/tests/test_acp_proxy.py",
+              "factory/python/tests/test_t009_inspection.py",
+              "factory/python/tests/test_t009_workflow_gates.py",
+              "factory/python/tests/test_t005_t006_agents_skills.py",
+              "factory/python/tests/test_brownfield_resume.py",
+              "factory/python/tests/test_bubblewrap_confinement.py",
+              "factory/python/tests/test_cre_d7_isolation.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-fc7e6d7-core",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fc7e6d7-core.xml"
+            ],
+            "started_at": "2026-10-25T16:10:09.262579+00:00",
+            "exit_code": 124,
+            "ended_at": "2026-10-25T16:25:12.246255+00:00"
+          },
+          {
+            "label": "release",
+            "command": [
+              "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+              "-m",
+              "pytest",
+              "-q",
+              "factory/python/tests/test_m7_governance_release.py",
+              "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-fc7e6d7-release",
+              "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fc7e6d7-release.xml"
+            ],
+            "started_at": "2026-10-25T16:25:28.584734+00:00",
+            "exit_code": 0,
+            "ended_at": "2026-10-25T16:26:38.214347+00:00"
+          }
+        ],
+        "end_dirty": "",
+        "end_head": "fc7e6d74b4a54b2827ab77800e775aa5e454f8f9"
+      },
+      "invocation_sha256": "180ae0ce0b0a416fc4ef21f44b800fac24f100607a7a205a239ad0ed9d326481",
+      "junit": [
+        {
+          "file": "provider-fc7e6d7-release.xml",
+          "sha256": "d0a7c8fad3b4be4eb0f8dad89aa94cadef6b57a3826770ee151518b714423838",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "13",
+            "time": "65.085",
+            "timestamp": "2026-10-25T16:25:29.057188+00:00",
+            "hostname": "master"
+          }
+        }
+      ]
+    },
+    {
+      "label": "launch-boundary-clean-4f954e2",
+      "invocation": {
+        "head": "4f954e2ed752c0c69b71d86227959076bac4d696",
+        "start_dirty": "",
+        "started_at": "2026-10-25T16:36:25.157928+00:00",
+        "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/dispatch-boundary-followup",
+        "command": [
+          "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "factory/python/tests/test_da014_launch_boundary.py",
+          "factory/python/tests/test_da014_integration.py",
+          "factory/python/tests/test_da014_protocol.py",
+          "factory/python/tests/test_afo_local_autonomy.py",
+          "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/launch-boundary-clean-4f954e2",
+          "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/launch-boundary-clean-4f954e2.xml"
+        ],
+        "exit_code": 0,
+        "ended_at": "2026-10-25T16:37:09.028461+00:00",
+        "end_dirty": "",
+        "end_head": "4f954e2ed752c0c69b71d86227959076bac4d696"
+      },
+      "invocation_sha256": "863fee216f2e77d3956cae7f7e08092455228a4eda2d8d64764a44ee6d7f1e02",
+      "junit": [
+        {
+          "file": "launch-boundary-clean-4f954e2.xml",
+          "sha256": "eb57ee5f235592c24f2a54efb72b00662f26416a40467a16048d590432dbfef2",
+          "summary": {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "107",
+            "time": "42.108",
+            "timestamp": "2026-10-25T16:36:25.920815+00:00",
+            "hostname": "master"
+          }
+        }
+      ]
+    }
+  ],
+  "pending_diagnostic_run": {
+    "source_revision": "fc7e6d74b4a54b2827ab77800e775aa5e454f8f9",
+    "runner_pid_last_observed": 3878591,
+    "pytest_pid_last_observed": 3878668,
+    "status_last_observed": "LIVE_92_PERCENT_NO_FAILURE_REPORTED",
+    "observation_time_utc": "2026-10-25T16:38:22Z",
+    "invocation": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-fc7e6d7-timeout-investigation-invocation.json",
+    "not_qualified_by_partial_progress": true
+  }
+}

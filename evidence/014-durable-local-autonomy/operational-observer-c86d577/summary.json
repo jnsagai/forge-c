@@ -1,0 +1,113 @@
+{
+  "artifacts": {
+    "core.log": "d169c5f2184237db4175ae67ad1825d56f5173296ff9582afdac968a4512efe7",
+    "core.xml": "a2594cdfc4dfd1fa46d26b85214ed07a01489f37ce209bbb271f7302f6538697",
+    "history.json": "8388ff53cefdcbf39b5bc916d061d49f843e8d0560893f4248c6d580281acfa3",
+    "independent-cre.json": "dba42a010627cbd96535b51479e3780b7207c7c3c94ed2953969c766fbaa007c",
+    "invocation.json": "ac51a708b55995d80249eca6337c26743a8a885a5dddbd09acb1477d5bb1d0b3",
+    "kernel_fixture.log": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "kernel_fixture.xml": "dc31ee91dcaabe47dabeca42cd1755bc7255ddd9c0f8993ddbca5dde70573082",
+    "private-input-hashes.json": "30c568e6ee843c06fe3f027b58f4a6e09539f15aefb853701b4f5137f3aa50cf",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "e5f25c81f169bb027e07aa579b0ee2336cdb08181b23fb2e366fe5313819bff8",
+    "systemd.json": "fa3f7607e1edfae8922c934398ab0cf99df8c8fcf669edc044c24763dba8b71e"
+  },
+  "campaigns_24_72_168_hours": "NOT_RUN",
+  "formal_tasks_complete": 30,
+  "formal_tasks_total": 58,
+  "full_1840_test_inherited_suite_on_this_revision": "NOT_RUN (previous exact full-suite record remains 20650af)",
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "local_systemd_cases": 7,
+  "new_tasks_checked": [],
+  "remaining_qualification_blockers": [
+    "Host intervention audit not implemented/available",
+    "Independent READY package oracle not integrated",
+    "No host-admin reboot/authoritative-mount fault window on Omniverse2",
+    "Actual workload/fault exposure and elapsed 24/72/168-hour campaigns not run",
+    "Independent CRE protected-path rejection retained"
+  ],
+  "results": {
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 712,
+      "seconds": 673.428,
+      "skipped": 11,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_bundles_from_real_failed_runs_and_none_for_a_passing_one"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r142 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r146 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]"
+        },
+        {
+          "reason": "WO-0002A-STM32N6-RCC-LL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]"
+        },
+        {
+          "reason": "live Fabro disabled",
+          "test": "factory.python.tests.test_t009_workflow_gates::test_installed_fabro_validates_generated_workflow"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]"
+        }
+      ],
+      "tests": 723
+    },
+    "kernel_fixture": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2,
+      "seconds": 1.31,
+      "skipped": 0,
+      "skips": [],
+      "tests": 2
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 11.194,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "runtime_deployment": "NOT_ACTIVATED",
+  "source_scope": "Bounded read-only capture plus recomputed predicates for all 16 declared operational fault classes; strict campaign manifest coverage/resource bounds",
+  "static_checks": {
+    "contracts": "PASS 6 schemas / 38 fixtures",
+    "design": "PASS 14 tests",
+    "handoff": "PASS 30/58 (documentation only)",
+    "ruff": "PASS selected changed modules/tests",
+    "spec": "PASS 58 mappings"
+  },
+  "tested_revision": "c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3"
+}

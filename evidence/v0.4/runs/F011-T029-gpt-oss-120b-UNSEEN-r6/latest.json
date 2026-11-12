@@ -1,0 +1,40 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.lrtx.seeded",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0002B-STM32N6-RCC-HAL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008A-STM32N6-RCC-LL-rc1b/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008B-STM32N6-RCC-HAL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0008C-ST-RCC-LL-rc1/workspace",
+    "--holdout",
+    "/mnt/data/forge-c/state/workorders/WO-0009B-STM32N6-IWDG-HAL-rc4/workspace",
+    "--case",
+    "NONE",
+    "--model",
+    "gpt-oss:120b",
+    "--inspector",
+    "semantic",
+    "--out",
+    "/mnt/data/forge-c/lrtx-v2/m6/gpt-oss-120b-unseen.json"
+  ],
+  "duration_s": 3507.307,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "2da542a1fa0d9493494060bdef47d8996891c748",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F011-T029-gpt-oss-120b-UNSEEN-r6/20261024T054403.log",
+  "log_sha256": "220d6cdfdd24e86104efd4809cdad669922c01997dbb5e13f20564fecf7f266b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "F011-T029-gpt-oss-120b-UNSEEN-r6",
+  "ts_utc": "2026-10-24T05:44:03.539742Z"
+}

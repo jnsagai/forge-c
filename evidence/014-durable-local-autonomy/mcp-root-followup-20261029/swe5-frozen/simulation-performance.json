@@ -1,0 +1,97 @@
+{
+  "artifact_sha256": "9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f",
+  "read_only": true,
+  "report": {
+    "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+    "elf_artifact_ref": "artifact:sha256:80d9950bb83e0374b05a9c1f969ed07cac090b1c52424aae137c624b4de60587",
+    "hardware_wcet": "NOT_MEASURED",
+    "issues": [],
+    "measurement_plan": {
+      "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+      "disassembly_sha256": "d45f0fe7398b942f8321248e6527f0c9406ca237ad75c6c07c561129fdd69408",
+      "elf_sha256": "481f85545bbfc0baaab44a43fec8f17939fbe9d8a64516fbed812a7c53e032b0",
+      "hooks": [
+        [
+          "forge_measure_LL_CRC_Write_IDR",
+          "BEGIN",
+          872415572
+        ],
+        [
+          "forge_measure_LL_CRC_Read_IDR",
+          "BEGIN",
+          872415576
+        ],
+        [
+          "forge_measure_LL_CRC_Write_IDR",
+          "END",
+          872415400
+        ],
+        [
+          "forge_measure_LL_CRC_Write_IDR",
+          "END",
+          872415436
+        ],
+        [
+          "forge_measure_LL_CRC_Read_IDR",
+          "END",
+          872415416
+        ],
+        [
+          "forge_measure_LL_CRC_Read_IDR",
+          "END",
+          872415442
+        ]
+      ],
+      "model_sha256": "dc60996b97d2e17eb0b917e6cf59c2a090bf4de4c76f515bb9050297ac464ae2",
+      "observer_sha256": "8e810ac5be55b170d54dabab63f04ad9160f05ef8ef017bffa27cc8af598c87b",
+      "platform_sha256": "59fc1a22ee1731a06065ed9c22762cc6425704a2b6a8a40fb14d83b204eee876",
+      "source_files": {
+        "inputs/vendor/include/cmsis_compiler.h": "8932e7ac5c9a13b199c64f25b3dc67ebf0a877b33dbcf434d4e1b78e625f57c5",
+        "inputs/vendor/include/cmsis_gcc.h": "8fd513058bc3d10f1b3929c648023964dd32f375d5be39ad31a13e2038763405",
+        "inputs/vendor/include/cmsis_version.h": "3b9195c5373a2a4dbfd968b083b3d7f5f446f9ec2e126f75928ac1ff4356b91e",
+        "inputs/vendor/include/core_cm55.h": "91b3f00ea1b9f7c0ef64f9763901476792aa3244119dcf46d40777788b313ad9",
+        "inputs/vendor/include/m-profile/armv7m_cachel1.h": "f7905d3e336feccda0647f214e791b424c5f92e788f1303e587cebca729b6dc3",
+        "inputs/vendor/include/m-profile/armv8m_mpu.h": "2a609542eb3d072eb9f588cd4516349b10b636d633d4439870cfe409a84835d2",
+        "inputs/vendor/include/m-profile/armv8m_pmu.h": "1323587da9fea03c96a685a9cf60c576b4d0532b3339501401332ff8a6c58e32",
+        "inputs/vendor/include/m-profile/cmsis_gcc_m.h": "83162eb508727a5e4b35abe9d65e76849ac9b48ad4fcb3957bf409bb0e1dcec2",
+        "inputs/vendor/include/stm32n657xx.h": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689",
+        "inputs/vendor/include/stm32n6xx.h": "d34dc59f4cc80a17832e628d6fb80f0993cf901047c88524db230011b2bae62d",
+        "inputs/vendor/include/system_stm32n6xx.h": "6bd8c976c5759e929ab7817156400ca362f35a6e0240cb6a34cbf88322962be0",
+        "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+      },
+      "symbols": [
+        "forge_measure_LL_CRC_Write_IDR",
+        "forge_measure_LL_CRC_Read_IDR"
+      ],
+      "test_source_sha256": "12aa5a6a3a8ae56db1a8910cd19dd3a7cf8df5d468c51962deccc211a7cd48c2",
+      "wrapper_sha256": "317616eaaf8a946610c42a121707632902ff46caae2b790df7bc7cec36f3fb3c"
+    },
+    "performance_mips": 100,
+    "raw_log_ref": "artifact:sha256:0e1d87d295216dbf463158697d6aff16ea0588658b5cc77e2f3978be57a6cdd5",
+    "samples": {
+      "forge_measure_LL_CRC_Read_IDR": [
+        {
+          "instructions": 2,
+          "virtual_nanoseconds": 20
+        },
+        {
+          "instructions": 2,
+          "virtual_nanoseconds": 20
+        }
+      ],
+      "forge_measure_LL_CRC_Write_IDR": [
+        {
+          "instructions": 2,
+          "virtual_nanoseconds": 20
+        },
+        {
+          "instructions": 2,
+          "virtual_nanoseconds": 20
+        }
+      ]
+    },
+    "schema": "forge-c/simulation-call-performance/1",
+    "scope": "observed complete calls in the pinned Renode instruction/time model; not silicon timing",
+    "status": "PASS"
+  }
+}

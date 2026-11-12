@@ -1,0 +1,59 @@
+{
+  "schema": "forge-c/owner-development-private-prospective-export/1",
+  "source": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "status": "PASS_PROSPECTIVE_ONLY",
+  "namespace_tests": 56,
+  "model_calls": 0,
+  "production_mutations": false,
+  "role_competence": "NOT_RUN",
+  "native_transport_scope": "OWN_PRIVATE_STUB_ONLY",
+  "files": [
+    {
+      "path": "staging-receipt.json",
+      "sha256": "ed5acdb5f440741d9158068adc1cd6214e3be01cd4ec1c044f0d142ae790ea0e",
+      "bytes": 2692
+    },
+    {
+      "path": "transport-receipt.json",
+      "sha256": "77112ca48b138c81ee1d587d58b077e9e8697cb4d149635852557a8590c7c58e",
+      "bytes": 221
+    },
+    {
+      "path": "probe-summary.json",
+      "sha256": "79fb264aa7682028242057bee04c36270b68bf9a535e1b4c575dc1107adab138",
+      "bytes": 470
+    },
+    {
+      "path": "cpu-preflight/preflight.json",
+      "sha256": "6257e3fd5f5be7bdd2300a2b8b5e0e04fbb81e9f1d572c0fb583e1a780116c89",
+      "bytes": 1167
+    },
+    {
+      "path": "authority-namespace-controls.xml",
+      "sha256": "75b1f1e8365d95cc69df6dd19705db705a4aa7cdf9b890085d8aa26a07c6d6d7",
+      "bytes": 9133
+    },
+    {
+      "path": "authority-namespace-controls.stdout.log",
+      "sha256": "a5bad37fc2190bed21c8f7befa636dc4fbe8b2f6206048cff2d3378a016c4864",
+      "bytes": 80
+    },
+    {
+      "path": "native-header/measurement.json",
+      "sha256": "f653472b2224344b33cb35b908739d32e242febb0917e67bb659b7f10161f0e9",
+      "bytes": 3173
+    },
+    {
+      "path": "stage.stdout.log",
+      "sha256": "177f3d909cbe43466b9f7f07ec1a781259dba84635f15f38fa8266525bdd8732",
+      "bytes": 1717
+    },
+    {
+      "path": "stage-v2.stdout.log",
+      "sha256": "e658cad23fc8c2e6bad89ddc1d8a20dfb2da7b05227e62289dc3264b75b7db81",
+      "bytes": 2897
+    }
+  ],
+  "vendor_input_content_excluded": true,
+  "credentials_private_home_and_Fabro_server_env_excluded": true
+}

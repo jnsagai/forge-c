@@ -1,0 +1,28 @@
+{
+  "schema": "forge-c/integration15-affected-regression/1",
+  "source": "bf6b7f53f1db466f16486c9a9c4b9000c73d0f67",
+  "modules": 11,
+  "initial": {
+    "xml": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch15-delta.xml",
+    "sha256": "e202ef0750c6e9cfba3f7c558be0849266bdc7a51f4765aa14a8150d8bf257cb",
+    "passed": 102,
+    "failed": 2,
+    "skipped": 0
+  },
+  "failure_attribution": "Both child python -c namespace checks imported old editable /home/jefferson/forge-c source because root invocation had no explicit candidate PYTHONPATH and cwd was repo root. Recorded traceback shows missing candidate modules, before candidate behavior.",
+  "unchanged_correction": {
+    "xml": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch15-namespace-correct-import.xml",
+    "sha256": "0d75117c0a790b5402a5988ca65b66c1ac49104d66d75a9fda3aa8453a91ed33",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "invocation": "Same two tests, unchanged source/test bytes, cwd=factory/python and explicit candidate PYTHONPATH."
+  },
+  "composite": {
+    "unique_cases": 104,
+    "passed": 104,
+    "unresolved_failures": 0,
+    "skipped": 0
+  },
+  "full_gate": "NOT_RUN_ROOT_YET"
+}

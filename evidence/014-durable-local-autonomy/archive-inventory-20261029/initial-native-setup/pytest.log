@@ -1,0 +1,202 @@
+.................FFF....                                                 [100%]
+=================================== FAILURES ===================================
+________ test_t045_v04_policy_superset_and_operational_inventory_hashed ________
+
+env = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_v04_policy_superset_0')
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_v04_policy_superset_0')
+
+    def test_t045_v04_policy_superset_and_operational_inventory_hashed(env, tmp_path):
+        v3 = json.loads((REPO_ROOT / "factory/release-manager/policies/release-package-policy.json").read_text())
+        v4 = json.loads(F.POLICY_V04.read_text())
+        assert set(v3["required_files"]) <= set(v4["required_files"]) and set(v3["required_sections"]) <= set(v4["required_sections"])
+        assert v4["required_quality_checks"] == v3["required_quality_checks"] and v4["require_no_open_findings"]
+        import hashlib
+        assert v4["extends"]["sha256"] == hashlib.sha256(
+            (REPO_ROOT / "factory/release-manager/policies/release-package-policy.json").read_bytes()).hexdigest()
+        ws = tmp_path / "ws"
+        ws.mkdir()
+>       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_v04_policy_superset_0/ws')
+
+    def complete_workspace(ws: Path) -> None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+>           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError
+___________ test_t045_ready_requires_every_check_and_tamper_detected ___________
+
+env = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_ready_requires_every0')
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_ready_requires_every0')
+
+    def test_t045_ready_requires_every_check_and_tamper_detected(env, tmp_path):
+        ws = tmp_path / "ws"
+        ws.mkdir()
+>       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t045_ready_requires_every0/ws')
+
+    def complete_workspace(ws: Path) -> None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+>           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError
+_________ test_t046_failing_swe3_static_check_blocked_archive_no_human _________
+
+env = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t046_failing_swe3_static_0')
+tmp_path = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t046_failing_swe3_static_0')
+
+    def test_t046_failing_swe3_static_check_blocked_archive_no_human(env, tmp_path):
+        ws = tmp_path / "ws"
+        ws.mkdir()
+>       complete_workspace(ws)
+
+factory/python/tests/test_m7_governance_release.py:251: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/mnt/data/forge-c/production-local-014/deployment/qualification-archive-319e215/tmp/pytest-of-omniverse2/pytest-0/test_t046_failing_swe3_static_0/ws')
+
+    def complete_workspace(ws: Path) -> None:
+        """Synthetic, test-only workspace satisfying every policy item via the real engines (NOT product evidence)."""
+        from test_swe2_architecture import ARCH_MIN
+        files = {
+            "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The RCC driver shall enable the HSI oscillator.\n",
+            "workproducts/SWE.2/software_architecture.md": ARCH_MIN,
+            "workproducts/SWE.3/detailed_design.md": "# Design\nsynthetic\n",
+            "workproducts/SWE.4/unit_verification_report.md": "# UV\nsynthetic\n",
+            "workproducts/SWE.5/integration_verification_report.md": "# IV\nsynthetic\n",
+            "workproducts/SWE.6/software_verification_report.md": "# SV\nsynthetic\n",
+            "safety/software_safety_requirements.md": "synthetic\n", "safety/software_safety_analysis.md": "synthetic\n",
+            "safety/tool_assurance_assessment.md": "synthetic\n",
+            "traceability/requirements_to_tests.csv": "requirement_id,test_id,test_file\nSWR-001,UT-001,software/tests/unit/t.c\n",
+            "software/src/drv.c": "int drv(void){return 0;}\n", "software/include/drv.h": "int drv(void);\n",
+            "software/tests/unit/t.c": "/* UT-001 */ int main(void){return 0;}\n", "verification/static/misra_coverage_matrix.md": "x\n",
+            "configuration/system_names.json": '["RCC driver"]',
+        }
+        from test_guideline_check import HAL_C, HAL_H, LL_H
+        from test_swe3_regmap import RM_CR
+        files.update({"software/hal/stm32n6xx_hal_rcc.h": HAL_H, "software/hal/stm32n6xx_hal_rcc.c": HAL_C,
+                      "software/ll/stm32n6xx_ll_rcc.h": LL_H.replace(
+                          "#endif", "#define LL_RCC_CR_OFFSET 0x000U\n#define LL_RCC_CR_HSION_MSK 0x00000008U\n#endif"),
+                      "inputs/sections/RM0486/14.10.1_RCC_control_register_RCC_CR.md": RM_CR})
+        for rel, txt in files.items():
+            p = ws / rel
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        from test_swe2_architecture import add_reqif, add_views
+    
+        add_views(ws)
+        add_reqif(ws)
+        (ws / "build/target-cm55-gcc").mkdir(parents=True)
+        (ws / "build/target-cm55-gcc/driver.elf").write_bytes(b"\x7fELF-synthetic")
+        (ws / "build/target-cm55-gcc/driver.map").write_text("synthetic map\n")
+        (ws / ".forge-run").mkdir()
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"budgets": {"flash_bytes": 4096, "static_ram_bytes": 64,
+                                                                             "stack_bytes": 128}, "target": {"part": "x"}}))
+        s = Store(ws)
+        for p in PHASES:
+            s.freeze(p, f"swe{p[-1]}-author")
+            v = {c["id"]: {"verdict": "PASS", "evidence_refs": ["x"]} for c in load_checklist(p)["checks"]}
+>           assert s.record_inspection(p, f"swe{p[-1]}-inspector", s.latest_baseline(p)["baseline_id"], v)["verdict"] == "PASS"
+E           AssertionError: assert 'FAIL' == 'PASS'
+E             
+E             - PASS
+E             + FAIL
+
+factory/python/tests/test_m7_governance_release.py:185: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_m7_governance_release.py::test_t045_v04_policy_superset_and_operational_inventory_hashed
+FAILED factory/python/tests/test_m7_governance_release.py::test_t045_ready_requires_every_check_and_tamper_detected
+FAILED factory/python/tests/test_m7_governance_release.py::test_t046_failing_swe3_static_check_blocked_archive_no_human

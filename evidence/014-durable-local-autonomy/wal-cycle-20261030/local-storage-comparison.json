@@ -1,0 +1,44 @@
+{
+  "scope": "LOCAL_ISOLATED_STORAGE_EXPERIMENT_NOT_NATIVE_OR_MODEL_QUALIFICATION",
+  "rows": [
+    {
+      "keep_idle_connection": false,
+      "transactions": 32,
+      "seconds": 0.14198723301524296,
+      "io_deltas": {
+        "rchar": 920823,
+        "wchar": 264192,
+        "syscr": 258,
+        "syscw": 384,
+        "read_bytes": 0,
+        "write_bytes": 1572864,
+        "cancelled_write_bytes": 1048576
+      },
+      "wal_bytes_before_keeper_close": 0,
+      "integrity": "ok",
+      "reopened_rows": 32,
+      "synchronous": "FULL_IN_EXISTING_STORE_CONNECT"
+    },
+    {
+      "keep_idle_connection": true,
+      "transactions": 32,
+      "seconds": 0.07904987101210281,
+      "io_deltas": {
+        "rchar": 662779,
+        "wchar": 131872,
+        "syscr": 195,
+        "syscw": 65,
+        "read_bytes": 0,
+        "write_bytes": 266240,
+        "cancelled_write_bytes": 0
+      },
+      "wal_bytes_before_keeper_close": 131872,
+      "integrity": "ok",
+      "reopened_rows": 32,
+      "synchronous": "FULL_IN_EXISTING_STORE_CONNECT"
+    }
+  ],
+  "model_requests": 0,
+  "live_database_mutated": false,
+  "speedup": 1.7961728614775883
+}
