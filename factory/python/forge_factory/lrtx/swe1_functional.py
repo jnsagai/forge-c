@@ -51,6 +51,10 @@ TOKEN = re.compile(r"(?<![A-Za-z0-9_])([A-Z][A-Z0-9_]+)(?![A-Za-z0-9_])")
 REG_TITLE = re.compile(r"\(([A-Z][A-Z0-9]*_[A-Z0-9_]+)\)")
 FIELD = re.compile(r"\bBits?\s+\d+(?::\d+)?\s+([A-Z][A-Z0-9_]*)(?:\[[^\]]*\])?\s*:")
 SECTION_ID = re.compile(r"(?<![\d.])(\d+(?:\.\d+)*)(?![\d.])")
+# D24 (T027): a guideline larger than this is partitioned into bounded design tasks (the real HAL driver guideline is
+# 444 kB: one design packet of ~171k estimated tokens, against <= 31k for every other functional author packet)
+DESIGN_PART_CHARS = 120_000
+GUIDE_HEADING = re.compile(r"^(?:#{1,6}\s|\s*\d{1,2}(?:\.\d{1,2})?\.?\s+[A-Z])")
 
 
 # ---- inputs of the author --------------------------------------------------------------------------------------------
@@ -84,6 +88,52 @@ def _guideline_inputs(ws: Path, inv: dict) -> list[str]:
     return [r["input_id"] for r in inv["inputs"] if r["role"] == GI.SOURCE and r["name"] in names]
 
 
+def guideline_parts(text: str, limit: int | None = None) -> list[tuple[int, int]]:
+    """[start, end) line ranges that partition `text` into consecutive parts of at most `limit` characters, cut at
+    heading lines (markdown or numbered sections) where possible; never truncated - every line is in exactly one part
+    (a single line longer than the bound is a part of its own)."""
+    limit = DESIGN_PART_CHARS if limit is None else limit
+    lines = text.splitlines(keepends=True)
+    cuts = [0] + [i for i, ln in enumerate(lines) if i and GUIDE_HEADING.match(ln)] + [len(lines)]
+    segs: list[tuple[int, int, int]] = []
+    for a, b in zip(cuts, cuts[1:]):
+        start, size = a, 0
+        for i in range(a, b):  # a section over the bound is split at line boundaries
+            if size and size + len(lines[i]) > limit:
+                segs.append((start, i, size))
+                start, size = i, 0
+            size += len(lines[i])
+        if b > start:
+            segs.append((start, b, size))
+    parts: list[tuple[int, int]] = []
+    size = 0
+    for a, b, n in segs:
+        if parts and size + n <= limit:
+            parts[-1] = (parts[-1][0], b)
+            size += n
+        else:
+            parts.append((a, b))
+            size = n
+    return parts or [(0, len(lines))]
+
+
+def _design_tasks(ws: Path, inv: dict, gl: list[str]) -> list[dict]:
+    """One design task over the guideline input(s) when each fits the bound (as before), else one per part (D24)."""
+    head = {"kind": "design", "origins": ORIGINS["design"], "heading": "HAL design constraints"}
+    names = {r["input_id"]: r["name"] for r in inv["inputs"]}
+    paths = {Path(i["path"]).name: i["path"] for i in _manifest(Path(ws)).get("inputs") or []}
+    split = []
+    for g in gl:
+        rel = paths.get(names[g])
+        text = (Path(ws) / rel).read_text(errors="replace") if rel and (Path(ws) / rel).is_file() else ""
+        split += [(g, rel, part) for part in guideline_parts(text)]
+    if len(split) == len(gl):
+        return [{"id": TASK_DESIGN, **head, "guideline": gl}]
+    return [{"id": f"{TASK_DESIGN}_p{n}", **head, "guideline": [g],
+             "part": {"path": rel, "lines": [a + 1, b], "n": n, "of": len(split)}}
+            for n, (g, rel, (a, b)) in enumerate(split, 1)]
+
+
 def plan(ws: Path) -> list[dict]:
     """The author's tasks (deterministic): service groups, state behaviour, HAL design constraints."""
     inv, pkg = GI.load(ws), governance_package(ws)
@@ -105,8 +155,7 @@ def plan(ws: Path) -> list[dict]:
     out.append({"id": TASK_STATE, "kind": "state", "origins": ORIGINS["state"], "heading": "State behaviour"})
     gl = _guideline_inputs(ws, inv)
     if gl:
-        out.append({"id": TASK_DESIGN, "kind": "design", "guideline": gl, "origins": ORIGINS["design"],
-                    "heading": "HAL design constraints"})
+        out += _design_tasks(ws, inv, gl)
     return out
 
 
@@ -353,6 +402,12 @@ def task_sources(ws: Path, task: dict, inv: dict | None = None) -> list[dict]:
     if task["kind"] == "group":
         secs = _section_files(ws)
         out += [S.source(ws, secs[f]["file"]) for f in task["features"] if f in secs and (ws / secs[f]["file"]).is_file()]
+    elif task["kind"] == "design" and task.get("part"):  # D24: only this part of the guideline
+        pt = task["part"]
+        lines = (ws / pt["path"]).read_text(errors="replace").splitlines(keepends=True)
+        text = "".join(lines[pt["lines"][0] - 1:pt["lines"][1]])
+        out.append({"path": f"{pt['path']}#lines-{pt['lines'][0]}-{pt['lines'][1]}",
+                    "sha256": sha256_bytes(text.encode()), "text": text})
     elif task["kind"] == "design":
         names = {r["input_id"]: r["name"] for r in inv["inputs"]}
         for i in _manifest(ws).get("inputs") or []:
@@ -403,6 +458,13 @@ def task_packet(ws: Path, task: dict, model: str, findings: list[str] | None = N
     ctx = ctx or context(ws)
     inv, pkg = GI.load(ws), governance_package(ws)
     instr = LEAD[task["kind"]].format(group=task.get("group", ""), module=inv["module"]) + _rules(ws, task, ctx)
+    if task.get("part"):  # D24
+        pt = task["part"]
+        instr += (f" This task covers part {pt['n']} of {pt['of']} of the guideline (its lines {pt['lines'][0]}-"
+                  f"{pt['lines'][1]}, the guideline source below); the other parts are separate tasks, so write the "
+                  "design constraints that this part states and nothing from the other parts; when this part states "
+                  "no rule that applies to the module, write the one constraint it supports best or name the gap in "
+                  "open_points.")
     art = [_artifact("lrtx:task_scope", task_scope(ws, task, inv, pkg)),
            _artifact("lrtx:input_register", input_register_text(inv))]
     crit = ["every statement is EARS with one 'shall' and a system-name subject", "no register-level vocabulary",

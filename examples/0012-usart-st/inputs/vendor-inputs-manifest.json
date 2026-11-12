@@ -1,0 +1,17 @@
+{
+  "schema": "forge-c/vendor-input-manifest/1",
+  "note": "Feature 020 (FR-002): vendor files used as order inputs, kept out of the repository (git-ignored body, content in the line inputs cache under its sha256). 'markdown'/'markdown_sha256' are the file keys the line launcher materialises by (afo/line_launcher.input_hashes); the file is a byte-identical copy, not a conversion.",
+  "documents": [
+    {
+      "doc": "CMSIS device header (STM32N657xx peripheral access layer)",
+      "markdown": "stm32n657xx.h",
+      "markdown_sha256": "559792ea50e7253ddb386bd77267e475c7f5ecbccfc917adeea9398ef3aaa689",
+      "revision": "cmsis-device-n6 v1.4.0",
+      "origin": "STMicroelectronics cmsis-device-n6 v1.4.0, Include/stm32n657xx.h",
+      "source_url": "https://github.com/STMicroelectronics/cmsis-device-n6/archive/refs/tags/v1.4.0.tar.gz",
+      "archive_sha256": "8ca92ce4d3bcd6a469e4ebc6d4e58d02931898ddd8ad956c87078f9c8512107f",
+      "licence": "Apache-2.0",
+      "converter": "none (byte-identical copy of the release file)"
+    }
+  ]
+}
