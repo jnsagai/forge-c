@@ -240,13 +240,13 @@ def test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch(fac
     assert seen["reproducers"] == [sub["staged"]["id"]] and seen["staged_manifest"].is_file()
     assert seen["cand"] == sub["candidate"] and seen["base"] == case["base"]
     assert rec["outcome"] == "ELIGIBLE_FOR_OFFLINE_REVIEW" and rec["auto_deployment_allowed"] is False
-    assert rec["capa_id"] == "CAPA-001" and rec["changed_paths"] == sorted([
+    assert rec["capa_id"] == "LCAPA-001" and rec["changed_paths"] == sorted([
         "factory/python/forge_factory/calc.py", M.CANDIDATE_TESTS + "rpr_calc.py", M.CANDIDATE_TESTS + "test_calc.py"])
     from forge_factory.reliability.capa import CapaRegistry
 
     reg = CapaRegistry(CREStore(), cre_policy())
-    assert reg.links("CAPA-001", "AFO_PROPOSAL") == [case["proposal_id"]]
-    assert reg.must("CAPA-001")["root_cause_status"] == "HYPOTHESIS"                  # a maintainer never verifies
+    assert reg.links("LCAPA-001", "AFO_PROPOSAL") == [case["proposal_id"]]
+    assert reg.must("LCAPA-001")["root_cause_status"] == "HYPOTHESIS"                  # a maintainer never verifies
     with pytest.raises(M.MaintainerDenied) as e:
         M.publish(store, case["proposal_id"], Eff())                                  # policy: maintainer disabled
     assert e.value.code == "MAINTAINER_DISABLED_BY_POLICY"
