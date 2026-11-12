@@ -530,7 +530,8 @@ def record(store, case: dict, sub: dict, outcome: str, status: str, *, capa_id: 
            "changed_paths": changed_paths(case["base"], sub["candidate"], repo), "tests_ref": tests_ref,
            "cre_promotion_id": promotion_id, "outcome": outcome, "auto_deployment_allowed": False,
            "branch_ref": branch, "pr_url": pr_url, "authorization_ref": None,
-           "evidence_refs": sorted({*evidence, *(f"veto:{v}"[:200] for v in sub.get("veto", []))}) or ["none"]}
+           "evidence_refs": sorted({*evidence, *(f"veto:{v}"[:200] for v in sub.get("veto", [])),
+                                    *([f"owner-capa:{owner_capa(case)}"] if owner_capa(case) else [])}) or ["none"]}
     if not sub.get("veto"):
         rec["protected_changes_count"] = 0
     store.record_proposal(rec, status, case["incident"].get("order_id"))
@@ -547,8 +548,18 @@ def quarantine(case: dict) -> None:
 
 # -- triage with 004 CAPA linkage (T047) and independent evaluation (T048) ----------------------------------------
 def _next_capa(reg) -> str:
-    n = max([int(c["capa_id"].split("-")[1]) for c in reg.all()] or [0])
-    return f"CAPA-{n + 1:03d}"
+    """Maintainer gap (b), 2026-11-12: the line maintainer's CAPAs live in the LINE store, numbered in their own LCAPA-
+    namespace. Before, they were numbered CAPA-NNN from the (empty) line store - CAPA-001 again - colliding with the
+    owner store's CAPA-NNN that the deployer, the observer and the owner read."""
+    ns = [int(m.group(1)) for c in reg.all() if (m := re.fullmatch(r"LCAPA-(\d+)", str(c["capa_id"])))]
+    return f"LCAPA-{max(ns or [0]) + 1:03d}"
+
+
+def owner_capa(case: dict) -> str | None:
+    """The owner-store CAPA the observer routed this defect to (CAPA-222 route, in the case's run evidence), or None.
+    It travels in the proposal's evidence (owner-capa:<id>) so the deployer links the imported fix to it."""
+    rc = ((((case.get("run_evidence") or {}).get("record") or {}).get("routed_capa")) or {}).get("capa_id")
+    return rc if isinstance(rc, str) and re.fullmatch(r"CAPA-\d{3,}", rc) else None
 
 
 def triage(case: dict, sub: dict, cre_store, policy, *, capa_id: str | None = None, fingerprints=()) -> dict:
@@ -583,6 +594,8 @@ def triage(case: dict, sub: dict, cre_store, policy, *, capa_id: str | None = No
                    "AGENT (afo-factory-maintainer)")
     reg.link(linked, "AFO_PROPOSAL", case["proposal_id"])
     reg.link(linked, "AFO_STAGED_REPRODUCER", staged["id"])
+    if owner_capa(case):  # the line CAPA names the owner CAPA it works on (gap b)
+        reg.link(linked, "OWNER_CAPA", owner_capa(case))
     return {"ok": True, "capa_id": linked, "baseline_run": b}
 
 
