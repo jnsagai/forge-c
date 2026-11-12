@@ -218,7 +218,7 @@ def test_campaign_orders_are_the_campaign_lineage_names():
                 assert D.ORDER_DRIVERS[L.wo(phase, k)] == spec["driver_class"]
     assert D.ORDER_SCOPE == expected and D.ORDERS == tuple(expected)
     assert D.ORDERS[0] == "WO-F014-SWE1-GPIOL-20261107-L40" and D.ORDER_DRIVERS[D.ORDERS[0]] == "STM32N6_GPIO_LL_ST"
-    assert D.ORDERS[-1] == "WO-F014-SWE6-UARTM-20261112-L48" + retry_suffix(64)  # feature 020: the pilot is last
+    assert D.ORDERS[-1] == "WO-F014-SWE6-UARTM-20261112-L49" + retry_suffix(64)  # feature 020: the pilot is last
     assert "WO-F014-SWE6-TIMH-20261109-L47" + retry_suffix(64) in D.ORDERS
 
 
