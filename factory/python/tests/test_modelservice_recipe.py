@@ -150,3 +150,28 @@ def test_apply_refuses_outside_a_window_on_omniverse2(tmp_path, monkeypatch):
     (rec / "model-tier/catalog.yaml").write_text("x")
     cmds = R.apply("omniverse2", rec)  # dry: commands only, nothing run
     assert "model_tier.tenant_gateway" in cmds[1] and "--listen 127.0.0.1:18480" in cmds[1]
+
+
+def test_factory_tenants_get_the_full_reference_context():
+    """Qualification window 2 (2026-11-12): forge-qual max_context 65536 refused every Ornith request
+    (context_exceeded: the owner gateway asks up to 131072 reasoning output tokens; the baseline llama-server served
+    262144). Owner 2026-11-08: both models at FULL capacity - a factory tenant gets the recipe reference context."""
+    import yaml
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[3] / "deploy/recipe"
+    ref = yaml.safe_load((root / "params/omniverse2.yaml").read_text())
+    ref = next(v for k, v in _walk(ref) if k == "reference_context")["value"]
+    tenants = yaml.safe_load((root / "model-tier/tenants.example.yaml").read_text())["tenants"]
+    factory = [t for t in tenants if t["tenant_id"].startswith("forge-")]
+    assert factory and all(t["max_context"] == ref for t in factory)
+
+
+def _walk(doc):
+    if isinstance(doc, dict):
+        for k, v in doc.items():
+            yield k, v
+            yield from _walk(v)
+    elif isinstance(doc, list):
+        for v in doc:
+            yield from _walk(v)

@@ -15,7 +15,7 @@ tenants:
     queue_limit: 16
     queue_timeout_s: 900
     priority: 0
-    max_context: 65536
+    max_context: 262144
     reasoning_mode: "on"            # each catalog model keeps its own reasoning setting
     enabled: true
     allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
@@ -26,7 +26,7 @@ tenants:
     queue_limit: 16
     queue_timeout_s: 900
     priority: 0
-    max_context: 65536
+    max_context: 262144
     reasoning_mode: "on"
     enabled: false
     allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
