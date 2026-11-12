@@ -172,6 +172,7 @@ def requirement_schema(tpl: dict) -> dict:
                            "input_id": {"type": "string", "pattern": "^IN-[0-9]{2}$"},
                            "locator": {"type": "string", "minLength": 1}, "rationale": {"type": "string"}}}},
         "use_cases": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "operations": {"type": "array", "items": {"type": "string", "minLength": 1}},  # template v2 (D32)
         "verification_method": {"enum": list(e["verification_method"])}, "test_level": {"enum": list(e["test_level"])}}
     return {"type": "object", "additionalProperties": False, "required": list(tpl["attributes"]),
             "properties": {a: props[a] for a in tpl["attributes"]}}
@@ -253,7 +254,31 @@ def context(ws: Path) -> dict:
             "sections": secs, "code": sorted(code, key=len, reverse=True), "names": names,
             "use_cases": {u["use_case_id"] for u in (pkg or {}).get("use_cases") or []},
             "terms": level_terms(ws), "allowed": {a["function"] for a in inv["api"]},
+            "in_scope": {a["function"]: a["component"] for a in inv["api"] if a["scope_class"] == "in"},
+            "rules": dict(tpl.get("rules") or {}),
             "patterns": list((tpl.get("level_rule") or {}).get("patterns") or [])}
+
+
+NO_VALUE = re.compile(r"^(n/?a|none|tbd|-+|not applicable\b.*)$", re.I)
+
+
+def allocation(r: dict, ctx: dict) -> tuple[str, str]:
+    """Template v2 (D32): (allocated interface, allocated operation) derived from the requirement's operations."""
+    ops = list(r.get("operations") or [])
+    if not ops:
+        un = (ctx["template"].get("allocation") or {}).get("unallocated", "not allocated")
+        return un, un
+    return ", ".join(sorted({ctx["in_scope"].get(o, "?") for o in ops})), ", ".join(ops)
+
+
+def design_limit(task_id: str, n: int, ctx: dict) -> str | None:
+    """Template v2 (D31): the per-part cap of design-constraint requirements (None within the cap or without one)."""
+    cap = ctx["rules"].get("design_constraints_per_part")
+    if not cap or n <= cap:
+        return None
+    return (f"DESIGN_CONSTRAINT_LIMIT: {n} design constraints in {task_id}, at most {cap} per guideline part - one "
+            "requirement per topic that shapes the module's API or observable behaviour; merge the rules of one topic "
+            "and leave general coding, naming and layout rules to the SWE.3 guideline checklist")
 
 
 def _ears(statement: str, key: str, names: set[str]) -> list[tuple[str, str]]:
@@ -322,6 +347,23 @@ def requirement_findings(r: dict, origins: list[str] | None, ctx: dict) -> list[
         out.append(("DESIGN_CONSTRAINT_NOT_BY_INSPECTION", "a design constraint is verified by inspection"))
     if og == "hal_design_constraint" and r["type"] != "design_constraint":
         out.append(("HAL_DESIGN_CONSTRAINT_TYPE", "a HAL design-constraint requirement has type design_constraint"))
+    rules = ctx.get("rules") or {}
+    dc = og == "hal_design_constraint" or r["type"] == "design_constraint"
+    if rules.get("functional_precondition_required") and r["type"] == "functional" and \
+            NO_VALUE.match(r["precondition"].strip()):
+        out.append(("PRECONDITION_MISSING", "a functional requirement states its precondition: the state the module or "
+                    "its handle must be in for the behaviour ('none' only for a design constraint)"))
+    if rules.get("design_constraint_no_use_cases") and dc and r["use_cases"]:
+        out.append(("DESIGN_CONSTRAINT_USE_CASES", "a design constraint serves no single use case: use_cases is []"))
+    if "operations" in r:
+        ops = r["operations"]
+        out += [("OPERATION_UNKNOWN", f"{o} is no in-scope delivered function of the module") for o in ops
+                if o not in ctx["in_scope"]]
+        if rules.get("design_constraint_no_operations") and dc and ops:
+            out.append(("DESIGN_CONSTRAINT_OPERATIONS", "a design constraint is not allocated: operations is []"))
+        if rules.get("functional_operations_required") and r["type"] == "functional" and not ops:
+            out.append(("OPERATION_MISSING", "a functional requirement names the delivered function(s) it is about in "
+                        "operations"))
     return out
 
 
@@ -334,6 +376,10 @@ def validate_task(ws: Path, doc: dict, task: dict, ctx: dict | None = None) -> l
             out.append(f"[{k}] DUPLICATE_KEY: keys are unique within the task")
         keys.add(k)
         out += [f"[{k}] {rule}: {detail}" for rule, detail in requirement_findings(r, task.get("origins"), ctx)]
+    if task.get("kind") == "design":
+        lim = design_limit(task["id"], len((doc or {}).get("requirements") or []), ctx)
+        if lim:
+            out.append(f"[{task['id']}] {lim}")
     return out
 
 
@@ -371,6 +417,8 @@ LINK_RULE = (
 
 
 def _rules(ws: Path, task: dict, ctx: dict) -> str:
+    if "operations" in ctx["template"]["attributes"]:
+        return _rules_v2(task, ctx)
     names = ", ".join(f"'the {n}'" for n in sorted(ctx["names"]))
     return (f" Each requirement follows template {ctx['template']['template_id']}: key (short snake_case, unique in "
             "this task), title (3-80 characters), statement in EARS (The/When/While/Where/If..then) with exactly one "
@@ -382,6 +430,27 @@ def _rules(ws: Path, task: dict, ctx: dict) -> str:
             "integration, qualification, not_testable). " + LEVEL_RULE + " " + LINK_RULE + " Status, ASIL, CAL and "
             "the SWE.2 allocation are set by the factory, never written here. open_points lists ambiguities or gaps "
             "of the inputs (or nothing).")
+
+
+def _rules_v2(task: dict, ctx: dict) -> str:
+    """Template v2 rules text (D31-D33); the v1 text above stays unchanged for v1 orders."""
+    names = ", ".join(f"'the {n}'" for n in sorted(ctx["names"]))
+    design = task.get("kind") == "design"
+    return (f" Each requirement follows template {ctx['template']['template_id']}: key (short snake_case, unique in "
+            "this task), title (3-80 characters), statement in EARS (The/When/While/Where/If..then) with exactly one "
+            f"'shall', the subject being one of {names} (the component that offers the service), ending with a "
+            "period; type (functional, design_constraint or architectural); precondition (the state the module or its "
+            "handle must be in for the behaviour, e.g. 'the handle is initialised and no transfer is ongoing'; 'none' "
+            "only for a design constraint); origin_group, one of: " + ", ".join(task["origins"]) + "; links; "
+            + ("use_cases [] and operations [] (a design constraint serves no single use case and is not allocated); "
+               if design else
+               "use_cases (the use-case ids it serves, from the TASK SCOPE, never invented); operations (the delivered "
+               "public functions of the TASK SCOPE the requirement is about - at least one for a functional "
+               "requirement; the factory allocates the requirement to them); ")
+            + "verification_method (test, analysis, inspection, demonstration; a design_constraint is verified by "
+            "inspection); test_level (unit, component, integration, qualification, not_testable). " + LEVEL_RULE + " "
+            + LINK_RULE + " Status, ASIL and CAL are set by the factory, never written here. open_points lists "
+            "ambiguities or gaps of the inputs (or nothing).")
 
 
 def input_register_text(inv: dict) -> str:
@@ -452,12 +521,28 @@ LEAD = {
 }
 
 
+# Template v2 (D31): design constraints per topic, bounded per guideline part. Both pilot models wrote ~40% of their
+# requirements as one design constraint per guideline rule (benchmark: 5 of 56); general coding rules are already checked
+# at SWE.3 by the guideline checklist.
+LEAD_DESIGN_V2 = (
+    "Write the design-constraint requirements that the HAL driver guideline (the provided guideline input) imposes on "
+    "module {module}, one requirement per topic and at most {cap} for this task: only rules that shape the module's "
+    "public API or its observable behaviour (for example the service signature and handle convention, the status and "
+    "error reporting convention, callback registration, blocking and timeout policy, reentrancy). Merge the rules of "
+    "one topic into one requirement. General coding, naming, formatting and file-layout rules are not SWE.1 "
+    "requirements: the SWE.3 guideline checklist checks them. Each requirement: type design_constraint, origin_group "
+    "hal_design_constraint, verification_method inspection, linked to the guideline rule(s) it states.")
+
+
 def task_packet(ws: Path, task: dict, model: str, findings: list[str] | None = None, previous: dict | None = None,
                 ctx: dict | None = None) -> dict:
     ws = Path(ws)
     ctx = ctx or context(ws)
     inv, pkg = GI.load(ws), governance_package(ws)
-    instr = LEAD[task["kind"]].format(group=task.get("group", ""), module=inv["module"]) + _rules(ws, task, ctx)
+    cap = ctx["rules"].get("design_constraints_per_part")
+    lead = LEAD_DESIGN_V2.format(module=inv["module"], cap=cap) if task["kind"] == "design" and cap else \
+        LEAD[task["kind"]].format(group=task.get("group", ""), module=inv["module"])
+    instr = lead + _rules(ws, task, ctx)
     if task.get("part"):  # D24
         pt = task["part"]
         instr += (f" This task covers part {pt['n']} of {pt['of']} of the guideline (its lines {pt['lines'][0]}-"
@@ -537,6 +622,11 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
           "design constraints of the HAL driver guideline. SWR identifiers are stable within this baseline.", "",
           f"Awaiting traceability: {waiting} of {len(rows)} requirements ({100.0 * waiting / max(len(rows), 1):.1f}%).",
           ""]
+    v2 = "operations" in tpl["attributes"]
+    actx = {"template": tpl, "in_scope": {a["function"]: a["component"] for a in inv["api"] if a["scope_class"] == "in"}}
+    for row in rows:  # D32 (template v2): the allocation is derived from the operations; v1 keeps the fixed values
+        row["alloc"] = allocation(row["obj"], actx) if v2 else (fixed["allocated_interface"],
+                                                                fixed["allocated_operation"])
     heading = None
     for row in rows:
         r, swr = row["obj"], row["swr"]
@@ -548,9 +638,10 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
                f"  - Status: {fixed['status']}", f"  - ASIL: {fixed['asil']}", f"  - CAL: {fixed['cal']}",
                f"  - Precondition: {r['precondition']}", f"  - Origin group: {r['origin_group']}",
                f"  - Links: {_links_line(r)}", f"  - Use cases: {', '.join(r['use_cases']) or 'none'}",
+               *([f"  - Operations: {', '.join(r['operations']) or 'none'}"] if v2 else []),
                f"  - Verification method: {r['verification_method']}", f"  - Test level: {r['test_level']}",
-               f"  - Allocated interface: {fixed['allocated_interface']}",
-               f"  - Allocated operation: {fixed['allocated_operation']}"]
+               f"  - Allocated interface: {row['alloc'][0]}",
+               f"  - Allocated operation: {row['alloc'][1]}"]
     opens, open_points = [], {}
     for t in plan_:
         rec = recs[t["id"]]
@@ -572,7 +663,9 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
     md.append("")
     attrs = {"schema": ATTR_SCHEMA, "template": tpl["template_id"], "work_order": m["work_order"],
              "package_version": pkg["package_version"],
-             "requirements": [{"id": row["swr"], "task": row["task"], **row["obj"], **fixed} for row in rows]}
+             "requirements": [{"id": row["swr"], "task": row["task"], **row["obj"], **fixed,
+                               **({"allocated_interface": row["alloc"][0], "allocated_operation": row["alloc"][1]}
+                                  if v2 else {})} for row in rows]}
     csv = ["requirement_id,test_id,test_file"] + [_test_row(row["swr"], row["obj"], inv["module"]) for row in rows]
     files = {REQS: "\n".join(md), ATTRS: json.dumps(attrs, indent=1) + "\n", CSV: "\n".join(csv) + "\n"}
     st = safety_text(ws)

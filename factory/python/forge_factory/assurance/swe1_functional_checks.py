@@ -38,21 +38,34 @@ def findings(ws: Path) -> list[str]:
     except ValueError as exc:
         return out + [f"{PREFIX}{exc}"]
     fixed = dict(tpl["fixed"])
+    v2 = "operations" in tpl["attributes"]  # template v2 (D32): the allocation is derived from the operations
+    derived = ("allocated_interface", "allocated_operation") if v2 else ()
     md = (ws / F.REQS).read_text() if (ws / F.REQS).is_file() else ""
     stated = {m.group(1): m.group(2).strip() for m in re.finditer(r"^\s*-\s*\*\*(SWR-\d{3,})\*\*\s*(.+)$", md, re.M)}
-    ids = []
+    ids, per_task = [], {}
     for r in doc.get("requirements") or []:
         swr, key = r.get("id", "?"), r.get("key", "?")
         ids.append(swr)
-        own = {k: v for k, v in r.items() if k not in ("id", "task", *fixed)}
+        per_task[r.get("task")] = per_task.get(r.get("task"), 0) + 1
+        own = {k: v for k, v in r.items() if k not in ("id", "task", *fixed, *derived)}
         found = F.requirement_findings(own, origins.get(r.get("task")), ctx)
         found += [("FIXED_ATTRIBUTE", f"{k} is '{r.get(k)}', the lane fixes '{v}'") for k, v in fixed.items()
                   if str(r.get(k)) != str(v)]
+        if v2 and "operations" in own:
+            want = F.allocation(own, ctx)
+            if (r.get("allocated_interface"), r.get("allocated_operation")) != want:
+                found.append(("ALLOCATION_MISMATCH", f"allocation is '{r.get('allocated_interface')}' / "
+                              f"'{r.get('allocated_operation')}', its operations give '{want[0]}' / '{want[1]}'"))
         if r.get("task") not in origins:
             found.append(("TASK_UNKNOWN", f"{r.get('task')} is no task of the functional author"))
         if stated.get(swr) != str(r.get("statement", "")).strip():
             found.append(("MARKDOWN_MISMATCH", f"{F.REQS} does not state {swr} as recorded in {F.ATTRS}"))
         out += [f"{PREFIX}{swr} [{key}] {rule}: {detail}" for rule, detail in found]
+    kinds = {t["id"]: t.get("kind") for t in F.plan(ws)}
+    for tid, n in per_task.items():  # template v2 (D31): the per-part cap of design constraints
+        lim = F.design_limit(tid, n, ctx) if kinds.get(tid) == "design" else None
+        if lim:
+            out.append(f"{PREFIX}{tid} {lim}")
     if not ids:
         out.append(f"{PREFIX}NO_REQUIREMENTS")
     if ids != [f"SWR-{n:03d}" for n in range(1, len(ids) + 1)]:

@@ -38,10 +38,15 @@ def of_workspace(ws: Path) -> str:
 
 
 def load_template(template_id: str | None = None) -> dict:
-    t = load_yaml(TEMPLATE)
-    if template_id is not None and t.get("template_id") != template_id:
-        raise LevelRefused(f"SWE1_TEMPLATE_UNKNOWN:{template_id}")
-    return t
+    """The template config with this id among config/factory/swe1-functional-template*.yaml (feature 020 round 2:
+    a new template version is a new file, older ones stay unchanged); None: the v1 file."""
+    if template_id is None:
+        return load_yaml(TEMPLATE)
+    for p in sorted(TEMPLATE.parent.glob("swe1-functional-template*.yaml")):
+        t = load_yaml(p)
+        if t.get("template_id") == template_id:
+            return t
+    raise LevelRefused(f"SWE1_TEMPLATE_UNKNOWN:{template_id}")
 
 
 def template(manifest: dict | None) -> dict | None:

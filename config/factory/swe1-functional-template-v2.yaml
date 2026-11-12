@@ -1,0 +1,47 @@
+# Feature 020 (owner 2026-11-12, "after UART finish, run the benchmark to compare, make the fixes if needed and run
+# again"): functional-level SWE.1 template v2 = v1 plus the fixes the first pilot round showed (decision log D31-D33);
+# v1 stays unchanged for the orders that ran on it. Module-agnostic: module facts live in the work order.
+schema: forge-c/swe1-functional-template/1
+template_id: swe1-functional-v2
+attributes:   # author-written attributes
+  - key
+  - title
+  - statement
+  - type
+  - precondition
+  - origin_group
+  - links
+  - use_cases
+  - operations                 # D32: the delivered public functions the requirement is about (allocation source)
+  - verification_method
+  - test_level
+enums:
+  type: [functional, design_constraint, architectural]
+  origin_group: [use_case, out_of_context, hal_design_constraint, state_behaviour, awaiting_traceability]
+  link_kind: [trace, derive]
+  verification_method: [test, analysis, inspection, demonstration]
+  test_level: [unit, component, integration, qualification, not_testable]
+fixed:        # set by assembly, never by the model (this lane: ASPICE-only, QM)
+  status: draft
+  asil: QM
+  cal: "0"
+allocation:   # D32: derived by assembly from `operations` (brownfield: the delivered API is known at SWE.1)
+  interface_from: component    # the delivered component(s) of the named operations (governance inventory)
+  unallocated: not allocated (design constraint)
+rules:
+  design_constraint_verification: inspection     # a design constraint is verified by inspection
+  derive_needs_rationale: true
+  awaiting_has_no_links: true
+  delivered_code_never_a_source: true
+  design_constraints_per_part: 3                 # D31: per guideline part, one per topic that shapes the API/behaviour
+  design_constraint_no_use_cases: true           # D31: a design constraint serves no single use case
+  design_constraint_no_operations: true          # D32: design constraints stay unallocated
+  functional_precondition_required: true         # D33: every functional requirement states its precondition
+  functional_operations_required: true           # D32: every functional requirement names >=1 delivered operation
+level_rule:   # functional level: no register-level vocabulary in a statement
+  term_sources:
+    - rm_register_index        # register and field names of the order's reference-manual sections
+    - cmsis_header_symbols     # register-block member and _Msk/_Pos symbol names of the device header
+  patterns:
+    - '\b0x[0-9A-Fa-f]{4,}\b'   # addresses and reset values
+  allowed: delivered public API names (functions, states, option constants)
