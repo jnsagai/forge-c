@@ -1,0 +1,19 @@
+{
+ "campaign_without_lineages": "2ad6965e1e8528743b3132589ac2b64b207d3efbb9fd0cfe74b1e1d7bd962832",
+ "lineages": {
+  "gpio-ll": "d2f38db086c435461afa30394127f36b3754c28ebdbc589cb6de4e8e7d50fd34",
+  "spi-hal": "d3ebd15568cf62984bc4f5b73ad5f577b342ed367138a14eb8951d378466f4d6",
+  "spi-ll": "dc22246c03fb9dd72c8f438ad6d30143614296f63b26a373eb88f9cd26ac951c",
+  "tim-hal": "893359030b91436536fae095cf768c9aa24332d11879f16c1ffdba39c75bd54c",
+  "tim-ll": "f8005a224d1de669b30ee2edf0c8ea4f7ea7db11e39599a6443fc59dc9b3ad57",
+  "usart-ll": "34f889659eddd5bc447526d2c3d2ffe0c8cd57aa8761348ef8a29a890d103fb7",
+  "wwdg-hal": "ae5a3dce581f8a558d3ebc50ca4d58ecc034bd9b6aef7e51ab74aa3ba032adde",
+  "wwdg-ll": "4bc54f19c91d2b316de093aeca0937b4591829573d4bc61dbe70c685f7da21cd"
+ },
+ "order_drivers_sha256": "d63dc6b3495c10785a387225346293a5eec2c9a3d483b1b7226e83bd700982ae",
+ "orders": {
+  "count": 3072,
+  "sha256": "2fe014617751cb75aa62157ae78e389ae9d16fce49af1e4c2d09fa29db1c8c96"
+ },
+ "source": "forge-c-020-base 303b46ea"
+}

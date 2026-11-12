@@ -43,7 +43,7 @@ def test_the_derived_campaign_validates_and_follows_the_ladder():
             assert L["after"] == {"lineage": D.LADDER[k - 1], "phase": "SWE.2", "verdict": "PASS"}
     assert (by["wwdg-hal"]["provided_from"], by["spi-hal"]["provided_from"], by["tim-hal"]["provided_from"]) == (L29, L41P, L43T)
     assert all("provided_from" not in by[i] for i in ("wwdg-ll", "spi-ll", "tim-ll"))
-    for lid in set(by) - set(D.LADDER):
+    for lid in set(by) - set(D.LADDER) - set(D.PILOTS):  # feature 020: a pilot lineage runs on its own phases
         assert (by[lid]["status"], by[lid]["priority"], by[lid]["phases"]) == ("ON_HOLD", 30, SIX)
 
 

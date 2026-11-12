@@ -122,6 +122,9 @@ LINEAGES = tuple(
         # peripheral onboarding stage (feature 016) delivers them.
         ("spi-hal", "SPIH", "20261109-L46", "0011m-spi-hal", "STM32N6_SPI_HAL", "spi-ll"),
         ("tim-hal", "TIMH", "20261109-L47", "0013m-tim-hal", "STM32N6_TIM_HAL", "tim-ll"),
+        # Feature 020 (owner 2026-11-12): the UART module pilot - one module (ST's frozen UART HAL + USART LL) under one
+        # functional-level SWE.1 requirement set; a pilot lineage (PILOTS), not a ladder step.
+        ("uart-module", "UARTM", "20261112-L48", "0012u-st-cube-uart-module", "STM32N6_UART_MODULE_ST", None),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
@@ -151,6 +154,14 @@ assert LADDER_PHASES == PHASES[:len(LADDER_PHASES)] and LADDER_PHASES
 assert all(_LINEAGE[i]["depends_on"] in (None, LADDER[k - 1]) and (k or _LINEAGE[i]["depends_on"] is None)
            for k, i in enumerate(LADDER))
 assert LADDER_PHASES[-1] == PHASES[-1] or all(i in PROVIDED_LL for i in LADDER if _LINEAGE[i]["depends_on"])
+# Feature 020 (research R7): a pilot lineage runs ACTIVE with its own phases outside the driver ladder - no `after` or
+# `depends_on` chaining, after every ready ladder step (PILOT_PRIORITY) and before the lineages on hold. Generic: a
+# pilot is any lineage of LINEAGES off the ladder that builds on nothing, with a contiguous phase list from SWE.1.
+PILOTS = {"uart-module": ["SWE.1"]}
+PILOT_PRIORITY = 40
+assert all(i in _LINEAGE and i not in LADDER and _LINEAGE[i]["depends_on"] is None
+           and list(ph) == list(PHASES[:len(ph)]) and ph for i, ph in PILOTS.items())
+assert 30 < PILOT_PRIORITY < 50 - (len(LADDER) - 1)
 
 
 def derived_campaign():
@@ -158,18 +169,20 @@ def derived_campaign():
     the deployer substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority and
     run the stage's phases; a HAL step builds on its LL lineage's SWE.6 (depends_on) when the stage reaches SWE.6,
     else on its PROVIDED_LL; every later step waits `after` the previous step's last stage phase unless it already
-    depends on it. Lineages off the ladder stay ON_HOLD."""
+    depends on it. A pilot lineage (PILOTS, feature 020) is ACTIVE on its own phases with PILOT_PRIORITY and no chaining.
+    Other lineages off the ladder stay ON_HOLD."""
     from ..quality import defaults
 
     pos = {lid: k for k, lid in enumerate(LADDER)}
     out = []
     for L in LINEAGES:
         k = pos.get(L["id"])
-        e = dict(id=L["id"], status="ACTIVE" if k is not None else "ON_HOLD", example=L["example"], tag=L["tag"],
-                 series=L["series"], driver_class=L["driver_class"], factory_revision="@SOURCE@", profile=PROFILE,
-                 run_model=RUN_MODEL, purpose="ASPICE_ONLY",
-                 phases=list(LADDER_PHASES if k is not None else PHASES),
-                 priority=50 - k if k is not None else 30, quality=defaults("ASPICE_ONLY"))
+        pilot = PILOTS.get(L["id"]) if k is None else None  # feature 020
+        e = dict(id=L["id"], status="ACTIVE" if k is not None or pilot else "ON_HOLD", example=L["example"],
+                 tag=L["tag"], series=L["series"], driver_class=L["driver_class"], factory_revision="@SOURCE@",
+                 profile=PROFILE, run_model=RUN_MODEL, purpose="ASPICE_ONLY",
+                 phases=list(LADDER_PHASES if k is not None else pilot or PHASES),
+                 priority=50 - k if k is not None else PILOT_PRIORITY if pilot else 30, quality=defaults("ASPICE_ONLY"))
         if L["depends_on"] is not None:
             if k is not None and LADDER_PHASES[-1] != PHASES[-1]:
                 e["provided_from"] = PROVIDED_LL[L["id"]]
@@ -178,7 +191,9 @@ def derived_campaign():
         if k and e.get("depends_on", {}).get("lineage") != LADDER[k - 1]:
             e["after"] = dict(lineage=LADDER[k - 1], phase=LADDER_PHASES[-1], verdict="PASS")
         e["note"] = (f"Driver ladder step {k + 1} of {len(LADDER)} (owner 2026-11-09: LL first, then the HAL on it)."
-                     if k is not None else "Not on the driver ladder (owner 2026-11-09).")
+                     if k is not None else
+                     f"Pilot lineage (feature 020): ACTIVE on {', '.join(pilot)} outside the driver ladder." if pilot
+                     else "Not on the driver ladder (owner 2026-11-09).")
         out.append(e)
     return dict(schema="forge-c/line-campaign/1", campaign_id=CAMPAIGN, line="local", wo_prefix="WO-F014",
                 lineages=out, note="Derived from the factory source driver ladder (feature 019); never hand-edited.")
