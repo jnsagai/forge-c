@@ -1,0 +1,150 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Functional-level software requirement (author output, feature 020)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "key",
+  "title",
+  "statement",
+  "type",
+  "precondition",
+  "origin_group",
+  "links",
+  "use_cases",
+  "verification_method",
+  "test_level"
+ ],
+ "properties": {
+  "key": {
+   "type": "string",
+   "minLength": 1
+  },
+  "title": {
+   "type": "string",
+   "minLength": 3,
+   "maxLength": 80
+  },
+  "statement": {
+   "type": "string",
+   "minLength": 10,
+   "maxLength": 600
+  },
+  "type": {
+   "enum": [
+    "functional",
+    "design_constraint",
+    "architectural"
+   ]
+  },
+  "precondition": {
+   "type": "string",
+   "minLength": 1
+  },
+  "origin_group": {
+   "enum": [
+    "use_case",
+    "out_of_context",
+    "hal_design_constraint",
+    "state_behaviour",
+    "awaiting_traceability"
+   ]
+  },
+  "links": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "kind",
+     "input_id",
+     "locator"
+    ],
+    "properties": {
+     "kind": {
+      "enum": [
+       "trace",
+       "derive"
+      ]
+     },
+     "input_id": {
+      "type": "string",
+      "pattern": "^IN-[0-9]{2}$"
+     },
+     "locator": {
+      "type": "string",
+      "minLength": 1
+     },
+     "rationale": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "use_cases": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "minLength": 1
+   }
+  },
+  "verification_method": {
+   "enum": [
+    "test",
+    "analysis",
+    "inspection",
+    "demonstration"
+   ]
+  },
+  "test_level": {
+   "enum": [
+    "unit",
+    "component",
+    "integration",
+    "qualification",
+    "not_testable"
+   ]
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "origin_group": {
+      "const": "awaiting_traceability"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "links": {
+      "maxItems": 0
+     }
+    }
+   },
+   "else": {
+    "properties": {
+     "links": {
+      "minItems": 1
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "type": {
+      "const": "design_constraint"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "verification_method": {
+      "const": "inspection"
+     }
+    }
+   }
+  }
+ ]
+}

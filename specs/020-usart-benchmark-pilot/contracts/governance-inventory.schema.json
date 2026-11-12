@@ -1,0 +1,138 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Governance inventory (deterministic, written by prepare)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "module",
+  "inputs",
+  "api",
+  "rm_features",
+  "not_delivered"
+ ],
+ "properties": {
+  "schema": {
+   "const": "forge-c/governance-inventory/1"
+  },
+  "module": {
+   "type": "string",
+   "minLength": 1
+  },
+  "inputs": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "input_id",
+     "name",
+     "sha256",
+     "bytes",
+     "role"
+    ],
+    "properties": {
+     "input_id": {
+      "type": "string",
+      "pattern": "^IN-[0-9]{2}$"
+     },
+     "name": {
+      "type": "string",
+      "minLength": 1
+     },
+     "revision": {
+      "type": "string"
+     },
+     "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+     },
+     "bytes": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "role": {
+      "enum": [
+       "requirement_source",
+       "implementation_under_analysis"
+      ]
+     },
+     "sections": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "api": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "function",
+     "component",
+     "file",
+     "scope_class",
+     "scope_group"
+    ],
+    "properties": {
+     "function": {
+      "type": "string",
+      "minLength": 1
+     },
+     "component": {
+      "type": "string",
+      "minLength": 1
+     },
+     "file": {
+      "type": "string",
+      "minLength": 1
+     },
+     "scope_class": {
+      "enum": [
+       "in",
+       "out"
+      ]
+     },
+     "scope_group": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "rm_features": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "feature",
+     "scope_class"
+    ],
+    "properties": {
+     "feature": {
+      "type": "string",
+      "minLength": 1
+     },
+     "scope_class": {
+      "enum": [
+       "in",
+       "out"
+      ]
+     }
+    }
+   }
+  },
+  "not_delivered": {
+   "type": "array",
+   "items": {
+    "type": "object"
+   }
+  }
+ }
+}

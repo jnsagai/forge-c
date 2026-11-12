@@ -1,0 +1,77 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Benchmark / pilot SWE.1 metrics (numbers and generic categories only)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "side",
+  "requirement_count",
+  "by_type",
+  "attribute_completeness",
+  "by_origin_group",
+  "link_kinds",
+  "verification_methods",
+  "test_levels"
+ ],
+ "properties": {
+  "side": {
+   "enum": [
+    "benchmark",
+    "pilot"
+   ]
+  },
+  "requirement_count": {
+   "type": "integer",
+   "minimum": 0
+  },
+  "by_type": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+   }
+  },
+  "by_origin_group": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+   }
+  },
+  "link_kinds": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+   }
+  },
+  "verification_methods": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+   }
+  },
+  "test_levels": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "integer",
+    "minimum": 0
+   }
+  },
+  "attribute_completeness": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "number",
+    "minimum": 0,
+    "maximum": 1
+   }
+  },
+  "scope_coverage": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "number"
+   }
+  }
+ }
+}

@@ -1,0 +1,169 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Work order: SWE.1 level, module and scope rule (feature 020)",
+ "type": "object",
+ "required": [
+  "swe1",
+  "module",
+  "scope"
+ ],
+ "additionalProperties": true,
+ "properties": {
+  "swe1": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "level",
+    "template"
+   ],
+   "properties": {
+    "level": {
+     "enum": [
+      "functional",
+      "register"
+     ]
+    },
+    "template": {
+     "type": "string",
+     "minLength": 1
+    }
+   }
+  },
+  "module": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "name",
+    "components"
+   ],
+   "properties": {
+    "name": {
+     "type": "string",
+     "minLength": 1
+    },
+    "components": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "id",
+       "layer",
+       "files",
+       "uses"
+      ],
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "layer": {
+        "enum": [
+         "LL",
+         "HAL"
+        ]
+       },
+       "files": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+         "type": "string",
+         "minLength": 1
+        }
+       },
+       "uses": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "minLength": 1
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "scope": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "in",
+    "out",
+    "not_delivered"
+   ],
+   "properties": {
+    "in": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "$ref": "#/$defs/group"
+     }
+    },
+    "out": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/group"
+     }
+    },
+    "not_delivered": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "capability",
+       "note"
+      ],
+      "properties": {
+       "capability": {
+        "type": "string",
+        "minLength": 1
+       },
+       "note": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  },
+  "use_cases_owner": {
+   "type": "array",
+   "items": {
+    "$ref": "governance-package.schema.json#/$defs/use_case"
+   }
+  }
+ },
+ "$defs": {
+  "group": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "group",
+    "functions"
+   ],
+   "properties": {
+    "group": {
+     "type": "string",
+     "minLength": 1
+    },
+    "functions": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "rm_features": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  }
+ }
+}

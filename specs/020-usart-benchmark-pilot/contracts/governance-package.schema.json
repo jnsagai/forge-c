@@ -1,0 +1,164 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Governance package (model step output + deterministic coverage)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "package_version",
+  "inventory_sha256",
+  "actors",
+  "use_cases",
+  "assumptions",
+  "open_points",
+  "coverage"
+ ],
+ "properties": {
+  "schema": {
+   "const": "forge-c/governance-package/1"
+  },
+  "package_version": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "inventory_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "actors": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "actor_id",
+     "name",
+     "description"
+    ],
+    "properties": {
+     "actor_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "name": {
+      "type": "string",
+      "minLength": 1
+     },
+     "description": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "use_cases": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "$ref": "#/$defs/use_case"
+   }
+  },
+  "assumptions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "assumption_id",
+     "text"
+    ]
+   }
+  },
+  "open_points": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "open_point_id",
+     "text",
+     "concerns"
+    ]
+   }
+  },
+  "coverage": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "uncovered_functions",
+    "uncovered_features",
+    "unused_use_cases"
+   ],
+   "properties": {
+    "uncovered_functions": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "uncovered_features": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "unused_use_cases": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "use_case": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "use_case_id",
+    "title",
+    "actor_id",
+    "goal",
+    "functions",
+    "origin"
+   ],
+   "properties": {
+    "use_case_id": {
+     "type": "string",
+     "minLength": 1
+    },
+    "title": {
+     "type": "string",
+     "minLength": 1
+    },
+    "actor_id": {
+     "type": "string",
+     "minLength": 1
+    },
+    "goal": {
+     "type": "string",
+     "minLength": 1
+    },
+    "functions": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "rm_features": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "origin": {
+     "enum": [
+      "generated",
+      "owner"
+     ]
+    }
+   }
+  }
+ }
+}
