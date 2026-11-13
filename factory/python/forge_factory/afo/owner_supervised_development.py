@@ -125,6 +125,9 @@ LINEAGES = tuple(
         # Feature 020 (owner 2026-11-12): the UART module pilot - one module (ST's frozen UART HAL + USART LL) under one
         # functional-level SWE.1 requirement set; a pilot lineage (PILOTS), not a ladder step.
         ("uart-module", "UARTM", "20261113-L50", "0012u-st-cube-uart-module", "STM32N6_UART_MODULE_ST", None),
+        # Owner 2026-11-13: "run SWE.1 on spi module now on local. use this new way of working" - the SPI module
+        # (ST's frozen SPI HAL + SPI LL) on the feature 020 way of working (functional template v2, D40 rules).
+        ("spi-module", "SPIM", "20261113-L51", "0011u-st-cube-spi-module", "STM32N6_SPI_MODULE_ST", None),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
@@ -157,7 +160,8 @@ assert LADDER_PHASES[-1] == PHASES[-1] or all(i in PROVIDED_LL for i in LADDER i
 # Feature 020 (research R7): a pilot lineage runs ACTIVE with its own phases outside the driver ladder - no `after` or
 # `depends_on` chaining, after every ready ladder step (PILOT_PRIORITY) and before the lineages on hold. Generic: a
 # pilot is any lineage of LINEAGES off the ladder that builds on nothing, with a contiguous phase list from SWE.1.
-PILOTS = {"uart-module": ["SWE.1"]}
+# The UART module pilot passed SWE.1 (L50B, decision D41) and is on hold; the SPI module is the active pilot.
+PILOTS = {"spi-module": ["SWE.1"]}
 PILOT_PRIORITY = 40
 assert all(i in _LINEAGE and i not in LADDER and _LINEAGE[i]["depends_on"] is None
            and list(ph) == list(PHASES[:len(ph)]) and ph for i, ph in PILOTS.items())
