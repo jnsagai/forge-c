@@ -157,12 +157,29 @@ def test_crash_mode_runs_only_for_a_latched_crash_with_an_unfixed_capa_on_a_down
     (dep / "FAILED_LATCHED.json").write_text(json.dumps({"at": "T1", "note": "deploy failed, rollback failed"}))
     assert plan() == {"skip": "LATCH_NOT_A_GUARDIAN_CRASH"}
     (dep / "FAILED_LATCHED.json").write_text(json.dumps({"at": "T1", "note": "live guardian crashed, automatic recovery failed: lane down"}))
-    for key, val, why in (("tip", "b" * 40, "BRANCH_AHEAD_OF_CRASHED_LIVE"), ("active", True, "LANE_NOT_DOWN"),
+    for key, val, why in (("tip", "b" * 40, "BRANCH_AHEAD_NOT_GATED"), ("active", True, "LANE_NOT_DOWN"),
                           ("free", 1913, "GPU_NOT_FREE")):
         old, env[key] = env[key], val
         assert plan() == {"skip": why}
         env[key] = old
     p = plan()
     assert p["capa"]["capa_id"] == "CAPA-901" and p["base"] == live and p["repo"] == str(newS) and p["latch_at"] == "T1"
+    # CAPA-255: a GATED tip ahead of the crashed live revision becomes the base, in its own checkout under qualification/
+    from forge_factory.reliability.store import CREStore
+    with CREStore(tmp_path / "owner/incidents.sqlite3").conn() as c:
+        cols = [r[1] for r in c.execute("PRAGMA table_info(cre_promotion_decisions)")]
+        row = {k: "x" for k in cols}
+        row.update(decision_id="pd-t", candidate="b" * 40, baseline=live, decision="ELIGIBLE_FOR_OFFLINE_REVIEW", at="T")
+        c.execute(f"INSERT INTO cre_promotion_decisions ({','.join(row)}) VALUES ({','.join('?' * len(row))})", list(row.values()))
+    env["tip"] = "b" * 40
+    p = plan()
+    assert p["base"] == "b" * 40 and p["live"] == live and p["repo"] == str(q / "maintenance-bbbbbbbb/src")
+    env["tip"] = live
     (dep / "maintenance-attempts.json").write_text(json.dumps({"T1": {}}))
     assert plan() == {"skip": "ALREADY_ATTEMPTED_FOR_THIS_LATCH"}  # one maintenance per latch
+
+
+def test_checkout_makes_a_clean_detached_tree_of_the_revision(tmp_path, factory):  # noqa: F811
+    rev = subprocess.run(["git", "rev-parse", "HEAD"], cwd=factory, capture_output=True, text=True).stdout.strip()
+    repo = MS.checkout(tmp_path / "qual/maintenance-x/src", rev, source=factory)
+    assert MS._git(repo, "rev-parse", "HEAD") == rev and MS.checkout(repo, rev, source=factory) == repo  # idempotent

@@ -295,16 +295,43 @@ def crash_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot:
     if capa is None:
         return {"skip": "NO_UNFIXED_CRASH_CAPA"}
     live = json.loads((deployer / "state.json").read_text())["live"]["commit"]
-    if git("rev-parse", BRANCH) != live:
-        return {"skip": "BRANCH_AHEAD_OF_CRASHED_LIVE"}  # the importer applies a fix only on the live revision
+    tip = git("rev-parse", BRANCH)
+    if tip != live and not gated(tip, live, Path(owner_cre)):
+        return {"skip": "BRANCH_AHEAD_NOT_GATED"}  # the importer anchors a fix only on live or a GATED tip (CAPA-255)
     if unit_active(live[:8]):
         return {"skip": "LANE_NOT_DOWN"}
     if gpu_free() < GPU_FREE_MIN_MIB:
         return {"skip": "GPU_NOT_FREE"}
-    repo = Path(qroot) / f"owner-allowance-{live[:8]}-main-20261107/newS"
-    if not (repo / ".git").exists() or _git(repo, "rev-parse", "HEAD") != live:
-        return {"skip": "LIVE_CHECKOUT_MISSING"}
-    return {"capa": capa, "base": live, "repo": str(repo), "latch_at": str(latch.get("at")), "latch": str(latch_p)}
+    if tip == live:
+        repo = Path(qroot) / f"owner-allowance-{live[:8]}-main-20261107/newS"
+        if not (repo / ".git").exists() or _git(repo, "rev-parse", "HEAD") != live:
+            return {"skip": "LIVE_CHECKOUT_MISSING"}
+    else:  # the gated tip whose recovery failed: the fix goes onto the code that starts next
+        repo = Path(qroot) / f"maintenance-{tip[:8]}/src"
+    return {"capa": capa, "base": tip, "live": live, "repo": str(repo), "latch_at": str(latch.get("at")),
+            "latch": str(latch_p)}
+
+
+def gated(cand: str, base: str, owner_cre: Path) -> bool:
+    """The host CRE store holds an ELIGIBLE decision for exactly base -> cand (the deployer's own gate record)."""
+    import sqlite3
+
+    with sqlite3.connect(Path(owner_cre).as_uri() + "?mode=ro", uri=True) as c:
+        row = c.execute("SELECT decision FROM cre_promotion_decisions WHERE candidate=? AND baseline=? ORDER BY at DESC",
+                        (cand, base)).fetchone()
+    return bool(row) and row[0] == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+
+
+def checkout(repo: Path, rev: str, source: Path = BRANCH_REPO) -> Path:
+    """A clean checkout of `rev` at `repo` (under the qualification root, where the importer accepts case repos)."""
+    if not (repo / ".git").exists():
+        repo.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "clone", "-q", "--no-checkout", str(source), str(repo)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(repo), "fetch", "-q", str(source), rev], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(repo), "checkout", "-q", "--detach", rev], check=True, capture_output=True)
+    if _git(repo, "rev-parse", "HEAD") != rev or _git(repo, "status", "--porcelain"):
+        raise MaintenanceError("CHECKOUT_NOT_CLEAN")
+    return repo
 
 
 def crash(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 170) -> dict:
@@ -327,7 +354,9 @@ def crash(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 17
     attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True))
     D = STATE / "maintenance" / stamp
     D.mkdir(parents=True, exist_ok=True)
-    (D / "guardian.journal").write_text("\n".join(_journal(plan["base"][:8])))
+    (D / "guardian.journal").write_text("\n".join(_journal(plan["live"][:8])))
+    if plan["base"] != plan["live"]:
+        checkout(Path(plan["repo"]), plan["base"])
     spec = {"capa_id": plan["capa"]["capa_id"], "base": plan["base"], "repo": plan["repo"], "state_dir": str(LSTATE),
             "owner_cre": str(OWNER_CRE), "journal": str(D / "guardian.journal"), "latch": plan["latch"], "drill": False,
             "pid": f"mnt-{plan['capa']['capa_id'].lower()}-{stamp}", "agent_seconds": 5400}
