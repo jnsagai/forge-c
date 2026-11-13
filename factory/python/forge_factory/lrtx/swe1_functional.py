@@ -260,6 +260,51 @@ def context(ws: Path) -> dict:
 
 
 NO_VALUE = re.compile(r"^(n/?a|none|tbd|-+|not applicable\b.*)$", re.I)
+# Round 3 (cloud control run C04, 2026-11-13; template v2 rules references_by_key / no_author_meta_text /
+# budget_verified_by_measurement): SWR ids are assigned at assembly and change between baselines, so another
+# requirement is cited by its key - "[key]" or "[task/key]" - and the assembly writes the current id in front.
+REF = re.compile(r"(?:\bSWR-\d{3,}\s*)?\[((?:[a-z][a-z0-9_]*/)?[a-z][a-z0-9_]*)\]")
+BARE_REF = re.compile(r"\bSWR-\d{3,}\b(?!\s*\[)")
+META = re.compile(r"\b(?:task owner|regenerat\w*|this answer|(?:consolidated|assembled) work ?products?|new key|"
+                  r"(?:IQ|SQ|SWE1)-\d{2}\b|inspectors?\b|inspection findings?|rework\w*|the author)", re.I)
+BUDGET = re.compile(r"\b\d[\d,.]*\s*(?:bytes?|KiB|kB|instructions?|cycles?|microseconds?|µs|us|milliseconds?|ms|MIPS)\b")
+REFERENCE_RULE = ("References: cite another requirement only by its key in brackets, '[key]' or '[task/key]' (the "
+                  "factory writes its current SWR id in front); never a bare SWR id - ids change between baselines.")
+META_RULE = ("Requirements and open points describe the module and its inputs, never the authoring process (tasks, keys "
+             "to assign, inspections, rework, regenerating work products).")
+BUDGET_RULE = ("A work-order budget (memory, stack, timing) is a mandatory requirement of this release like any other: "
+               "state the limit, verify it by measurement (test or analysis naming what is measured), and never "
+               "qualify it as optional, non-binding or not an acceptance limit.")
+
+
+def ref_index(rows: list[dict]) -> dict[str, str]:
+    """'key' (when unique in the set) and 'task/key' (task = the part after 'requirements:') -> current SWR id."""
+    idx, count = {}, {}
+    for row in rows:
+        key, task = row["key"], str(row["task"]).split(":", 1)[-1]
+        idx[f"{task}/{key}"] = row["swr"]
+        count[key] = count.get(key, 0) + 1
+        idx.setdefault(key, row["swr"])
+    for key, n in count.items():
+        if n > 1:
+            idx.pop(key, None)
+    return idx
+
+
+def resolve_refs(text: str, idx: dict[str, str]) -> tuple[str, list[str]]:
+    """The text with every '[key]' reference of a known key written as '<current SWR id> [key]'; the references
+    written with an id whose key is not in the set are returned (unresolved). Other brackets stay as they are."""
+    missing = []
+
+    def sub(m):
+        swr = idx.get(m.group(1))
+        if swr is None:
+            if m.group(0).startswith("SWR-"):
+                missing.append(m.group(1))
+            return m.group(0)
+        return f"{swr} [{m.group(1)}]"
+
+    return REF.sub(sub, text), missing
 
 
 def allocation(r: dict, ctx: dict) -> tuple[str, str]:
@@ -364,6 +409,28 @@ def requirement_findings(r: dict, origins: list[str] | None, ctx: dict) -> list[
         if rules.get("functional_operations_required") and r["type"] == "functional" and not ops:
             out.append(("OPERATION_MISSING", "a functional requirement names the delivered function(s) it is about in "
                         "operations"))
+    out += text_findings([r["title"], r["statement"], r["precondition"],
+                          *[str(ln.get("rationale") or "") for ln in links]], rules)
+    if rules.get("budget_verified_by_measurement") and r["type"] == "functional" and BUDGET.search(r["statement"]) \
+            and r["verification_method"] == "inspection":
+        out.append(("BUDGET_NOT_MEASURED", "a requirement that states a budget value is verified by measurement (test "
+                    "or analysis naming what is measured), not by inspection"))
+    return out
+
+
+def text_findings(texts: list[str], rules: dict) -> list[tuple[str, str]]:
+    """Round 3: bare SWR id references and authoring-process text (requirements and open points)."""
+    out = []
+    if rules.get("references_by_key"):
+        bare = next((m.group(0) for t in texts if (m := BARE_REF.search(t))), None)
+        if bare:
+            out.append(("REFERENCE_BY_ID", f"'{bare}' cites a requirement by id; cite it by its key in brackets, "
+                        "'[key]' or '[task/key]' - SWR ids are assigned when the set is assembled"))
+    if rules.get("no_author_meta_text"):
+        meta = next((m.group(0) for t in texts if (m := META.search(t))), None)
+        if meta:
+            out.append(("AUTHOR_META_TEXT", f"'{meta}': describe the module and its inputs, never the authoring "
+                        "process (tasks, keys, inspections, rework, regeneration)"))
     return out
 
 
@@ -376,6 +443,9 @@ def validate_task(ws: Path, doc: dict, task: dict, ctx: dict | None = None) -> l
             out.append(f"[{k}] DUPLICATE_KEY: keys are unique within the task")
         keys.add(k)
         out += [f"[{k}] {rule}: {detail}" for rule, detail in requirement_findings(r, task.get("origins"), ctx)]
+    for n, op in enumerate((doc or {}).get("open_points") or [], 1):
+        out += [f"[open_point {n}] {rule}: {detail}" for rule, detail in
+                text_findings([str(op)], ctx.get("rules") or {})]
     if task.get("kind") == "design":
         lim = design_limit(task["id"], len((doc or {}).get("requirements") or []), ctx)
         if lim:
@@ -450,7 +520,14 @@ def _rules_v2(task: dict, ctx: dict) -> str:
             + "verification_method (test, analysis, inspection, demonstration; a design_constraint is verified by "
             "inspection); test_level (unit, component, integration, qualification, not_testable). " + LEVEL_RULE + " "
             + LINK_RULE + " Status, ASIL and CAL are set by the factory, never written here. open_points lists "
-            "ambiguities or gaps of the inputs (or nothing).")
+            "ambiguities or gaps of the inputs (or nothing)." + _round3_rules(ctx))
+
+
+def _round3_rules(ctx: dict) -> str:
+    """Round 3 guidance, only where the template switches the rule on (orders without the switch keep their text)."""
+    rules = ctx.get("rules") or {}
+    return "".join(" " + t for k, t in (("references_by_key", REFERENCE_RULE), ("no_author_meta_text", META_RULE),
+                                         ("budget_verified_by_measurement", BUDGET_RULE)) if rules.get(k))
 
 
 def input_register_text(inv: dict) -> str:
@@ -609,15 +686,37 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
             ["requirements"]]
     for n, row in enumerate(rows, 1):
         row["swr"] = f"SWR-{n:03d}"
+    rules = dict(tpl.get("rules") or {})
+    unresolved: dict[str, list[str]] = {}
+    if rules.get("references_by_key"):  # round 3: the current id is written in front of every '[key]' reference
+        idx = ref_index([{"key": row["obj"]["key"], "task": row["task"], "swr": row["swr"]} for row in rows])
+        for row in rows:
+            r = json.loads(json.dumps(row["obj"]))  # the task record itself stays as the author wrote it
+            miss = []
+            for f in ("statement", "precondition"):
+                r[f], m_ = resolve_refs(r[f], idx)
+                miss += m_
+            for ln in r["links"]:
+                if ln.get("rationale"):
+                    ln["rationale"], m_ = resolve_refs(ln["rationale"], idx)
+                    miss += m_
+            row["obj"] = r
+            if miss:
+                unresolved[row["swr"]] = sorted(set(miss))
     waiting = sum(r["obj"]["origin_group"] == "awaiting_traceability" for r in rows)
     out_fns = [a["function"] for a in inv["api"] if a["scope_class"] == "out"]
+    budgets = m.get("budgets") if rules.get("budget_verified_by_measurement") else None
     md = ["# Software requirements", "",
           f"Functional-level software requirements of module {inv['module']} (template {tpl['template_id']}). Scope: "
           + " ".join(m["scope"]), "",
           f"Governance package: {GP.OUT_JSON} (version `{pkg['package_version']}`); input register and use cases "
           "there.", "",
           f"Release scope: work order {m['work_order']} (a single release; every requirement below belongs to it). "
-          "Priority: mandatory - every requirement is required for this release; none is optional or deferred.", "",
+          "Priority: mandatory - every requirement is required for this release; none is optional or deferred."
+          + (" Work-order budgets (" + ", ".join(sorted(k for k in budgets if k != "status")) + ") are development "
+             "targets set by the work-order owner: the requirements that state them are mandatory like every other "
+             "and verified by measurement; a measured exceedance is a failed verification, reported for the owner's "
+             "disposition." if budgets else ""), "",
           "Organization: one section per service group of the module's scope rule, then state behaviour, then the "
           "design constraints of the HAL driver guideline. SWR identifiers are stable within this baseline.", "",
           f"Awaiting traceability: {waiting} of {len(rows)} requirements ({100.0 * waiting / max(len(rows), 1):.1f}%).",
@@ -655,7 +754,8 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
             open_points[ident] = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
                                   "packet_input_hash": rec.get("base_hash"), "record_sha256": sha256_bytes(
                                       canonical_json(rec))}
-            opens.append(f"**{ident}** ({t['heading']}): {text}")
+            shown = resolve_refs(text, idx)[0] if rules.get("references_by_key") else text  # id stays stable (raw)
+            opens.append(f"**{ident}** ({t['heading']}): {shown}")
     opens += [f"**{o['open_point_id']}** (governance package): {o['text']}" for o in pkg["open_points"]]
     md += ["", "## Open points", ""] + ([f"- {o}" for o in opens] or ["- none"])
     md += ["", "## Delivered, out of scope", "", ", ".join(out_fns) or "none", "", "## Not delivered", ""]
@@ -675,7 +775,7 @@ def assemble(ws: Path, plan_: list[dict], recs: dict[str, dict]) -> dict:
     amap = {"schema": "forge-c/lrtx-swe1-assembly/1", "at": utc_now(), "level": L.FUNCTIONAL,
             "template": tpl["template_id"], "package_version": pkg["package_version"],
             "swr": {row["swr"]: {"task": row["task"], "key": row["obj"]["key"]} for row in rows}, "case": {},
-            "files": sorted(files), "open_points": open_points}
+            "files": sorted(files), "open_points": open_points, "unresolved_references": unresolved}
     S.record(ws, "SWE.1/assembly.json", amap)
     return amap
 

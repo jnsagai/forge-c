@@ -43,12 +43,27 @@ def findings(ws: Path) -> list[str]:
     md = (ws / F.REQS).read_text() if (ws / F.REQS).is_file() else ""
     stated = {m.group(1): m.group(2).strip() for m in re.finditer(r"^\s*-\s*\*\*(SWR-\d{3,})\*\*\s*(.+)$", md, re.M)}
     ids, per_task = [], {}
+    by_key = (ctx.get("rules") or {}).get("references_by_key")
+    idx = F.ref_index([{"key": r.get("key"), "task": r.get("task"), "swr": r.get("id")}
+                       for r in doc.get("requirements") or []]) if by_key else {}
     for r in doc.get("requirements") or []:
         swr, key = r.get("id", "?"), r.get("key", "?")
         ids.append(swr)
         per_task[r.get("task")] = per_task.get(r.get("task"), 0) + 1
         own = {k: v for k, v in r.items() if k not in ("id", "task", *fixed, *derived)}
         found = F.requirement_findings(own, origins.get(r.get("task")), ctx)
+        if by_key:  # round 3: a '<SWR id> [key]' reference names a key of this set and that key's current id
+            texts = [str(r.get("statement") or ""), str(r.get("precondition") or ""),
+                     *[str(ln.get("rationale") or "") for ln in r.get("links") or [] if isinstance(ln, dict)]]
+            for m in (m for t in texts for m in F.REF.finditer(t) if m.group(0).startswith("SWR-")):
+                written, want = m.group(0).split()[0].split("[")[0], idx.get(m.group(1))
+                # the detail names no SWR id: finding routing reads ids, and the cited id belongs to another task
+                if want is None:
+                    found.append(("REFERENCE_UNKNOWN", f"the reference [{m.group(1)}] names no key of this set (cite an "
+                                  "existing key, '[key]' or '[task/key]')"))
+                elif written != want:
+                    found.append(("REFERENCE_STALE", f"the id written before [{m.group(1)}] is not its id in this "
+                                  "baseline"))
         found += [("FIXED_ATTRIBUTE", f"{k} is '{r.get(k)}', the lane fixes '{v}'") for k, v in fixed.items()
                   if str(r.get(k)) != str(v)]
         if v2 and "operations" in own:

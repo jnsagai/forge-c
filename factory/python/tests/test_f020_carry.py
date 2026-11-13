@@ -68,7 +68,7 @@ def _author_dst(dst, monkeypatch):
     changed = copy.deepcopy(v2["requirements:g_blocking_transfer"])
     for r in changed["requirements"]:
         if r["key"] == "receive_blocking":
-            r["title"] = "a title the rework answer changed"  # must come back byte-identical (kept)
+            r["title"] = "a title the second answer changed"  # must come back byte-identical (kept); D40: no process words
     calls: list = []
     monkeypatch.setattr(S, "call", scripted({**v2, "requirements:g_blocking_transfer": changed}, calls))
     from forge_factory.lrtx import swe1_functional as F
