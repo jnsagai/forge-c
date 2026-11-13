@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/recipe-params.schema.json",
+  "title": "RecipeParameters",
+  "description": "One file per site (params/omniverse2.yaml, params/production.yaml). Every site-specific value is a named parameter; secrets are referenced by name only (FR-018).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["site", "parameters", "not_proven_here"],
+  "properties": {
+    "site": {"enum": ["omniverse2", "production"]},
+    "parameters": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value", "description"],
+        "properties": {
+          "value": {"type": ["string", "integer", "number", "boolean", "null"]},
+          "description": {"type": "string"},
+          "secret_ref": {"type": "boolean", "default": false, "description": "true: value is the NAME of a secret, never the secret"},
+          "confirmed": {"type": "boolean", "default": true, "description": "false: production value awaits the platform team"},
+          "production_value": {"type": ["string", "integer", "number", "boolean", "null"], "description": "documented in the omniverse2 file next to each value (SC-008)"}
+        }
+      }
+    },
+    "not_proven_here": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "production properties this site's build does not prove (precision, scale, virtualisation stand-in)"
+    }
+  }
+}

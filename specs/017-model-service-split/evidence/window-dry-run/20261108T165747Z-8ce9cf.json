@@ -1,0 +1,10 @@
+{
+ "dry_run": true,
+ "ended": "2026-11-08T16:57:47Z",
+ "max_minutes": 120,
+ "outcome": "REFUSED",
+ "planned_start": "2026-11-08T16:57:47Z",
+ "refusal": "LANE_NOT_READY:BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING",
+ "steps": [],
+ "window_id": "20261108T165747Z-8ce9cf"
+}

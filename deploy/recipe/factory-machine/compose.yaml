@@ -1,0 +1,63 @@
+# Forge-C factory machine, container stand-in (feature 017, User Story 5, T060; research R9, FR-021).
+#
+# Boundary: no GPU device, no host network, no host model paths, one bind mount (the data volume), and one network
+# that is `internal: true` (no route off the bridge) with the factory as its only member. Nothing with a GPU joins it.
+#
+# Model channel route (decision): a UNIX SOCKET inside the data volume, not a TCP route to the host.
+#   - On Omniverse2 the tenant gateway listens on the host loopback 127.0.0.1:18480 (tenant-gateway.service). A
+#     container on an internal network cannot reach the host loopback, and an extra_hosts/host-gateway route would
+#     need the gateway on a bridge address plus root-owned iptables rules to restrict it to port 18480 (no sudo here),
+#     and would expose every other host port on that address as well.
+#   - Instead the host runs one relay (as the omniverse2 user; started with the window/T061, not by this file):
+#       socat UNIX-LISTEN:/mnt/data/forge-c/model-service/factory-data/.channel/model.sock,fork,mode=0660,unlink-early \
+#             TCP:127.0.0.1:18480
+#     and inside the container a second relay maps the socket back to the URL every factory component already uses
+#     (params channel_url http://127.0.0.1:18480/v1): TCP 127.0.0.1:18480 (container loopback) -> the socket.
+#   - Verifiable: the container's only way out of its network namespace is that one socket file, which leads to that
+#     one TCP port; `python -m forge_factory.modelservice.isolation` proves from inside that the host ports (22, 8787,
+#     8788, 11455-11460, 18502, 32397, and 18480 on any host address) are unreachable and the channel answers.
+#
+# Build is local (no registry image of this name exists); BASE_DIGEST and the pins are required by the Dockerfile.
+#   FORGE_FACTORY_BASE_DIGEST=sha256:<64 hex> docker compose -f deploy/recipe/factory-machine/compose.yaml build
+name: forge-factory-machine
+services:
+  factory:
+    build:
+      context: ..
+      dockerfile: factory-machine/container/Dockerfile
+      args:
+        BASE_DIGEST: ${FORGE_FACTORY_BASE_DIGEST:-}
+        FORGE_SITE: omniverse2
+        FORGE_UID: "1000"                      # owner of the bind-mounted data volume on Omniverse2
+        FORGE_REPO_URL: ${FORGE_REPO_URL:-}
+        FORGE_REVISION: ${FORGE_REVISION:-}
+    image: forge-c-factory-machine:local
+    hostname: forge-factory
+    user: forge
+    init: true
+    command:
+      - sh
+      - -c
+      - >-
+        socat TCP-LISTEN:18480,bind=127.0.0.1,fork,reuseaddr UNIX-CONNECT:/srv/forge-c/.channel/model.sock &
+        exec sleep infinity
+    environment:
+      FORGE_MODEL_CHANNEL_URL: http://127.0.0.1:18480/v1
+      FORGE_DATA_DIR: /srv/forge-c
+    volumes:
+      - type: bind
+        source: /mnt/data/forge-c/model-service/factory-data
+        target: /srv/forge-c
+    networks:
+      - factory-boundary
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    cpus: 16                                   # params factory_vcpu
+    mem_limit: 64g                             # params factory_ram_gib (a cgroup limit, not VM memory: stand-in)
+    pids_limit: 4096
+    restart: "no"
+
+networks:
+  factory-boundary:
+    internal: true

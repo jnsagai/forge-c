@@ -1,0 +1,29 @@
+# Recipe parameters for production (feature 017). Values from docs/ONPREM-DEPLOYMENT.md (2026-10-15) and the owner
+# (2026-11-08: one H200 141 GB, shared). `confirmed: false` = waiting for the platform team. Secrets by name only.
+site: production
+parameters:
+  gpu_model:              {value: "NVIDIA H200", description: "GPU of the shared model service (DGX)"}
+  gpu_vram_mib:           {value: 144384, description: "141 GB"}
+  model_catalog:          {value: "both models loaded together (co-resident, about 90 GB)", confirmed: false, description: "141 GB holds both at full settings; no swap needed"}
+  reference_model:        {value: "qwen3.8:27b-q8_0 + Ornith-1.5-35B-A3B Q8_0", description: "The same two models as Omniverse2 (owner 2026-11-08)"}
+  reference_precision:    {value: q8_0, description: "GGUF Q8_0, pinned by sha256 in recipe.lock.json"}
+  reference_context:      {value: 262144, description: "Context per sequence of each model"}
+  reference_sequences:    {value: 1, confirmed: false, description: "Sequences per model; 141 GB leaves room for more (platform team)"}
+  reference_kv_cache_tokens: {value: null, description: "Not applicable: llama.cpp models, KV per sequence"}
+  reasoning_mode:         {value: "on", description: "Each model keeps its own setting (qwen3.8 medium effort, Ornith on)"}
+  prefix_caching:         {value: true, description: "Must stay on"}
+  request_logging:        {value: false, description: "Must stay off"}
+  channel_url:            {value: null, confirmed: false, description: "GPU server API URL"}
+  channel_tls:            {value: true, description: "HTTPS"}
+  channel_ca_bundle:      {value: null, confirmed: false, description: "Internal CA, if needed"}
+  auth_method:            {value: null, confirmed: false, description: "Platform authentication method"}
+  tenant_key_factory:     {value: "forge-prod", secret_ref: true, description: "Name of the factory's API key in Fabro's secret vault"}
+  identity_extension:     {value: null, confirmed: false, description: "Whether the platform offers /forge/v1/identity"}
+  factory_share_concurrency: {value: 7, confirmed: false, description: "Sequences for the factory (2 reserved for the coding assistant)"}
+  factory_queue_wait_max_s:  {value: 900, description: "Factory bounded wait"}
+  factory_machine:        {value: "vm", description: "Ubuntu VM, no GPU"}
+  factory_vcpu:           {value: 16, description: "vCPU"}
+  factory_ram_gib:        {value: 64, description: "RAM"}
+  factory_data_volume:    {value: "/srv/forge-c", description: "250 GB SSD data volume, encrypted, backed up daily"}
+  factory_os:             {value: "ubuntu-22.04.5", description: "OS image"}
+not_proven_here: []

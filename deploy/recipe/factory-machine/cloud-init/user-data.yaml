@@ -1,0 +1,77 @@
+#cloud-config
+# Forge-C factory machine (feature 017, User Story 5, T059; docs/ONPREM-DEPLOYMENT.md "Recommended VM environment").
+# Ubuntu 22.04 cloud image, no GPU. The same provision.sh builds the container stand-in (container/Dockerfile).
+#
+# Template: the @@...@@ markers below are replaced with base64 by vm/run-vm.sh (or the recipe CLI) when it
+# builds the seed: provision.sh, recipe.lock.json and provision.env (FORGE_* parameters and pins; no secrets).
+# Until they are rendered the decoded files are invalid and runcmd stops with "BLOCKED: seed not rendered".
+#
+# Network (comment only; enforced by the hypervisor or the platform firewall, not by this file):
+#   outbound allowlist after setup = the model channel ONLY (tenant gateway / GPU server API, HTTPS in production).
+#   During setup only: the apt and PyPI mirrors and the pinned release URLs in recipe.lock.json (443), preferably
+#   internal mirrors (ONPREM "Security"). Inbound: SSH (22) for named project members; dashboards via nginx (443).
+#   On Omniverse2 vm/run-vm.sh uses qemu user-mode networking with restrict=on, hostfwd ssh and one guestfwd to the
+#   tenant gateway port, so the guest has no other route.
+
+hostname: forge-factory
+preserve_hostname: false
+timezone: UTC
+
+# SSH only: key authentication, no passwords, no root login.
+ssh_pwauth: false
+disable_root: true
+ssh_deletekeys: true
+ssh_genkeytypes: [ed25519]
+
+users:
+  - name: forge
+    gecos: Forge-C factory service account
+    shell: /bin/bash
+    lock_passwd: true
+    # No sudo: provision.sh runs as root from cloud-init; the service account stays unprivileged.
+    ssh_authorized_keys:
+      - "@@FORGE_SSH_PUBKEY@@"   # rendered by run-vm.sh from FORGE_VM_SSH_PUBKEY_FILE (a public key, not a secret)
+
+# Data volume: second disk (vdb on qemu), ext4 labelled forge-data, mounted at /srv/forge-c. overwrite: false keeps an
+# existing file system (a rebuilt VM re-attaches the same data, T056).
+disk_setup:
+  /dev/vdb:
+    table_type: gpt
+    layout: true
+    overwrite: false
+fs_setup:
+  - label: forge-data
+    filesystem: ext4
+    device: /dev/vdb
+    partition: auto
+    overwrite: false
+mounts:
+  - [LABEL=forge-data, /srv/forge-c, ext4, "defaults,nofail", "0", "2"]
+
+package_update: false   # provision.sh installs the pinned package set itself
+package_upgrade: false
+
+write_files:
+  - path: /opt/forge-c/recipe/factory-machine/provision.sh
+    owner: root:root
+    permissions: "0755"
+    encoding: b64
+    content: "@@FORGE_PROVISION_SH_B64@@"
+  - path: /opt/forge-c/recipe/recipe.lock.json
+    owner: root:root
+    permissions: "0644"
+    encoding: b64
+    content: "@@FORGE_RECIPE_LOCK_B64@@"
+  - path: /etc/forge-c/provision.env
+    owner: root:root
+    permissions: "0600"
+    encoding: b64
+    content: "@@FORGE_PROVISION_ENV_B64@@"
+
+runcmd:
+  - [sh, -c, "grep -q '^#!/usr/bin/env bash' /opt/forge-c/recipe/factory-machine/provision.sh || { echo 'BLOCKED: seed not rendered' > /var/log/forge-provision.status; exit 1; }"]
+  - [mkdir, -p, /srv/forge-c]
+  - [loginctl, enable-linger, forge]
+  - [sh, -c, "set -a; . /etc/forge-c/provision.env; set +a; /opt/forge-c/recipe/factory-machine/provision.sh > /var/log/forge-provision.log 2>&1 && echo PASS > /var/log/forge-provision.status || echo FAIL > /var/log/forge-provision.status"]
+
+final_message: "forge-c factory machine cloud-init done after $UPTIME s; see /var/log/forge-provision.status"

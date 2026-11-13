@@ -1,0 +1,1 @@
+{"change": "MIN_GAP_S 3600 -> 0", "owner": "2026-11-08 remove this limit between deploys", "before_sha256": "eded1758242db52d1eb624026b3d5dddf484bce597897b88528ea1a09edfcff4", "after_sha256": "fb55ea76abc41f63e2f5e2460347aa254bd3093ed521f014bee153a051817f52", "tests": {"test_window": "16/16", "test_rollback": "32/32", "test_importer": "12/12"}, "at": "2026-11-08T21:02:29Z"}

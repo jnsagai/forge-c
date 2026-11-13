@@ -455,6 +455,16 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
     return dot
 
 
+def external_model_service(root: str | None) -> bool:
+    """Feature 017 (FR-029, T048): a lane whose root holds `model-service.yaml` with `mode: external` reaches its models
+    through the external model service, which swaps on demand. Such a lane adds no `<node>_serve` nodes: `lrtx.stack serve`
+    (pinned by the owner lane's transport proof, external mode deferred to the cutover) would fail closed there. Never
+    true for the owner or production lanes: their roots are refused, so a stray file cannot remove their swaps."""
+    from ..modelservice.lane_run import external_model_service as ems
+
+    return ems(root) is not None
+
+
 def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
     """Owner 2026-10-31 ("go ahead with the swap"): before every node that calls a model, a deterministic node makes the
     stack's llama-server serve that node's model (`lrtx.stack serve`, a no-op when it already does). Structured author
@@ -483,6 +493,8 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
             nodes[name]["model"] = im
     for start, end, text in reversed(edits):
         dot = dot[:start] + text + dot[end:]
+    if external_model_service(root):  # 017 FR-029: the model service swaps on demand; the lane never serves a model
+        return dot
     models: dict[str, str] = {}
     for _st, _en, _i, name, attrs in statements(dot):
         if re.search(r"forge_factory\.lrtx\.runner (?:inspect|iq-inspect) ", attrs):

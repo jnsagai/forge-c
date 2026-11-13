@@ -1,0 +1,67 @@
+== 2026-11-08T21:02:40Z window t073202611082102 deadline 1794182560
+== gpu before:
+3467149, 41816 MiB
+== release
+{"at": "2026-11-08T21:02:53Z", "decision": "pd-6fe3328abaf0678df37a", "event": "window_prepared", "package": "/mnt/data/forge-c/owner-autodeploy/ops/owner-allowance-main-window-4339ee54", "revision": "4339ee54df6973ab0fd911c3173eede19274b8af", "window": "t073202611082102"}
+{"at": "2026-11-08T21:02:53Z", "event": "hold", "out": "{\"status\": \"ADMISSION_HELD\", \"paused\": \"1\", \"orders\": [[\"-L40H\", \"RUNNING\"]]}"}
+{"at": "2026-11-08T21:42:55Z", "event": "close_unlaunched", "out": "{\"status\": \"CLOSED_NEVER_LAUNCHED\", \"requests\": [\"WO-F014-SWE1-SPIL-20261107-L41F\"]}", "round": 1}
+{"at": "2026-11-08T21:43:43Z", "event": "close_unlaunched", "out": "{\"status\": \"CLOSED_NEVER_LAUNCHED\", \"requests\": [\"WO-F014-SWE1-USARTL-20261107-L42E\"]}", "round": 2}
+{"at": "2026-11-08T21:44:47Z", "event": "close_unlaunched", "out": "{\"status\": \"CLOSED_NEVER_LAUNCHED\", \"requests\": [\"WO-F014-SWE1-TIML-20261107-L43E\"]}", "round": 3}
+{"at": "2026-11-08T21:46:22Z", "event": "clear_hold", "out": "{\"status\": \"HOLD_CLEARED\", \"paused\": \"0\"}"}
+{"at": "2026-11-08T21:47:27Z", "budget": {"attempts": 14, "jobs": 4, "requests": 477}, "event": "window_captured", "expected_sha": "00a94635a2e72c8e8f62ec9c553261d5549abb990f9c62f56ef7ab6ab9dd8d12", "window": "t073202611082102"}
+{"at": "2026-11-08T21:48:41Z", "event": "window_stop", "out": "rc=0", "window": "t073202611082102"}
+{"at": "2026-11-08T21:48:42Z", "event": "window_released", "revision": "4339ee54df6973ab0fd911c3173eede19274b8af", "stop": "f3557865af878060782c74202a0026148f7f35219f8d47aaec560b4f5325567c", "window": "t073202611082102"}
+WINDOW_RELEASED
+release rc=0
+== 2026-11-08T21:48:42Z gpu during the window:
+929 MiB, 47572 MiB
+== window file:
+{
+ "id": "t073202611082102",
+ "deadline": 1794182560.0,
+ "revision": "4339ee54df6973ab0fd911c3173eede19274b8af",
+ "decision": "pd-6fe3328abaf0678df37a",
+ "pkg": "/mnt/data/forge-c/owner-autodeploy/ops/owner-allowance-main-window-4339ee54",
+ "R": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-allowance-4339ee54-main-20261107",
+ "STOP": "f3557865af878060782c74202a0026148f7f35219f8d47aaec
+== the timer skips while the window is open:
+SKIP window_open
+== 2026-11-08T21:49:42Z restore
+{"at": "2026-11-08T21:49:47Z", "event": "guard_recheck", "out": "{\"status\": \"GUARD_EXTERNAL_FACTS_OK_NO_AUTHORITY\", \"mode\": \"INSTALLED\", \"production_invocation\": \"17d293418b5143eb8a9815b6e5054835\", \"writes\": 0, \"models\": 0}"}
+{"at": "2026-11-08T21:49:47Z", "event": "start", "out": "RT_DETACHED\", \"ticket_sha256\": \"483888b12276dcf49b3a000297aeedde71bb0beca2f5708272a8327abb190a42\"}\n \nanchor 2026-11-08 21:54:55 UTC RTT 0.00039743678644299507 elapsed_since_sample 0.10354176117107272\n", "rc": 0}
+{"at": "2026-11-08T22:05:19Z", "event": "window_restored", "inv": "9701370709214e1586bf68c8600c0dc7", "pid": "3680379", "ref": "34f2d919c4a680eda6d805a96ff27cebd5bac8b512853d0f6d392d904f3a604c", "revision": "4339ee54df6973ab0fd911c3173eede19274b8af", "window": "t073202611082102"}
+WINDOW_RESTORED
+restore rc=0
+== status
+{
+ "live": {
+  "commit": "4339ee54df6973ab0fd911c3173eede19274b8af",
+  "guard": "ddd19c3439899a2f7da29a38b80a911a9303cd295647fcb43742f62899865bec",
+  "inv": "9701370709214e1586bf68c8600c0dc7",
+  "pid": "3680379",
+  "ref": "34f2d919c4a680eda6d805a96ff27cebd5bac8b512853d0f6d392d904f3a604c"
+ },
+ "latched": false,
+ "locked": false,
+ "window": null,
+ "tip": "be3ccc701456afbf30a8ca8fc3b00a4ec5efd268",
+ "deploys": [
+  {
+   "adopted": false,
+   "at": "2026-11-08T11:08:34Z",
+   "at_epoch": 1794136114.1499617,
+   "commit": "383d54621a1575e5c53351703c71a6ee02d69e1d",
+   "decision": "pd-74cc4d924cdca0975d54",
+   "meta": "5f8e60d571103cd978bb63f4bc60c87dcd2fa834f31fe67939132e657496fb54",
+   "pid": "291142",
+   "stop": "d4674d1617dba10f2aa70ca92d6ca288f5088147572f45ab11e9963633c8296c"
+  },
+  {
+   "adopted": false,
+   "at": "2026-11-08T20:49:10Z",
+   "at_epoch": 1794170950.1915073,
+   "commit": "482b82
+== gpu after:
+3723002, 41816 MiB
+window closed
+T073_PASS

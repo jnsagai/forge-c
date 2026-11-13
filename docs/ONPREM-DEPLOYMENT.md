@@ -8,8 +8,8 @@ Forge-C needs one new Ubuntu VM with no GPU. All AI inference runs on the existi
 
 - **What Forge-C is:** an on-premise "software dark factory". AI agents draft and inspect embedded C workproducts for ASPICE SWE.1–SWE.6. Open-source tools (compilers, static analysis, tests) decide pass or fail.
 - **New VM (request):** Ubuntu 22.04 LTS, 16 vCPU, 64 GB RAM and a 250 GB SSD data volume. It runs all Forge-C software.
-- **GPU server (existing, unchanged):** vLLM serving Qwen3.6-35B-A3B. No Forge-C software is installed on it.
-- **Fit:** an agent call peaks at about 40k tokens. The 761,376-token KV cache holds 7 factory agents at 64k context plus a coding assistant at 2 × 128k.
+- **GPU server (existing):** an OpenAI-compatible model server that serves Forge-C's two models: `qwen3.8:27b-q8_0` (Qwen3.8 27B, GGUF Q8_0) and `Ornith-1.5-35B-A3B` (GGUF Q8_0). No Forge-C software is installed on it.
+- **Fit:** both models stay loaded together at full settings (262,144-token context each): about 46 GB + 44 GB of GPU memory, measured on the Forge-C test machine, so about 90 GB of the 141 GB H200. The rest is available for more concurrent sequences or other applications.
 - **Security:** Forge-C handles customer IP that may be export-controlled. Both machines, all backups and all access must stay inside Capgemini's controlled zone, with no internet access at runtime.
 
 ## What Forge-C does
@@ -41,7 +41,7 @@ flowchart LR
         DATA[(Data volume<br/>250 GB SSD)]
     end
     subgraph GPU["GPU server (existing) · managed by Infrastructure"]
-        VLLM[vLLM inference server<br/>Qwen3.6-35B-A3B BF16<br/>1 GPU, 141 GB VRAM<br/>262k context, 11 sequences<br/>761k-token KV cache]
+        VLLM[Model server, OpenAI-compatible<br/>qwen3.8 27B Q8_0 + Ornith-1.5 35B-A3B Q8_0<br/>1 GPU, 141 GB VRAM<br/>both models loaded, 262k context each]
     end
     GW -- HTTPS, OpenAI-compatible API --> VLLM
 ```
@@ -52,7 +52,7 @@ Two read-only web dashboards also run on the VM. **Fabro Monitor** (port 8787) s
 
 ## How Forge-C uses the GPU server
 
-The current GPU server configuration is sufficient and needs no change. Forge-C uses non-thinking mode with automatic tool calling, and does not use vision.
+Authoring agents use Ornith-1.5-35B-A3B; the supervisor, monitor and inspector agents use qwen3.8 27B. Forge-C needs the GPU server to serve its two models under the names it requests: `qwen3.8:27b-q8_0` (the default model) and `hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0`. Both are GGUF Q8_0 files, pinned by SHA-256 in the Forge-C recipe, and run today on the llama.cpp server with these settings: 262,144-token context, one sequence each, f16 KV cache, flash attention; qwen3.8 adds its own draft model (3 tokens) and reasoning at medium effort, Ornith runs with reasoning on. Forge-C uses automatic tool calling and does not use vision. Forge-C strips any reasoning text before it stores anything.
 
 | Measure (one full work order) | Value |
 | --- | --- |
@@ -63,7 +63,7 @@ The current GPU server configuration is sufficient and needs no change. Forge-C 
 
 With 2 sequences reserved for the coding assistant (262,144 tokens), 7 factory agents at 65,536 tokens each still fit: 720,896 tokens in total, within the 761,376-token KV cache. Agents re-send their growing conversation on every call, so vLLM prefix caching should stay on.
 
-These figures come from 2026-10-15 runs of the same workflow on a hosted benchmark model. Forge-C has not yet run on Qwen3.6-35B-A3B, so the pilot will confirm speed and reliability on this server.
+The call figures above come from 2026-10-15 runs of the same workflow on a hosted benchmark model; the two models above are the ones Forge-C runs every day on its test machine (owner decision 2026-11-08). With 141 GB both models can stay loaded, so the server never has to swap between them; on smaller GPUs Forge-C's own model service swaps them in seconds from host RAM (`deploy/recipe/README.md`).
 
 ## Recommended VM environment
 
@@ -120,7 +120,7 @@ Forge-C keeps evolving while it runs, so the VM also hosts a local AI coding ass
 | --- | --- |
 | Coding assistant | Qwen Code CLI (Apache-2.0), a terminal agent like Claude Code, connected to the GPU server's OpenAI-compatible API |
 | Runtime | Node.js 20 LTS or later |
-| GPU share | At most 2 of the 11 sequences, 131,072 tokens each (262,144 of the 761,376-token KV cache), with its own API key |
+| GPU share | Its own API key and a share agreed with the platform team (see Questions); the coding assistant can use the same two models |
 | Separation | Development uses its own git worktree, data root and Fabro instance. Production runs only tagged releases and cannot be touched by the assistant |
 | Source control | An internal Git server (GitLab or Bitbucket) inside the controlled zone, because the VM has no internet access |
 | Project rules | A `QWEN.md` in the repository carries the same engineering rules as today's Claude Code contract |
@@ -139,7 +139,7 @@ Forge-C processes customer IP, such as requirements, designs, source code and ve
 - **Need-to-know access:** SSH and dashboard access only for named project members, through company SSO or LDAP. Forge-C isolates each work order in its own workspace, but it does not separate customers from each other on one VM. A separate VM per customer program is therefore recommended.
 - **Encryption at rest:** the data volume and its backups are encrypted.
 - **No prompt logging on the GPU server:** vLLM request logging must stay off. If the server is shared with other projects, its access and logs must meet the same classification.
-- **Model provenance:** Qwen3.6-35B-A3B is a third-party open-weight model that runs fully offline, so no data goes back to its publisher. Its licence and origin should be approved by Capgemini security and export-control compliance.
+- **Model provenance:** Qwen3.8 27B and Ornith-1.5-35B-A3B are third-party open-weight models that run fully offline, so no data goes back to their publishers. Their licences and origins should be approved by Capgemini security and export-control compliance.
 - **Retention and deletion:** retention periods are configurable to match each customer contract, and a program's data can be deleted when it ends.
 
 ### Built-in Forge-C controls
@@ -165,9 +165,14 @@ Once the VM is ready, the Forge-C team can install and validate it without furth
 
 - [ ] Is the GPU server dedicated to Forge-C or shared? If shared, how many of the 11 sequences can Forge-C use?
 - [ ] What are the GPU server's API URL, served model name and authentication method, and is an internal CA certificate needed?
-- [ ] Can you confirm that vLLM prefix caching is on and that `chat_template_kwargs` is accepted per request?
+- [ ] Can the server load the two GGUF Q8_0 models (llama.cpp server, or another OpenAI-compatible server that runs GGUF) under the model names Forge-C requests, with prefix caching on?
 - [ ] Is there an internal apt and PyPI mirror, or temporary internet access for setup?
 - [ ] Which authentication should the dashboard reverse proxy use (SSO, LDAP), and who issues its TLS certificate?
 - [ ] Which export-control classification and network zone apply, and is the GPU server inside that zone?
 - [ ] Is a separate VM required for each customer program?
 - [ ] Is there an internal Git server in the controlled zone for the Forge-C repository, and can the generic factory code be mirrored in from GitHub?
+- [ ] Does the GPU server offer the Forge-C identity extension (`/forge/v1/identity`), or only `/v1/models`? Without it, Forge-C records the served model as not attested.
+- [ ] What share does each tenant get: guaranteed and maximum concurrent requests, queue length, and priority between applications?
+- [ ] Which models will the server offer, and are they kept loaded together or swapped? Forge-C works either way, and only waits longer during a swap.
+
+The interface Forge-C relies on is defined in `specs/017-model-service-split/contracts/model-channel.md`. The recipe that builds the same two-tier shape on the Forge-C test machine is described in `deploy/recipe/README.md` (feature 017).
