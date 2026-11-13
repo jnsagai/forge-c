@@ -188,7 +188,7 @@ def main(argv: list[str] | None = None) -> int:
 
     ap = argparse.ArgumentParser(prog="window")
     ap.add_argument("cmd", choices=["run"])
-    ap.add_argument("--plan", choices=["smoke", "qualification", "none"], default="none")
+    ap.add_argument("--plan", choices=["smoke", "qualification", "maintenance", "none"], default="none")
     ap.add_argument("--max-minutes", type=int, required=True)
     ap.add_argument("--state", type=Path, default=Path("/mnt/data/forge-c/model-service/windows-state"))
     ap.add_argument("--execute", action="store_true", help="really drain the lane and use the GPU (default: dry run)")

@@ -284,3 +284,10 @@ def _order_status(stdout: str) -> str | None:
         if isinstance(doc, dict) and "status" in doc:
             return str(doc["status"])
     return None
+
+
+def maintenance(ctx: dict) -> dict:
+    """Feature 022: the factory maintainer on the model service for one CRE CAPA (spec: FORGE_MAINTENANCE_SPEC)."""
+    from .maintenance import maintenance as run
+
+    return run(ctx)
