@@ -132,3 +132,40 @@ def test_a_workspace_without_a_functional_swe1_is_refused(tmp_path, capsys):
     bench.write_text(json.dumps(BENCH))
     rc = C.main(["--pilot", str(tmp_path / "empty"), "--benchmark", str(bench), "--out", str(tmp_path / "o")])
     assert rc == 2 and "PILOT_SWE1_MISSING" in capsys.readouterr().err
+
+
+def test_preserve_flags_a_guarded_metric_that_dropped(tmp_path):
+    """D34 (owner: "in the new runs, preserve what is already good compared to the benchmark")."""
+    bench = tmp_path / "metrics.json"
+    bench.write_text(json.dumps(BENCH))
+    ws = _workspace(tmp_path)
+    v = ws / ".forge-run/lrtx/SWE.1/phase1"
+    v.mkdir(parents=True)
+    (v / "verdicts.jsonl").write_text("".join(json.dumps({"tk": f"t|k{n}", "passed": n != 2}) + "\n" for n in range(4)))
+    (ws / ".forge-run/lrtx/SWE.1/governance").mkdir(parents=True)
+    (ws / ".forge-run/lrtx/SWE.1/governance/status.json").write_text(json.dumps({"state": "COVERAGE_PASS"}))
+    assert C.main(["--pilot", str(ws), "--benchmark", str(bench), "--out", str(tmp_path / "base")]) == 0
+    base = json.loads((tmp_path / "base/comparison.json").read_text())
+    assert base["quality"] == {"iq_first_pass_share": 0.75, "iq_judged": 4, "governance_pass": 1.0}
+    # the rerun loses a trace link (traced share 0.75 -> 0.5) and keeps everything else
+    p = ws / "workproducts/SWE.1/requirement_attributes.json"
+    d = json.loads(p.read_text())
+    d["requirements"][0]["links"] = [{"kind": "derive", "input_id": "IN-01", "locator": "p.1", "rationale": "r"}]
+    p.write_text(json.dumps(d))
+    assert C.main(["--pilot", str(ws), "--benchmark", str(bench), "--out", str(tmp_path / "new"),
+                   "--preserve", str(tmp_path / "base/comparison.json")]) == 0
+    rep = json.loads((tmp_path / "new/comparison.json").read_text())
+    st = {(x["metric"], x["category"]): x["status"] for x in rep["preserve"]}
+    assert st[("scope_coverage", "traced_share")] == "REGRESSED"
+    assert st[("attribute_completeness", "statement")] == "PRESERVED"
+    assert st[("quality", "iq_first_pass_share")] == "PRESERVED"
+    assert len(st) == len(C.GUARDED)
+    assert "Preserved against the baseline run" in (tmp_path / "new/comparison.md").read_text()
+
+
+def test_a_missing_baseline_is_refused(tmp_path, capsys):
+    bench = tmp_path / "metrics.json"
+    bench.write_text(json.dumps(BENCH))
+    rc = C.main(["--pilot", str(_workspace(tmp_path)), "--benchmark", str(bench), "--out", str(tmp_path / "o"),
+                 "--preserve", str(tmp_path / "nope.json")])
+    assert rc == 2 and "BASELINE_COMPARISON_MISSING" in capsys.readouterr().err

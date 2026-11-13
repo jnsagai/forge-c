@@ -694,8 +694,18 @@ def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None,
 
 
 def _run(ws, task, model, budget, ctx, findings=None) -> dict:
-    return V.run_task(ws, PHASE, task["id"], lambda fi, pr: task_packet(ws, task, model, fi, pr, ctx),
-                      lambda d: validate_task(ws, d, task, ctx), budget, findings)
+    from . import swe1_carry as C
+
+    def build(fi, pr):
+        return task_packet(ws, task, model, fi, pr, ctx)
+
+    if C.wanted(ws):  # D36 owner rule: validated requirements of a predecessor run are kept
+        if findings is None:
+            C.seed_task(ws, task, build(None, None)["input_hash"], ctx)
+        else:
+            C.release(ws, task["id"], findings)
+    rec = V.run_task(ws, PHASE, task["id"], build, lambda d: validate_task(ws, d, task, ctx), budget, findings)
+    return C.merge_kept(ws, task, rec, ctx) if C.wanted(ws) else rec
 
 
 def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = False,
@@ -813,6 +823,9 @@ def replace_requirement(ws: Path, task: str, key: str, new: dict) -> dict:
     errs, state = splice(ws, task, key, new)
     if errs:
         raise ValueError("PHASE1_SPLICE_INVALID:" + errs[0][:300])
+    from . import swe1_carry as C
+
+    C.release(ws, task, [f"[{key}] reworked by the per-requirement inspection"])  # D36: an inspection finding wins
     plan_, recs = state
     _p, recs0 = checkpoint_set(ws)
     before = requirement_hashes(recs0)

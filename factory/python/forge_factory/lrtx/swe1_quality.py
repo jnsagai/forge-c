@@ -374,6 +374,11 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
     srcs = _contexts(ws)
     budget = _budget(ws, INSPECT, resume, time_budget_s)
     issues = []
+    carry = None
+    if _functional(ws):  # D36 owner rule: a requirement unchanged since the predecessor run keeps its PASS verdict
+        from . import swe1_carry as C
+
+        carry = C.verdict_carrier(ws) if C.wanted(ws) else None
     try:
         for ref in refs:
             k = st["keys"].setdefault(_tk(ref), {"reworks": 0, "stopped": None})
@@ -384,6 +389,8 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
                 ws, ref, f"iq:{ref['task']}:{ref['key']}:{ref['sha'][:12]}",
                 lambda fi, pr, ref=ref, sources=sources: iq_packet(ws, ref, model, sources, fi, pr),
                 lambda d, ref=ref: validate_iq(d, ref))
+            if inherited is None and carry is not None and not ref["generated"]:
+                inherited = carry(ref)
             if inherited is not None:  # CAPA-209
                 inherited["round"] = k["reworks"] + 1
                 _append(ws, VERDICTS, inherited)

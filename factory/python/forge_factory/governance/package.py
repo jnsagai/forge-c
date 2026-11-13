@@ -239,6 +239,10 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     role = {a.id: a for a in load_agents()[0]}[ROLE]
     budget, _ = V.open_visit(ws, VISIT, resume, lambda: [], V.author_call_limit(ws, "SWE.1", role.max_turns, max_calls),
                              time_budget_s)
+    from ..lrtx import swe1_carry as C
+
+    if C.wanted(ws):  # D36 owner rule: the predecessor's validated package answer, same inventory, current checks
+        C.seed_governance(ws, VISIT, TASK, packet(ws, model, None, None)["input_hash"], lambda d: check_answer(ws, d))
     try:
         rec = V.run_task(ws, VISIT, TASK, lambda fi, pr: packet(ws, model, fi, pr), lambda d: check_answer(ws, d),
                          budget)

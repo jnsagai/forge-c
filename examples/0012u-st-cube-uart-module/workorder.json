@@ -79,7 +79,11 @@
   "layer_note": "Feature 020 pilot (owner 2026-11-12): one module, the delivered UART HAL and USART LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set; requirements are derived from the inputs, never from the code; secure build.",
   "swe1": {
     "level": "functional",
-    "template": "swe1-functional-v1"
+    "template": "swe1-functional-v2",
+    "carry_from": [
+      "WO-F014-SWE1-UARTM-20261112-L49",
+      "WO-F014-CMP-SWE1-UARTM-20261112-C02"
+    ]
   },
   "module": {
     "name": "UART",

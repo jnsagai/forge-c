@@ -124,7 +124,7 @@ LINEAGES = tuple(
         ("tim-hal", "TIMH", "20261109-L47", "0013m-tim-hal", "STM32N6_TIM_HAL", "tim-ll"),
         # Feature 020 (owner 2026-11-12): the UART module pilot - one module (ST's frozen UART HAL + USART LL) under one
         # functional-level SWE.1 requirement set; a pilot lineage (PILOTS), not a ladder step.
-        ("uart-module", "UARTM", "20261112-L49", "0012u-st-cube-uart-module", "STM32N6_UART_MODULE_ST", None),
+        ("uart-module", "UARTM", "20261113-L50", "0012u-st-cube-uart-module", "STM32N6_UART_MODULE_ST", None),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}

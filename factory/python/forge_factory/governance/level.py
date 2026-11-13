@@ -95,7 +95,9 @@ def manifest_keys(spec: dict) -> dict:
     if b is None or b["swe1"]["level"] != FUNCTIONAL:
         return {}
     return {"swe1_level": FUNCTIONAL, "swe1_template": b["swe1"]["template"],
-            **({"swe1_use_cases_owner": b["use_cases_owner"]} if b.get("use_cases_owner") else {})}
+            **({"swe1_use_cases_owner": b["use_cases_owner"]} if b.get("use_cases_owner") else {}),
+            # D36 owner rule: the predecessor runs whose validated SWE.1 artifacts this order keeps (lrtx/swe1_carry.py)
+            **({"swe1_carry_from": list(b["swe1"]["carry_from"])} if b["swe1"].get("carry_from") else {})}
 
 
 def check_phase_scope(spec: dict, stop_after: str | None) -> None:

@@ -26,6 +26,16 @@
     "template": {
      "type": "string",
      "minLength": 1
+    },
+    "carry_from": {
+     "type": "array",
+     "maxItems": 8,
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "pattern": "^WO-[A-Za-z0-9_.-]{1,96}$"
+     },
+     "description": "D36 owner rule: predecessor runs whose validated SWE.1 artifacts this order keeps (first available wins)"
     }
    }
   },

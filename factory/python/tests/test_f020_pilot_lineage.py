@@ -69,13 +69,13 @@ def test_existing_order_names_are_unchanged_and_the_pilot_adds_its_own():
     drivers = {wo: d for wo, d in D.ORDER_DRIVERS.items() if wo in old}
     assert hashlib.sha256(json.dumps(sorted(drivers.items())).encode()).hexdigest() == BASE["order_drivers_sha256"]
     new = {wo for wo, s in D.ORDER_SCOPE.items() if s[0] == PILOT}
-    assert "WO-F014-SWE1-UARTM-20261112-L49" in new and all("-UARTM-" in wo for wo in new)
-    assert D.ORDER_SCOPE["WO-F014-SWE1-UARTM-20261112-L49"] == (PILOT, "SWE.1", EXAMPLE)
+    assert "WO-F014-SWE1-UARTM-20261113-L50" in new and all("-UARTM-" in wo for wo in new)
+    assert D.ORDER_SCOPE["WO-F014-SWE1-UARTM-20261113-L50"] == (PILOT, "SWE.1", EXAMPLE)
 
 
 def test_t029_the_owner_lane_admits_the_pilot_from_generated_data_only():
     """The record fields the guardian generates (order_ids, driver_class, order_drivers) carry the pilot."""
-    wo = "WO-F014-SWE1-UARTM-20261112-L49"
+    wo = "WO-F014-SWE1-UARTM-20261113-L50"
     assert wo in D.ORDERS and D.ORDER_DRIVERS[wo] == DRIVER
     assert DRIVER in sorted(set(D.ORDER_DRIVERS.values()))
     from forge_factory.afo.queue import order_id_for
