@@ -129,6 +129,97 @@ ENGINE_FILES = ("workproducts/SWE.1/register_obligations.json", "workproducts/SW
 ENGINE_NOTE = ("SafeC engine output (register obligations / register oracle), checked by the deterministic oracle gate; "
                "listed by hash only, not inspected text: judge the requirements, effects and traceability")
 
+# CAPA-248 (cloud control run WO-F014-CMP-SWE1-UARTM-20261113-C03, 273 requirements): a functional SWE.1 baseline
+# carries the requirement set twice - software_requirements.md (421 kB) and its machine view requirement_attributes.json
+# (352 kB) - so the set inspection packet (315,657 estimated tokens) was refused PACKET_TOO_LARGE before any judgement.
+# The attributes reach the inspector as a residue index instead: every attribute value of a requirement that the
+# markdown block of that SWR states verbatim is checked here and left out; every value it does not state (task, key,
+# a trace-link rationale, any new attribute) stays in the index. Lossless by construction: nothing is dropped unchecked.
+FUNCTIONAL_ATTRS = "workproducts/SWE.1/requirement_attributes.json"
+FUNCTIONAL_REQS = "workproducts/SWE.1/software_requirements.md"
+ATTR_NOTE = ("Machine view of software_requirements.md. Every attribute value the markdown block of an SWR states "
+             "verbatim was checked against this file and is inspected there; 'requirements' lists per SWR only the "
+             "values the markdown does not state (always task and key, the identifiers open points and other "
+             "requirements cite).")
+
+
+# the markdown label of each attribute (lrtx/swe1_functional.assemble); an attribute without a label stays in the index
+ATTR_LABELS = {"title": "Title", "type": "Type", "status": "Status", "asil": "ASIL", "cal": "CAL",
+               "precondition": "Precondition", "origin_group": "Origin group", "use_cases": "Use cases",
+               "operations": "Operations", "links": "Links", "verification_method": "Verification method",
+               "test_level": "Test level", "allocated_interface": "Allocated interface",
+               "allocated_operation": "Allocated operation"}
+
+
+def _md_blocks(md: str) -> dict[str, dict[str, str]]:
+    """SWR id -> {"statement": text, <label>: value} from the requirement bullets of software_requirements.md."""
+    out, cur = {}, None
+    for line in md.splitlines():
+        m = re.match(r"^- \*\*(SWR-\d{3,})\*\* (.*)$", line)
+        if m:
+            cur = out.setdefault(m.group(1), {"statement": m.group(2).strip()})
+            continue
+        a = re.match(r"^  - ([A-Za-z][A-Za-z ]*): (.*)$", line) if cur is not None else None
+        if a and a.group(1) not in cur:
+            cur[a.group(1)] = a.group(2).strip()
+        elif not line.startswith("  "):
+            cur = None
+    return out
+
+
+def _link_text(ln: dict) -> str | None:
+    if not isinstance(ln, dict) or set(ln) - {"kind", "input_id", "locator", "rationale"}:
+        return None
+    t = f"{ln.get('kind')} {ln.get('input_id')} {ln.get('locator')}"
+    if ln.get("kind") == "derive" and ln.get("rationale"):
+        t += f" (rationale: {str(ln['rationale']).strip()})"
+    elif ln.get("rationale"):
+        return None  # a trace-link rationale is not rendered
+    return t
+
+
+def _rendered(k: str, v, fields: dict[str, str]) -> bool:
+    if k == "statement":
+        return isinstance(v, str) and fields.get("statement") == v.strip()
+    label = ATTR_LABELS.get(k)
+    if label is None or label not in fields:
+        return False
+    if k == "links":
+        if not isinstance(v, list):
+            return False
+        parts = [_link_text(ln) for ln in v]
+        return None not in parts and fields[label] == ("; ".join(parts) if parts else "none")
+    if k in ("use_cases", "operations"):
+        return isinstance(v, list) and all(isinstance(x, str) for x in v) and \
+            fields[label] == (", ".join(v) or "none")
+    return isinstance(v, (str, int)) and not isinstance(v, bool) and fields[label] == str(v).strip()
+
+
+def attribute_index(ws: Path) -> dict | None:
+    """CAPA-248: the residue source of requirement_attributes.json, or None when the files are not both there."""
+    ws = Path(ws)
+    pa, pm = ws / FUNCTIONAL_ATTRS, ws / FUNCTIONAL_REQS
+    if not (pa.is_file() and pm.is_file()):
+        return None
+    data = pa.read_bytes()
+    try:
+        doc = json.loads(data)
+    except ValueError:
+        return None
+    if not isinstance(doc, dict) or not isinstance(doc.get("requirements"), list) or \
+            not all(isinstance(r, dict) for r in doc["requirements"]):
+        return None
+    blocks = _md_blocks(pm.read_text())
+    rows = []
+    for r in doc["requirements"]:
+        fields = blocks.get(str(r.get("id")), {})
+        rows.append({"id": r.get("id"), **{k: v for k, v in r.items() if k != "id" and (
+            k in ("task", "key") or not _rendered(k, v, fields))}})
+    head = {k: v for k, v in doc.items() if k != "requirements"}
+    note = json.dumps({"path": FUNCTIONAL_ATTRS, "sha256": sha256_bytes(data), "bytes": len(data), "content": ATTR_NOTE,
+                       **head, "requirements": rows}, indent=None)
+    return {"path": f"{FUNCTIONAL_ATTRS}#residue", "text": note, "sha256": sha256_bytes(note.encode())}
+
 
 # CAPA-116 (run WO-F014-CMP-SWE3-OBL-20261102-08): the frozen work products of the previous phase each checklist judges
 # the phase against (SWE3-01/03 "match the software architecture"; SWE4-02/06 the units, unit specifications and design
@@ -193,7 +284,15 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
         elif (api := delivered_interface(ws)) and api not in files:  # interface is no source (FR-003)
             files.append(api)
     limit = source_char_limit(ws)
-    srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
+    residue = None
+    if phase == "SWE.1" and FUNCTIONAL_ATTRS in files and FUNCTIONAL_REQS in files:
+        from .swe1_quality import _functional
+
+        residue = attribute_index(ws) if _functional(ws) is not None else None  # CAPA-248
+    srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES
+            and not (residue is not None and f == FUNCTIONAL_ATTRS)]
+    if residue is not None:
+        srcs.append(residue)
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:
         data = (Path(ws) / f).read_bytes()
         note = json.dumps({"path": f, "sha256": sha256_bytes(data), "bytes": len(data), "content": ENGINE_NOTE}, indent=1)
