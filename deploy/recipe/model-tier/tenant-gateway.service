@@ -1,0 +1,20 @@
+# Feature 017: the model tier's tenant gateway and swap controller (user unit on the model-tier host).
+# On Omniverse2 it is started only by a qualification window until the owner approves the cutover; do not enable.
+[Unit]
+Description=Forge-C model tier: tenant gateway + swap controller (factory-agnostic, feature 017)
+After=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/data/forge-c/repos/forge-c-017-impl
+Environment=PATH=/home/omniverse2/.local/bin:/usr/bin:/bin
+ExecStart=/home/omniverse2/.local/bin/uv run python -m model_tier.tenant_gateway \
+  --config deploy/recipe/model-tier/tenants.yaml \
+  --secrets /mnt/data/forge-c/model-service/secrets/model-service.secrets \
+  --listen 127.0.0.1:18480 --state /mnt/data/forge-c/model-service/tier-state
+Restart=no
+TimeoutStopSec=120
+UMask=0077
+
+[Install]
+WantedBy=default.target

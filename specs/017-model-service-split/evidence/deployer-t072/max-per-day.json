@@ -1,0 +1,1 @@
+{"change": "MAX_PER_DAY 4 -> 10", "owner": "2026-11-08 increase the daily limit to 10", "before_sha256": "a947e57533868cca1e031a27a45b464d77460c22cab2ff4b98284d95851c2037", "after_sha256": "eded1758242db52d1eb624026b3d5dddf484bce597897b88528ea1a09edfcff4", "tests": {"test_window": "16/16", "test_rollback": "32/32", "test_importer": "12/12"}, "at": "2026-11-08T20:21:50Z"}

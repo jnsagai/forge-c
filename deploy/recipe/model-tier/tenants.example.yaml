@@ -1,0 +1,43 @@
+# Tenant gateway configuration (feature 017). Schema: config/schemas/model-service/tenant-config.schema.json
+# Copy to tenants.yaml next to catalog.yaml and replace each key_sha256 with sha256(<tenant key>); the keys
+# themselves live only in the private secrets file. A tenant is any application: several factories, a coding
+# assistant, a test neighbour. Adding one is only a new entry here (FR-032).
+catalog: catalog.yaml
+identity_lock: ../recipe.lock.json
+engine_key_ref: engine-internal
+outcome_log: outcomes.jsonl
+reasoning_finding_threshold: 3
+tenants:
+  - tenant_id: forge-qual          # the qualification lane (feature 017 windows)
+    key_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    guaranteed_concurrency: 1
+    max_concurrency: 2
+    queue_limit: 16
+    queue_timeout_s: 900
+    priority: 0
+    max_context: 262144
+    reasoning_mode: "on"            # each catalog model keeps its own reasoning setting
+    enabled: true
+    allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
+  - tenant_id: forge-owner         # the owner lane, enabled only by the owner-approved cutover (FR-020)
+    key_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    guaranteed_concurrency: 0
+    max_concurrency: 2
+    queue_limit: 16
+    queue_timeout_s: 900
+    priority: 0
+    max_context: 262144
+    reasoning_mode: "on"
+    enabled: false
+    allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
+  - tenant_id: sim-neighbour       # synthetic second application for contention tests (FR-013)
+    key_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    guaranteed_concurrency: 0
+    max_concurrency: 1
+    queue_limit: 64
+    queue_timeout_s: 600
+    priority: 5
+    max_context: 32768
+    reasoning_mode: "on"
+    enabled: true
+    allowed_models: ["qwen3.8:27b-q8_0"]

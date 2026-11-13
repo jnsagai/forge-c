@@ -358,6 +358,43 @@ def collect_structured(ws: Path, captured: Path | None = None) -> dict:
     return _clean(visits)
 
 
+def collect_gateway(caps: Path | None) -> list[dict]:
+    """Calls captured by the external-mode gateway transport (feature 017, FR-022): one private file per call."""
+    out = []
+    for f in sorted(caps.glob("*/*.json")) if caps and caps.is_dir() else []:
+        try:
+            rec = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(rec, dict) and rec.get("kind") == "gateway":
+            out.append(_clean(rec))
+    return out
+
+
+def attach_gateway(visits: list[dict], recs: list[dict], slack_s: float = 120.0) -> int:
+    """Attach each captured call to the agent turn it answered: same model and exact prompt tokens, started within
+    `slack_s` of the turn (output tokens break ties). The transport cannot see run or node, so this is the join."""
+    free, n = list(recs), 0
+    for v in visits:
+        for t in v.get("turns") or []:
+            if t.get("prompt_tokens") is None:
+                continue
+            model = t.get("model") or t.get("requested_model")
+            start = _ms(t.get("started"))
+            cands = [r for r in free if r.get("model") == model
+                     and ((r.get("reply") or {}).get("usage") or {}).get("prompt_tokens") == t["prompt_tokens"]
+                     and start is not None and _ms(r.get("at")) is not None and abs(_ms(r["at"]) - start) <= slack_s * 1000]
+            if not cands:
+                continue
+            out_tok = (t.get("usage") or {}).get("output")
+            best = min(cands, key=lambda r: (((r.get("reply") or {}).get("usage") or {}).get("completion_tokens") != out_tok,
+                                            abs(_ms(r["at"]) - start)))
+            free.remove(best)
+            v.setdefault("gateway_captured", []).append({**best, "turn": t.get("i")})
+            n += 1
+    return n
+
+
 def visit_stats(v: dict) -> dict:
     turns = v["turns"]
     u = [t.get("usage") or {} for t in turns]
@@ -538,6 +575,10 @@ def transcript(meta: dict, v: dict, st: dict) -> str:
             ]
         for w in t["warnings"]:
             out += [f"> warning {w['kind']}: {w['message']}", ""]
+    if v.get("gateway_captured"):
+        out += ["## Wire-level calls (captured at the model channel, capture switch on)", ""]
+        for rec in v["gateway_captured"]:
+            out += [f"Turn {rec.get('turn')} · identity {rec.get('identity_prefix')}", ""] + _captured_block(rec)
     return "\n".join(out)
 
 
@@ -632,7 +673,7 @@ def _write_visit(rdir: Path, meta: dict, v: dict) -> dict:
                 {
                     "kind": "visit",
                     "run": meta,
-                    **{k: x for k, x in v.items() if k not in ("turns", "tasks", "captured")},
+                    **{k: x for k, x in v.items() if k not in ("turns", "tasks", "captured", "gateway_captured")},
                     "stats": st,
                 },
                 ensure_ascii=False,
@@ -645,6 +686,8 @@ def _write_visit(rdir: Path, meta: dict, v: dict) -> dict:
             f.write(json.dumps({"kind": "task_output", **task}, ensure_ascii=False) + "\n")
         for rec in v.get("captured") or []:
             f.write(json.dumps({"kind": "captured_call", **rec}, ensure_ascii=False) + "\n")
+        for rec in v.get("gateway_captured") or []:
+            f.write(json.dumps({"kind": "captured_gateway_call", **rec}, ensure_ascii=False) + "\n")
     Path(str(base) + ".md").write_text(transcript(meta, v, st), encoding="utf-8")
     return {"node": v["node"], "visit": v.get("visit"), **st}
 
@@ -671,6 +714,7 @@ def export(
     )
     state_path = out / ".exported.json"
     done = json.loads(state_path.read_text()) if incremental and state_path.is_file() else {}
+    gateway_recs = collect_gateway(workorders.parent / "model-exchanges/gateway")
     c = _ro(db)
     try:
         every = runs(c)
@@ -684,6 +728,8 @@ def export(
             if incremental and final and done.get(meta["run_id"]) == meta["completed_ms"] and not owns_order:
                 continue
             visits = list(collect(c, meta["run_id"])["visits"].values())
+            if gateway_recs:
+                attach_gateway(visits, gateway_recs)
             if owns_order:  # an order's workspace and captures are shared by all its runs: attached to the newest run only
                 ws = workorders / meta["wo"] / "workspace"
                 caps = workorders.parent / "model-exchanges/structured" / _safe(meta["wo"])

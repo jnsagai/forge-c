@@ -1,0 +1,98 @@
+{
+ "dry_run": false,
+ "ended": "2026-11-11T12:20:45Z",
+ "hard_end_s": 7200,
+ "max_minutes": 120,
+ "outcome": "COMPLETED",
+ "planned_start": "2026-11-11T11:10:48Z",
+ "steps": [
+  {
+   "at": "2026-11-11T11:10:48Z",
+   "step": "drain_requested"
+  },
+  {
+   "at": "2026-11-11T11:10:48Z",
+   "detail": "IDLE",
+   "step": "lane_idle"
+  },
+  {
+   "at": "2026-11-11T11:14:44Z",
+   "step": "lane_model_stopped"
+  },
+  {
+   "at": "2026-11-11T11:14:44Z",
+   "free_mib": 47568,
+   "step": "gpu_free_verified"
+  },
+  {
+   "at": "2026-11-11T11:14:55Z",
+   "step": "tier_started"
+  },
+  {
+   "at": "2026-11-11T11:14:55Z",
+   "identities": {},
+   "step": "identity_verified"
+  },
+  {
+   "at": "2026-11-11T12:05:00Z",
+   "result": {
+    "calls": 1593,
+    "cold_swaps": 0,
+    "failed": 0,
+    "identities": {
+     "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": true,
+     "qwen3.8:27b-q8_0": true
+    },
+    "identities_pass": true,
+    "neighbour": {
+     "by_status": {
+      "429": 1,
+      "error": 3
+     },
+     "latency_ms": {
+      "max": 600011.044064071,
+      "p50": 600003.5617346875,
+      "p95": 600011.044064071
+     },
+     "ok": 0,
+     "requests": 4
+    },
+    "sc003_pass": true,
+    "sc009_pass": true,
+    "sc011_pass": true,
+    "swap_s": {
+     "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0 -> qwen3.8:27b-q8_0": {
+      "median": 5.491818957030773,
+      "n": 10,
+      "p95": 6.272003645077348
+     },
+     "qwen3.8:27b-q8_0 -> hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": {
+      "median": 6.5966067663393915,
+      "n": 9,
+      "p95": 6.701654450502247
+     }
+    },
+    "wrong_model": 0
+   },
+   "step": "qualification_ran"
+  },
+  {
+   "at": "2026-11-11T12:05:01Z",
+   "step": "tier_stopped"
+  },
+  {
+   "at": "2026-11-11T12:05:01Z",
+   "free_mib": 47568,
+   "step": "gpu_free_after_tier"
+  },
+  {
+   "at": "2026-11-11T12:20:42Z",
+   "step": "lane_model_restarted"
+  },
+  {
+   "at": "2026-11-11T12:20:45Z",
+   "step": "lane_resumed"
+  }
+ ],
+ "window_id": "20261111T111048Z-829e4f"
+}

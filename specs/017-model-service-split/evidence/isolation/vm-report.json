@@ -1,0 +1,300 @@
+{
+  "attempts": [
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 11455,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 11456,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 11457,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 11460,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 8787,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 8788,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 32397,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 22,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.100",
+      "port": 18502,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 11455,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 11456,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 11457,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 11460,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 8787,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 8788,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 32397,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 22,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 18502,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "172.17.0.1",
+      "port": 18480,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 11455,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 11456,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 11457,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 11460,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 8787,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 8788,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 32397,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 22,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 18502,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "unreachable",
+      "host": "10.0.2.2",
+      "port": 18480,
+      "reachable": false,
+      "result": "blocked"
+    },
+    {
+      "expected": "reachable",
+      "host": "10.0.2.100",
+      "http_status": 200,
+      "port": 18480,
+      "reachable": true,
+      "result": "ok"
+    }
+  ],
+  "boundary": {
+    "evidence": [
+      "/sys/class/dmi/id/sys_vendor=QEMU",
+      "cpu flag hypervisor"
+    ],
+    "kind": "vm"
+  },
+  "channel_url": "http://10.0.2.100:18480/v1",
+  "checked_at": "2026-11-08T20:06:38Z",
+  "checks": [
+    {
+      "id": "boundary_present",
+      "observed": {
+        "evidence": [
+          "/sys/class/dmi/id/sys_vendor=QEMU",
+          "cpu flag hypervisor"
+        ],
+        "kind": "vm"
+      },
+      "reasons": [],
+      "status": "PASS"
+    },
+    {
+      "id": "gpu_device_absent",
+      "observed": {
+        "devices": [],
+        "drivers": [],
+        "kernel_shared_driver_entries": [],
+        "tools": {}
+      },
+      "reasons": [],
+      "status": "PASS"
+    },
+    {
+      "id": "host_model_paths_absent",
+      "observed": {
+        "checked": [
+          "/mnt/data/forge-c/model-service/models",
+          "/mnt/data/forge-c/model-service/images",
+          "/dev/shm/forge-model-tier",
+          "/mnt/data/forge-c/ollama-models",
+          "/usr/share/ollama/.ollama/models"
+        ],
+        "visible": []
+      },
+      "reasons": [],
+      "status": "PASS"
+    },
+    {
+      "id": "only_model_channel_reachable",
+      "observed": {
+        "channel": {
+          "host": "10.0.2.100",
+          "http_status": 200,
+          "port": 18480
+        },
+        "hosts": [
+          "10.0.2.100",
+          "172.17.0.1",
+          "host.docker.internal",
+          "10.0.2.2"
+        ],
+        "ports": [
+          11455,
+          11456,
+          11457,
+          11460,
+          8787,
+          8788,
+          32397,
+          22,
+          18502
+        ],
+        "unresolved_hosts": [
+          "host.docker.internal"
+        ]
+      },
+      "reasons": [],
+      "status": "PASS"
+    }
+  ],
+  "open_issues": 0,
+  "schema": "forge-c/017/isolation-report",
+  "standin_limitations": [],
+  "status": "PASS"
+}

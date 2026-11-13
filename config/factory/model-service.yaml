@@ -1,0 +1,18 @@
+# Feature 017 (specs/017-model-service-split): how the factory reaches its model.
+# Schema: config/schemas/model-service/model-service-profile.schema.json
+#
+# owned    = today's behaviour, unchanged: the line starts, swaps and stops its own model server on the GPU.
+# external = the factory is a tenant of a separate model service and never touches a model server or the GPU.
+#            Moving a lane to external needs an owner-approved cutover (FR-020).
+mode: owned
+
+# Example of the external mode (qualification lane only until the cutover):
+# mode: external
+# base_url: http://127.0.0.1:18480/v1        # the tenant gateway; the only model endpoint the factory may use
+# credential_ref: forge-qual                 # resolved from the private secrets file, never stored here
+# expected_identity:                         # per catalog model; every role's model must be listed
+#   ornith-1.5-35b-a3b-q8: {precision: other, reasoning_mode: on, min_context_limit: 65536}
+#   qwen3.6-35b-a3b-fp8:   {precision: fp8,   reasoning_mode: off, min_context_limit: 65536}
+# share: {concurrency: 4, queue_wait_max_s: 900}
+# outage_wait_max_s: 900
+# context_limit: 65536

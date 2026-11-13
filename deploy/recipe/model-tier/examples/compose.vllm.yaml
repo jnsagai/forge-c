@@ -1,0 +1,41 @@
+# EXAMPLE (feature 017): engines for a site that serves with vLLM, such as the production reference in
+# docs/ONPREM-DEPLOYMENT.md. Omniverse2 does not use it (owner 2026-11-08: "we don't work with qwen 3.6 here"):
+# its catalog is the owner lane's llama.cpp models.
+# Started and stopped ONLY by the swap controller of the
+# tenant gateway (model_tier.engines), and on Omniverse2 only inside a qualification window until the cutover.
+#
+# - vLLM with sleep mode: started once, then slept/woken for swaps; weights stay in pinned host RAM (FR-031).
+# - The engine port is bound to loopback only; the tenant gateway (host user unit) is the only published entry.
+# - Request logging stays off; prefix caching on; non-thinking is enforced per request by the gateway.
+# - The internal engine key comes from the environment of the gateway that runs `docker compose`.
+name: forge-model-tier
+services:
+  engine-qwen36:
+    image: vllm/vllm-openai@sha256:befccf0e7e4089aa23926bb6f887a85c0d46c2a99e6de5c5ffdf5cb7957c5b34   # v0.32.0
+    command:
+      - --model=/models/qwen3.6-35b-a3b-fp8
+      - --served-model-name=qwen3.6-35b-a3b-fp8
+      - --host=0.0.0.0
+      - --port=8000
+      - --max-model-len=65536
+      - --max-num-seqs=2
+      - --gpu-memory-utilization=0.90
+      - --enable-prefix-caching
+      - --enable-sleep-mode
+      - --api-key=${FORGE_MODEL_TIER_ENGINE_KEY:?engine key}
+    environment:
+      VLLM_SERVER_DEV_MODE: "1"        # sleep/wake endpoints; reachable on loopback only, guarded by the engine key
+      HF_HUB_OFFLINE: "1"
+      VLLM_NO_USAGE_STATS: "1"
+      DO_NOT_TRACK: "1"
+    volumes:
+      - /mnt/data/forge-c/model-service/models/qwen3.6-35b-a3b-fp8:/models/qwen3.6-35b-a3b-fp8:ro
+      - /mnt/data/forge-c/model-service/vllm-cache:/root/.cache/vllm
+    ports:
+      - "127.0.0.1:18502:8000"
+    devices:
+      - nvidia.com/gpu=all
+    ulimits:
+      memlock: -1
+    shm_size: 16gb
+    restart: "no"
