@@ -38,6 +38,9 @@ rules:
   design_constraint_no_operations: true          # D32: design constraints stay unallocated
   functional_precondition_required: true         # D33: every functional requirement states its precondition
   functional_operations_required: true           # D32: every functional requirement names >=1 delivered operation
+  references_by_key: true                        # D40: cite requirements as [key]/[task/key]; assembly writes the id
+  no_author_meta_text: true                      # D40: no authoring-process text in requirements or open points
+  budget_verified_by_measurement: true           # D40: budgets mandatory, measured; intro states the budget policy
 level_rule:   # functional level: no register-level vocabulary in a statement
   term_sources:
     - rm_register_index        # register and field names of the order's reference-manual sections
