@@ -66,6 +66,16 @@ def profile_context_tokens(ws: Path | None, model: str | None = None) -> tuple[i
     return CONTEXT_TOKENS, "legacy:FORGE_LRTX_CONTEXT_TOKENS"
 
 
+# Feature 021 FR-004: the run-identity-free part of a packet. input_hash also covers the run context (the QM assessment
+# scope binds the work order, the lessons offered are looked up per order, the demonstration scope), so no checkpoint
+# ever matches across orders; the semantic key leaves exactly those out. A pure function: packets are unchanged.
+RUN_CONTEXT_FIELDS = ("assessment_scope", "lessons_offered", "demonstration_scope", "accounting", "input_hash", "_messages")
+
+
+def semantic_key(p: dict) -> str:
+    return hashlib.sha256(canonical_json({k: v for k, v in p.items() if k not in RUN_CONTEXT_FIELDS})).hexdigest()
+
+
 def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
     """G3/D10 (process-first design, owner 2026-10-31): the served-model identity a packet's answer depends on.
 

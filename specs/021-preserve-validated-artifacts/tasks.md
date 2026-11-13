@@ -6,15 +6,15 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Create branch `feat/021-preserve-validated-artifacts` from the campaign tip in a new worktree `repos/forge-c-021-preserve`
-- [ ] T002 Baseline: run the f020 regression scope and the register-level identity guards; record failing set in `specs/021-preserve-validated-artifacts/baseline.md`
+- [X] T001 Create branch `feat/021-preserve-validated-artifacts` from the campaign tip in a new worktree `repos/forge-c-021-preserve`
+- [X] T002 Baseline: run the f020 regression scope and the register-level identity guards; record failing set in `specs/021-preserve-validated-artifacts/baseline.md`
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T003 [P] Test: `tests/test_f021_semantic_key.py` - same semantic content under two work-order ids gives the same key; register-level packets byte-identical
-- [ ] T004 Implement `semantic_key` beside `input_hash` in `forge_factory/lrtx/structured.py` (QM scope without work_order_id in the key only)
-- [ ] T005 [P] Test: `tests/test_f021_carry_store.py` - put/get by (phase, item_key, content_sha, dep_sha), provenance, intact-source check
-- [ ] T006 Implement `forge_factory/lrtx/carry_store.py` (sqlite index in the line state dir)
+- [X] T003 [P] Test: `tests/test_f021_semantic_key.py` - same semantic content under two work-order ids gives the same key; register-level packets byte-identical
+- [X] T004 Implement `semantic_key` beside `input_hash` in `forge_factory/lrtx/structured.py` (QM scope without work_order_id in the key only)
+- [X] T005 [P] Test: `tests/test_f021_carry_store.py` - put/get by (phase, item_key, content_sha, dep_sha), provenance, intact-source check
+- [X] T006 Implement `forge_factory/lrtx/carry_store.py` (sqlite index in the line state dir)
 
 ## Phase 3: User Story 1 - a rerun keeps every validated item (P1)
 
