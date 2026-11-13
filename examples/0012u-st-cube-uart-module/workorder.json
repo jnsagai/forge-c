@@ -81,6 +81,8 @@
     "level": "functional",
     "template": "swe1-functional-v2",
     "carry_from": [
+      "WO-F014-SWE1-UARTM-20261113-L50",
+      "WO-F014-CMP-SWE1-UARTM-20261113-C03",
       "WO-F014-SWE1-UARTM-20261112-L49",
       "WO-F014-CMP-SWE1-UARTM-20261112-C02"
     ]
