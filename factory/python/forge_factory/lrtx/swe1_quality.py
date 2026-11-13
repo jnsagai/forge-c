@@ -419,6 +419,13 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
     summary(ws)
     if budget.get("outage"):
         return reply(ws, "iq-inspect", "FAILED", [f"PHASE1_OUTAGE: {str(budget['outage'])[:200]}"])
+    if _functional(ws):  # feature 021 FR-001: the validated requirements become findable by later runs
+        from . import swe1_carry as C
+
+        try:
+            C.publish(ws)
+        except Exception as exc:  # noqa: BLE001 - the store is an index; the inspection result stands without it
+            issues.append(f"VALIDATED_ITEM_STORE_UNAVAILABLE: {type(exc).__name__}: {str(exc)[:120]}")
     return reply(ws, "iq-inspect", "PASS", issues)
 
 

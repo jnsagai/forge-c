@@ -18,8 +18,8 @@
 
 ## Phase 3: User Story 1 - a rerun keeps every validated item (P1)
 
-- [ ] T007 [US1] Test: `tests/test_f021_partial_carry.py` - set-level failure rerun re-judges no item; rule change reworks only named items; INPUT_CHANGED carries nothing
-- [ ] T008 [US1] Generalise `lrtx/swe1_carry.py` into `forge_factory/lrtx/carry.py` on the store (SWE.1 functional unchanged, D36/D39/D40 tests green)
+- [X] T007 [US1] Test: `tests/test_f021_partial_carry.py` - set-level failure rerun re-judges no item; rule change reworks only named items; INPUT_CHANGED carries nothing
+- [X] T008 [US1] Generalise `lrtx/swe1_carry.py` into `forge_factory/lrtx/carry.py` on the store (SWE.1 functional unchanged, D36/D39/D40 tests green)
 - [ ] T009 [US1] Partial phase carry in `forge_factory/workorder.py` resume and `forge_factory/lrtx/visit.py` (keep valid items of a non-PASS phase, re-freeze, set checks once)
 
 ## Phase 4: User Story 2 - carried items are auditable (P1)

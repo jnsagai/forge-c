@@ -57,3 +57,9 @@ class Store:
             raise CarryRefused(f"SOURCE_RECORD_CHANGED:{hit['source_order']}:{item_key}")
         hit["verdicts"] = json.loads(hit["verdicts"])
         return hit
+
+    def orders_for(self, phase: str, dep_sha: str) -> list[str]:
+        """The source orders that validated items of `phase` for exactly this dependency set, newest first."""
+        with closing(sqlite3.connect(self.path)) as c:
+            return [r[0] for r in c.execute("SELECT source_order, max(at) m FROM validated_items WHERE phase=? AND "
+                                            "dep_sha=? GROUP BY source_order ORDER BY m DESC", (phase, dep_sha))]

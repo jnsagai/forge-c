@@ -69,7 +69,46 @@ def source(ws: Path) -> tuple[Path | None, dict]:
             reasons.append(f"{wo}:INPUT_CHANGED")  # the inputs the requirements rest on changed: nothing is carried
             continue
         return p, {"source_work_order": wo, "inventory_sha256": want}
+    # Feature 021 FR-002: none of the named sources is here - an earlier run that validated requirements for exactly
+    # these inputs (same governance inventory) is found through the validated-item store
+    from . import carry_store as CS
+
+    try:
+        found = CS.Store().orders_for(PHASE, want)
+    except Exception:  # noqa: BLE001 - the store is an index: without it the named sources decide alone
+        found = []
+    for wo in found:
+        try:
+            p = source_workspace(wo)
+        except (ValueError, OSError):
+            continue
+        if (p.is_dir() and p.resolve() != ws.resolve() and p.resolve().is_relative_to(root)
+                and (p / GI.OUT).is_file() and sha256_file(p / GI.OUT) == want):
+            return p, {"source_work_order": wo, "inventory_sha256": want, "via": "validated-item store"}
     return None, {"reason": ";".join(reasons) or "NO_CARRY_SOURCE"}
+
+
+def publish(ws: Path) -> int:
+    """Feature 021 FR-001: record this run's PASS requirements (per-requirement inspection) in the validated-item
+    store, keyed by task|key, requirement sha and the governance inventory sha; the record is the task checkpoint."""
+    from . import carry_store as CS
+    from . import swe1_quality as Q
+
+    ws = Path(ws)
+    inv = ws / GI.OUT
+    wo = _manifest(ws).get("work_order")
+    if not inv.is_file() or not wo:
+        return 0
+    dep, store, n = sha256_file(inv), CS.Store(), 0
+    for (tk, sha), v in Q.verdicts(ws).items():
+        task = tk.split("|", 1)[0]
+        ck = V._ckpt(ws, PHASE, task)
+        if v.get("passed") is not True or not ck.is_file():
+            continue
+        store.put(PHASE, tk, content_sha=sha, dep_sha=dep, record=ck, source_order=wo,
+                  verdicts={"IQ": "PASS", "swr": v.get("swr"), "round": v.get("round")})
+        n += 1
+    return n
 
 
 def _record(src: Path, phase: str, task: str) -> tuple[dict | None, bytes | None]:
