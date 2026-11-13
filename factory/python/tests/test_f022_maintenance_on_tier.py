@@ -59,15 +59,24 @@ def test_the_crash_capa_is_the_unfixed_guardian_one(owner):
     assert MS.crash_capa(owner, "CAPA-902")["capa_id"] == "CAPA-902"  # a drill may name a fixed one
 
 
-def test_the_workflow_is_the_lines_own_maintainer_workflow_on_the_case_state(factory, tmp_path):  # noqa: F811
+def test_the_workflow_is_the_lines_own_maintainer_workflow_on_the_case_state(factory, tmp_path, monkeypatch):  # noqa: F811
     case = M.prepare("mnt-wf-a1", "HEAD", {"incident_id": "INC-1"}, factory)
     case_path = M.case_dir("mnt-wf-a1") / "case.json"
     ws = tmp_path / "run-ws"
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "lane-state"))  # the lane process has its own state (drill 1)
     toml = MS.workflow(case_path, ws, model=MS.DEFAULT_MODEL, seconds=600)
     text = "\n".join(p.read_text() for p in ws.rglob("*") if p.is_file() and p.suffix in (".toml", ".fabro", ".json"))
     assert Path(toml).is_file() and (ws / f".fabro/skills/{MS.ROLE}/SKILL.md").is_file()
     assert str(case_path) in text and str(MS.case_state(case_path)) in text  # MCP server scoped to the case + its state
     assert "agent-output.json" in text and "local_agent record-output" not in text  # no line job bookkeeping
+    # CAPA-258: the policy hook issues tickets where the MCP server consumes them - the same state directory
+    import re as _re
+    toml_text = Path(toml).read_text()
+    hooks = _re.findall(r'script = "([^"]*fabro_hook[^"]*)"', toml_text)
+    assert hooks and all(f"FORGE_STATE_DIR={MS.case_state(case_path)}" in h for h in hooks), hooks
+    server_state = _re.search(r'\[run\.agent\.mcps\.forge_maintainer_mcp\.env\][^\[]*?FORGE_STATE_DIR = "([^"]+)"',
+                              toml_text, _re.S)
+    assert server_state and server_state.group(1) == str(MS.case_state(case_path))
     with pytest.raises(MS.MaintenanceError):
         MS.case_state(tmp_path / "case.json")
 

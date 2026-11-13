@@ -129,8 +129,11 @@ def workflow(case_path: Path, ws: Path, *, model: str, seconds: int) -> Path:
     servers[ROLES[ROLE]]["env"] = {"FORGE_AFO_MAINT_CASE": str(case_path), "FORGE_REPO_ROOT": str(REPO_ROOT),
                                    "FORGE_STATE_DIR": str(case_state(case_path))}
     binding = Binding(ws.name, str(ws), {"agent": {"role": ROLE, "phase": None}})
+    # CAPA-258 (drill 1, 2026-11-13 21:43Z): the policy hook issues each approved call's ticket under
+    # <state>/tickets/<binding> and the MCP server consumes it from its own <state>: both use the case state, else
+    # every maintainer tool call is denied NO_AUTHORIZATION_TICKET
     return write_run(ws, graph, "Propose a validated factory fix", binding, servers, model=model,
-                     hook_env={"FORGE_REPO_ROOT": str(REPO_ROOT)})
+                     hook_env={"FORGE_REPO_ROOT": str(REPO_ROOT), "FORGE_STATE_DIR": str(case_state(case_path))})
 
 
 def agent(case_path: Path, ws: Path, *, model: str, seconds: int, invoke=subprocess.run) -> dict:
