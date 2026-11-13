@@ -280,6 +280,13 @@ def _replan(store, cmd, value, spec, row, eff, client):
     except planner.Pending as pending:
         store.mark_command(cmd["command_id"], "PENDING")
         return {"status": "PLANNER_PENDING", "job_id": str(pending)}
+    from . import planner_refusal
+
+    if decision["status"] == planner_refusal.STATUS:
+        # autonomy item 3: the gateway refused the planner packet; the refusal is recorded in the workspace, so the next
+        # pass of this REPLAN rebuilds the failure bundle as FACTORY_CODE_DEFECT and takes the maintenance branch above
+        store.mark_command(cmd["command_id"], "PENDING")
+        return {"status": "FACTORY_DEFECT_IN_PLANNER", "issues": decision.get("reasons") or []}
     if decision["status"] == "PENDING":
         store.mark_command(cmd["command_id"], "PENDING")
         return {"status": "PLANNER_PENDING"}

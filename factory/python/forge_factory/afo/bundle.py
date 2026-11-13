@@ -275,9 +275,14 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
             tools[r.get("op", "?")] = str((r.get("result") or {}).get("tool_version") or "")[:60]
         except ValueError:
             continue
+    from . import planner_refusal as PR
+
+    # autonomy item 3: a gateway refusal of this attempt's recovery planner packet makes it the factory defect it is
+    cls, fp, code, summary = PR.apply(ws, attempt_id, cls, dom["fingerprint"],
+                                      (factory_refusal(dom) or dom["error_code"])[:200], summary)
     rec = {"schema_version": "1.0", "order_id": order_id, "attempt_id": attempt_id, "phase": phase,
-           "failure_class": cls, "fingerprint": dom["fingerprint"], "gate_result": "BLOCKED",
-           "error_code": (factory_refusal(dom) or dom["error_code"])[:200],
+           "failure_class": cls, "fingerprint": fp, "gate_result": "BLOCKED",
+           "error_code": code,
            "artifact_refs": [f"workspace:{p.relative_to(ws)}" for p in ins[-1:]],
            "evidence_refs": [f"cre-observation:{o['obs_id']}" for o in (work + route)[-5:]], "input_digests": digests,
            "tool_versions": {k: v for k, v in list(tools.items())[:20] if v}, "requirements_refs": sorted(reqs)[:20],

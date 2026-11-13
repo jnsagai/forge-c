@@ -453,6 +453,15 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
             try:
                 plan, source = planner(bundle, {**b, "allowed_model_profiles": allowed}, ws), "PLANNER"
             except Failed as exc:
+                from . import planner_refusal as PR
+
+                # autonomy item 3 (L49, 2026-11-13): the gateway refused the planner packet the factory built - a
+                # factory defect for the maintainer, not a dead end (once per attempt; the advisory admission-time
+                # refusal path is unchanged)
+                if ws is not None and PR.record(Path(ws), bundle, getattr(exc, "agent_error", ""),
+                                               getattr(exc, "job_id", None)):
+                    return {"plan": None, "status": PR.STATUS, "source": "PLANNER",
+                            "reasons": [getattr(exc, "agent_error", "")[:200]]}
                 plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], f"LOCAL_DIAGNOSIS_FAILED:{str(exc)[:100]}")
             if plan == "PENDING":  # the planner run is asynchronous (planner_run): the Conductor polls again
                 return {"plan": None, "status": "PENDING", "source": source, "reasons": []}

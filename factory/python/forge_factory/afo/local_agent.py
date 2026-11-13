@@ -817,7 +817,10 @@ def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
         if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
             raise planner.Pending(job["job_id"])
         if job["state"] != "SUCCEEDED":
-            raise planner.Failed(f"{job['state']}:{job['job_id']}")
+            failed = planner.Failed(f"{job['state']}:{job['job_id']}")
+            failed.agent_error = str(job.get("error") or "")  # autonomy item 3: the gateway's reason, message unchanged
+            failed.job_id = job["job_id"]
+            raise failed
         if job.get("durable_protocol"):
             from .completion_receipt import Receipts
 
