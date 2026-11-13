@@ -127,7 +127,7 @@ benchmark names in the repository.
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T038 [P] Update `specs/020-usart-benchmark-pilot/quickstart.md` with the commands actually used and their results
+- [X] T038 [P] Update `specs/020-usart-benchmark-pilot/quickstart.md` with the commands actually used and their results
 - [ ] T039 [P] Memory/notes: record the outcome, the CRE ids and the open follow-ups (SWE.2/SWE.3 alignment feature) in `specs/020-usart-benchmark-pilot/decision-log.md`
 - [ ] T040 Final regression (T024 scope) on the deployed commit; mark tasks `[X]` only with recorded evidence
 

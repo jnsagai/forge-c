@@ -41,3 +41,22 @@ test run restore `docs/IMPLEMENTATION-STATUS-v0.4.md` and `evidence/v0.4/impleme
   every rule cites its log entry.
 - Second module (SC-009): the synthetic test module is prepared and passes the governance and SWE.1 validators with
   only its own data.
+
+## 5. Commands actually used (T038, rounds 2-3, 2026-11-12/13) and their results
+
+- Comparison with the guarded metrics of the previous round (D34):
+  `python -m forge_factory.benchmark.compare --pilot <workspace> --benchmark <private metrics.json> --out <private dir>
+  --preserve <previous comparison.json>` -> `{"status": "OK", "requirements": N, "regressed": [...]}`. Outputs stay
+  in the private directories (Omniverse2 `model-service/f020-compare-<run>`, loop10 `ops/scratch/f020/private/cmp-<run>`).
+  Results: L49 241 reqs; L50 137 (traced share and IQ first pass REGRESSED vs L49, set inspection lost to the
+  CAPA-249 guardian crash); C03 273 (set packet refused, CAPA-248); C04 257, every guarded metric PRESERVED vs C03.
+- Cloud control run (account-only bridge, loop10): inside `lrtx.stack exec` with `FORGE_LRTX_PROFILE=
+  cloud-bridge-claude-author-codex-inspector`: `python -m forge_factory.workorder --example
+  ../../examples/0012u-st-cube-uart-module --wo <WO> --profile cloud-bridge-claude-author-codex-inspector --model
+  claude-opus-5-5 --purpose ASPICE_ONLY --stop-after SWE.1 --detach`; each run from its own worktree.
+- Carry between rounds (D36/D39): `examples/0012u-st-cube-uart-module/workorder.json` `swe1.carry_from` lists the
+  predecessor runs (first existing workspace wins); only requirements a new rule names are reworked.
+- Round 3 (D40) unit evidence: `pytest tests/test_f020_round3_references.py tests/test_f020_carry.py
+  tests/test_f020_template_v2.py` -> 24 passed; reproducer RPR-256 (stale reference) 4/4 roles via
+  `model-service/checkrpr.sh 256`.
+- Regression scope (T024/T040): `bash /mnt/data/forge-c/model-service/f020reg2.sh` (feature vs base, prints NEW/GONE).
