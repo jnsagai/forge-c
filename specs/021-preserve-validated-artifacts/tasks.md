@@ -24,8 +24,8 @@
 
 ## Phase 4: User Story 2 - carried items are auditable (P1)
 
-- [ ] T010 [P] [US2] Test: `tests/test_f021_carry_manifest.py` - every carried item listed with provenance; never labelled direct; altered source -> SOURCE_RECORD_CHANGED
-- [ ] T011 [US2] Carry manifest in the release packager (`forge_factory/release/`) and refusal reasons in `forge_factory/lrtx/carry.py`
+- [X] T010 [P] [US2] Test: `tests/test_f021_carry_manifest.py` - every carried item listed with provenance; never labelled direct; altered source -> SOURCE_RECORD_CHANGED
+- [X] T011 [US2] Carry manifest in the release packager (`forge_factory/release/`) and refusal reasons in `forge_factory/lrtx/carry.py`
 
 ## Phase 5: User Story 3 - every SWE phase (P2)
 

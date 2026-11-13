@@ -729,6 +729,13 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
         afo_bundle(ws, stage, dry_status)
     except Exception as exc:  # noqa: BLE001 - AFO evidence must never break packaging
         _w(stage, "operations/afo/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
+    carried = 0
+    try:  # feature 021 FR-008: every carried item with its provenance; never changes the status
+        from ..lrtx.carry_manifest import bundle_into as carry_bundle
+
+        carried = carry_bundle(ws, stage, dry_status)
+    except Exception as exc:  # noqa: BLE001 - carry evidence must never break packaging
+        _w(stage, "carry/error.json", pretty_json({"error": f"{type(exc).__name__}: {exc}"[:300]}))
     sealed: dict = {}
 
     def seal(_key: str) -> dict:
@@ -755,6 +762,7 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             else "archive:evidence/" + selected_policy.relative_to(stage).as_posix(),
             "policy_sha256": sha256_file(selected_policy),
             "finalized_at": utc_now(),
+            **({"carried_items": carried} if carried else {}),
         }
         os.chmod(out_dir, 0o755)  # noqa: S103 - archive dir must stay listable; members are 0444
         (out_dir / "finalize-result.json").write_text(pretty_json(out))
