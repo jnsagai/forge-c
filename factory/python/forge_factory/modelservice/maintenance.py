@@ -241,6 +241,120 @@ def maintenance(ctx: dict, *, spec_path: str | None = None, runner=None, lane_ro
             "line_capa": rec.get("capa_id"), "promotion": rec.get("cre_promotion_id"), "state_dir": str(state)}
 
 
+# ---- crash mode: the owner lane is down and latched after a guardian crash ----------------------------------------
+DEPLOYER = Path("/mnt/data/forge-c/owner-autodeploy/deployer")
+LSTATE = Path("/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state")
+OWNER_CRE = Path("/mnt/data/forge-c/owner-autodeploy/state/supervisor/incidents.sqlite3")
+QROOT = Path("/mnt/data/forge-c/swe1-fabro-20261031/qualification")
+BRANCH_REPO = Path("/mnt/data/forge-c/owner-autodeploy/repo.git")
+BRANCH = "feat/owner-lane-campaign-v21-20261107"
+GPU_FREE_MIN_MIB = 44000
+
+
+def _git(repo: Path, *a: str) -> str:
+    return subprocess.run(["git", "-C", str(repo), *a], capture_output=True, text=True, check=True).stdout.strip()
+
+
+def _unit_active(c8: str) -> bool:
+    return subprocess.run(["systemctl", "--user", "is-active", f"forge-c-owner-development-{c8}-guard6860-20261107.service"],
+                          capture_output=True, text=True).stdout.strip() in ("active", "activating", "deactivating")
+
+
+def _gpu_free_mib() -> int:
+    from model_tier import gpu
+
+    return int(gpu.memory_mib()["free"])
+
+
+def _journal(c8: str) -> list[str]:
+    out = subprocess.run(["journalctl", "--user", "-u", f"forge-c-owner-development-{c8}-guard6860-20261107.service", "-o", "cat",
+                          "--no-pager", "--since", "-12h"], capture_output=True, text=True).stdout
+    return [ln for ln in out.splitlines() if "remains running" not in ln and "Sending signal" not in ln][-600:]
+
+
+def crash_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot: Path = QROOT, git=None, unit_active=None,
+               gpu_free=None) -> dict:
+    """Whether (and on what) maintenance should run now: {"skip": reason} or the case inputs. Read-only."""
+    git = git or (lambda *a: _git(BRANCH_REPO, *a))
+    unit_active, gpu_free = unit_active or _unit_active, gpu_free or _gpu_free_mib
+    latch_p = deployer / "FAILED_LATCHED.json"
+    if not latch_p.is_file():
+        return {"skip": "NOT_LATCHED"}
+    latch = json.loads(latch_p.read_text())
+    if "guardian crashed" not in str(latch.get("note") or ""):
+        return {"skip": "LATCH_NOT_A_GUARDIAN_CRASH"}
+    attempts_p = deployer / "maintenance-attempts.json"
+    attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
+    if str(latch.get("at")) in attempts:
+        return {"skip": "ALREADY_ATTEMPTED_FOR_THIS_LATCH"}
+    from ..reliability.capa import CapaRegistry
+    from ..reliability.policy import load as cre_policy
+    from ..reliability.store import CREStore
+
+    capa = crash_capa(CapaRegistry(CREStore(Path(owner_cre)), cre_policy()))
+    if capa is None:
+        return {"skip": "NO_UNFIXED_CRASH_CAPA"}
+    live = json.loads((deployer / "state.json").read_text())["live"]["commit"]
+    if git("rev-parse", BRANCH) != live:
+        return {"skip": "BRANCH_AHEAD_OF_CRASHED_LIVE"}  # the importer applies a fix only on the live revision
+    if unit_active(live[:8]):
+        return {"skip": "LANE_NOT_DOWN"}
+    if gpu_free() < GPU_FREE_MIN_MIB:
+        return {"skip": "GPU_NOT_FREE"}
+    repo = Path(qroot) / f"owner-allowance-{live[:8]}-main-20261107/newS"
+    if not (repo / ".git").exists() or _git(repo, "rev-parse", "HEAD") != live:
+        return {"skip": "LIVE_CHECKOUT_MISSING"}
+    return {"capa": capa, "base": live, "repo": str(repo), "latch_at": str(latch.get("at")), "latch": str(latch_p)}
+
+
+def crash(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 170) -> dict:
+    """Crash mode: deploy.lock held (the deployer skips), the tier on the freed GPU, maintenance into the LINE state
+    (the importer's source), tier stopped, then the deployer's own import; its latch retry gates the new tip."""
+    plan = crash_plan(deployer=deployer)
+    if "skip" in plan or not execute:
+        return plan
+    lock = deployer / "deploy.lock"
+    try:
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        return {"skip": "DEPLOYER_BUSY"}
+    os.write(fd, str(os.getpid()).encode())
+    os.close(fd)
+    stamp = time.strftime("%Y%m%d%H%M", time.gmtime())
+    attempts_p = deployer / "maintenance-attempts.json"
+    attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
+    attempts[plan["latch_at"]] = {"capa_id": plan["capa"]["capa_id"], "base": plan["base"], "started": stamp}
+    attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True))
+    D = STATE / "maintenance" / stamp
+    D.mkdir(parents=True, exist_ok=True)
+    (D / "guardian.journal").write_text("\n".join(_journal(plan["base"][:8])))
+    spec = {"capa_id": plan["capa"]["capa_id"], "base": plan["base"], "repo": plan["repo"], "state_dir": str(LSTATE),
+            "owner_cre": str(OWNER_CRE), "journal": str(D / "guardian.journal"), "latch": plan["latch"], "drill": False,
+            "pid": f"mnt-{plan['capa']['capa_id'].lower()}-{stamp}", "agent_seconds": 5400}
+    (D / "spec.json").write_text(json.dumps(spec, indent=1))
+    from ..common import REPO_ROOT
+    from .window_adapters import ModelTier
+
+    tier, result = ModelTier(repo=REPO_ROOT, window_id="maint" + stamp), {}
+    try:
+        tier.start()
+        result = maintenance({"clock": time.time, "deadline": time.time() + minutes * 60}, spec_path=str(D / "spec.json"))
+    except Exception as exc:  # noqa: BLE001 - recorded; the tier is stopped and the lock released below
+        result = {"error": f"{type(exc).__name__}: {str(exc)[:300]}"}
+    finally:
+        tier.stop()
+        if lock.read_text().strip() == str(os.getpid()):
+            lock.unlink()
+    if result.get("outcome") == "ELIGIBLE_FOR_OFFLINE_REVIEW":
+        r = subprocess.run([sys.executable if Path(sys.executable).exists() else "python3", str(deployer / "autodeploy.py"),
+                            "import"], capture_output=True, text=True, timeout=1800)
+        result["import"] = (r.stdout + r.stderr).strip()[-600:]
+    attempts[plan["latch_at"]].update(ended=time.strftime("%Y%m%d%H%M", time.gmtime()), result=result)
+    attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True, default=str))
+    (D / "result.json").write_text(json.dumps(result, indent=1, default=str))
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
 
@@ -251,9 +365,13 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--workspace", type=Path, required=True)
     a.add_argument("--model", default=DEFAULT_MODEL)
     a.add_argument("--seconds", type=int, default=3600)
+    c = sub.add_parser("crash", help="owner lane latched after a guardian crash: maintenance on the model service")
+    c.add_argument("--execute", action="store_true", help="really run (default: report the plan only)")
     args = ap.parse_args(argv)
     if args.cmd == "agent":
         print(json.dumps(agent(args.case, args.workspace, model=args.model, seconds=args.seconds)), flush=True)
+    elif args.cmd == "crash":
+        print(json.dumps(crash(execute=args.execute), default=str), flush=True)
     return 0
 
 
