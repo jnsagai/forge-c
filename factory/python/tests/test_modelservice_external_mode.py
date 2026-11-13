@@ -53,9 +53,15 @@ def test_collisions_with_other_lanes_are_refused(kw, reason):
 
 
 def test_owner_lane_pinned_sources_are_untouched():
-    """Research R7: the owner lane's signed transport proof pins these sources; this feature must not change them."""
+    """Research R7: the owner lane's signed transport proof pins these sources; this feature must not change them.
+    Before the merge the base is 017's fork point; once 017 is merged into the campaign (feature 022) it is the
+    campaign side of that merge - the campaign may change a pinned source through its own CRE-gated fixes (CAPA-216)."""
+    tip017 = "3ffdf141"
+    merges = subprocess.run(["git", "-C", str(ROOT), "log", "--merges", "--ancestry-path", "--reverse", "--format=%H",
+                             f"{tip017}..HEAD"], capture_output=True, text=True, check=False).stdout.split()
+    ref = f"{merges[0]}^1" if merges else "482b824b"
     for rel in PINNED:
-        base = subprocess.run(["git", "-C", str(ROOT), "show", f"482b824b:factory/python/forge_factory/{rel}"],
+        base = subprocess.run(["git", "-C", str(ROOT), "show", f"{ref}:factory/python/forge_factory/{rel}"],
                               capture_output=True, check=False)
         if base.returncode != 0:
             pytest.skip("NOT_RUN: no git history in this checkout")
