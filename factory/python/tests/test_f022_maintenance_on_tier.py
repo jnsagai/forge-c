@@ -147,18 +147,19 @@ def test_crash_mode_runs_only_for_a_latched_crash_with_an_unfixed_capa_on_a_down
     newS = q / f"owner-allowance-{live[:8]}-main-20261107/newS"
     newS.parent.mkdir(parents=True)
     subprocess.run(["git", "clone", "-q", str(factory), str(newS)], check=True)
-    env = {"tip": live, "active": False, "free": 47000}
+    env = {"tip": live, "active": False, "free": 47000, "tier": False}
 
     def plan():
         return MS.crash_plan(deployer=dep, owner_cre=tmp_path / "owner/incidents.sqlite3", qroot=q,
-                             git=lambda *a: env["tip"], unit_active=lambda c8: env["active"], gpu_free=lambda: env["free"])
+                             git=lambda *a: env["tip"], unit_active=lambda c8: env["active"], gpu_free=lambda: env["free"],
+                             tier_active=lambda: env["tier"])
 
     assert plan() == {"skip": "NOT_LATCHED"}
     (dep / "FAILED_LATCHED.json").write_text(json.dumps({"at": "T1", "note": "deploy failed, rollback failed"}))
     assert plan() == {"skip": "LATCH_NOT_A_GUARDIAN_CRASH"}
     (dep / "FAILED_LATCHED.json").write_text(json.dumps({"at": "T1", "note": "live guardian crashed, automatic recovery failed: lane down"}))
     for key, val, why in (("tip", "b" * 40, "BRANCH_AHEAD_NOT_GATED"), ("active", True, "LANE_NOT_DOWN"),
-                          ("free", 1913, "GPU_NOT_FREE")):
+                          ("tier", True, "TIER_IN_USE"), ("free", 1913, "GPU_NOT_FREE")):
         old, env[key] = env[key], val
         assert plan() == {"skip": why}
         env[key] = old

@@ -272,11 +272,17 @@ def _journal(c8: str) -> list[str]:
     return [ln for ln in out.splitlines() if "remains running" not in ln and "Sending signal" not in ln][-600:]
 
 
+def _tier_active() -> bool:
+    return subprocess.run(["systemctl", "--user", "is-active", "forge-model-tier-gateway.service"],
+                          capture_output=True, text=True).stdout.strip() in ("active", "activating", "deactivating")
+
+
 def crash_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot: Path = QROOT, git=None, unit_active=None,
-               gpu_free=None) -> dict:
+               gpu_free=None, tier_active=None) -> dict:
     """Whether (and on what) maintenance should run now: {"skip": reason} or the case inputs. Read-only."""
     git = git or (lambda *a: _git(BRANCH_REPO, *a))
     unit_active, gpu_free = unit_active or _unit_active, gpu_free or _gpu_free_mib
+    tier_active = tier_active or _tier_active
     latch_p = deployer / "FAILED_LATCHED.json"
     if not latch_p.is_file():
         return {"skip": "NOT_LATCHED"}
@@ -300,6 +306,8 @@ def crash_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot:
         return {"skip": "BRANCH_AHEAD_NOT_GATED"}  # the importer anchors a fix only on live or a GATED tip (CAPA-255)
     if unit_active(live[:8]):
         return {"skip": "LANE_NOT_DOWN"}
+    if tier_active():
+        return {"skip": "TIER_IN_USE"}  # a window (qualification, drill) owns the model service now
     if gpu_free() < GPU_FREE_MIN_MIB:
         return {"skip": "GPU_NOT_FREE"}
     if tip == live:
