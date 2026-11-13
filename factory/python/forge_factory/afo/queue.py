@@ -806,15 +806,19 @@ class ReadSnapshot(Store):
     Existing read methods are reused; SQLite refuses every inherited mutation.
     """
 
-    def __init__(self, path, *, max_rows=10000, max_bytes=16 * 1024 * 1024, timeout_s=120):
+    # CAPA-249: the guardian reads the whole mission ledger through one snapshot; 10,000 rows / 16 MiB was exceeded
+    # by normal growth of the line history (owner rule: limits very high). The bound stops a runaway read only.
+    MAX_ROWS, MAX_BYTES = 10_000_000, 1_000_000_000
+
+    def __init__(self, path, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, timeout_s=120):
         import math
 
         self.path = Path(path)
         if self.path.is_symlink() or not self.path.is_file():
             raise QueueError("OBSERVATION_DATABASE_UNAVAILABLE")
         if (
-            type(max_rows) is not int or not 1 <= max_rows <= 10000
-            or type(max_bytes) is not int or not 1 <= max_bytes <= 16 * 1024 * 1024
+            type(max_rows) is not int or not 1 <= max_rows <= self.MAX_ROWS
+            or type(max_bytes) is not int or not 1 <= max_bytes <= self.MAX_BYTES
             or type(timeout_s) not in (int, float) or not math.isfinite(timeout_s) or not 0 < timeout_s <= 120
         ):
             raise QueueError("OBSERVATION_BOUND_INVALID")
