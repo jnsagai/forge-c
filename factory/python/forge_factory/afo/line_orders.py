@@ -91,6 +91,39 @@ def supervisor_dir() -> Path:
     return state_dir() / "supervisor"
 
 
+# Owner 2026-11-13 (autonomy item 1): the delivery build is checked before a placement (L48: four launches failed on
+# a toolchain header before the lineage stopped). A PASS is cached per (revision, example); a failure is re-checked after
+# this interval (the environment may be fixed without a new revision).
+DELIVERY_RECHECK_S = 600
+
+
+def delivery_gap(cache: dict, key: tuple, spec: dict, example_dir: Path, *, now: float, detail_dir: Path,
+                 toolchain_bin: Path | None = None) -> str | None:
+    """DELIVERY_BUILD when the order's delivered code does not compile with the line's toolchain, else None (also
+    when the check could not run: UNVERIFIED never holds the line). The compiler message of a gap is written to
+    `detail_dir/<example>.json` for the floor and the escalation; a resolved gap removes it."""
+    from ..brownfield import delivery as BD
+
+    hit = cache.get(key)
+    if hit is not None and (hit["status"] == "PASS" or now - hit["at"] < DELIVERY_RECHECK_S):
+        return hit["code"]
+    try:
+        r = BD.precheck(spec, example_dir, toolchain_bin=toolchain_bin)
+    except Exception as exc:  # noqa: BLE001 - a broken check never stops the line
+        r = {"status": "UNVERIFIED", "issues": [f"{type(exc).__name__}:{exc}"[:240]]}
+    code = "DELIVERY_BUILD" if r.get("status") == "FAIL" else None
+    cache[key] = {"status": r.get("status"), "at": now, "code": code}
+    p = Path(detail_dir) / f"{key[1]}.json"
+    if code:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        _atomic(p, {"schema": "forge-c/line-input-gap/1", "example": key[1], "revision": key[0], "code": code,
+                    "checked_at": _utc(now), "command": r.get("command"), "exit_code": r.get("exit_code"),
+                    "log_tail": r.get("log_tail"), "log_sha256": r.get("log_sha256")})
+    elif p.is_file():
+        p.unlink()
+    return code
+
+
 # ------------------------------------------------------------------------------------------------------ the policy
 @dataclass
 class LinePolicy:
@@ -351,12 +384,37 @@ class RealLine:
                         approved = load_upstream(Path(td))["status"] == "APPROVED"
                 cache[key] = input_readiness.gaps(spec, purpose=purpose, upstream_approved=approved)
                 self.__dict__.setdefault("_onboarding_examples", {})[key] = onboarding_spec(spec)
+                self.__dict__.setdefault("_specs", {})[key] = spec
         out = list(cache[key])
         if not out and self.__dict__.get("_onboarding_examples", {}).get(key):
             code = onboarding_gap(example)  # live, never cached: the owner may sign at any time
             if code:
                 out.append(code)
+        spec = self.__dict__.get("_specs", {}).get(key)
+        if not out and spec is not None and spec.get("delivery"):  # autonomy item 1: the delivery build, pre-launch
+            from ..common import data_root
+
+            tc = data_root() / "toolchains/sysroot/usr/bin"
+            code = delivery_gap(self.__dict__.setdefault("_delivery", {}), (sha, example), spec,
+                                Path(self.cfg.repo) / "examples" / example, now=time.time(),
+                                detail_dir=supervisor_dir() / "input-gaps", toolchain_bin=tc if tc.is_dir() else None)
+            if code:
+                out.append(code)
         return out
+
+    @property
+    def releases(self):
+        """Autonomy item 2: the line's lineage release log."""
+        from . import lineage_release as LR
+
+        if "_releases" not in self.__dict__:
+            self.__dict__["_releases"] = LR.Releases(supervisor_dir() / "lineage-releases.jsonl")
+        return self.__dict__["_releases"]
+
+    def launch_cause(self, wo: str) -> dict | None:
+        from . import lineage_release as LR
+
+        return LR.launch_cause(self.cfg.runs_root, wo)
 
     def quality_supported(self, sha: str) -> bool:
         return self.LL.quality_supported(self.LL.RevReader(self.cfg.repo, sha))
@@ -780,7 +838,19 @@ class Planner:
             P.last_good = {"phase": last[-1] if last else None, "wo": prev.wo}
         P.prev = prev
         if P.phase:
-            n, e = strikes(_events(self.recs.phase_attempts(L, P.phase), L.sha256)) if P.state != "DONE" else (0, None)
+            n, e = (0, None)
+            if P.state != "DONE":
+                atts = self.recs.phase_attempts(L, P.phase)
+                ev = _events(atts, L.sha256)
+                store = getattr(self.line, "releases", None)
+                rel = store.latest(L.sha256, P.phase) if store is not None else None
+                if rel is not None:  # autonomy item 2: strikes before a release are history
+                    # the events the release cleared (up to its last strike event) are history; everything later
+                    # counts (event times come from the gate log at second resolution, so not the release clock)
+                    ev = [x for x in ev if x[0] > rel.get("after", rel["at"])]
+                n, e = strikes(ev)
+                if n > STRIKE_LIMIT and store is not None and self._release(P, L, atts, e, store):
+                    n, e = 0, None
             P.strikes, P.strike_event = n, e
         return P
 
@@ -943,12 +1013,49 @@ class Planner:
         r = self.line.resolve(rev) or rev
         return full.startswith(r) or r.startswith(full)
 
+    def _release(self, P: Plan, L: LCMP.Lineage, atts: list, e: tuple, store) -> bool:
+        """Autonomy item 2 (rule CAUSE_GONE, lineage_release.py): a stop whose attempts all ended before their run
+        started on an input/environment cause is released once the line's own pre-placement checks pass again;
+        once per lineage block, recorded with the evidence."""
+        from . import lineage_release as LR
+
+        fp = e[1]
+        if store.has(L.sha256, P.phase, fp, LR.CAUSE_GONE):
+            return False
+        cause_of = getattr(self.line, "launch_cause", None)
+        input_gaps = getattr(self.line, "input_gaps", None)
+        if cause_of is None or input_gaps is None:
+            return False
+        tail = [a for a in atts if a.lineage_sha in (None, L.sha256) and any(x[1] == fp for x in _events([a], L.sha256))]
+        if not tail:
+            return False
+        causes = {a.wo: cause_of(a.wo) for a in tail}
+        if not all(LR.pre_run(c) for c in causes.values()):
+            return False
+        full = self.line.resolve(L.factory_revision)
+        missing = input_gaps(full, L.example, L.purpose) if full else ["FACTORY_REVISION_NOT_ON_HOST"]
+        if missing:
+            return False
+        store.record({"lineage": f"{L.campaign_id}/{L.id}", "lineage_sha": L.sha256, "phase": P.phase,
+                      "fingerprint": fp, "rule": LR.CAUSE_GONE, "at": self.now, "after": e[0], "revision": full,
+                      "evidence": {"attempts": [a.wo for a in tail], "causes": causes, "checks_now": "PASS"}})
+        return True
+
     def _place(self, P: Plan, order: dict, action: str) -> None:
         L = P.lineage
         ok, why = self._quality_ok(L)
         if not ok:
             P.state, P.reason = "WAITING", why
             return
+        input_gaps = getattr(self.line, "input_gaps", None)
+        if input_gaps is not None and order.get("kind") != "START":
+            # autonomy item 1 (L48): a retry or relaunch is held on an input gap like a first placement - no launch
+            # that is known to fail, no strike for an environment the line can check before the GPU
+            full = self.line.resolve(L.factory_revision)
+            missing = input_gaps(full, L.example, L.purpose) if full else []
+            if missing:
+                P.state, P.reason = "WAITING", f"INPUT_GAP:{missing[0]}:{L.example}"
+                return
         # order["quality_via"]: FLAG = --quality FILE; REVISION = the revision gives exactly that quality
         P.order, P.action, P.kind = order, action, order["kind"]
         if order.get("resume_from") is None and order["phase"] != L.phases[0] and not L.start:

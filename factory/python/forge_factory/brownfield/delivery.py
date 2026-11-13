@@ -137,6 +137,68 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
     `extra`: read-only files the delivery builds against but does not own (e.g. the HAL's provided LL header)."""
     d = spec["delivery"]
     store = store_dir(wo)
+    issues, files, records, resolved, excluded = _collect(d, example)
+    build = {"status": "NOT_RUN", "command": [], "exit_code": None, "log_sha256": None, "warnings": 0}
+    if not issues:
+        build = build_check({**(extra or {}), **files}, d["build"]["style"], d["build"].get("defines") or [],
+                            bool(d["build"].get("secure")))
+        if build["status"] != "PASS":
+            issues.append(f"DELIVERY_BUILD_{build['status']}")
+    rec = {"schema": INTAKE_SCHEMA, "work_order": wo, "checked_at": utc_now(),
+           "status": "BLOCKED" if issues else "ACCEPTED", "issues": issues, "code_mode": d.get("code_mode"),
+           "origin": d.get("origin"), "licence": d.get("licence"), "files": records, "build_check": build}
+    if store.exists():
+        for p in sorted(store.rglob("*"), reverse=True):  # a re-prepared work order replaces its own store only
+            p.chmod(0o755 if p.is_dir() else 0o644)
+        shutil.rmtree(store)
+    store.mkdir(parents=True)
+    (store / "intake.json").write_text(pretty_json(rec))
+    (store / "scope.json").write_text(pretty_json({"schema": "forge-c/delivery-scope/0.1", "functions": resolved,
+                                                   "excluded": excluded, "excluded_count": len(excluded)}))
+    if issues:
+        raise DeliveryBlocked(";".join(issues))
+    for rel, data in files.items():
+        p = store / "files" / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data)
+        p.chmod(0o444)
+    return rec
+
+
+def precheck(spec: dict, example: Path, toolchain_bin: Path | None = None) -> dict:
+    """Owner 2026-11-13 (autonomy item 1): the delivery intake's build check run at placement time, before any launch
+    (no store and no workspace written). Status: NOT_APPLICABLE (no delivery, or a HAL that builds against another
+    order's provided LL), PASS, FAIL (the delivered code does not compile with the line's toolchain: an input gap),
+    UNVERIFIED (the check itself could not run - source unreadable, no compiler: never a gap, so a broken check can
+    never stop the line). `toolchain_bin` goes first on PATH: the launcher's toolchain, not the host's."""
+    d = spec.get("delivery")
+    if not d:
+        return {"status": "NOT_APPLICABLE", "reason": "NO_DELIVERY"}
+    if spec.get("layer") == "HAL" and d.get("provided_ll") is not False:
+        return {"status": "NOT_APPLICABLE", "reason": "BUILDS_AGAINST_A_PROVIDED_LL"}
+    try:
+        issues, files, _r, _s, _x = _collect(d, example)
+    except Exception as exc:  # noqa: BLE001 - the check never stops the line on its own failure
+        return {"status": "UNVERIFIED", "issues": [f"{type(exc).__name__}:{exc}"[:240]]}
+    if issues:
+        return {"status": "UNVERIFIED", "issues": issues[:5]}
+    old = os.environ.get("PATH", "")
+    if toolchain_bin is not None:
+        os.environ["PATH"] = f"{toolchain_bin}{os.pathsep}{old}"
+    try:
+        b = build_check(files, d["build"]["style"], d["build"].get("defines") or [], bool(d["build"].get("secure")))
+    finally:
+        os.environ["PATH"] = old
+    status = {"PASS": "PASS", "FAIL": "FAIL"}.get(b["status"], "UNVERIFIED")
+    out = {"status": status, "command": list(b.get("command") or [])[:1], "exit_code": b.get("exit_code"),
+           "log_tail": (b.get("log") or "")[-2000:], "log_sha256": b.get("log_sha256")}
+    if b.get("reason"):
+        out["reason"] = b["reason"]
+    return out
+
+
+def _collect(d: dict, example: Path) -> tuple[list[str], dict[str, bytes], list[dict], list[dict], list[str]]:
+    """The delivery block's validation, files and scope resolution (no store written, no build run)."""
     blank = [k for k in ("origin", "licence") if k in d and not str(d[k]).strip()]  # FR-005, named explicitly
     issues = [f"DELIVERY_{k.upper()}_MISSING" for k in blank] + \
         [e for e in validate(d) if not any(e.startswith(f"DELIVERY_SPEC_INVALID:{k}:") for k in blank)]
@@ -148,7 +210,6 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
     records: list[dict] = []
     resolved: list[dict] = []
     excluded: list[str] = []
-    build = {"status": "NOT_RUN", "command": [], "exit_code": None, "log_sha256": None, "warnings": 0}
     if not issues:
         with tempfile.TemporaryDirectory(prefix="forge-bf-src-") as td:
             try:
@@ -187,30 +248,7 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
             else:
                 resolved.append({"name": name, "file": x.file, "line": x.line, "kind": x.kind})
         excluded = sorted({x.name for x in defs} - set(d["scope"]["functions"]))
-    if not issues:
-        build = build_check({**(extra or {}), **files}, d["build"]["style"], d["build"].get("defines") or [],
-                            bool(d["build"].get("secure")))
-        if build["status"] != "PASS":
-            issues.append(f"DELIVERY_BUILD_{build['status']}")
-    rec = {"schema": INTAKE_SCHEMA, "work_order": wo, "checked_at": utc_now(),
-           "status": "BLOCKED" if issues else "ACCEPTED", "issues": issues, "code_mode": d.get("code_mode"),
-           "origin": d.get("origin"), "licence": d.get("licence"), "files": records, "build_check": build}
-    if store.exists():
-        for p in sorted(store.rglob("*"), reverse=True):  # a re-prepared work order replaces its own store only
-            p.chmod(0o755 if p.is_dir() else 0o644)
-        shutil.rmtree(store)
-    store.mkdir(parents=True)
-    (store / "intake.json").write_text(pretty_json(rec))
-    (store / "scope.json").write_text(pretty_json({"schema": "forge-c/delivery-scope/0.1", "functions": resolved,
-                                                   "excluded": excluded, "excluded_count": len(excluded)}))
-    if issues:
-        raise DeliveryBlocked(";".join(issues))
-    for rel, data in files.items():
-        p = store / "files" / rel
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_bytes(data)
-        p.chmod(0o444)
-    return rec
+    return issues, files, records, resolved, excluded
 
 
 def stored(wo: str) -> dict[str, bytes]:
