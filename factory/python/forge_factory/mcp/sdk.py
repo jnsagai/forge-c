@@ -356,7 +356,10 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
             if verify:  # feature 021 T014 (FR-007): the code the tool ran on, so an unchanged PASS stays current
                 from ..inspection.engine import Store as _Store
 
+                from ..inspection.engine import tool_image as _tool_image
+
                 rec["code_sha"] = _Store(ws).current_hash("SWE.3")
+                rec["tool_image"] = _tool_image()
             (ws / "evidence").mkdir(parents=True, exist_ok=True)
             with open(ws / "evidence" / "tool-results.jsonl", "a", encoding="utf-8") as f:
                 f.write(json.dumps(rec, sort_keys=True) + "\n")

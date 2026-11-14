@@ -90,6 +90,29 @@ def _admission_refused(reply: dict) -> bool:
     errors = [i.split(": ", 1)[1] if ": " in i else i for i in issues]
     return bool(errors) and all(e.startswith("CALL_REFUSED:") and call_outage([e]) is None for e in errors)
 
+# Feature 021 T014 (FR-007): the verification tools whose identity binds a recorded tool result (compilers, coverage,
+# static analysis, simulator, robot). A cheap identity, not a content hash: resolved path, size and mtime of each.
+TOOL_IMAGE_TOOLS = ("clang", "clang++", "gcc", "arm-none-eabi-gcc", "llvm-profdata", "llvm-cov", "gcovr", "cppcheck",
+                    "renode", "robot")
+
+
+def tool_image() -> str:
+    """The identity of the verification tool image on PATH (a missing tool counts as missing)."""
+    import os
+    import shutil
+
+    parts = []
+    for t in TOOL_IMAGE_TOOLS:
+        p = shutil.which(t)
+        if p is None:
+            parts.append(f"{t}:-")
+            continue
+        r = os.path.realpath(p)
+        st = os.stat(r)
+        parts.append(f"{t}:{r}:{st.st_size}:{int(st.st_mtime)}")
+    return sha256_bytes("\n".join(parts).encode())
+
+
 @dataclass
 class Store:
     workspace: Path
@@ -194,7 +217,8 @@ class Store:
                 if r is None or r["result"]["status"] != "PASS":
                     out.append(f"REQUIRED_TOOL_NOT_PASS:{op}:{r['result']['status'] if r else 'NOT_RUN'}")
                 elif (code_bl and r.get("ts_utc", "") < code_bl["frozen_at"]
-                      and r.get("code_sha") != code_bl["baseline_hash"]):
+                      and not (r.get("code_sha") == code_bl["baseline_hash"]
+                               and r.get("tool_image") in (None, tool_image()))):
                     # ADR-0008: a PASS recorded before the current code baseline (e.g. before an upstream fix) is stale;
                     # feature 021 T014 (FR-007): unless it ran on exactly the frozen code (its recorded code hash)
                     out.append(f"REQUIRED_TOOL_STALE:{op}:before {code_bl['baseline_id']}")

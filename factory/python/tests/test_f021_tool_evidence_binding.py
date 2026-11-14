@@ -16,11 +16,11 @@ def _baseline(s, h):
          "frozen_at": "2026-10-15T09:00:00Z", "author_role": "swe3-author"}))
 
 
-def _bound(ws, code_sha):  # noqa: F811
+def _bound(ws, code_sha, **extra):  # noqa: F811
     p = ws / "evidence/tool-results.jsonl"
     with p.open("a") as f:
         f.write(json.dumps({"ts_utc": "2000-01-01T00:00:00Z", "phase": "SWE.4", "op": "run_unit",
-                            "server": "forge-tests-mcp", "code_sha": code_sha,
+                            "server": "forge-tests-mcp", "code_sha": code_sha, **extra,
                             "result": {"status": "PASS", "issues": [], "summary": "run_unit"}}) + "\n")
 
 
@@ -54,3 +54,17 @@ def test_the_sdk_records_the_code_hash_of_a_verification_tool(mission, monkeypat
     sdk.invoke("forge-tests-mcp", op, {})
     rec = json.loads((mission.ws / "evidence/tool-results.jsonl").read_text().splitlines()[-1])
     assert rec["op"] == "run_unit" and rec["code_sha"] == Store(mission.ws).current_hash("SWE.3")
+    from forge_factory.inspection.engine import tool_image
+    assert rec["tool_image"] == tool_image()
+
+
+def test_a_pass_on_the_frozen_code_but_another_tool_image_is_stale(ws):  # noqa: F811
+    from forge_factory.inspection.engine import tool_image
+
+    s = Store(ws)
+    _baseline(s, s.current_hash("SWE.3"))
+    (ws / "evidence").mkdir(exist_ok=True)
+    _bound(ws, s.current_hash("SWE.3"), tool_image="0" * 64)
+    assert "REQUIRED_TOOL_STALE:run_unit:before BL-SWE.3-001" in s.missing_outputs("SWE.4")
+    _bound(ws, s.current_hash("SWE.3"), tool_image=tool_image())
+    assert not [m for m in s.missing_outputs("SWE.4") if "run_unit" in m]
