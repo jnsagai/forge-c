@@ -353,6 +353,10 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
         try:  # durable, append-only record of every tool result for deterministic gates/finalizer
             rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,
                    "run_id": run, "result": out}
+            if verify:  # feature 021 T014 (FR-007): the code the tool ran on, so an unchanged PASS stays current
+                from ..inspection.engine import Store as _Store
+
+                rec["code_sha"] = _Store(ws).current_hash("SWE.3")
             (ws / "evidence").mkdir(parents=True, exist_ok=True)
             with open(ws / "evidence" / "tool-results.jsonl", "a", encoding="utf-8") as f:
                 f.write(json.dumps(rec, sort_keys=True) + "\n")

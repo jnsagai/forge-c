@@ -193,8 +193,10 @@ class Store:
                 r = latest(res, server, op)
                 if r is None or r["result"]["status"] != "PASS":
                     out.append(f"REQUIRED_TOOL_NOT_PASS:{op}:{r['result']['status'] if r else 'NOT_RUN'}")
-                elif code_bl and r.get("ts_utc", "") < code_bl["frozen_at"]:
-                    # ADR-0008: a PASS recorded before the current code baseline (e.g. before an upstream fix) is stale
+                elif (code_bl and r.get("ts_utc", "") < code_bl["frozen_at"]
+                      and r.get("code_sha") != code_bl["baseline_hash"]):
+                    # ADR-0008: a PASS recorded before the current code baseline (e.g. before an upstream fix) is stale;
+                    # feature 021 T014 (FR-007): unless it ran on exactly the frozen code (its recorded code hash)
                     out.append(f"REQUIRED_TOOL_STALE:{op}:before {code_bl['baseline_id']}")
         return out
 
