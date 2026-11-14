@@ -128,6 +128,9 @@ LINEAGES = tuple(
         # Owner 2026-11-13: "run SWE.1 on spi module now on local. use this new way of working" - the SPI module
         # (ST's frozen SPI HAL + SPI LL) on the feature 020 way of working (functional template v2, D40 rules).
         ("spi-module", "SPIM", "20261113-L51", "0011u-st-cube-spi-module", "STM32N6_SPI_MODULE_ST", None),
+        # Owner 2026-11-14: "after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work" - the TIM module
+        # (ST's frozen TIM HAL + TIM LL, general-purpose TIM2-TIM5) on the same way of working, after the SPI module.
+        ("tim-module", "TIMM", "20261114-L52", "0013u-st-cube-tim-module", "STM32N6_TIM_MODULE_ST", None),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
@@ -161,10 +164,14 @@ assert LADDER_PHASES[-1] == PHASES[-1] or all(i in PROVIDED_LL for i in LADDER i
 # `depends_on` chaining, after every ready ladder step (PILOT_PRIORITY) and before the lineages on hold. Generic: a
 # pilot is any lineage of LINEAGES off the ladder that builds on nothing, with a contiguous phase list from SWE.1.
 # The UART module pilot passed SWE.1 (L50B, decision D41) and is on hold; the SPI module is the active pilot.
-PILOTS = {"spi-module": ["SWE.1"]}
+PILOTS = {"spi-module": ["SWE.1"], "tim-module": ["SWE.1"]}
+# Owner 2026-11-14 "after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work": a pilot may wait
+# `after` another pilot's last phase PASS (it builds on nothing); the line places it by itself once that order passes.
+PILOT_AFTER = {"tim-module": "spi-module"}
 PILOT_PRIORITY = 40
 assert all(i in _LINEAGE and i not in LADDER and _LINEAGE[i]["depends_on"] is None
            and list(ph) == list(PHASES[:len(ph)]) and ph for i, ph in PILOTS.items())
+assert all(i in PILOTS and a in PILOTS and a != i for i, a in PILOT_AFTER.items())
 assert 30 < PILOT_PRIORITY < 50 - (len(LADDER) - 1)
 
 
@@ -173,7 +180,8 @@ def derived_campaign():
     the deployer substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority and
     run the stage's phases; a HAL step builds on its LL lineage's SWE.6 (depends_on) when the stage reaches SWE.6,
     else on its PROVIDED_LL; every later step waits `after` the previous step's last stage phase unless it already
-    depends on it. A pilot lineage (PILOTS, feature 020) is ACTIVE on its own phases with PILOT_PRIORITY and no chaining.
+    depends on it. A pilot lineage (PILOTS, feature 020) is ACTIVE on its own phases with PILOT_PRIORITY, chained only by
+    PILOT_AFTER (it waits `after` the named pilot's last phase PASS).
     Other lineages off the ladder stay ON_HOLD."""
     from ..quality import defaults
 
@@ -194,9 +202,13 @@ def derived_campaign():
                 e["depends_on"] = dict(lineage=L["depends_on"], phase=PHASES[-1], verdict="PASS")
         if k and e.get("depends_on", {}).get("lineage") != LADDER[k - 1]:
             e["after"] = dict(lineage=LADDER[k - 1], phase=LADDER_PHASES[-1], verdict="PASS")
+        if pilot and L["id"] in PILOT_AFTER:  # owner 2026-11-14: TIM after SPI
+            prev = PILOT_AFTER[L["id"]]
+            e["after"] = dict(lineage=prev, phase=PILOTS[prev][-1], verdict="PASS")
         e["note"] = (f"Driver ladder step {k + 1} of {len(LADDER)} (owner 2026-11-09: LL first, then the HAL on it)."
                      if k is not None else
-                     f"Pilot lineage (feature 020): ACTIVE on {', '.join(pilot)} outside the driver ladder." if pilot
+                     f"Pilot lineage (feature 020): ACTIVE on {', '.join(pilot)} outside the driver ladder"
+                     + (f", after {PILOT_AFTER[L['id']]}." if L["id"] in PILOT_AFTER else ".") if pilot
                      else "Not on the driver ladder (owner 2026-11-09).")
         out.append(e)
     return dict(schema="forge-c/line-campaign/1", campaign_id=CAMPAIGN, line="local", wo_prefix="WO-F014",
