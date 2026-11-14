@@ -1,0 +1,1 @@
+{"before_sha256": "dcdbab5aaff42f01d541e0b7abe700b3475d6786479735bb5d0a8c7cfa030ea4", "after_sha256": "a947e57533868cca1e031a27a45b464d77460c22cab2ff4b98284d95851c2037", "swapped_at": "2026-11-08T18:01:58Z", "tests": {"test_window": "16/16", "test_rollback": "32/32", "test_importer": "12/12"}, "backup": "autodeploy.py.bak-t072-dcdbab5a"}

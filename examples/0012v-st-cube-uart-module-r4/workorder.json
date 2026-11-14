@@ -1,0 +1,840 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 USART/UART module (UART HAL component + USART LL component) as delivered by ST (STM32CubeN6 v1.4.0)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 65 (USART) + memory map p.180"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.65 USART register interface + memory map p.180 (USART1 secure base 0x52001000)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the USART benchmark work orders"
+  },
+  "scope": [
+    "Module UART as delivered by ST (STM32CubeN6 v1.4.0), FROZEN: the UART HAL component (classic, handle-based) and the USART LL component (header-only inline functions) under one functional-level requirement set. The delivered HAL does not use the delivered LL: the two components are parallel public APIs over the same peripheral.",
+    "In scope (HAL): initialisation and de-initialisation with their platform hooks; configuration through the initialisation structure (baud rate, word length, stop bits, parity, direction, oversampling); FIFO mode and FIFO thresholds; blocking transmit and receive; interrupt-driven transmit, receive and interrupt handling; DMA-driven transmit and receive; abort of transmit, receive or both, blocking and interrupt-driven; callback registration and unregistration and the transmit/receive complete, half-complete, error and abort-complete callbacks; state and error queries.",
+    "In scope (LL): enable and disable; configuration of the asynchronous mode (direction, parity, data width, stop bits, oversampling, prescaler, baud rate); FIFO; DMA request enable; transmit, receive and error interrupt enable and status with the corresponding flags and flag clears; data transmit and receive.",
+    "Out of scope (delivered; listed by the governance inventory): half-duplex, LIN, multiprocessor, RS-485, receive-to-idle and its event callbacks, receiver timeout, DMA pause/resume/stop, stop-mode wake-up, the FIFO event callbacks and the vendor-internal helper functions of the HAL; LIN, smartcard, IrDA, auto baud rate, wake-up, RS-485 driver enable, synchronous and SPI-slave mode, hardware flow control and the advanced pin and data options of the LL.",
+    "SWE.1 only, at the functional level: register-level detail and concrete negative cases belong to SWE.3."
+  ],
+  "system_names": [
+    "USART HAL driver",
+    "USART driver",
+    "STM32N6 USART HAL driver",
+    "USART LL driver",
+    "STM32N6 USART LL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25); simulation performance budget set 2026-11-12 under the owner delegation of timing/CPU decisions (same development target as the ladder HAL orders 0016m/0013m)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0012-usart-st/inputs/RM0486-rev4-ch65-usart.md",
+      "role": "reference_manual_usart_chapter"
+    },
+    {
+      "path": "../0012-usart-st/inputs/RM0486-rev4-memory-map-excerpt-usart.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0012-usart-st/inputs/RM0486-rev4-vector-table.md",
+      "role": "reference_manual_interrupt_mapping"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0012-usart-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    },
+    {
+      "path": "../0012-usart-st/inputs/stm32n657xx.h",
+      "role": "cmsis_device_header"
+    },
+    {
+      "path": "../0012-usart-st/inputs/vendor-inputs-manifest.json",
+      "role": "conversion_provenance"
+    }
+  ],
+  "layer": "LL+HAL",
+  "layer_note": "Feature 020 pilot (owner 2026-11-12): one module, the delivered UART HAL and USART LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set; requirements are derived from the inputs, never from the code; secure build.",
+  "swe1": {
+    "level": "functional",
+    "template": "swe1-functional-v3",
+    "carry_from": [
+      "WO-F014-SWE1-UARTM-20261113-L50B",
+      "WO-F014-SWE1-UARTM-20261113-L50",
+      "WO-F014-CMP-SWE1-UARTM-20261113-C03"
+    ]
+  },
+  "module": {
+    "name": "UART",
+    "components": [
+      {
+        "id": "HAL_UART",
+        "layer": "HAL",
+        "files": [
+          "software/hal/stm32n6xx_hal_uart.c",
+          "software/hal/stm32n6xx_hal_uart.h",
+          "software/hal/stm32n6xx_hal_uart_ex.c",
+          "software/hal/stm32n6xx_hal_uart_ex.h"
+        ],
+        "uses": []
+      },
+      {
+        "id": "LL_USART",
+        "layer": "LL",
+        "files": [
+          "software/ll/stm32n6xx_ll_usart.h"
+        ],
+        "uses": []
+      }
+    ]
+  },
+  "scope_rule": {
+    "in": [
+      {
+        "group": "initialisation and platform hooks",
+        "functions": [
+          "HAL_UART_Init",
+          "HAL_UART_DeInit",
+          "HAL_UART_MspInit",
+          "HAL_UART_MspDeInit"
+        ],
+        "rm_features": [
+          "65.5.3",
+          "65.5.4",
+          "65.5.8",
+          "65.5.13"
+        ]
+      },
+      {
+        "group": "fifo mode",
+        "functions": [
+          "HAL_UARTEx_EnableFifoMode",
+          "HAL_UARTEx_DisableFifoMode",
+          "HAL_UARTEx_SetTxFifoThreshold",
+          "HAL_UARTEx_SetRxFifoThreshold"
+        ],
+        "rm_features": [
+          "65.5.5"
+        ]
+      },
+      {
+        "group": "blocking transfer",
+        "functions": [
+          "HAL_UART_Transmit",
+          "HAL_UART_Receive"
+        ],
+        "rm_features": [
+          "65.5.6",
+          "65.5.7"
+        ]
+      },
+      {
+        "group": "interrupt transfer",
+        "functions": [
+          "HAL_UART_Transmit_IT",
+          "HAL_UART_Receive_IT",
+          "HAL_UART_IRQHandler"
+        ],
+        "rm_features": [
+          "65.7",
+          "24.1.2"
+        ]
+      },
+      {
+        "group": "dma transfer",
+        "functions": [
+          "HAL_UART_Transmit_DMA",
+          "HAL_UART_Receive_DMA"
+        ],
+        "rm_features": [
+          "65.5.20"
+        ]
+      },
+      {
+        "group": "abort",
+        "functions": [
+          "HAL_UART_Abort",
+          "HAL_UART_AbortTransmit",
+          "HAL_UART_AbortReceive",
+          "HAL_UART_Abort_IT",
+          "HAL_UART_AbortTransmit_IT",
+          "HAL_UART_AbortReceive_IT"
+        ]
+      },
+      {
+        "group": "callbacks",
+        "functions": [
+          "HAL_UART_*Callback"
+        ]
+      },
+      {
+        "group": "state and error queries",
+        "functions": [
+          "HAL_UART_GetState",
+          "HAL_UART_GetError"
+        ]
+      },
+      {
+        "group": "ll enable and disable",
+        "functions": [
+          "LL_USART_Enable",
+          "LL_USART_Disable",
+          "LL_USART_IsEnabled"
+        ]
+      },
+      {
+        "group": "ll configuration",
+        "functions": [
+          "LL_USART_*TransferDirection",
+          "LL_USART_*DirectionRx",
+          "LL_USART_*DirectionTx",
+          "LL_USART_*Parity",
+          "LL_USART_*DataWidth",
+          "LL_USART_*StopBitsLength",
+          "LL_USART_*OverSampling",
+          "LL_USART_SetBaudRate",
+          "LL_USART_GetBaudRate",
+          "LL_USART_SetPrescaler",
+          "LL_USART_GetPrescaler",
+          "LL_USART_ConfigCharacter",
+          "LL_USART_ConfigAsyncMode"
+        ],
+        "rm_features": [
+          "65.5.4",
+          "65.5.8",
+          "65.5.13"
+        ]
+      },
+      {
+        "group": "ll fifo",
+        "functions": [
+          "LL_USART_*FIFO*",
+          "LL_USART_*_TXFT",
+          "LL_USART_*_RXFT",
+          "LL_USART_*_TXFE",
+          "LL_USART_*_RXFF",
+          "LL_USART_Request*DataFlush"
+        ],
+        "rm_features": [
+          "65.5.5"
+        ]
+      },
+      {
+        "group": "ll dma requests",
+        "functions": [
+          "LL_USART_*DMAReq_RX",
+          "LL_USART_*DMAReq_TX"
+        ],
+        "rm_features": [
+          "65.5.20"
+        ]
+      },
+      {
+        "group": "ll transfer and error interrupts",
+        "functions": [
+          "LL_USART_*IT_TXE_TXFNF",
+          "LL_USART_*IT_TC",
+          "LL_USART_*IT_RXNE_RXFNE",
+          "LL_USART_*IT_PE",
+          "LL_USART_*IT_ERROR"
+        ],
+        "rm_features": [
+          "65.7"
+        ]
+      },
+      {
+        "group": "ll status flags",
+        "functions": [
+          "LL_USART_*Flag_PE",
+          "LL_USART_*Flag_FE",
+          "LL_USART_*Flag_NE",
+          "LL_USART_*Flag_ORE",
+          "LL_USART_*Flag_TC",
+          "LL_USART_*Flag_TXE_TXFNF",
+          "LL_USART_*Flag_RXNE_RXFNE",
+          "LL_USART_IsActiveFlag_TEACK",
+          "LL_USART_IsActiveFlag_REACK"
+        ],
+        "rm_features": [
+          "65.5.6",
+          "65.5.7"
+        ]
+      },
+      {
+        "group": "ll data transfer",
+        "functions": [
+          "LL_USART_TransmitData*",
+          "LL_USART_ReceiveData*"
+        ],
+        "rm_features": [
+          "65.5.6",
+          "65.5.7"
+        ]
+      }
+    ],
+    "out": [
+      {
+        "group": "half-duplex",
+        "functions": [
+          "HAL_HalfDuplex_*"
+        ],
+        "rm_features": [
+          "65.5.16"
+        ]
+      },
+      {
+        "group": "lin",
+        "functions": [
+          "HAL_LIN_*"
+        ],
+        "rm_features": [
+          "65.5.14"
+        ]
+      },
+      {
+        "group": "multiprocessor",
+        "functions": [
+          "HAL_MultiProcessor*"
+        ],
+        "rm_features": [
+          "65.5.11"
+        ]
+      },
+      {
+        "group": "rs-485",
+        "functions": [
+          "HAL_RS485Ex_*"
+        ],
+        "rm_features": [
+          "65.5.21"
+        ]
+      },
+      {
+        "group": "receive-to-idle and receive-event callbacks",
+        "functions": [
+          "HAL_UARTEx_ReceiveToIdle*",
+          "HAL_UARTEx_GetRxEventType",
+          "HAL_UARTEx_RxEventCallback",
+          "HAL_UART_RegisterRxEventCallback",
+          "HAL_UART_UnRegisterRxEventCallback"
+        ]
+      },
+      {
+        "group": "receiver timeout",
+        "functions": [
+          "HAL_UART_*ReceiverTimeout*"
+        ],
+        "rm_features": [
+          "65.5.17"
+        ]
+      },
+      {
+        "group": "dma pause, resume and stop",
+        "functions": [
+          "HAL_UART_DMA*"
+        ]
+      },
+      {
+        "group": "stop-mode wake-up",
+        "functions": [
+          "HAL_UARTEx_*StopMode*",
+          "HAL_UARTEx_WakeupCallback"
+        ],
+        "rm_features": [
+          "65.5.22",
+          "65.6"
+        ]
+      },
+      {
+        "group": "fifo event callbacks",
+        "functions": [
+          "HAL_UARTEx_RxFifoFullCallback",
+          "HAL_UARTEx_TxFifoEmptyCallback"
+        ]
+      },
+      {
+        "group": "vendor-internal helper functions",
+        "functions": [
+          "UART_*"
+        ]
+      },
+      {
+        "group": "ll stop-mode wake-up",
+        "functions": [
+          "LL_USART_*InStopMode",
+          "LL_USART_*WKUP*",
+          "LL_USART_*WakeUpMethod"
+        ],
+        "rm_features": [
+          "65.5.22",
+          "65.6"
+        ]
+      },
+      {
+        "group": "ll multiprocessor and mute mode",
+        "functions": [
+          "LL_USART_*MuteMode",
+          "LL_USART_*NodeAddress*",
+          "LL_USART_IsActiveFlag_RWU",
+          "LL_USART_*_CM",
+          "LL_USART_ConfigMultiProcessMode"
+        ],
+        "rm_features": [
+          "65.5.11"
+        ]
+      },
+      {
+        "group": "ll synchronous mode and spi slave",
+        "functions": [
+          "LL_USART_*LastClkPulseOutput",
+          "LL_USART_*ClockPhase",
+          "LL_USART_*ClockPolarity",
+          "LL_USART_ConfigClock",
+          "LL_USART_*SCLKOutput",
+          "LL_USART_*SPISlave*",
+          "LL_USART_ConfigSyncMode",
+          "LL_USART_*Flag_UDR"
+        ],
+        "rm_features": [
+          "65.5.15"
+        ]
+      },
+      {
+        "group": "ll advanced pin and data options",
+        "functions": [
+          "LL_USART_*TXRXSwap",
+          "LL_USART_*RXPinLevel",
+          "LL_USART_*TXPinLevel",
+          "LL_USART_*BinaryDataLogic",
+          "LL_USART_*TransferBitOrder",
+          "LL_USART_*OneBitSamp",
+          "LL_USART_*OverrunDetect"
+        ]
+      },
+      {
+        "group": "ll auto baud rate detection",
+        "functions": [
+          "LL_USART_*AutoBaud*",
+          "LL_USART_IsActiveFlag_ABR*"
+        ],
+        "rm_features": [
+          "65.5.10"
+        ]
+      },
+      {
+        "group": "ll receiver timeout and block mode",
+        "functions": [
+          "LL_USART_*RxTimeout",
+          "LL_USART_*_RTO",
+          "LL_USART_*BlockLength",
+          "LL_USART_*_EOB"
+        ],
+        "rm_features": [
+          "65.5.12",
+          "65.5.17"
+        ]
+      },
+      {
+        "group": "ll hardware flow control",
+        "functions": [
+          "LL_USART_*HWFlowCtrl",
+          "LL_USART_*_CTS",
+          "LL_USART_*Flag_nCTS"
+        ],
+        "rm_features": [
+          "65.5.21"
+        ]
+      },
+      {
+        "group": "ll irda",
+        "functions": [
+          "LL_USART_*Irda*"
+        ],
+        "rm_features": [
+          "65.5.19"
+        ]
+      },
+      {
+        "group": "ll smartcard",
+        "functions": [
+          "LL_USART_*Smartcard*",
+          "LL_USART_*_TCBGT"
+        ],
+        "rm_features": [
+          "65.5.18"
+        ]
+      },
+      {
+        "group": "ll half-duplex",
+        "functions": [
+          "LL_USART_*HalfDuplex*"
+        ],
+        "rm_features": [
+          "65.5.16"
+        ]
+      },
+      {
+        "group": "ll lin",
+        "functions": [
+          "LL_USART_*LIN*",
+          "LL_USART_*_LBD",
+          "LL_USART_RequestBreakSending",
+          "LL_USART_IsActiveFlag_SBK"
+        ],
+        "rm_features": [
+          "65.5.14"
+        ]
+      },
+      {
+        "group": "ll rs-485 driver enable",
+        "functions": [
+          "LL_USART_*DEMode",
+          "LL_USART_*DEDeassertionTime",
+          "LL_USART_*DEAssertionTime",
+          "LL_USART_*DESignalPolarity"
+        ],
+        "rm_features": [
+          "65.5.21"
+        ]
+      },
+      {
+        "group": "ll receive-to-idle",
+        "functions": [
+          "LL_USART_*_IDLE"
+        ]
+      },
+      {
+        "group": "ll dma options",
+        "functions": [
+          "LL_USART_*DMADeactOnRxErr",
+          "LL_USART_DMA_GetRegAddr"
+        ]
+      },
+      {
+        "group": "ll busy status",
+        "functions": [
+          "LL_USART_IsActiveFlag_BUSY"
+        ]
+      }
+    ],
+    "not_delivered": [
+      {
+        "capability": "separate configuration setters and getters in the HAL component",
+        "note": "the delivered HAL configures the peripheral only through its initialisation structure; per-setting set/get services exist only in the LL component"
+      },
+      {
+        "capability": "DMA channel linking services",
+        "note": "the delivered HAL expects the application to link the DMA handles; it offers no service to link or unlink a DMA channel"
+      },
+      {
+        "capability": "loopback or self-test mode",
+        "note": "neither delivered component offers a loopback or self-test service"
+      }
+    ]
+  },
+  "delivery": {
+    "code_mode": "FROZEN",
+    "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+    "licence": "BSD-3-Clause",
+    "licence_allows_modification": true,
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+    "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+    "files": [
+      {
+        "from": "Src/stm32n6xx_hal_uart.c",
+        "to": "software/hal/stm32n6xx_hal_uart.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_uart.h",
+        "to": "software/hal/stm32n6xx_hal_uart.h"
+      },
+      {
+        "from": "Src/stm32n6xx_hal_uart_ex.c",
+        "to": "software/hal/stm32n6xx_hal_uart_ex.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_uart_ex.h",
+        "to": "software/hal/stm32n6xx_hal_uart_ex.h"
+      },
+      {
+        "from": "Inc/stm32n6xx_ll_usart.h",
+        "to": "software/ll/stm32n6xx_ll_usart.h"
+      }
+    ],
+    "scope": {
+      "functions": [
+        "HAL_UART_Abort",
+        "HAL_UART_AbortCpltCallback",
+        "HAL_UART_AbortReceive",
+        "HAL_UART_AbortReceiveCpltCallback",
+        "HAL_UART_AbortReceive_IT",
+        "HAL_UART_AbortTransmit",
+        "HAL_UART_AbortTransmitCpltCallback",
+        "HAL_UART_AbortTransmit_IT",
+        "HAL_UART_Abort_IT",
+        "HAL_UART_DMAPause",
+        "HAL_UART_DMAResume",
+        "HAL_UART_DMAStop",
+        "HAL_UART_DeInit",
+        "HAL_UART_DisableReceiverTimeout",
+        "HAL_UART_EnableReceiverTimeout",
+        "HAL_UART_ErrorCallback",
+        "HAL_UART_GetError",
+        "HAL_UART_GetState",
+        "HAL_UART_IRQHandler",
+        "HAL_UART_Init",
+        "HAL_UART_MspDeInit",
+        "HAL_UART_MspInit",
+        "HAL_UART_Receive",
+        "HAL_UART_Receive_DMA",
+        "HAL_UART_Receive_IT",
+        "HAL_UART_ReceiverTimeout_Config",
+        "HAL_UART_RegisterCallback",
+        "HAL_UART_RegisterRxEventCallback",
+        "HAL_UART_RxCpltCallback",
+        "HAL_UART_RxHalfCpltCallback",
+        "HAL_UART_Transmit",
+        "HAL_UART_Transmit_DMA",
+        "HAL_UART_Transmit_IT",
+        "HAL_UART_TxCpltCallback",
+        "HAL_UART_TxHalfCpltCallback",
+        "HAL_UART_UnRegisterCallback",
+        "HAL_UART_UnRegisterRxEventCallback",
+        "HAL_HalfDuplex_EnableReceiver",
+        "HAL_HalfDuplex_EnableTransmitter",
+        "HAL_HalfDuplex_Init",
+        "HAL_LIN_Init",
+        "HAL_LIN_SendBreak",
+        "HAL_MultiProcessor_DisableMuteMode",
+        "HAL_MultiProcessor_EnableMuteMode",
+        "HAL_MultiProcessor_EnterMuteMode",
+        "HAL_MultiProcessor_Init",
+        "HAL_UARTEx_RxEventCallback",
+        "HAL_MultiProcessorEx_AddressLength_Set",
+        "HAL_RS485Ex_Init",
+        "HAL_UARTEx_DisableFifoMode",
+        "HAL_UARTEx_DisableStopMode",
+        "HAL_UARTEx_EnableFifoMode",
+        "HAL_UARTEx_EnableStopMode",
+        "HAL_UARTEx_GetRxEventType",
+        "HAL_UARTEx_ReceiveToIdle",
+        "HAL_UARTEx_ReceiveToIdle_DMA",
+        "HAL_UARTEx_ReceiveToIdle_IT",
+        "HAL_UARTEx_RxFifoFullCallback",
+        "HAL_UARTEx_SetRxFifoThreshold",
+        "HAL_UARTEx_SetTxFifoThreshold",
+        "HAL_UARTEx_StopModeWakeUpSourceConfig",
+        "HAL_UARTEx_TxFifoEmptyCallback",
+        "HAL_UARTEx_WakeupCallback",
+        "UART_AdvFeatureConfig",
+        "UART_CheckIdleState",
+        "UART_InitCallbacksToDefault",
+        "UART_SetConfig",
+        "UART_Start_Receive_DMA",
+        "UART_Start_Receive_IT",
+        "UART_WaitOnFlagUntilTimeout"
+      ],
+      "note": "the public functions of the delivered HAL (prototypes of the delivered UART HAL headers); the LL component's public API is every inline function of its delivered header. The scope rule (scope_rule) classifies both into in scope and out of scope"
+    },
+    "dependencies": [
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n6xx.h",
+        "to": "inputs/vendor/include/stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n657xx.h",
+        "to": "inputs/vendor/include/stm32n657xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/system_stm32n6xx.h",
+        "to": "inputs/vendor/include/system_stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "core_cm55.h",
+        "to": "inputs/vendor/include/core_cm55.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_version.h",
+        "to": "inputs/vendor/include/cmsis_version.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_compiler.h",
+        "to": "inputs/vendor/include/cmsis_compiler.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_gcc.h",
+        "to": "inputs/vendor/include/cmsis_gcc.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/cmsis_gcc_m.h",
+        "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_mpu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_pmu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv7m_cachel1.h",
+        "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_def.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_def.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma_ex.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma_ex.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_rcc.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_rcc.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_rcc_ex.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_rcc_ex.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_rcc.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_rcc.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_bus.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_bus.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_pwr.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_pwr.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/Legacy/stm32_hal_legacy.h",
+        "to": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_conf_template.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause",
+        "configure": {
+          "hal_modules": [
+            "UART",
+            "DMA",
+            "RCC"
+          ]
+        }
+      }
+    ],
+    "build": {
+      "style": "cmsis",
+      "defines": [
+        "STM32N657xx"
+      ],
+      "secure": true
+    }
+  },
+  "peripheral": "usart",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

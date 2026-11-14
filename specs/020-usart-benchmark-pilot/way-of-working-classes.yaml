@@ -94,3 +94,27 @@ rules:
   - id: D29
     class: default
     rule: Comparisons are metrics only (present = a real value; categories not reported are never zero); forbidden reference names are kept as salted digests
+  - id: D30
+    class: pilot_only
+    rule: A pilot lineage restarted after an intake toolchain fix moves to a new series with new order names; earlier attempts stay history
+  - id: D34
+    class: default
+    rule: A rerun after a comparison names guarded metrics from the baseline run and reports each as PRESERVED or REGRESSED (compare --preserve)
+  - id: D35
+    class: per_order
+    rule: Functional SWE.1 template v2 (design constraints one per topic and capped per guideline part, operations attribute with derived allocation, preconditions required) is selected per order by template id; v1 unchanged
+  - id: D37
+    class: default
+    rule: A rerun names its predecessor runs (carry_from); requirements still valid for unchanged inputs keep content and PASS verdict, only those the findings name are reworked
+  - id: D38
+    class: pilot_only
+    rule: Each comparison round of the pilot runs as a new lineage series carried from the previous local and cloud runs
+  - id: D39
+    class: default
+    rule: The set inspection of a functional order reads the attributes as a residue index beside the requirements markdown (values the markdown does not state), so a large set fits the context
+  - id: D40
+    class: default
+    rule: Requirements cite each other by key and the assembly writes the current id; no authoring-process text; work-order budgets are mandatory, measured requirements and the introduction states that policy
+  - id: D41
+    class: pilot_only
+    rule: The pilot accepts its first SWE.1 that passes both inspection phases; count differences to the benchmark are recorded, not forced

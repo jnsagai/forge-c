@@ -41,13 +41,41 @@ def _manifest(ws: Path) -> dict:
         return {}
 
 
+# The line's own retries (afo/line_campaign.py: attempt n of a series appends B, C, ...) of a functional SWE.1 order.
+RETRY_NAME = re.compile(r"^(WO-[A-Z0-9]+-SWE1-[A-Z0-9-]+-L\d+)([A-Z]{0,2})$")
+
+
+def predecessors(wo: str | None) -> list[str]:
+    """CAPA (run WO-F014-SWE1-SPIM-20261113-L51 -> L51B): the line's automatic retry of a functional SWE.1 order
+    named no carry source and started over, although the owner rule D36 keeps what an earlier attempt already
+    inspected and validated. Attempt n of a series carries from its earlier attempts, newest first; the inventory
+    check in source() still refuses an attempt whose inputs changed."""
+    from ..afo.line_campaign import retry_suffix
+
+    m = RETRY_NAME.match(wo or "")
+    if not m or not m.group(2):
+        return []
+    n = 0
+    for ch in m.group(2):  # bijective base 26 (retry_suffix): B -> 2, Z -> 26, AA -> 27
+        n = n * 26 + ord(ch) - 64
+    return [m.group(1) + retry_suffix(k) for k in range(n - 1, 0, -1)]
+
+
+def candidates(ws: Path) -> list[str]:
+    """The work order's named sources (`swe1.carry_from`) first, then the earlier attempts of its own series."""
+    man = _manifest(ws)
+    named = list(man.get(SOURCE_KEY) or [])
+    auto = predecessors(man.get("work_order")) if man.get("swe1_level") == "functional" else []
+    return named + [w for w in auto if w not in named]
+
+
 def source(ws: Path) -> tuple[Path | None, dict]:
     """The predecessor workspace to carry from and the provenance record (None and the reason when there is none)."""
     from ..brownfield.resume import source_workspace
     from ..common import state_dir
 
     ws = Path(ws)
-    cands = _manifest(ws).get(SOURCE_KEY) or []
+    cands = candidates(ws)
     if not cands:
         return None, {"reason": "NO_CARRY_SOURCE"}
     inv = ws / GI.OUT
@@ -146,7 +174,7 @@ def _named_keys(findings: list[str]) -> set[str]:
 
 
 def wanted(ws: Path) -> bool:
-    return bool(_manifest(ws).get(SOURCE_KEY))
+    return bool(candidates(ws))
 
 
 def _keep_path(ws: Path, task: str) -> Path:

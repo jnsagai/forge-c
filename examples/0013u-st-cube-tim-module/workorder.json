@@ -1,0 +1,915 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 TIM module (TIM HAL component + TIM LL component) as delivered by ST (STM32CubeN6 v1.4.0)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 54 (TIM2/TIM3/TIM4/TIM5) + memory map p.181"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.54 TIM2-5 register interface + memory map p.181 (TIM2 secure base 0x50000000)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the TIM module work orders"
+  },
+  "scope": [
+    "Module TIM as delivered by ST (STM32CubeN6 v1.4.0), FROZEN: the TIM HAL component (classic, handle-based) and the TIM LL component (header-only inline functions) under one functional-level requirement set, for the general-purpose timers TIM2/TIM3/TIM4/TIM5 (RM0486 chapter 54). The delivered HAL does not use the delivered LL: the two components are parallel public APIs over the same peripheral.",
+    "In scope (HAL): time base, output compare, PWM, input capture, one-pulse and encoder interface modes, each with initialisation and de-initialisation, platform hooks, channel configuration, blocking, interrupt-driven and DMA-driven start and stop, and state queries; clock source selection; slave-mode and master-mode synchronisation; interrupt handling and software event generation; captured value read-back; callback registration and unregistration and the period-elapsed, compare, capture, pulse-finished, trigger, error and half-complete callbacks; active channel and channel state queries.",
+    "In scope (LL): counter enable; time-base configuration (update event and source, one-pulse, counter mode, auto-reload preload, clock division, counter, direction, prescaler, auto-reload); capture/compare channel control; output compare configuration and compare values of channels 1 to 4; input capture configuration and captured values of channels 1 to 4; clock source, encoder mode, trigger output, slave mode, trigger input, master/slave mode and external trigger configuration; DMA requests, interrupts, status flags and event generation for update, channels 1 to 4 and trigger.",
+    "Out of scope (delivered; listed by the governance inventory): the vendor-internal helper functions the delivered HAL headers declare, the HAL DMA burst services, output reference clear and input XOR configuration and every extended HAL service (complementary outputs, break and dead time, commutation, Hall sensor, encoder index, dithering, ADC synchronisation, slave-mode preload, pulse on compare, input selection and remap); the LL advanced-control timer features (repetition counter, channels 5 and 6, complementary outputs, break, dead time, lock, off-states, output enable, commutation, second trigger output), encoder index and error detection, and the remaining LL options (update flag remap, dithering, output reference clear, pulse width, input XOR, external trigger source, slave-mode preload, ADC synchronisation, DMA burst, input remap).",
+    "SWE.1 only, at the functional level: register-level detail and concrete negative cases belong to SWE.3."
+  ],
+  "system_names": [
+    "TIM HAL driver",
+    "TIM driver",
+    "STM32N6 TIM HAL driver",
+    "TIM LL driver",
+    "STM32N6 TIM LL driver",
+    "timer driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25); simulation performance budget set 2026-11-12 under the owner delegation of timing/CPU decisions (same development target as the ladder HAL orders 0016m/0013m)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0013-tim-st/inputs/RM0486-rev4-ch54-tim2-5.md",
+      "role": "reference_manual_tim_chapter"
+    },
+    {
+      "path": "../0013-tim-st/inputs/RM0486-rev4-memory-map-excerpt-tim.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0012-usart-st/inputs/RM0486-rev4-vector-table.md",
+      "role": "reference_manual_interrupt_mapping"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0013-tim-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    },
+    {
+      "path": "../0012-usart-st/inputs/stm32n657xx.h",
+      "role": "cmsis_device_header"
+    },
+    {
+      "path": "../0012-usart-st/inputs/vendor-inputs-manifest.json",
+      "role": "conversion_provenance"
+    }
+  ],
+  "layer": "LL+HAL",
+  "layer_note": "Feature 020 way of working applied to TIM (owner 2026-11-14: \"after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work\"): one module, the delivered TIM HAL and TIM LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set for the general-purpose timers TIM2-TIM5; requirements are derived from the inputs, never from the code; secure build.",
+  "swe1": {
+    "level": "functional",
+    "template": "swe1-functional-v2"
+  },
+  "module": {
+    "name": "TIM",
+    "components": [
+      {
+        "id": "HAL_TIM",
+        "layer": "HAL",
+        "files": [
+          "software/hal/stm32n6xx_hal_tim.c",
+          "software/hal/stm32n6xx_hal_tim.h",
+          "software/hal/stm32n6xx_hal_tim_ex.c",
+          "software/hal/stm32n6xx_hal_tim_ex.h"
+        ],
+        "uses": []
+      },
+      {
+        "id": "LL_TIM",
+        "layer": "LL",
+        "files": [
+          "software/ll/stm32n6xx_ll_tim.h"
+        ],
+        "uses": []
+      }
+    ]
+  },
+  "scope_rule": {
+    "in": [
+      {
+        "group": "time base",
+        "functions": [
+          "HAL_TIM_Base_*"
+        ],
+        "rm_features": [
+          "54.4.3",
+          "54.4.4"
+        ]
+      },
+      {
+        "group": "output compare",
+        "functions": [
+          "HAL_TIM_OC_*"
+        ],
+        "rm_features": [
+          "54.4.6",
+          "54.4.9",
+          "54.4.10"
+        ]
+      },
+      {
+        "group": "pwm",
+        "functions": [
+          "HAL_TIM_PWM_*"
+        ],
+        "rm_features": [
+          "54.4.11"
+        ]
+      },
+      {
+        "group": "input capture",
+        "functions": [
+          "HAL_TIM_IC_*",
+          "HAL_TIM_ReadCapturedValue"
+        ],
+        "rm_features": [
+          "54.4.7",
+          "54.4.8"
+        ]
+      },
+      {
+        "group": "one-pulse",
+        "functions": [
+          "HAL_TIM_OnePulse_*"
+        ],
+        "rm_features": [
+          "54.4.15"
+        ]
+      },
+      {
+        "group": "encoder interface",
+        "functions": [
+          "HAL_TIM_Encoder_*"
+        ],
+        "rm_features": [
+          "54.4.18"
+        ]
+      },
+      {
+        "group": "clock source and synchronisation",
+        "functions": [
+          "HAL_TIM_ConfigClockSource",
+          "HAL_TIM_SlaveConfigSynchro",
+          "HAL_TIM_SlaveConfigSynchro_IT",
+          "HAL_TIMEx_MasterConfigSynchronization"
+        ],
+        "rm_features": [
+          "54.4.5",
+          "54.4.22",
+          "54.4.23"
+        ]
+      },
+      {
+        "group": "interrupt handling and event generation",
+        "functions": [
+          "HAL_TIM_IRQHandler",
+          "HAL_TIM_GenerateEvent"
+        ],
+        "rm_features": [
+          "54.4.30",
+          "24.1.2"
+        ]
+      },
+      {
+        "group": "callbacks",
+        "functions": [
+          "HAL_TIM_*Callback"
+        ]
+      },
+      {
+        "group": "state queries",
+        "functions": [
+          "HAL_TIM_GetActiveChannel",
+          "HAL_TIM_GetChannelState"
+        ],
+        "rm_features": [
+          "54.5.5"
+        ]
+      },
+      {
+        "group": "ll counter enable",
+        "functions": [
+          "LL_TIM_EnableCounter",
+          "LL_TIM_DisableCounter",
+          "LL_TIM_IsEnabledCounter"
+        ],
+        "rm_features": [
+          "54.4.3"
+        ]
+      },
+      {
+        "group": "ll time-base configuration",
+        "functions": [
+          "LL_TIM_EnableUpdateEvent",
+          "LL_TIM_DisableUpdateEvent",
+          "LL_TIM_IsEnabledUpdateEvent",
+          "LL_TIM_SetUpdateSource",
+          "LL_TIM_GetUpdateSource",
+          "LL_TIM_SetOnePulseMode",
+          "LL_TIM_GetOnePulseMode",
+          "LL_TIM_SetCounterMode",
+          "LL_TIM_GetCounterMode",
+          "LL_TIM_EnableARRPreload",
+          "LL_TIM_DisableARRPreload",
+          "LL_TIM_IsEnabledARRPreload",
+          "LL_TIM_SetClockDivision",
+          "LL_TIM_GetClockDivision",
+          "LL_TIM_SetCounter",
+          "LL_TIM_GetCounter",
+          "LL_TIM_GetDirection",
+          "LL_TIM_SetPrescaler",
+          "LL_TIM_GetPrescaler",
+          "LL_TIM_SetAutoReload",
+          "LL_TIM_GetAutoReload"
+        ],
+        "rm_features": [
+          "54.4.3",
+          "54.4.4",
+          "54.4.15"
+        ]
+      },
+      {
+        "group": "ll capture/compare channel control",
+        "functions": [
+          "LL_TIM_CC_EnablePreload",
+          "LL_TIM_CC_DisablePreload",
+          "LL_TIM_CC_IsEnabledPreload",
+          "LL_TIM_CC_SetUpdate",
+          "LL_TIM_CC_SetDMAReqTrigger",
+          "LL_TIM_CC_GetDMAReqTrigger",
+          "LL_TIM_CC_EnableChannel",
+          "LL_TIM_CC_DisableChannel",
+          "LL_TIM_CC_IsEnabledChannel"
+        ],
+        "rm_features": [
+          "54.4.6"
+        ]
+      },
+      {
+        "group": "ll output compare",
+        "functions": [
+          "LL_TIM_OC_ConfigOutput",
+          "LL_TIM_OC_SetMode",
+          "LL_TIM_OC_GetMode",
+          "LL_TIM_OC_SetPolarity",
+          "LL_TIM_OC_GetPolarity",
+          "LL_TIM_OC_EnableFast",
+          "LL_TIM_OC_DisableFast",
+          "LL_TIM_OC_IsEnabledFast",
+          "LL_TIM_OC_EnablePreload",
+          "LL_TIM_OC_DisablePreload",
+          "LL_TIM_OC_IsEnabledPreload",
+          "LL_TIM_OC_SetCompareCH1",
+          "LL_TIM_OC_SetCompareCH2",
+          "LL_TIM_OC_SetCompareCH3",
+          "LL_TIM_OC_SetCompareCH4",
+          "LL_TIM_OC_GetCompareCH1",
+          "LL_TIM_OC_GetCompareCH2",
+          "LL_TIM_OC_GetCompareCH3",
+          "LL_TIM_OC_GetCompareCH4"
+        ],
+        "rm_features": [
+          "54.4.9",
+          "54.4.10",
+          "54.4.11"
+        ]
+      },
+      {
+        "group": "ll input capture",
+        "functions": [
+          "LL_TIM_IC_Config",
+          "LL_TIM_IC_SetActiveInput",
+          "LL_TIM_IC_GetActiveInput",
+          "LL_TIM_IC_SetPrescaler",
+          "LL_TIM_IC_GetPrescaler",
+          "LL_TIM_IC_SetFilter",
+          "LL_TIM_IC_GetFilter",
+          "LL_TIM_IC_SetPolarity",
+          "LL_TIM_IC_GetPolarity",
+          "LL_TIM_IC_GetCaptureCH1",
+          "LL_TIM_IC_GetCaptureCH2",
+          "LL_TIM_IC_GetCaptureCH3",
+          "LL_TIM_IC_GetCaptureCH4"
+        ],
+        "rm_features": [
+          "54.4.7",
+          "54.4.8"
+        ]
+      },
+      {
+        "group": "ll clock source and synchronisation",
+        "functions": [
+          "LL_TIM_EnableExternalClock",
+          "LL_TIM_DisableExternalClock",
+          "LL_TIM_IsEnabledExternalClock",
+          "LL_TIM_SetClockSource",
+          "LL_TIM_SetEncoderMode",
+          "LL_TIM_SetTriggerOutput",
+          "LL_TIM_SetSlaveMode",
+          "LL_TIM_SetTriggerInput",
+          "LL_TIM_EnableMasterSlaveMode",
+          "LL_TIM_DisableMasterSlaveMode",
+          "LL_TIM_IsEnabledMasterSlaveMode",
+          "LL_TIM_ConfigETR"
+        ],
+        "rm_features": [
+          "54.4.5",
+          "54.4.18",
+          "54.4.22",
+          "54.4.23"
+        ]
+      },
+      {
+        "group": "ll dma requests",
+        "functions": [
+          "LL_TIM_EnableDMAReq_UPDATE",
+          "LL_TIM_DisableDMAReq_UPDATE",
+          "LL_TIM_IsEnabledDMAReq_UPDATE",
+          "LL_TIM_EnableDMAReq_CC1",
+          "LL_TIM_DisableDMAReq_CC1",
+          "LL_TIM_IsEnabledDMAReq_CC1",
+          "LL_TIM_EnableDMAReq_CC2",
+          "LL_TIM_DisableDMAReq_CC2",
+          "LL_TIM_IsEnabledDMAReq_CC2",
+          "LL_TIM_EnableDMAReq_CC3",
+          "LL_TIM_DisableDMAReq_CC3",
+          "LL_TIM_IsEnabledDMAReq_CC3",
+          "LL_TIM_EnableDMAReq_CC4",
+          "LL_TIM_DisableDMAReq_CC4",
+          "LL_TIM_IsEnabledDMAReq_CC4",
+          "LL_TIM_EnableDMAReq_TRIG",
+          "LL_TIM_DisableDMAReq_TRIG",
+          "LL_TIM_IsEnabledDMAReq_TRIG"
+        ],
+        "rm_features": [
+          "54.4.27"
+        ]
+      },
+      {
+        "group": "ll interrupts",
+        "functions": [
+          "LL_TIM_EnableIT_UPDATE",
+          "LL_TIM_DisableIT_UPDATE",
+          "LL_TIM_IsEnabledIT_UPDATE",
+          "LL_TIM_EnableIT_CC1",
+          "LL_TIM_DisableIT_CC1",
+          "LL_TIM_IsEnabledIT_CC1",
+          "LL_TIM_EnableIT_CC2",
+          "LL_TIM_DisableIT_CC2",
+          "LL_TIM_IsEnabledIT_CC2",
+          "LL_TIM_EnableIT_CC3",
+          "LL_TIM_DisableIT_CC3",
+          "LL_TIM_IsEnabledIT_CC3",
+          "LL_TIM_EnableIT_CC4",
+          "LL_TIM_DisableIT_CC4",
+          "LL_TIM_IsEnabledIT_CC4",
+          "LL_TIM_EnableIT_TRIG",
+          "LL_TIM_DisableIT_TRIG",
+          "LL_TIM_IsEnabledIT_TRIG"
+        ],
+        "rm_features": [
+          "54.4.30"
+        ]
+      },
+      {
+        "group": "ll status flags",
+        "functions": [
+          "LL_TIM_IsActiveFlag_UPDATE",
+          "LL_TIM_ClearFlag_UPDATE",
+          "LL_TIM_IsActiveFlag_CC1",
+          "LL_TIM_ClearFlag_CC1",
+          "LL_TIM_IsActiveFlag_CC2",
+          "LL_TIM_ClearFlag_CC2",
+          "LL_TIM_IsActiveFlag_CC3",
+          "LL_TIM_ClearFlag_CC3",
+          "LL_TIM_IsActiveFlag_CC4",
+          "LL_TIM_ClearFlag_CC4",
+          "LL_TIM_IsActiveFlag_TRIG",
+          "LL_TIM_ClearFlag_TRIG",
+          "LL_TIM_IsActiveFlag_CC1OVR",
+          "LL_TIM_ClearFlag_CC1OVR",
+          "LL_TIM_IsActiveFlag_CC2OVR",
+          "LL_TIM_ClearFlag_CC2OVR",
+          "LL_TIM_IsActiveFlag_CC3OVR",
+          "LL_TIM_ClearFlag_CC3OVR",
+          "LL_TIM_IsActiveFlag_CC4OVR",
+          "LL_TIM_ClearFlag_CC4OVR"
+        ],
+        "rm_features": [
+          "54.5.5"
+        ]
+      },
+      {
+        "group": "ll event generation",
+        "functions": [
+          "LL_TIM_GenerateEvent_UPDATE",
+          "LL_TIM_GenerateEvent_CC1",
+          "LL_TIM_GenerateEvent_CC2",
+          "LL_TIM_GenerateEvent_CC3",
+          "LL_TIM_GenerateEvent_CC4",
+          "LL_TIM_GenerateEvent_TRIG"
+        ],
+        "rm_features": [
+          "54.4.3"
+        ]
+      }
+    ],
+    "out": [
+      {
+        "group": "dma burst",
+        "functions": [
+          "HAL_TIM_DMABurst*"
+        ],
+        "rm_features": [
+          "54.4.26"
+        ]
+      },
+      {
+        "group": "vendor-internal helper functions declared in the delivered headers",
+        "functions": [
+          "TIM_*",
+          "TIMEx_*"
+        ]
+      },
+      {
+        "group": "output reference clear and input options",
+        "functions": [
+          "HAL_TIM_ConfigOCrefClear",
+          "HAL_TIM_ConfigTI1Input"
+        ],
+        "rm_features": [
+          "54.4.14",
+          "54.4.21"
+        ]
+      },
+      {
+        "group": "extended services (complementary outputs, break and dead time, commutation, hall sensor, encoder index, dithering, adc synchronisation, slave-mode preload, pulse on compare, input selection and remap)",
+        "functions": [
+          "HAL_TIMEx_*"
+        ],
+        "rm_features": [
+          "54.4.16",
+          "54.4.17",
+          "54.4.19",
+          "54.4.24",
+          "54.4.25"
+        ]
+      },
+      {
+        "group": "ll advanced-control timer features (repetition counter, channels 5 and 6, complementary outputs, break, dead time, lock, off-states, output enable, commutation, second trigger output)",
+        "functions": [
+          "LL_TIM_SetRepetitionCounter",
+          "LL_TIM_GetRepetitionCounter",
+          "LL_TIM_CC_SetLockLevel",
+          "LL_TIM_OC_SetIdleState",
+          "LL_TIM_OC_GetIdleState",
+          "LL_TIM_OC_SetDeadTime",
+          "LL_TIM_SetCH5CombinedChannels",
+          "LL_TIM_SetTriggerOutput2",
+          "LL_TIM_SetOffStates",
+          "LL_TIM_OC_SetCompareCH5",
+          "LL_TIM_OC_SetCompareCH6",
+          "LL_TIM_OC_GetCompareCH5",
+          "LL_TIM_OC_GetCompareCH6",
+          "LL_TIM_*BRK*",
+          "LL_TIM_*AutomaticOutput",
+          "LL_TIM_*AllOutputs",
+          "LL_TIM_*BreakInputSource*",
+          "LL_TIM_*AsymmetricalDeadTime",
+          "LL_TIM_*FallingDeadTime",
+          "LL_TIM_*DeadTimePreload",
+          "LL_TIM_*_COM",
+          "LL_TIM_*_CC5",
+          "LL_TIM_*_CC6"
+        ],
+        "rm_features": [
+          "54.4.12",
+          "54.4.13"
+        ]
+      },
+      {
+        "group": "ll encoder index and error detection",
+        "functions": [
+          "LL_TIM_*EncoderIndex",
+          "LL_TIM_*IndexDirection",
+          "LL_TIM_*Indexblanking",
+          "LL_TIM_*FirstIndex",
+          "LL_TIM_*IndexPositionning",
+          "LL_TIM_ConfigIDX",
+          "LL_TIM_*_IDX",
+          "LL_TIM_*_DIR",
+          "LL_TIM_*_TERR",
+          "LL_TIM_*_IERR"
+        ]
+      },
+      {
+        "group": "ll other options (update flag remap, dithering, output reference clear, pulse width, input xor, external trigger source, slave-mode preload, adc synchronisation, dma burst, input remap)",
+        "functions": [
+          "LL_TIM_*UIFRemap",
+          "LL_TIM_IsActiveUIFCPY",
+          "LL_TIM_*Dithering",
+          "LL_TIM_OC_*Clear",
+          "LL_TIM_OC_*PulseWidth*",
+          "LL_TIM_IC_*XORCombination",
+          "LL_TIM_SetETRSource",
+          "LL_TIM_*SMSPreload*",
+          "LL_TIM_*ADCSynchronization",
+          "LL_TIM_ConfigDMABurst",
+          "LL_TIM_SetRemap"
+        ],
+        "rm_features": [
+          "54.4.20"
+        ]
+      }
+    ],
+    "not_delivered": [
+      {
+        "capability": "separate configuration setters and getters in the HAL component",
+        "note": "the delivered HAL configures the timer only through its initialisation and channel configuration structures; per-setting set/get services exist only in the LL component"
+      },
+      {
+        "capability": "DMA channel linking services",
+        "note": "the delivered HAL expects the application to link the DMA handles; it offers no service to link or unlink a DMA channel"
+      },
+      {
+        "capability": "loopback or self-test mode",
+        "note": "neither delivered component offers a loopback or self-test service"
+      }
+    ]
+  },
+  "delivery": {
+    "code_mode": "FROZEN",
+    "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+    "licence": "BSD-3-Clause",
+    "licence_allows_modification": true,
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+    "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+    "files": [
+      {
+        "from": "Src/stm32n6xx_hal_tim.c",
+        "to": "software/hal/stm32n6xx_hal_tim.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_tim.h",
+        "to": "software/hal/stm32n6xx_hal_tim.h"
+      },
+      {
+        "from": "Src/stm32n6xx_hal_tim_ex.c",
+        "to": "software/hal/stm32n6xx_hal_tim_ex.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_tim_ex.h",
+        "to": "software/hal/stm32n6xx_hal_tim_ex.h"
+      },
+      {
+        "from": "Inc/stm32n6xx_ll_tim.h",
+        "to": "software/ll/stm32n6xx_ll_tim.h"
+      }
+    ],
+    "scope": {
+      "functions": [
+        "HAL_TIMEx_Break2Callback",
+        "HAL_TIMEx_BreakCallback",
+        "HAL_TIMEx_CommutCallback",
+        "HAL_TIMEx_CommutHalfCpltCallback",
+        "HAL_TIMEx_ConfigAsymmetricalDeadTime",
+        "HAL_TIMEx_ConfigBreakDeadTime",
+        "HAL_TIMEx_ConfigBreakInput",
+        "HAL_TIMEx_ConfigCommutEvent",
+        "HAL_TIMEx_ConfigCommutEvent_DMA",
+        "HAL_TIMEx_ConfigCommutEvent_IT",
+        "HAL_TIMEx_ConfigDeadTime",
+        "HAL_TIMEx_ConfigEncoderIndex",
+        "HAL_TIMEx_ConfigSlaveModePreload",
+        "HAL_TIMEx_DirectionChangeCallback",
+        "HAL_TIMEx_DisableADCSynchronization",
+        "HAL_TIMEx_DisableAsymmetricalDeadTime",
+        "HAL_TIMEx_DisableDeadTimePreload",
+        "HAL_TIMEx_DisableEncoderFirstIndex",
+        "HAL_TIMEx_DisableEncoderIndex",
+        "HAL_TIMEx_DisableSlaveModePreload",
+        "HAL_TIMEx_DisarmBreakInput",
+        "HAL_TIMEx_DitheringDisable",
+        "HAL_TIMEx_DitheringEnable",
+        "HAL_TIMEx_EnableADCSynchronization",
+        "HAL_TIMEx_EnableAsymmetricalDeadTime",
+        "HAL_TIMEx_EnableDeadTimePreload",
+        "HAL_TIMEx_EnableEncoderFirstIndex",
+        "HAL_TIMEx_EnableEncoderIndex",
+        "HAL_TIMEx_EnableSlaveModePreload",
+        "HAL_TIMEx_EncoderIndexCallback",
+        "HAL_TIMEx_GetChannelNState",
+        "HAL_TIMEx_GroupChannel5",
+        "HAL_TIMEx_HallSensor_DeInit",
+        "HAL_TIMEx_HallSensor_GetState",
+        "HAL_TIMEx_HallSensor_Init",
+        "HAL_TIMEx_HallSensor_MspDeInit",
+        "HAL_TIMEx_HallSensor_MspInit",
+        "HAL_TIMEx_HallSensor_Start",
+        "HAL_TIMEx_HallSensor_Start_DMA",
+        "HAL_TIMEx_HallSensor_Start_IT",
+        "HAL_TIMEx_HallSensor_Stop",
+        "HAL_TIMEx_HallSensor_Stop_DMA",
+        "HAL_TIMEx_HallSensor_Stop_IT",
+        "HAL_TIMEx_IndexErrorCallback",
+        "HAL_TIMEx_MasterConfigSynchronization",
+        "HAL_TIMEx_OCN_Start",
+        "HAL_TIMEx_OCN_Start_DMA",
+        "HAL_TIMEx_OCN_Start_IT",
+        "HAL_TIMEx_OCN_Stop",
+        "HAL_TIMEx_OCN_Stop_DMA",
+        "HAL_TIMEx_OCN_Stop_IT",
+        "HAL_TIMEx_OC_ConfigPulseOnCompare",
+        "HAL_TIMEx_OnePulseN_Start",
+        "HAL_TIMEx_OnePulseN_Start_IT",
+        "HAL_TIMEx_OnePulseN_Stop",
+        "HAL_TIMEx_OnePulseN_Stop_IT",
+        "HAL_TIMEx_PWMN_Start",
+        "HAL_TIMEx_PWMN_Start_DMA",
+        "HAL_TIMEx_PWMN_Start_IT",
+        "HAL_TIMEx_PWMN_Stop",
+        "HAL_TIMEx_PWMN_Stop_DMA",
+        "HAL_TIMEx_PWMN_Stop_IT",
+        "HAL_TIMEx_ReArmBreakInput",
+        "HAL_TIMEx_RemapConfig",
+        "HAL_TIMEx_TISelection",
+        "HAL_TIMEx_TransitionErrorCallback",
+        "HAL_TIM_Base_DeInit",
+        "HAL_TIM_Base_GetState",
+        "HAL_TIM_Base_Init",
+        "HAL_TIM_Base_MspDeInit",
+        "HAL_TIM_Base_MspInit",
+        "HAL_TIM_Base_Start",
+        "HAL_TIM_Base_Start_DMA",
+        "HAL_TIM_Base_Start_IT",
+        "HAL_TIM_Base_Stop",
+        "HAL_TIM_Base_Stop_DMA",
+        "HAL_TIM_Base_Stop_IT",
+        "HAL_TIM_ConfigClockSource",
+        "HAL_TIM_ConfigOCrefClear",
+        "HAL_TIM_ConfigTI1Input",
+        "HAL_TIM_DMABurstState",
+        "HAL_TIM_DMABurst_MultiReadStart",
+        "HAL_TIM_DMABurst_MultiWriteStart",
+        "HAL_TIM_DMABurst_ReadStart",
+        "HAL_TIM_DMABurst_ReadStop",
+        "HAL_TIM_DMABurst_WriteStart",
+        "HAL_TIM_DMABurst_WriteStop",
+        "HAL_TIM_Encoder_DeInit",
+        "HAL_TIM_Encoder_GetState",
+        "HAL_TIM_Encoder_Init",
+        "HAL_TIM_Encoder_MspDeInit",
+        "HAL_TIM_Encoder_MspInit",
+        "HAL_TIM_Encoder_Start",
+        "HAL_TIM_Encoder_Start_DMA",
+        "HAL_TIM_Encoder_Start_IT",
+        "HAL_TIM_Encoder_Stop",
+        "HAL_TIM_Encoder_Stop_DMA",
+        "HAL_TIM_Encoder_Stop_IT",
+        "HAL_TIM_ErrorCallback",
+        "HAL_TIM_GenerateEvent",
+        "HAL_TIM_GetActiveChannel",
+        "HAL_TIM_GetChannelState",
+        "HAL_TIM_IC_CaptureCallback",
+        "HAL_TIM_IC_CaptureHalfCpltCallback",
+        "HAL_TIM_IC_ConfigChannel",
+        "HAL_TIM_IC_DeInit",
+        "HAL_TIM_IC_GetState",
+        "HAL_TIM_IC_Init",
+        "HAL_TIM_IC_MspDeInit",
+        "HAL_TIM_IC_MspInit",
+        "HAL_TIM_IC_Start",
+        "HAL_TIM_IC_Start_DMA",
+        "HAL_TIM_IC_Start_IT",
+        "HAL_TIM_IC_Stop",
+        "HAL_TIM_IC_Stop_DMA",
+        "HAL_TIM_IC_Stop_IT",
+        "HAL_TIM_IRQHandler",
+        "HAL_TIM_OC_ConfigChannel",
+        "HAL_TIM_OC_DeInit",
+        "HAL_TIM_OC_DelayElapsedCallback",
+        "HAL_TIM_OC_GetState",
+        "HAL_TIM_OC_Init",
+        "HAL_TIM_OC_MspDeInit",
+        "HAL_TIM_OC_MspInit",
+        "HAL_TIM_OC_Start",
+        "HAL_TIM_OC_Start_DMA",
+        "HAL_TIM_OC_Start_IT",
+        "HAL_TIM_OC_Stop",
+        "HAL_TIM_OC_Stop_DMA",
+        "HAL_TIM_OC_Stop_IT",
+        "HAL_TIM_OnePulse_ConfigChannel",
+        "HAL_TIM_OnePulse_DeInit",
+        "HAL_TIM_OnePulse_GetState",
+        "HAL_TIM_OnePulse_Init",
+        "HAL_TIM_OnePulse_MspDeInit",
+        "HAL_TIM_OnePulse_MspInit",
+        "HAL_TIM_OnePulse_Start",
+        "HAL_TIM_OnePulse_Start_IT",
+        "HAL_TIM_OnePulse_Stop",
+        "HAL_TIM_OnePulse_Stop_IT",
+        "HAL_TIM_PWM_ConfigChannel",
+        "HAL_TIM_PWM_DeInit",
+        "HAL_TIM_PWM_GetState",
+        "HAL_TIM_PWM_Init",
+        "HAL_TIM_PWM_MspDeInit",
+        "HAL_TIM_PWM_MspInit",
+        "HAL_TIM_PWM_PulseFinishedCallback",
+        "HAL_TIM_PWM_PulseFinishedHalfCpltCallback",
+        "HAL_TIM_PWM_Start",
+        "HAL_TIM_PWM_Start_DMA",
+        "HAL_TIM_PWM_Start_IT",
+        "HAL_TIM_PWM_Stop",
+        "HAL_TIM_PWM_Stop_DMA",
+        "HAL_TIM_PWM_Stop_IT",
+        "HAL_TIM_PeriodElapsedCallback",
+        "HAL_TIM_PeriodElapsedHalfCpltCallback",
+        "HAL_TIM_ReadCapturedValue",
+        "HAL_TIM_RegisterCallback",
+        "HAL_TIM_SlaveConfigSynchro",
+        "HAL_TIM_SlaveConfigSynchro_IT",
+        "HAL_TIM_TriggerCallback",
+        "HAL_TIM_TriggerHalfCpltCallback",
+        "HAL_TIM_UnRegisterCallback",
+        "TIMEx_DMACommutationCplt",
+        "TIMEx_DMACommutationHalfCplt",
+        "TIM_Base_SetConfig",
+        "TIM_CCxChannelCmd",
+        "TIM_DMACaptureCplt",
+        "TIM_DMACaptureHalfCplt",
+        "TIM_DMADelayPulseHalfCplt",
+        "TIM_DMAError",
+        "TIM_DMA_Start_IT",
+        "TIM_ETR_SetConfig",
+        "TIM_OC2_SetConfig",
+        "TIM_ResetCallback",
+        "TIM_TI1_SetConfig"
+      ],
+      "note": "the public functions of the delivered HAL (prototypes of the delivered TIM HAL headers); the LL component's public API is every inline function of its delivered header. The scope rule (scope_rule) classifies both into in scope and out of scope"
+    },
+    "dependencies": [
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n6xx.h",
+        "to": "inputs/vendor/include/stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n657xx.h",
+        "to": "inputs/vendor/include/stm32n657xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/system_stm32n6xx.h",
+        "to": "inputs/vendor/include/system_stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "core_cm55.h",
+        "to": "inputs/vendor/include/core_cm55.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_version.h",
+        "to": "inputs/vendor/include/cmsis_version.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_compiler.h",
+        "to": "inputs/vendor/include/cmsis_compiler.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_gcc.h",
+        "to": "inputs/vendor/include/cmsis_gcc.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/cmsis_gcc_m.h",
+        "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_mpu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_pmu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv7m_cachel1.h",
+        "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_def.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_def.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma_ex.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma_ex.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/Legacy/stm32_hal_legacy.h",
+        "to": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_conf_template.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause",
+        "configure": {
+          "hal_modules": [
+            "TIM",
+            "DMA"
+          ]
+        }
+      }
+    ],
+    "build": {
+      "style": "cmsis",
+      "defines": [
+        "STM32N657xx"
+      ],
+      "secure": true
+    }
+  },
+  "peripheral": "tim",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

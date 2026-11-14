@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/qualification-report.schema.json",
+  "title": "QualificationReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_id",
+    "created_at",
+    "baseline_setup",
+    "candidate_setup",
+    "rows",
+    "deviations",
+    "blocking_findings",
+    "verdict"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "baseline_setup": {
+      "$ref": "#/$defs/setup"
+    },
+    "candidate_setup": {
+      "$ref": "#/$defs/setup"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "phase",
+          "node",
+          "baseline",
+          "candidate"
+        ],
+        "properties": {
+          "phase": {
+            "enum": [
+              "SWE.1",
+              "SWE.2",
+              "SWE.3",
+              "SWE.4",
+              "SWE.5",
+              "SWE.6"
+            ]
+          },
+          "node": {
+            "type": "string"
+          },
+          "baseline": {
+            "$ref": "#/$defs/measure"
+          },
+          "candidate": {
+            "$ref": "#/$defs/measure"
+          }
+        }
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "property",
+          "mirror_value",
+          "production_value"
+        ],
+        "properties": {
+          "property": {
+            "type": "string"
+          },
+          "mirror_value": {},
+          "production_value": {},
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "phase",
+          "summary",
+          "capa_id",
+          "evidence"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string"
+          },
+          "node": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "capa_id": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED"
+            ]
+          }
+        }
+      }
+    },
+    "verdict": {
+      "enum": [
+        "QUALIFIED_FOR_OWNER_REVIEW",
+        "NOT_QUALIFIED",
+        "INCOMPLETE"
+      ],
+      "description": "never QUALIFIED with an OPEN blocking finding or a NOT_RUN phase"
+    }
+  },
+  "$defs": {
+    "setup": {
+      "type": "object",
+      "required": [
+        "label",
+        "identity"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "identity": {
+          "type": "object",
+          "description": "served-model-identity.schema.json, or the owned-mode model profile"
+        },
+        "factory_revision": {
+          "type": "string"
+        },
+        "gateway_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "measure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_RUN"
+          ]
+        },
+        "run_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gate_outcome": {
+          "type": "string"
+        },
+        "reworks": {
+          "type": "integer"
+        },
+        "retries": {
+          "type": "integer"
+        },
+        "model_time_s": {
+          "type": "number"
+        },
+        "prompt_tokens": {
+          "type": "integer"
+        },
+        "output_tokens": {
+          "type": "integer"
+        },
+        "reasoning_tokens": {
+          "type": "integer"
+        },
+        "cache_reuse_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "swaps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_wait_s": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

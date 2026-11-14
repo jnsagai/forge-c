@@ -54,6 +54,9 @@ ORDER_SCHEMA = "forge-c/line-order/1"
 PHASES = LCMP.PHASES
 STRIKE_LIMIT = 3  # owner rule 2026-11-03 (binding): the same issue more than 3 times stops the lineage
 FLOOR = {"same_issue_limit": 3, "min_free_gb": 30, "cleanup_min_age_days": 3, "max_concurrent_gpu_runs": 1}
+# CAPA-260: how long a lineage waits for a fix of a suspected factory defect before it retries anyway (the maintainer's
+# defect window, its CRE gate and a deploy fit in it)
+SUSPECTED_WAIT_S = 6 * 3600
 STATES = ("QUEUED", "CHAINED", "LAUNCHING", "RUNNING", "WAITING", "ESCALATED", "PARKED", "ON_HOLD", "DONE")
 LAUNCH_ACTIONS = ("PLACE", "RELAUNCH", "LAUNCH")
 RETRY_KINDS = ("RETRY", "RETRY_INFRA", "UPSTREAM", "RELAUNCH", "RELAUNCH_INFRA")
@@ -987,6 +990,13 @@ class Planner:
             P.state, P.reason = "WAITING", reason
             return
         if cls == "FACTORY_DEFECT":
+            waited = self.now - (a.ended_at or self.now)
+            if self._same_rev(a.revision, full) and a.core.get("suspected") and waited >= SUSPECTED_WAIT_S:
+                # CAPA-260: a SUSPECTED factory defect (no CAPA proved it) holds the lineage for the maintainer at most
+                # SUSPECTED_WAIT_S; no fix by then: retry as before (strikes still count), never a silent deadlock
+                self._place(P, self._order(P, ph, "RETRY", resume_from=base.get("resume_from"),
+                                           resume_upto=base.get("resume_upto")), "PLACE")
+                return
             if self._same_rev(a.revision, full):
                 P.state = "WAITING"
                 P.reason = f"WAITING_EXTERNAL_CHANGE:{a.core.get('capa') or a.core.get('error_code')}"

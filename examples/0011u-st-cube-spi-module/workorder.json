@@ -1,0 +1,611 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 SPI module (SPI HAL component + SPI LL component) as delivered by ST (STM32CubeN6 v1.4.0)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 67 (SPI) + memory map p.180"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.67 SPI register interface + memory map p.180 (SPI1 secure base 0x52003000)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the SPI module work orders"
+  },
+  "scope": [
+    "Module SPI as delivered by ST (STM32CubeN6 v1.4.0), FROZEN: the SPI HAL component (classic, handle-based) and the SPI LL component (header-only inline functions) under one functional-level requirement set. The delivered HAL does not use the delivered LL: the two components are parallel public APIs over the same peripheral.",
+    "In scope (HAL): initialisation and de-initialisation with their platform hooks; configuration through the initialisation structure (mode, direction, data size, clock polarity and phase, slave-select management, baud-rate prescaler, bit order, TI mode, CRC, FIFO threshold); blocking transmit, receive and transmit-receive; interrupt-driven transmit, receive, transmit-receive and interrupt handling; DMA-driven transmit, receive and transmit-receive; abort, blocking and interrupt-driven; callback registration and unregistration and the transmit/receive/transmit-receive complete, half-complete, error, abort-complete and suspend callbacks; state and error queries.",
+    "In scope (LL): enable and disable; configuration (mode, standard, clock polarity and phase, baud-rate prescaler, bit order, transfer direction, data width, slave-select mode and polarity, transfer size, FIFO threshold); master transfer start, suspend and progress; CRC; DMA request enable; interrupt enable and status with the corresponding flags and flag clears; data transmit and receive.",
+    "Out of scope (delivered; listed by the governance inventory): the extended HAL services (underrun configuration, I/O configuration lock, receive FIFO flush), DMA pause/resume/stop and the vendor-internal helper functions of the HAL; I2S/PCM mode, slave underrun handling, I/O swap, alternate-function GPIO control and I/O lock, master timing options (inter-data and slave-select idleness, NSS pulse management, receive auto-suspend, FIFO packing), half-duplex direction, internal slave-select level and the DMA register addresses of the LL.",
+    "SWE.1 only, at the functional level: register-level detail and concrete negative cases belong to SWE.3."
+  ],
+  "system_names": [
+    "SPI HAL driver",
+    "SPI driver",
+    "STM32N6 SPI HAL driver",
+    "SPI LL driver",
+    "STM32N6 SPI LL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25); simulation performance budget set 2026-11-12 under the owner delegation of timing/CPU decisions (same development target as the ladder HAL orders 0016m/0013m)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0011-spi-st/inputs/RM0486-rev4-ch67-spi.md",
+      "role": "reference_manual_spi_chapter"
+    },
+    {
+      "path": "../0011-spi-st/inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0012-usart-st/inputs/RM0486-rev4-vector-table.md",
+      "role": "reference_manual_interrupt_mapping"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0011-spi-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    },
+    {
+      "path": "../0012-usart-st/inputs/stm32n657xx.h",
+      "role": "cmsis_device_header"
+    },
+    {
+      "path": "../0012-usart-st/inputs/vendor-inputs-manifest.json",
+      "role": "conversion_provenance"
+    }
+  ],
+  "layer": "LL+HAL",
+  "layer_note": "Feature 020 way of working applied to SPI (owner 2026-11-13: \"run SWE.1 on spi module now on local. use this new way of working\"): one module, the delivered SPI HAL and SPI LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set; requirements are derived from the inputs, never from the code; secure build.",
+  "swe1": {
+    "level": "functional",
+    "template": "swe1-functional-v2"
+  },
+  "module": {
+    "name": "SPI",
+    "components": [
+      {
+        "id": "HAL_SPI",
+        "layer": "HAL",
+        "files": [
+          "software/hal/stm32n6xx_hal_spi.c",
+          "software/hal/stm32n6xx_hal_spi.h",
+          "software/hal/stm32n6xx_hal_spi_ex.c",
+          "software/hal/stm32n6xx_hal_spi_ex.h"
+        ],
+        "uses": []
+      },
+      {
+        "id": "LL_SPI",
+        "layer": "LL",
+        "files": [
+          "software/ll/stm32n6xx_ll_spi.h"
+        ],
+        "uses": []
+      }
+    ]
+  },
+  "scope_rule": {
+    "in": [
+      {
+        "group": "initialisation and platform hooks",
+        "functions": [
+          "HAL_SPI_Init",
+          "HAL_SPI_DeInit",
+          "HAL_SPI_MspInit",
+          "HAL_SPI_MspDeInit"
+        ],
+        "rm_features": [
+          "67.4.9",
+          "67.4.10",
+          "67.4.11",
+          "67.4.13"
+        ]
+      },
+      {
+        "group": "blocking transfer",
+        "functions": [
+          "HAL_SPI_Transmit",
+          "HAL_SPI_Receive",
+          "HAL_SPI_TransmitReceive"
+        ],
+        "rm_features": [
+          "67.4.4",
+          "67.4.12"
+        ]
+      },
+      {
+        "group": "interrupt transfer",
+        "functions": [
+          "HAL_SPI_Transmit_IT",
+          "HAL_SPI_Receive_IT",
+          "HAL_SPI_TransmitReceive_IT",
+          "HAL_SPI_IRQHandler"
+        ],
+        "rm_features": [
+          "67.7",
+          "24.1.2"
+        ]
+      },
+      {
+        "group": "dma transfer",
+        "functions": [
+          "HAL_SPI_Transmit_DMA",
+          "HAL_SPI_Receive_DMA",
+          "HAL_SPI_TransmitReceive_DMA"
+        ],
+        "rm_features": [
+          "67.4.14"
+        ]
+      },
+      {
+        "group": "abort",
+        "functions": [
+          "HAL_SPI_Abort",
+          "HAL_SPI_Abort_IT"
+        ]
+      },
+      {
+        "group": "callbacks",
+        "functions": [
+          "HAL_SPI_*Callback"
+        ]
+      },
+      {
+        "group": "state and error queries",
+        "functions": [
+          "HAL_SPI_GetState",
+          "HAL_SPI_GetError"
+        ],
+        "rm_features": [
+          "67.5.2"
+        ]
+      },
+      {
+        "group": "ll enable and disable",
+        "functions": [
+          "LL_SPI_Enable",
+          "LL_SPI_Disable",
+          "LL_SPI_IsEnabled"
+        ],
+        "rm_features": [
+          "67.4.11",
+          "67.4.13"
+        ]
+      },
+      {
+        "group": "ll configuration",
+        "functions": [
+          "LL_SPI_SetMode",
+          "LL_SPI_GetMode",
+          "LL_SPI_*Standard",
+          "LL_SPI_*ClockPhase",
+          "LL_SPI_*ClockPolarity",
+          "LL_SPI_*BaudRatePrescaler",
+          "LL_SPI_*TransferBitOrder",
+          "LL_SPI_*TransferDirection",
+          "LL_SPI_*DataWidth",
+          "LL_SPI_*NSSMode",
+          "LL_SPI_*NSSPolarity",
+          "LL_SPI_*TransferSize",
+          "LL_SPI_*FIFOThreshold"
+        ],
+        "rm_features": [
+          "67.4.7",
+          "67.4.9",
+          "67.4.10",
+          "67.5.1"
+        ]
+      },
+      {
+        "group": "ll master transfer control",
+        "functions": [
+          "LL_SPI_StartMasterTransfer",
+          "LL_SPI_IsActiveMasterTransfer",
+          "LL_SPI_SuspendMasterTransfer",
+          "LL_SPI_GetRemainingDataFrames"
+        ],
+        "rm_features": [
+          "67.4.12"
+        ]
+      },
+      {
+        "group": "ll crc",
+        "functions": [
+          "LL_SPI_*CRC",
+          "LL_SPI_*CRCPolynomial",
+          "LL_SPI_*CRCWidth",
+          "LL_SPI_*CRCInitPattern"
+        ],
+        "rm_features": [
+          "67.5.3"
+        ]
+      },
+      {
+        "group": "ll dma requests",
+        "functions": [
+          "LL_SPI_*DMAReq_RX",
+          "LL_SPI_*DMAReq_TX"
+        ],
+        "rm_features": [
+          "67.4.14"
+        ]
+      },
+      {
+        "group": "ll interrupts",
+        "functions": [
+          "LL_SPI_*IT_*"
+        ],
+        "rm_features": [
+          "67.7"
+        ]
+      },
+      {
+        "group": "ll status flags",
+        "functions": [
+          "LL_SPI_IsActiveFlag_*",
+          "LL_SPI_ClearFlag_*"
+        ],
+        "rm_features": [
+          "67.5.2",
+          "67.7"
+        ]
+      },
+      {
+        "group": "ll data transfer",
+        "functions": [
+          "LL_SPI_TransmitData*",
+          "LL_SPI_ReceiveData*"
+        ],
+        "rm_features": [
+          "67.4.12"
+        ]
+      }
+    ],
+    "out": [
+      {
+        "group": "dma pause, resume and stop",
+        "functions": [
+          "HAL_SPI_DMA*"
+        ]
+      },
+      {
+        "group": "extended services (underrun configuration, i/o lock, receive fifo flush)",
+        "functions": [
+          "HAL_SPIEx_*"
+        ]
+      },
+      {
+        "group": "ll i2s/pcm mode",
+        "functions": [
+          "LL_I2S_*"
+        ],
+        "rm_features": [
+          "67.8",
+          "67.9",
+          "67.10"
+        ]
+      },
+      {
+        "group": "ll slave underrun",
+        "functions": [
+          "LL_SPI_*UDRConfiguration",
+          "LL_SPI_*UDRPattern"
+        ]
+      },
+      {
+        "group": "ll i/o options",
+        "functions": [
+          "LL_SPI_*IOSwap",
+          "LL_SPI_*GPIOControl",
+          "LL_SPI_*IOLock"
+        ]
+      },
+      {
+        "group": "ll master timing options",
+        "functions": [
+          "LL_SPI_*InterDataIdleness",
+          "LL_SPI_*MasterSSIdleness",
+          "LL_SPI_*NSSPulse*",
+          "LL_SPI_*MasterRxAutoSuspend",
+          "LL_SPI_GetRxFIFOPackingLevel",
+          "LL_SPI_*InternalSSLevel"
+        ]
+      },
+      {
+        "group": "ll half-duplex direction",
+        "functions": [
+          "LL_SPI_*HalfDuplexDirection"
+        ]
+      },
+      {
+        "group": "ll dma register addresses",
+        "functions": [
+          "LL_SPI_DMA_Get*RegAddr"
+        ]
+      }
+    ],
+    "not_delivered": [
+      {
+        "capability": "separate configuration setters and getters in the HAL component",
+        "note": "the delivered HAL configures the peripheral only through its initialisation structure; per-setting set/get services exist only in the LL component"
+      },
+      {
+        "capability": "DMA channel linking services",
+        "note": "the delivered HAL expects the application to link the DMA handles; it offers no service to link or unlink a DMA channel"
+      },
+      {
+        "capability": "loopback or self-test mode",
+        "note": "neither delivered component offers a loopback or self-test service"
+      }
+    ]
+  },
+  "delivery": {
+    "code_mode": "FROZEN",
+    "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+    "licence": "BSD-3-Clause",
+    "licence_allows_modification": true,
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+    "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+    "files": [
+      {
+        "from": "Src/stm32n6xx_hal_spi.c",
+        "to": "software/hal/stm32n6xx_hal_spi.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_spi.h",
+        "to": "software/hal/stm32n6xx_hal_spi.h"
+      },
+      {
+        "from": "Src/stm32n6xx_hal_spi_ex.c",
+        "to": "software/hal/stm32n6xx_hal_spi_ex.c"
+      },
+      {
+        "from": "Inc/stm32n6xx_hal_spi_ex.h",
+        "to": "software/hal/stm32n6xx_hal_spi_ex.h"
+      },
+      {
+        "from": "Inc/stm32n6xx_ll_spi.h",
+        "to": "software/ll/stm32n6xx_ll_spi.h"
+      }
+    ],
+    "scope": {
+      "functions": [
+        "HAL_SPIEx_ConfigureUnderrun",
+        "HAL_SPIEx_EnableLockConfiguration",
+        "HAL_SPIEx_FlushRxFifo",
+        "HAL_SPI_Abort",
+        "HAL_SPI_AbortCpltCallback",
+        "HAL_SPI_Abort_IT",
+        "HAL_SPI_DMAPause",
+        "HAL_SPI_DMAResume",
+        "HAL_SPI_DMAStop",
+        "HAL_SPI_DeInit",
+        "HAL_SPI_ErrorCallback",
+        "HAL_SPI_GetError",
+        "HAL_SPI_GetState",
+        "HAL_SPI_IRQHandler",
+        "HAL_SPI_Init",
+        "HAL_SPI_MspDeInit",
+        "HAL_SPI_MspInit",
+        "HAL_SPI_Receive",
+        "HAL_SPI_Receive_DMA",
+        "HAL_SPI_Receive_IT",
+        "HAL_SPI_RegisterCallback",
+        "HAL_SPI_RxCpltCallback",
+        "HAL_SPI_RxHalfCpltCallback",
+        "HAL_SPI_SuspendCallback",
+        "HAL_SPI_Transmit",
+        "HAL_SPI_TransmitReceive",
+        "HAL_SPI_TransmitReceive_DMA",
+        "HAL_SPI_TransmitReceive_IT",
+        "HAL_SPI_Transmit_DMA",
+        "HAL_SPI_Transmit_IT",
+        "HAL_SPI_TxCpltCallback",
+        "HAL_SPI_TxHalfCpltCallback",
+        "HAL_SPI_TxRxCpltCallback",
+        "HAL_SPI_TxRxHalfCpltCallback",
+        "HAL_SPI_UnRegisterCallback"
+      ],
+      "note": "the public functions of the delivered HAL (prototypes of the delivered SPI HAL headers); the LL component's public API is every inline function of its delivered header. The scope rule (scope_rule) classifies both into in scope and out of scope"
+    },
+    "dependencies": [
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n6xx.h",
+        "to": "inputs/vendor/include/stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/stm32n657xx.h",
+        "to": "inputs/vendor/include/stm32n657xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "from": "Include/system_stm32n6xx.h",
+        "to": "inputs/vendor/include/system_stm32n6xx.h",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "core_cm55.h",
+        "to": "inputs/vendor/include/core_cm55.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_version.h",
+        "to": "inputs/vendor/include/cmsis_version.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_compiler.h",
+        "to": "inputs/vendor/include/cmsis_compiler.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "cmsis_gcc.h",
+        "to": "inputs/vendor/include/cmsis_gcc.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/cmsis_gcc_m.h",
+        "to": "inputs/vendor/include/m-profile/cmsis_gcc_m.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_mpu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_mpu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv8m_pmu.h",
+        "to": "inputs/vendor/include/m-profile/armv8m_pmu.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "from": "m-profile/armv7m_cachel1.h",
+        "to": "inputs/vendor/include/m-profile/armv7m_cachel1.h",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_def.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_def.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_dma_ex.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_dma_ex.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_rcc.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_rcc.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_rcc_ex.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_rcc_ex.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_rcc.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_rcc.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_bus.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_bus.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_ll_pwr.h",
+        "to": "inputs/vendor/include/stm32n6xx_ll_pwr.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/Legacy/stm32_hal_legacy.h",
+        "to": "inputs/vendor/include/Legacy/stm32_hal_legacy.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+        "from": "Inc/stm32n6xx_hal_conf_template.h",
+        "to": "inputs/vendor/include/stm32n6xx_hal_conf.h",
+        "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6)",
+        "licence": "BSD-3-Clause",
+        "configure": {
+          "hal_modules": [
+            "SPI",
+            "DMA",
+            "RCC"
+          ]
+        }
+      }
+    ],
+    "build": {
+      "style": "cmsis",
+      "defines": [
+        "STM32N657xx"
+      ],
+      "secure": true
+    }
+  },
+  "peripheral": "spi",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
+}

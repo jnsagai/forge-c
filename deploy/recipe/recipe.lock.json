@@ -1,0 +1,102 @@
+{
+  "fabro_version": "0.362.0",
+  "factory_revision": "a6a5cb23a8ff803d5a7458f5d0b5c7ee48f6408f",
+  "identities": {
+    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": {
+      "attested": true,
+      "context_limit": 262144,
+      "engine": {
+        "name": "llama.cpp",
+        "version": "ollama-0.34.0-bundled"
+      },
+      "kv_cache_dtype": "f16",
+      "max_sequences": 1,
+      "name": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+      "precision": "other",
+      "reasoning_mode": "on",
+      "revision_fingerprint": "7152ae684ce037a1c10e451c1a4dc717dfdd527af817df327b88e59eb2baae1b"
+    },
+    "qwen3.8:27b-q8_0": {
+      "attested": true,
+      "context_limit": 262144,
+      "engine": {
+        "name": "llama.cpp",
+        "version": "ollama-0.34.0-bundled"
+      },
+      "kv_cache_dtype": "f16",
+      "max_sequences": 1,
+      "name": "qwen3.8:27b-q8_0",
+      "precision": "other",
+      "reasoning_mode": "on",
+      "revision_fingerprint": "ade583af591347e6505301ee959383c17e10fad4b69403b1120c09a80f87c36c"
+    }
+  },
+  "images": {
+    "factory_vm_base": {
+      "path": "/mnt/data/forge-c/model-service/images/ubuntu-22.04-server-cloudimg-amd64.img",
+      "release": "release-20261106",
+      "sha256": "f77bc6d59cb8deaa9657095736b5f5003f7705b47055f01823459715c967de6a"
+    },
+    "llama-server-ollama-0.34.0": "sha256:234b05b2138264f8fb263c3205e85f4c290e8afe5067e280a4f6f90cdac5696b"
+  },
+  "model_files": {
+    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": {
+      "files": [
+        {
+          "bytes": 37802149280,
+          "path": "sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+          "sha256": "de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3"
+        }
+      ],
+      "root": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-models/blobs",
+      "source": "local"
+    },
+    "qwen3.8:27b-q8_0": {
+      "files": [
+        {
+          "bytes": 29047084384,
+          "path": "sha256-2bb22714289826d7b9e0ba376c3ce47d08bce39abe598745857c44d88c09bdbf",
+          "sha256": "2bb22714289826d7b9e0ba376c3ce47d08bce39abe598745857c44d88c09bdbf"
+        }
+      ],
+      "root": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-models/blobs",
+      "source": "local"
+    }
+  },
+  "schema": "forge-c/017/recipe-lock",
+  "toolchain": {
+    "fabro": {
+      "file": "fabro-x86_64-unknown-linux-musl.tar.gz",
+      "note": "upstream URL not recorded; the archive matches the checksum file published with it (downloads/fabro-0.362.0)",
+      "sha256": "9255041f0d2d157749db272a66ef9380bb9febab2368ed8b59526674ea26978e",
+      "url": "mirror:fabro-x86_64-unknown-linux-musl.tar.gz",
+      "version": "0.362.0"
+    },
+    "formal": {
+      "file": "formal-frama-c-33.0-opam-switch.tar.gz",
+      "note": "Frama-C 33.0 + Alt-Ergo, runtime part of the factory opam switch (not in the Ubuntu 22.04 archive); unpacked at the prefix its absolute paths expect",
+      "prefix": "/mnt/data/forge-c/toolchains/opam/root/forge-c",
+      "sha256": "e0f6d182b55e226ce7e525d44c5ce02494882c2e7117ced5b6f290816fa0f521",
+      "url": "mirror:formal-frama-c-33.0-opam-switch.tar.gz",
+      "version": "frama-c-33.0"
+    },
+    "gnu_arm": {
+      "file": "gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2",
+      "sha256": "8c5b8de344e23cd035ca2b53bbf2075c58131ad61223cae48510641d3e556cea",
+      "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.07/gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2",
+      "version": "10.3-2021.07"
+    },
+    "llvm": {
+      "file": "LLVM-19.1.7-Linux-X64.tar.xz",
+      "sha256": "4a5ec53951a584ed36f80240f6fbf8fdd46b4cf6c7ee87cc2d5018dc37caf679",
+      "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz",
+      "version": "19.1.7"
+    },
+    "uv": {
+      "file": "uv-x86_64-unknown-linux-gnu.tar.gz",
+      "sha256": "fa82fd8dde8e8eefdecada6aa0889666556cfceb690d06e0c3bca49eb3070a63",
+      "url": "https://github.com/astral-sh/uv/releases/download/0.12.17/uv-x86_64-unknown-linux-gnu.tar.gz",
+      "version": "0.12.17"
+    }
+  }
+}

@@ -1,0 +1,274 @@
+"""017 T048/T049: qualification orders run in the lane's own user+network namespace, on the profile's own ports, with
+the model service as the only way out; the owner lane is never reached and no model server is started."""
+from __future__ import annotations
+
+import json
+import subprocess
+
+import pytest
+import yaml
+
+from forge_factory.lrtx import profile as lp
+from forge_factory.modelservice import lane, lane_run, window_plans
+from forge_factory.modelservice.lane import LaneConfig, LaneError
+
+PROFILE = "local-rtx-v2-omniverse2-ornith-think-author-q38-inspector"
+
+
+def _lane(tmp_path, mode="external", base_url=None):
+    r = tmp_path / "qual-lane"
+    r.mkdir()
+    ms = {"mode": mode, "base_url": base_url or f"unix:{r / 'run/tier.sock'}", "credential_ref": "forge-qual",
+          "expected_identity": {}, "share": {"concurrency": 1, "queue_wait_max_s": 900}}
+    (r / "model-service.yaml").write_text(yaml.safe_dump(ms))
+    return r
+
+
+@pytest.fixture
+def clean_env(monkeypatch):
+    for k in lane_run.OWNER_CONTEXT:
+        monkeypatch.delenv(k, raising=False)
+
+
+def test_only_an_external_lane_outside_the_taken_roots_is_external(tmp_path, monkeypatch):
+    r = _lane(tmp_path)
+    assert lane_run.external_model_service(r)["mode"] == "external"
+    o = tmp_path / "o"
+    o.mkdir()
+    assert lane_run.external_model_service(_lane(o, mode="owned")) is None
+    monkeypatch.setattr(lane_run, "TAKEN_ROOTS", (tmp_path,))
+    assert lane_run.external_model_service(r) is None
+    assert lane_run.external_model_service(None) is None and lane_run.external_model_service(tmp_path / "none") is None
+
+
+def test_the_namespace_program_starts_only_gateway_and_fabro_on_the_profile_ports(tmp_path, clean_env):
+    r = _lane(tmp_path)
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    e = lr.env()
+    s = lr.script(["/v/bin/python", "-m", "forge_factory.workorder", "--wo", "WO-X"], e)
+    ports = lp.load(PROFILE)["deployment"]["ports"]
+    assert s.splitlines()[1] == "ip link set lo up || exit 90"
+    assert f"gateway_external --port {ports['gateway']}" in s and f"127.0.0.1:{ports['fabro']}/health" in s
+    assert "FORGE_GATEWAY_REASONING=" in s and "FORGE_GATEWAY_REQUEST_TIMEOUT_S=" in s
+    assert "forge_factory.workorder --wo WO-X" in s
+    for bad in ("llama-server", "ollama serve", "lrtx.stack serve", "gpu.lock", "nvidia-smi"):
+        assert bad not in s
+    assert e["FORGE_LRTX_ROOT"] == str(r) and e["FORGE_FABRO_URL"].endswith(f":{ports['fabro']}/api/v1")
+    assert e["FORGE_STATE_DIR"] == str(r / "state")
+
+
+def test_an_order_runs_in_a_fresh_namespace_with_the_lane_venv(tmp_path, clean_env, monkeypatch):
+    r = _lane(tmp_path)
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    seen = {}
+    monkeypatch.setattr(lane_run.subprocess, "run", lambda argv, **kw: seen.update(argv=argv, env=kw["env"]) or 0)
+    lr.run(["python", "-m", "forge_factory.workorder"], cwd="/", env={}, capture_output=True, text=True, timeout=60)
+    assert seen["argv"][:5] == ["unshare", "-rn", "--kill-child", "bash", "-c"]
+    assert f"{r}/venv/bin/python -m forge_factory.workorder" in seen["argv"][5]
+    assert seen["env"]["FORGE_MODEL_SERVICE_SECRETS"]
+
+
+def test_an_owner_lane_context_is_refused(tmp_path, clean_env, monkeypatch):
+    lr = lane_run.LaneRunner(LaneConfig(root=_lane(tmp_path)), PROFILE)
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", "/x/intent.json")
+    with pytest.raises(LaneError, match="OWNER_LANE_CONTEXT"):
+        lr.env()
+
+
+def test_the_owner_root_is_refused_as_a_lane():
+    with pytest.raises(LaneError, match="ROOT_COLLISION"):
+        lane_run.LaneRunner(LaneConfig(root=lane.TAKEN_ROOTS[0] / "lrtx"), PROFILE)
+
+
+def test_ready_names_what_is_missing(tmp_path, monkeypatch):
+    r = _lane(tmp_path, base_url="http://127.0.0.1:18480/v1")
+    lr = lane_run.LaneRunner(LaneConfig(root=r, secrets=tmp_path / "s"), PROFILE)
+    assert lr.ready() == "LANE_NOT_BOOTSTRAPPED:venv"
+    (r / "venv/bin").mkdir(parents=True)
+    (r / "venv/bin/python").write_text("")
+    assert lr.ready() == "LANE_MODEL_SERVICE_NOT_RELAYED"
+    (r / "model-service.yaml").write_text(yaml.safe_dump({"mode": "external", "base_url": f"unix:{r / 'run/tier.sock'}"}))
+    monkeypatch.setattr(lane_run, "FABRO_BIN", tmp_path / "fabro")
+    assert lr.ready() == "FABRO_BINARY_MISSING"
+    (tmp_path / "fabro").write_text("")
+    assert lr.ready() == "MODEL_SERVICE_SECRETS_MISSING"
+    (tmp_path / "s").write_text("forge-qual=x\n")
+    assert lr.ready() is None
+
+
+def test_the_window_plan_refuses_an_unprepared_lane_without_running_anything(tmp_path):
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [{"phase": "SWE.1", "baseline": {
+        "order": "WO-F014-SWE1-CRCHAL-20261103-L27",
+        "launch": {"example": "examples/0014m-crc-hal", "profile": PROFILE}}}]}))
+    r = _lane(tmp_path)
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, lane_root=r)
+    assert out == {"ran": [], "refused": f"LANE_NOT_BOOTSTRAPPED:venv:{PROFILE}"}
+
+
+def test_select_reads_model_identity_from_the_model_service_in_the_lane(tmp_path, monkeypatch):
+    r = _lane(tmp_path)
+    calls = []
+
+    def fake(prof, ms, m, env):
+        calls.append(m)
+        return {"model": m, "status": "MATCH", "identity_basis": "model_service_identity"}
+
+    monkeypatch.setattr(lane_run, "served_identity", fake)
+    monkeypatch.setattr(lp, "model_identity", lambda *a: pytest.fail("no Ollama identity in the lane"))
+    for name in ("selection_issues", "isolation_issues", "endpoint_issues", "served_model_issues"):
+        monkeypatch.setattr(lp, name, lambda *a, **k: [])
+    monkeypatch.setattr(lp, "network_enforcement", lambda: {"status": "DENIED_VERIFIED"})
+    prof = lp.load(PROFILE)
+    model = next(iter(prof["models"]["allowed"]))
+    rec = lp.select(PROFILE, model=model, provider="x", code_model=None, acp_authors=None, acp_inspectors=None,
+                    env={**{k: str(r / k.lower()) for k in prof["deployment"]["writable_env"]}, prof["deployment"]["root_env"]: str(r)})
+    assert calls and all(m["identity_basis"] == "model_service_identity" for m in rec["models"])
+    assert rec["enforcement"]["network"]["status"] == "DENIED_VERIFIED"
+
+
+def test_select_outside_the_lane_keeps_the_ollama_identity(tmp_path, monkeypatch):
+    monkeypatch.setattr(lane_run, "served_identity", lambda *a: pytest.fail("not a lane"))
+    seen = []
+    monkeypatch.setattr(lp, "model_identity", lambda prof, m, url: seen.append(m) or {"model": m, "status": "MATCH"})
+    for name in ("selection_issues", "isolation_issues", "endpoint_issues", "served_model_issues"):
+        monkeypatch.setattr(lp, name, lambda *a, **k: [])
+    monkeypatch.setattr(lp, "network_enforcement", lambda: {"status": "DENIED_VERIFIED"})
+    prof = lp.load(PROFILE)
+    lp.select(PROFILE, model=next(iter(prof["models"]["allowed"])), provider="x", code_model=None, acp_authors=None,
+              acp_inspectors=None, env={**{k: str(tmp_path / k.lower()) for k in prof["deployment"]["writable_env"]}, prof["deployment"]["root_env"]: str(tmp_path)})
+    assert seen
+
+
+def test_served_identity_maps_a_mismatch_and_a_match(tmp_path, monkeypatch):
+    from forge_factory.modelservice import client as C
+
+    prof = lp.load(PROFILE)
+    m = next(iter(prof["models"]["allowed"]))
+    ms = {"mode": "external", "base_url": f"unix:{tmp_path / 's.sock'}", "credential_ref": "forge-qual",
+          "expected_identity": {m: {}}, "share": {"concurrency": 1, "queue_wait_max_s": 900}}
+    env = {lane_run.SECRETS_ENV: str(tmp_path / "secrets")}
+    monkeypatch.setattr(C.ModelServiceClient, "preflight", lambda self, ms_: {m: {"revision_fingerprint": "f", "context_limit": 65536}})
+    ok = lane_run.served_identity(prof, ms, m, env)
+    assert ok["status"] == "MATCH" and ok["identity_basis"] == "model_service_identity" and ok["revision_fingerprint"] == "f"
+
+    def changed(self, ms_):
+        raise C.ProfileError(f"IDENTITY_CHANGED:{m}:revision_fingerprint")
+    monkeypatch.setattr(C.ModelServiceClient, "preflight", changed)
+    assert lane_run.served_identity(prof, ms, m, env)["status"] == "MISMATCH"
+    assert lane_run.served_identity(prof, ms, m, {})["status"] == "UNREACHABLE"
+
+
+def test_relay_needs_socat_and_cleans_its_socket(tmp_path, clean_env):
+    import shutil
+
+    if not shutil.which("socat"):
+        pytest.skip("socat")
+    lr = lane_run.LaneRunner(LaneConfig(root=_lane(tmp_path)), PROFILE)
+    with lr.relay() as sock:
+        assert sock.exists()
+    assert not sock.exists()
+    assert subprocess.run(["true"]).returncode == 0
+
+
+def test_inputs_named_by_the_work_order_are_found_in_sibling_examples(tmp_path):
+    repo = tmp_path / "repo"
+    ex = repo / "examples/0014m-crc-hal"
+    ex.mkdir(parents=True)
+    (ex / "workorder.json").write_text(
+        '{"inputs": ["../0014-crc-st/inputs/RM.md", "inputs/local.md", "../../../outside.md"], "x": "plain"}')
+    got = lane_run._referenced_files(ex)
+    assert [str(p) for p in got] == ["examples/0014-crc-st/inputs/RM.md", "examples/0014m-crc-hal/inputs/local.md"]
+
+
+def test_each_order_rewrites_the_fabro_settings_for_its_profile(tmp_path, clean_env, monkeypatch):
+    r = _lane(tmp_path)
+    (r / "fabro").mkdir()
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    monkeypatch.setattr(lane_run.subprocess, "run", lambda argv, **kw: 0)
+    lr.run(["python", "-m", "forge_factory.workorder"])
+    from forge_factory.lrtx import stack
+    assert (r / "fabro/settings.toml").read_text() == stack.fabro_config(lr.settings())
+
+
+def test_the_gateway_upstream_is_the_service_root_so_calls_are_not_doubled():
+    """Qualification window 1 (2026-11-12): every lane call went to /v1/v1/chat/completions and got HTTP 404."""
+    import httpx
+
+    from forge_factory.modelservice.gateway_external import upstream_of
+    for base, root in (("unix:/x/tier.sock", "http://model-service"), ("http://127.0.0.1:18480/v1", "http://127.0.0.1:18480"),
+                       ("http://127.0.0.1:18480/v1/", "http://127.0.0.1:18480"), ("http://h:1", "http://h:1")):
+        up, _ = upstream_of({"base_url": base})
+        assert up == root
+        assert httpx.Client(base_url=up).build_request("POST", "/v1/chat/completions").url.path == "/v1/chat/completions"
+
+
+def test_a_measured_model_is_routed_to_its_native_route_on_the_model_service(tmp_path, clean_env, monkeypatch):
+    from forge_factory.lrtx import request_measurement as RM
+
+    r = _lane(tmp_path)
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    assert "FORGE_GATEWAY_ROUTES" not in lr.gateway_env(lr.env())  # nothing measured: no routes (baseline parity)
+    m = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+    monkeypatch.setitem(RM.PINNED_PROFILE_ROUTES, PROFILE, {m: RM.METHOD})
+    monkeypatch.setattr(lp, "load", lambda pid, _l=lp.load: {**_l(pid), "runtime": {**_l(pid)["runtime"], "llama_server": {"x": 1}}})
+    g = lane_run.LaneRunner(LaneConfig(root=r), PROFILE).gateway_env(lr.env())
+    assert json.loads(g["FORGE_GATEWAY_ROUTES"]) == {m: "http://model-service/forge/v1/native/hf.co%2Fornith-ai%2FOrnith-1.5-35B-A3B-GGUF%3AQ8_0"}
+    assert json.loads(g["FORGE_GATEWAY_REQUEST_MEASUREMENT"]) == {m: RM.METHOD}
+
+
+def test_the_ledger_keeps_the_order_verdict_and_blocked_profiles_are_reported_not_recorded(tmp_path):
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": "SWE.1", "baseline": {"order": "WO-F014-SWE1-CRCHAL-20261103-L27",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}},
+        {"phase": "SWE.6", "baseline": {"order": "WO-F014-SWE6-AFOQUAL-20261105-L90AC",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "B"}}}]}))
+
+    class P:
+        returncode = 0
+        stdout = 'log line\n{"work_order": "X", "status": "BLOCKED"}\n'
+        stderr = ""
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=tmp_path / "lane", env={}, run=lambda *a, **k: P(), stamp="s",
+                                     blocked_profiles={"B": "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"})
+    led = __import__("json").loads((tmp_path / "lane/qualification-ledger.json").read_text())
+    assert out["ran"] == ["WO-F017Q-SWE1-CRCHAL-s"] and led["orders"]["WO-F017Q-SWE1-CRCHAL-s"]["status"] == "BLOCKED"
+    assert out["blocked"] == {"WO-F017Q-SWE6-AFOQUAL-s": "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"}
+    assert "WO-F017Q-SWE6-AFOQUAL-s" not in led["orders"]
+
+
+def test_an_archived_order_id_is_never_run_again_and_new_ledgers_get_a_fresh_stamp(tmp_path):
+    """Qualification window 3 (2026-11-12): a re-used order id got the earlier window's sealed package back."""
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": "SWE.1", "baseline": {"order": "WO-F014-SWE1-CRCHAL-20261103-L27",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}}]}))
+    lane_root = tmp_path / "lane"
+    (lane_root / "archives/WO-F017Q-SWE1-CRCHAL-s").mkdir(parents=True)
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=lane_root, env={}, run=lambda *a, **k: pytest.fail("must not run"), stamp="s")
+    assert out["ran"] == [] and out["blocked"] == {"WO-F017Q-SWE1-CRCHAL-s": "ORDER_ID_ALREADY_ARCHIVED"}
+    (lane_root / "qualification-ledger.json").unlink(missing_ok=True)
+
+    class P:
+        returncode, stdout, stderr = 0, '{"status": "READY_FOR_OFFLINE_REVIEW"}', ""
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=lane_root, env={}, run=lambda *a, **k: P())
+    import re
+    assert len(out["ran"]) == 1 and re.fullmatch(r"WO-F017Q-SWE1-CRCHAL-\d{8}T\d{4}", out["ran"][0])
+
+
+
+def test_a_window_can_target_some_phases_only(tmp_path, monkeypatch):
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": ph, "baseline": {"order": 'WO-F014-' + ph.replace('.', '') + '-CRCHAL-20261103-L27',
+                                    "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}} for ph in ("SWE.1", "SWE.6")]}))
+
+    class P:
+        returncode, stdout, stderr = 0, '{"status": "BLOCKED"}', ""
+    monkeypatch.setenv("FORGE_QUALIFICATION_PHASES", "SWE.6")
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=tmp_path / "lane", env={}, run=lambda *a, **k: P(), stamp="s")
+    assert out["ran"] == ["WO-F017Q-SWE6-CRCHAL-s"]

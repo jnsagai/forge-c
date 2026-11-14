@@ -103,7 +103,7 @@ unchanged.
 - [X] T028 [US2] Add the lineage `uart-module` (tag `UARTM`, example `0012u-st-cube-uart-module`, driver class `STM32N6_UART_MODULE_ST`) to `LINEAGES` and a generic `PILOTS = {"uart-module": ["SWE.1"]}` option to `derived_campaign()` in `F/afo/owner_supervised_development.py` (ACTIVE, own phases, no `after` chaining, ladder untouched); tests in `factory/python/tests/test_f020_pilot_lineage.py` (campaign validates with `F/afo/line_campaign.py`; ladder lineages unchanged; existing lineage order names unchanged)
 - [X] T029 [US2] Check whether the new driver class/lineage needs a policy grant or allowance entry (owner allowance generator, PILOT grant `driver_classes`); if it only needs generated (unsigned) data, add it with a test; if it needs owner-signed material, stop and report an input gap - never edit signed controls. Result (D27): generated data only - the owner-lane record and the deployer's trial inputs take the orders and driver classes from LINEAGES (added by T028); test in `test_f020_pilot_lineage.py`
 - [X] T030 CRE: open a CHANGE record for the feature in the owner CRE store (next free id checked right before registering; refuse if taken), merge the feature branch with the live campaign tip (merge commit), push to `/mnt/data/forge-c/owner-autodeploy/repo.git` branch `feat/owner-lane-campaign-v21-20261107`; the deployer gates the exact commit and deploys only when ELIGIBLE; on REJECTED, diagnose (reproducer races like RPR-155 are re-run, never waved through)
-- [ ] T031 Watch the pilot SWE.1 run on the line (floor + gate log); a failure follows the normal path (line retry, observer CAPA, maintainer route; hand fixes only via CRE and logged as interventions); record every new rule or finding in `specs/020-usart-benchmark-pilot/decision-log.md`
+- [X] T031 Watch the pilot SWE.1 run on the line (floor + gate log); a failure follows the normal path (line retry, observer CAPA, maintainer route; hand fixes only via CRE and logged as interventions); record every new rule or finding in `specs/020-usart-benchmark-pilot/decision-log.md`
 
 **Checkpoint**: the UART pilot's SWE.1 PASSes on the line with no owner input (SC-006).
 
@@ -121,15 +121,15 @@ benchmark names in the repository.
 - [X] T034 [US3] Outside the repository: write `/mnt/data/forge-c/model-service/private-benchmark/extract_metrics.py` (chmod 700 dir) that reads the private export and writes `metrics.json` (numbers and generic categories only, schema-valid); run it; never commit either file
 - [X] T035 [US3] Implement `F/benchmark/__init__.py` and `F/benchmark/compare.py` (`python -m forge_factory.benchmark.compare --pilot <workspace> --benchmark <metrics.json> --out <dir>`), report Markdown + JSON (T032 must pass)
 - [X] T036 [US3] Implement `F/benchmark/proposal.py` (`--log decision-log.md --metrics <dir>`): `specs/020-usart-benchmark-pilot/way-of-working-proposal.md` with default rules, per-order settings and what the ladder drivers would need, every rule citing its decision-log entry (SC-010); test in `factory/python/tests/test_f020_proposal.py`
-- [ ] T037 [US3] Generate the comparison and the proposal from the pilot's real SWE.1; add the forbidden-token hashes (computed locally from the private names, never written in clear) and run the privacy test
+- [X] T037 [US3] Generate the comparison and the proposal from the pilot's real SWE.1; add the forbidden-token hashes (computed locally from the private names, never written in clear) and run the privacy test
 
 ---
 
 ## Phase 7: Polish & cross-cutting
 
 - [X] T038 [P] Update `specs/020-usart-benchmark-pilot/quickstart.md` with the commands actually used and their results
-- [ ] T039 [P] Memory/notes: record the outcome, the CRE ids and the open follow-ups (SWE.2/SWE.3 alignment feature) in `specs/020-usart-benchmark-pilot/decision-log.md`
-- [ ] T040 Final regression (T024 scope) on the deployed commit; mark tasks `[X]` only with recorded evidence
+- [X] T039 [P] Memory/notes: record the outcome, the CRE ids and the open follow-ups (SWE.2/SWE.3 alignment feature) in `specs/020-usart-benchmark-pilot/decision-log.md`
+- [X] T040 Final regression (T024 scope) on the deployed commit; mark tasks `[X]` only with recorded evidence
 
 ---
 

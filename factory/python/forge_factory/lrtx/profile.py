@@ -301,7 +301,10 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     if require_network_denied and prof.get("network", {}).get("required") == "namespace_denied" \
             and net["status"] != "DENIED_VERIFIED":
         issues.append(f"NETWORK_NOT_DENIED:{net['status']}")
-    models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", ""))
+    from ..modelservice.lane_run import external_model_service, served_identity
+
+    ms = external_model_service(env.get(prof["deployment"]["root_env"]))  # 017 qualification lane (T049)
+    models = [served_identity(prof, ms, m, env) if ms else model_identity(prof, m, env.get("FORGE_OLLAMA_URL", ""))
               for m in sorted({model, code_model, *role_models(prof).values()} - {None})]
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
     if not issues:  # CAPA-081: nothing starts while the served model is not answering

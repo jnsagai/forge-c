@@ -1,0 +1,18 @@
+# Feature 017 (T045): which already-passed work the production-like setup must repeat. `qualify set` turns this into
+# config/factory/qualification-set.yaml from evidence (newest run that succeeded and whose gate decided PASS).
+# Only phases the line has already passed belong here (FR-014): GPIO SWE.1 has no gate PASS yet (2026-11-08).
+baseline_setup:
+  label: owned-lane-llama.cpp (qwen3.8 27B Q8 + Ornith-1.5 Q8, the lane owns the GPU)
+  identity: {name: "qwen3.8:27b-q8_0", precision: other, reasoning_mode: "on"}
+candidate_setup:
+  label: external-model-service (the same two models behind the tenant gateway; only the channel changes)
+  identity: {name: "qwen3.8:27b-q8_0", precision: other, reasoning_mode: "on"}
+# example: used only when an order predates the line queue (no envelope target); source: the CRCHAL case of
+# config/factory/campaigns/omniverse2-local-20261103.yaml (example: 0014m-crc-hal).
+phases:
+  - {phase: SWE.1, lineage: CRC-HAL, patterns: [SWE1-CRCHAL-], example: examples/0014m-crc-hal}
+  - {phase: SWE.2, lineage: CRC-HAL, patterns: [SWE2-CRCHAL-]}
+  - {phase: SWE.3, lineage: CRC-HAL, patterns: [SWE3-CRCHAL-]}
+  - {phase: SWE.4, lineage: CRC-HAL, patterns: [SWE4-CRCHAL-]}
+  - {phase: SWE.5, lineage: CRC-HAL, patterns: [SWE5-CRCHAL-]}
+  - {phase: SWE.6, lineage: CRC-HAL, patterns: [SWE6-AFOQUAL-, SWE6-CRCHAL-]}
