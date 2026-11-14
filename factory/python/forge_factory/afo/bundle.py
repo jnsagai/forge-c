@@ -192,9 +192,28 @@ def run_evidence(ws, phase: str, dom: dict | None = None) -> dict:
                           "reason": redact(str(g.get("reason", "")))[:240]})
     products = [{"path": str(p.relative_to(ws)), "bytes": p.stat().st_size}
                 for p in sorted((ws / "workproducts" / phase).glob("*")) if p.is_file() and not p.is_symlink()][:30]
+    # CAPA-260 (run WO-F014-SWE1-SPIM-20261113-L51): the blocking cause was an AUTHOR rejection (LRTX_REPAIR_STUCK on
+    # DESIGN_CONSTRAINT_OPERATIONS); gate decisions alone never showed it to the maintainer
+    rejections = []
+    for line in log.read_text().splitlines() if log.is_file() else []:
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("phase") == phase and r.get("step") == "author" and r.get("result") in ("REJECTED", "FREEZE_FAILED"):
+            rejections.append({"at": str(r.get("ts"))[:32], "issues": [redact(str(i))[:300] for i in (r.get("issues") or [])[:8]]})
+    full = []
+    rp = ws / ".forge-run/lrtx" / phase / "reply-issues.json"
+    try:
+        full = [redact(str(i))[:600] for i in (json.loads(rp.read_text()).get("issues") or [])[:8]] if rp.is_file() else []
+    except (OSError, ValueError, AttributeError):
+        full = []
     ev = {"schema": "forge-c/maintainer-run-evidence/1", "phase": phase, "set_inspection_findings": findings,
-          "gate_tail": gates[-40:], "workproducts": products,
+          "gate_tail": gates[-40:], "workproducts": products, "author_rejections": rejections[-3:],
+          "last_author_reply_issues": full,
           "routed_capa": routed_capa(ws, phase, dom) if dom else None, "trust": "UNTRUSTED_RUN_DATA"}
+    while len(json.dumps(ev).encode()) > 24576 and len(ev["author_rejections"]) > 1:
+        ev["author_rejections"].pop(0)
     while len(json.dumps(ev).encode()) > 24576 and (ev["set_inspection_findings"] or ev["gate_tail"]):
         (ev["gate_tail"] if len(ev["gate_tail"]) > 10 or not ev["set_inspection_findings"] else ev["set_inspection_findings"]).pop(0)
     return ev

@@ -203,14 +203,16 @@ def maintenance(ctx: dict, *, spec_path: str | None = None, runner=None, lane_ro
     from ..reliability.store import CREStore
 
     owner = CapaRegistry(CREStore(Path(spec["owner_cre"])) if spec.get("owner_cre") else CREStore(), cre_policy())
-    capa = crash_capa(owner, spec["capa_id"])
+    defect_mode = spec.get("mode") == "defect"
+    capa = (defect_capa if defect_mode else crash_capa)(owner, spec["capa_id"])
     if capa is None:
         return {"refused": "CAPA_NOT_FOUND"}
     journal = Path(spec["journal"]).read_text().splitlines() if spec.get("journal") else []
     latch = json.loads(Path(spec["latch"]).read_text()) if spec.get("latch") else None
     pid = spec.get("pid") or f"mnt-{capa['capa_id'].lower()}-{time.strftime('%Y%m%d%H%M', time.gmtime())}"
-    case = case_for(pid, base=spec["base"], repo=Path(spec["repo"]), capa=capa,
-                    evidence=crash_evidence(capa, journal=journal, latch=latch, signature=spec.get("signature")))
+    evidence = (json.loads(Path(spec["run_evidence"]).read_text()) if defect_mode and spec.get("run_evidence") else
+                crash_evidence(capa, journal=journal, latch=latch, signature=spec.get("signature")))
+    case = case_for(pid, base=spec["base"], repo=Path(spec["repo"]), capa=capa, evidence=evidence)
     from ..afo.maintainer import case_dir
 
     case_path = case_dir(pid) / "case.json"
@@ -395,6 +397,140 @@ def crash(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 17
     return result
 
 
+# ---- defect mode: a line order stopped on a suspected factory defect (CAPA-260) ----------------------------------
+# Owner 2026-11-14: "finding and fixing a defect shall be done by omniverse". The line classifies a repair stuck on a
+# factory check as a suspected FACTORY_DEFECT and holds the lineage (line_orders.SUSPECTED_WAIT_S); the CRE observer
+# opens a CAPA with a WORK|<part>|<phase>|FACTORY_DEFECT|<code> key and the order. Defect mode gives the maintainer a
+# window for that CAPA - the lane is drained and paused (window.py), the maintainer runs on the model service with the
+# failed run's evidence, and an ELIGIBLE proposal is imported by the deployer, whose CRE gate decides the deploy.
+DEFECT_KEY = re.compile(r"^WORK\|[^|]+\|(SWE\.\d)\|FACTORY_DEFECT\|")
+LSTATE_WORKORDERS = LSTATE / "workorders"
+
+
+def defect_capa(reg, capa_id: str | None = None) -> dict | None:
+    """The CAPA to work on: the named one, else the newest routable CAPA with a FACTORY_DEFECT work key, an order and
+    no fix yet."""
+    with reg.s.conn() as c:
+        rows = c.execute("SELECT capa_id, ref FROM cre_capa_links WHERE kind='FAILURE_KEY' AND ref LIKE 'WORK|%' "
+                         "ORDER BY capa_id").fetchall()
+    keys = {}
+    for cid, key in rows:
+        if DEFECT_KEY.match(key):
+            keys.setdefault(cid, key)
+    order = [capa_id] if capa_id else sorted(keys, key=lambda x: int(re.sub(r"\D", "", x) or 0), reverse=True)
+    for cid in order:
+        rec = reg.get(cid)
+        orders = reg.links(cid, "WORK_ORDER") if rec else []
+        if rec is None or cid not in keys or not orders:
+            continue
+        if capa_id or (rec["state"] in ROUTABLE and not reg.links(cid, "FIX_REVISION")):
+            return {"capa_id": cid, "state": rec["state"], "key": keys[cid], "phase": DEFECT_KEY.match(keys[cid]).group(1),
+                    "work_order": orders[-1], "hypothesis": rec.get("root_cause_summary") or ""}
+    return None
+
+
+def defect_evidence(capa: dict, ws: Path) -> dict:
+    """Run evidence for a suspected factory defect: the failed order's bounded view (afo.bundle.run_evidence)."""
+    from ..afo.bundle import run_evidence
+
+    ev = {"kind": "FACTORY_DEFECT_SUSPECTED", "work_order": capa["work_order"],
+          "routed_capa": {"capa_id": capa["capa_id"], "key": capa["key"], "hypothesis": str(capa.get("hypothesis") or "")[:1500]},
+          "run": run_evidence(Path(ws), capa["phase"])}
+    while len(json.dumps(ev).encode()) > EVIDENCE_MAX and ev["run"].get("gate_tail"):
+        ev["run"]["gate_tail"].pop(0)
+    return ev
+
+
+def defect_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot: Path = QROOT,
+                workorders: Path = LSTATE_WORKORDERS, git=None, tier_active=None) -> dict:
+    """Whether (and on what) defect maintenance should run now: {"skip": reason} or the case inputs. Read-only."""
+    git = git or (lambda *a: _git(BRANCH_REPO, *a))
+    tier_active = tier_active or _tier_active
+    from ..reliability.capa import CapaRegistry
+    from ..reliability.policy import load as cre_policy
+    from ..reliability.store import CREStore
+
+    capa = defect_capa(CapaRegistry(CREStore(Path(owner_cre)), cre_policy()))
+    if capa is None:
+        return {"skip": "NO_UNFIXED_DEFECT_CAPA"}
+    attempts_p = deployer / "maintenance-attempts.json"
+    attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
+    if f"defect:{capa['capa_id']}" in attempts:
+        return {"skip": "ALREADY_ATTEMPTED_FOR_THIS_CAPA"}  # one window per CAPA; the line's bounded wait then retries
+    ws = Path(workorders) / capa["work_order"] / "workspace"
+    if not ws.is_dir():
+        return {"skip": "WORK_ORDER_WORKSPACE_MISSING"}
+    live = json.loads((deployer / "state.json").read_text())["live"]["commit"]
+    tip = git("rev-parse", BRANCH)
+    if tip != live and not gated(tip, live, Path(owner_cre)):
+        return {"skip": "BRANCH_AHEAD_NOT_GATED"}
+    if tier_active():
+        return {"skip": "TIER_IN_USE"}
+    repo = (Path(qroot) / f"owner-allowance-{live[:8]}-main-20261107/newS" if tip == live else
+            Path(qroot) / f"maintenance-{tip[:8]}/src")
+    return {"capa": capa, "base": tip, "live": live, "repo": str(repo), "ws": str(ws)}
+
+
+def _window(minutes: int, execute: bool) -> dict:
+    """One maintenance window (window.py main, in process so the plan's result is returned)."""
+    from model_tier import gpu
+
+    from ..common import REPO_ROOT
+    from . import window_plans
+    from .window import run_window
+    from .window_adapters import ModelTier, OwnerLane
+
+    st = STATE / "windows-state"
+    wid = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    lane = OwnerLane(work=st / "work", window_id="w" + wid.replace("T", "").replace("Z", ""),
+                     deadline=time.time() + minutes * 60)
+    return run_window(window_plans.maintenance, lane=lane, tier=ModelTier(repo=REPO_ROOT, window_id=wid),
+                      gpu_apps=gpu.compute_apps, gpu_free_mib=lambda: gpu.memory_mib()["free"],
+                      owner_cgroup="forge-c-owner-development-", tier_cgroup="forge-model-tier", state_dir=st,
+                      max_minutes=minutes, dry_run=not execute)
+
+
+def defect(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 170, window=None) -> dict:
+    """Defect mode: when the lane is idle, one maintenance window for the newest unfixed FACTORY_DEFECT CAPA."""
+    window = window or _window
+    plan = defect_plan(deployer=deployer)
+    if "skip" in plan or not execute:
+        return plan
+    dry = window(minutes, False)
+    if not (dry.get("checks") or {}).get("lane_idle"):
+        return {"skip": "LANE_NOT_IDLE", "detail": str((dry.get("checks") or {}).get("lane_idle_detail") or dry.get("refusal"))[:200]}
+    stamp = time.strftime("%Y%m%d%H%M", time.gmtime())
+    cid = plan["capa"]["capa_id"]
+    attempts_p = deployer / "maintenance-attempts.json"
+    attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
+    attempts[f"defect:{cid}"] = {"capa_id": cid, "base": plan["base"], "work_order": plan["capa"]["work_order"], "started": stamp}
+    attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True))
+    D = STATE / "maintenance" / f"defect-{stamp}"
+    D.mkdir(parents=True, exist_ok=True)
+    (D / "run-evidence.json").write_text(json.dumps(defect_evidence(plan["capa"], Path(plan["ws"])), indent=1))
+    if plan["base"] != plan["live"]:
+        checkout(Path(plan["repo"]), plan["base"])
+    spec = {"mode": "defect", "capa_id": cid, "base": plan["base"], "repo": plan["repo"], "state_dir": str(LSTATE),
+            "owner_cre": str(OWNER_CRE), "run_evidence": str(D / "run-evidence.json"), "drill": False,
+            "pid": f"mnt-{cid.lower()}-{stamp}", "agent_seconds": 5400}
+    (D / "spec.json").write_text(json.dumps(spec, indent=1))
+    os.environ["FORGE_MAINTENANCE_SPEC"] = str(D / "spec.json")
+    try:
+        rec = window(minutes, True)
+        result = next((s.get("result") for s in rec.get("steps", []) if s.get("step") == "qualification_ran"), None) or {}
+        result = {**result, "window": {k: rec.get(k) for k in ("window_id", "outcome", "refusal", "error")}}
+    except Exception as exc:  # noqa: BLE001 - recorded with the attempt
+        result = {"error": f"{type(exc).__name__}: {str(exc)[:300]}"}
+    if result.get("outcome") == "ELIGIBLE_FOR_OFFLINE_REVIEW":
+        r = subprocess.run([sys.executable if Path(sys.executable).exists() else "python3", str(deployer / "autodeploy.py"),
+                            "import"], capture_output=True, text=True, timeout=1800)
+        result["import"] = (r.stdout + r.stderr).strip()[-600:]
+    attempts[f"defect:{cid}"].update(ended=time.strftime("%Y%m%d%H%M", time.gmtime()), result=result)
+    attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True, default=str))
+    (D / "result.json").write_text(json.dumps(result, indent=1, default=str))
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
 
@@ -407,11 +543,15 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--seconds", type=int, default=3600)
     c = sub.add_parser("crash", help="owner lane latched after a guardian crash: maintenance on the model service")
     c.add_argument("--execute", action="store_true", help="really run (default: report the plan only)")
+    d = sub.add_parser("defect", help="a line order stopped on a suspected factory defect: maintenance in a window")
+    d.add_argument("--execute", action="store_true", help="really run (default: report the plan only)")
     args = ap.parse_args(argv)
     if args.cmd == "agent":
         print(json.dumps(agent(args.case, args.workspace, model=args.model, seconds=args.seconds)), flush=True)
     elif args.cmd == "crash":
         print(json.dumps(crash(execute=args.execute), default=str), flush=True)
+    elif args.cmd == "defect":
+        print(json.dumps(defect(execute=args.execute), default=str), flush=True)
     return 0
 
 

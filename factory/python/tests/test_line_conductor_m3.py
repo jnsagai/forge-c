@@ -844,3 +844,21 @@ def test_act_dry_run_replay_over_todays_line_state(tmp_path, monkeypatch):
     assert st["wwdg-hal"]["state"] == "WAITING"
     (tmp_path / "plan.json").write_text(json.dumps(out, indent=1, default=str))
     assert {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file()} == stamp  # the copy is untouched
+
+
+def test_a_suspected_factory_defect_holds_the_lineage_for_a_bounded_time_then_retries(env):
+    """CAPA-260: a repair stuck on a factory check waits for a fix (the maintainer's window), but never forever."""
+    from forge_factory.afo import line_orders as LO
+
+    write_campaign(env, [lineage("crc-ll", "CRCL", "20261103-L30")])
+    grant(env)
+    sw1 = "WO-F014-SWE1-CRCL-20261103-L30"
+    issues = ["LRTX_TASK_INVALID:requirements:g_x: [k] DESIGN_CONSTRAINT_OPERATIONS: a design constraint is not",
+              "LRTX_TASK_INVALID:requirements:g_x: LRTX_REPAIR_STUCK: the repair answer has the same findings"]
+    outs = drive(env, placer(env), {sw1: issues}, cycles=4)
+    assert [x["wo"] for x in env["line"].launched] == [sw1]
+    v = lin(outs[-1], "crc-ll")
+    assert v["state"] == "WAITING" and v["reason"].startswith("WAITING_EXTERNAL_CHANGE")
+    env["clock"].tick(LO.SUSPECTED_WAIT_S)
+    placer(env).cycle()
+    assert env["line"].launched[-1]["wo"] == sw1 + "B"

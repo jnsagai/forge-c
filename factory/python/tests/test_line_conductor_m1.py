@@ -703,3 +703,32 @@ def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path
     assert progress["now"]["IWDGHAL"] == ("SWE.6", l24)
     assert progress["now"]["CRCL"] == ("SWE.6", "WO-F014-SWE6-CRCL-20261103-L24")
     assert {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file()} == stamp  # the source copy is untouched
+
+
+L51_ISSUES = ["LRTX_TASK_INVALID:requirements:g_ll_crc: [crc_init_pattern_value] DESIGN_CONSTRAINT_OPERATIONS: a design "
+              "constraint is not allocated: oper",
+              "LRTX_TASK_INVALID:requirements:g_ll_crc: [crc_frame_width] DESIGN_CONSTRAINT_OPERATIONS: a design constraint is ",
+              "LRTX_TASK_INVALID:requirements:g_ll_crc: LRTX_REPAIR_STUCK: the repair answer has the same findings as the answer"]
+
+
+@pytest.mark.parametrize("issues,expected", [
+    (L51_ISSUES, "FACTORY_DEFECT"),
+    (L51_ISSUES[:2], "UNKNOWN_OR_CONVERGENCE"),  # the same rejection without the stuck detector is not suspected
+])
+def test_a_repair_stuck_on_a_factory_check_is_a_suspected_factory_defect(line, issues, expected):
+    """CAPA-260 (run WO-F014-SWE1-SPIM-20261113-L51): the blocking author rejection carried LRTX_REPAIR_STUCK on
+    DESIGN_CONSTRAINT_OPERATIONS and the route said 'rework budget exhausted'; the issue was UNKNOWN, the line retried
+    blindly and no CAPA was opened."""
+    wo = "WO-F014-SWE1-SPIM-20261113-L51"
+    gates = [{"phase": "SWE.1", "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": issues},
+             {"phase": "SWE.1", "step": "route", "gate": {"decision": "BLOCKED",
+              "reason": "rework budget exhausted (3 failed cycles)"}},
+             {"phase": "SWE.1", "step": "upstream", "result": "NONE", "defects": []}]
+    mk_order(line["state"], wo, gates=gates, package=True, rid="01STUCK", created=T0 + 600)
+    i = by_wo(conductor(line).cycle(), wo)
+    if expected == "FACTORY_DEFECT":
+        assert (i["class"], i["status"], i["error_code"]) == ("FACTORY_DEFECT", "WAITING_EXTERNAL_CHANGE", "LRTX_REPAIR_STUCK")
+        assert i["proposals"][0]["strategy"] == "OPEN_CAPA_FACTORY_DEFECT_SUSPECTED"
+        assert "LRTX_REPAIR_STUCK:DESIGN_CONSTRAINT_OPERATIONS" in i["summary"]
+    else:
+        assert i["class"] != "FACTORY_DEFECT"

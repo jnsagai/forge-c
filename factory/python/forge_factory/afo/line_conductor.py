@@ -617,6 +617,26 @@ def _codes(rec: dict, phase: str) -> tuple[list[str], int | None, str]:
     return codes[:5], b["_line"], route
 
 
+_STUCK_CHECK = re.compile(r"\]\s+([A-Z][A-Z0-9_]{2,}):")
+
+
+def stuck_checks(rec: dict, phase: str) -> list[str]:
+    """CAPA-260 (run WO-F014-SWE1-SPIM-20261113-L51, 2026-11-14): the deterministic checks the author's repair stayed
+    stuck on in the rejection that blocked the phase (the factory's own LRTX_REPAIR_STUCK detector fired there); []
+    when it did not. The gate code of such a rejection ('LRTX_TASK_INVALID:requirements') hides both facts."""
+    blocked = [e for e in rec["log"] if e.get("phase") == phase and e.get("step") == "route" and _result(e) == "BLOCKED"]
+    if not blocked:
+        return []
+    b = blocked[-1]
+    rej = [e for e in rec["log"] if e.get("phase") == phase and e.get("step") == "author" and e["_line"] < b["_line"]
+           and _result(e) in ("REJECTED", "FREEZE_FAILED")]
+    issues = [str(i) for i in (rej[-1].get("issues") or [])] if rej else []
+    if not any("LRTX_REPAIR_STUCK" in i for i in issues):
+        return []
+    found = sorted({m.group(1) for i in issues for m in [_STUCK_CHECK.search(i)] if m and m.group(1) != "LRTX_REPAIR_STUCK"})
+    return found or ["UNNAMED_CHECK"]
+
+
 def _current_upstream_review(rec: dict) -> tuple[str, list[dict], str] | None:
     """Read-only proof of a current independent failure and its normal owning-phase route."""
     from ..inspection import defects
@@ -764,6 +784,13 @@ def classify_order(rec: dict, life: str | None, capa_of: dict, *, completed_run=
             cls = "PRODUCT" if up else "MODEL_CONVERGENCE"
         if cls != b["failure_class"]:
             error_code = codes[0]
+    stuck = stuck_checks(rec, ph) if not up and not completed_upstream else []
+    if stuck and cls != "FACTORY_DEFECT":
+        # CAPA-260: the factory's own check could not guide the author to a valid answer - the factory is the suspect
+        # (its check, finding text or packet), so the line waits for a fix (bounded: line_orders SUSPECTED_WAIT_S) and
+        # the CRE observer opens a CAPA for the maintainer instead of a blind retry
+        cls, suspected, error_code = "FACTORY_DEFECT", True, "LRTX_REPAIR_STUCK"
+        codes = [f"LRTX_REPAIR_STUCK:{c}" for c in stuck][:5]
     if capa:
         ev.append({"kind": "capa", "ref": f"capa:{capa}"})
     # the issue's identity across runs: the deterministic code set of the blocking rejection (the CRE bundle's dominant
