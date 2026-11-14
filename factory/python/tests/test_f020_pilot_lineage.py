@@ -31,7 +31,7 @@ TAG = "SPIM"
 EXAMPLE = "0011u-st-cube-spi-module"
 DRIVER = "STM32N6_SPI_MODULE_ST"
 NEXT = ("tim-module", "TIMM", "0013u-st-cube-tim-module", "STM32N6_TIM_MODULE_ST")
-MODULES = ("uart-module", "spi-module", "tim-module")  # the feature 020 lineages (not in the base golden)
+MODULES = ("uart-module", "spi-module", "tim-module", "uart-module-r4")  # the feature 020 lineages (not in the base golden)
 
 
 def _sub(doc):
@@ -39,7 +39,8 @@ def _sub(doc):
 
 
 def test_the_module_lineages_and_the_pilot_option():
-    assert D.PILOTS == {PILOT: ["SWE.1"], NEXT[0]: ["SWE.1"]} and D.PILOT_AFTER == {NEXT[0]: PILOT}
+    assert D.PILOTS == {PILOT: ["SWE.1"], NEXT[0]: ["SWE.1"], "uart-module-r4": ["SWE.1"]}
+    assert D.PILOT_AFTER == {NEXT[0]: PILOT, "uart-module-r4": NEXT[0]}  # round 4: UART again after TIM
     T = D._LINEAGE[NEXT[0]]
     assert (T["tag"], T["example"], T["driver_class"], T["depends_on"]) == (*NEXT[1:], None)
     assert NEXT[0] not in D.LADDER and (REPO_ROOT / "examples" / NEXT[2] / "workorder.json").is_file()

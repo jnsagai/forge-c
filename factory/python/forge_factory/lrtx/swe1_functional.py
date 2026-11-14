@@ -254,6 +254,9 @@ def context(ws: Path) -> dict:
             "sections": secs, "code": sorted(code, key=len, reverse=True), "names": names,
             "use_cases": {u["use_case_id"] for u in (pkg or {}).get("use_cases") or []},
             "terms": level_terms(ws), "allowed": {a["function"] for a in inv["api"]},
+            # round 4 D41: the HAL driver guideline input of the register (requirement source named *guideline*)
+            "guideline": next((r["input_id"] for r in inv["inputs"] if r["role"] != GI.UNDER_ANALYSIS
+                               and "guideline" in str(r["name"]).lower()), None),
             "in_scope": {a["function"]: a["component"] for a in inv["api"] if a["scope_class"] == "in"},
             "rules": dict(tpl.get("rules") or {}),
             "patterns": list((tpl.get("level_rule") or {}).get("patterns") or [])}
@@ -272,6 +275,11 @@ REFERENCE_RULE = ("References: cite another requirement only by its key in brack
                   "factory writes its current SWR id in front); never a bare SWR id - ids change between baselines.")
 META_RULE = ("Requirements and open points describe the module and its inputs, never the authoring process (tasks, keys "
              "to assign, inspections, rework, regenerating work products).")
+GRANULARITY_RULE = ("Granularity: one requirement per service behaviour of a delivered function - its normal outcome "
+                    "and its error, timeout and busy-state variants together in that one requirement - not one "
+                    "requirement per variant.")
+GUIDELINE_TRACE_RULE = ("HAL-only behaviour that no hardware input states (callbacks, MSP hooks, handle state, abort and "
+                        "status services) is traced to the HAL driver guideline input, not left awaiting traceability.")
 BUDGET_RULE = ("A work-order budget (memory, stack, timing) is a mandatory requirement of this release like any other: "
                "state the limit, verify it by measurement (test or analysis naming what is measured), and never "
                "qualify it as optional, non-binding or not an acceptance limit.")
@@ -400,6 +408,12 @@ def requirement_findings(r: dict, origins: list[str] | None, ctx: dict) -> list[
                     "its handle must be in for the behaviour ('none' only for a design constraint)"))
     if rules.get("design_constraint_no_use_cases") and dc and r["use_cases"]:
         out.append(("DESIGN_CONSTRAINT_USE_CASES", "a design constraint serves no single use case: use_cases is []"))
+    if (rules.get("hal_behaviour_traces_to_guideline") and og == "awaiting_traceability" and ctx.get("guideline")
+            and r.get("operations") and all(str(ctx["in_scope"].get(o, "")).upper().startswith("HAL")
+                                            for o in r["operations"])):
+        out.append(("HAL_GUIDELINE_TRACE", f"HAL-only behaviour (callbacks, MSP hooks, handle state, abort and "
+                    f"status services of the HAL) is traced to the HAL driver guideline {ctx['guideline']}: a trace or "
+                    "derive link to it and origin_group use_case (or out_of_context), not awaiting_traceability"))
     if "operations" in r:
         ops = r["operations"]
         out += [("OPERATION_UNKNOWN", f"{o} is no in-scope delivered function of the module") for o in ops
@@ -454,7 +468,31 @@ def validate_task(ws: Path, doc: dict, task: dict, ctx: dict | None = None) -> l
         lim = design_limit(task["id"], len((doc or {}).get("requirements") or []), ctx)
         if lim:
             out.append(f"[{task['id']}] {lim}")
+    else:
+        gran = granularity(task["id"], (doc or {}).get("requirements") or [], ctx)
+        if gran:
+            out.append(f"[{task['id']}] {gran}")
     return out
+
+
+def granularity(task_id: str, reqs: list, ctx: dict) -> str | None:
+    """Round 4: a delivered function that is the ONLY operation of more than N functional requirements of a task is a
+    service behaviour split into variants (UART L50B: HAL_UART_Receive alone in 5, HAL_UART_Transmit in 4)."""
+    cap = ctx["rules"].get("functional_requirements_per_operation")
+    if not cap:
+        return None
+    alone: dict[str, list[str]] = {}
+    for r in reqs:
+        if isinstance(r, dict) and r.get("type") == "functional" and len(r.get("operations") or []) == 1:
+            alone.setdefault(r["operations"][0], []).append(str(r.get("key")))
+    over = {o: ks for o, ks in alone.items() if len(ks) > cap}
+    if not over:
+        return None
+    return ("GRANULARITY: " + "; ".join(f"{o} is the only operation of {len(ks)} requirements ({', '.join(ks)})"
+                                        for o, ks in sorted(over.items()))
+            + f" - at most {cap} per function: one requirement per service behaviour, its error, timeout and state "
+            "variants merged into it (the statement names the outcomes), keeping the keys of the merged requirements' "
+            "first one")
 
 
 def _norm(s: str) -> str:
@@ -531,7 +569,9 @@ def _round3_rules(ctx: dict) -> str:
     """Round 3 guidance, only where the template switches the rule on (orders without the switch keep their text)."""
     rules = ctx.get("rules") or {}
     return "".join(" " + t for k, t in (("references_by_key", REFERENCE_RULE), ("no_author_meta_text", META_RULE),
-                                         ("budget_verified_by_measurement", BUDGET_RULE)) if rules.get(k))
+                                         ("budget_verified_by_measurement", BUDGET_RULE),
+                                         ("functional_requirements_per_operation", GRANULARITY_RULE),
+                                         ("hal_behaviour_traces_to_guideline", GUIDELINE_TRACE_RULE)) if rules.get(k))
 
 
 def input_register_text(inv: dict) -> str:

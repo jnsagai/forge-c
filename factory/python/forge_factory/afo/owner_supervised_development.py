@@ -131,6 +131,9 @@ LINEAGES = tuple(
         # Owner 2026-11-14: "after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work" - the TIM module
         # (ST's frozen TIM HAL + TIM LL, general-purpose TIM2-TIM5) on the same way of working, after the SPI module.
         ("tim-module", "TIMM", "20261114-L52", "0013u-st-cube-tim-module", "STM32N6_TIM_MODULE_ST", None),
+        # feature 020 round 4 (owner-approved recommendation 2026-11-14): the UART module again on template v3
+        # (granularity + D41), carrying what L50B validated; after TIM's SWE.1.
+        ("uart-module-r4", "UARTM", "20261114-L53", "0012v-st-cube-uart-module-r4", "STM32N6_UART_MODULE_ST", None),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
@@ -164,10 +167,10 @@ assert LADDER_PHASES[-1] == PHASES[-1] or all(i in PROVIDED_LL for i in LADDER i
 # `depends_on` chaining, after every ready ladder step (PILOT_PRIORITY) and before the lineages on hold. Generic: a
 # pilot is any lineage of LINEAGES off the ladder that builds on nothing, with a contiguous phase list from SWE.1.
 # The UART module pilot passed SWE.1 (L50B, decision D41) and is on hold; the SPI module is the active pilot.
-PILOTS = {"spi-module": ["SWE.1"], "tim-module": ["SWE.1"]}
+PILOTS = {"spi-module": ["SWE.1"], "tim-module": ["SWE.1"], "uart-module-r4": ["SWE.1"]}
 # Owner 2026-11-14 "after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work": a pilot may wait
 # `after` another pilot's last phase PASS (it builds on nothing); the line places it by itself once that order passes.
-PILOT_AFTER = {"tim-module": "spi-module"}
+PILOT_AFTER = {"tim-module": "spi-module", "uart-module-r4": "tim-module"}
 PILOT_PRIORITY = 40
 assert all(i in _LINEAGE and i not in LADDER and _LINEAGE[i]["depends_on"] is None
            and list(ph) == list(PHASES[:len(ph)]) and ph for i, ph in PILOTS.items())
