@@ -80,7 +80,7 @@
   "layer_note": "Feature 020 way of working applied to TIM (owner 2026-11-14: \"after finishing SPI, i want omniverse to place TIM to do the same SWE 1 work\"): one module, the delivered TIM HAL and TIM LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set for the general-purpose timers TIM2-TIM5; requirements are derived from the inputs, never from the code; secure build.",
   "swe1": {
     "level": "functional",
-    "template": "swe1-functional-v2"
+    "template": "swe1-functional-v3"
   },
   "module": {
     "name": "TIM",

@@ -114,3 +114,11 @@ def test_the_uart_round4_order_runs_after_tim_on_v3_and_carries_l50b():
     if camp:
         e = next(x for x in camp["lineages"] if x["id"] == "uart-module-r4")
         assert e["after"] == {"lineage": "tim-module", "phase": "SWE.1", "verdict": "PASS"}
+
+
+def test_spi_and_tim_run_on_v3_too():
+    """Owner 2026-11-14 (approved recommendation): SPI L51 produced 143 requirements and 19 design constraints against
+    the benchmark 56 and 5, and its set inspections kept failing on duplicates - TIM and SPI retries run on v3 as well."""
+    for ex in ("0011u-st-cube-spi-module", "0013u-st-cube-tim-module", "0012v-st-cube-uart-module-r4"):
+        w = json.loads((REPO_ROOT / "examples" / ex / "workorder.json").read_text())
+        assert w["swe1"]["template"] == V3, ex

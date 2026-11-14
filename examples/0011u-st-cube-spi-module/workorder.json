@@ -79,7 +79,7 @@
   "layer_note": "Feature 020 way of working applied to SPI (owner 2026-11-13: \"run SWE.1 on spi module now on local. use this new way of working\"): one module, the delivered SPI HAL and SPI LL of ST's stm32n6xx-hal-driver v1.4.0, FROZEN, under one functional-level SWE.1 requirement set; requirements are derived from the inputs, never from the code; secure build.",
   "swe1": {
     "level": "functional",
-    "template": "swe1-functional-v2"
+    "template": "swe1-functional-v3"
   },
   "module": {
     "name": "SPI",
