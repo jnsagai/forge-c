@@ -405,7 +405,11 @@ def requirement_findings(r: dict, origins: list[str] | None, ctx: dict) -> list[
         out += [("OPERATION_UNKNOWN", f"{o} is no in-scope delivered function of the module") for o in ops
                 if o not in ctx["in_scope"]]
         if rules.get("design_constraint_no_operations") and dc and ops:
-            out.append(("DESIGN_CONSTRAINT_OPERATIONS", "a design constraint is not allocated: operations is []"))
+            # CAPA (L51 g_ll_crc): the finding named one way out only; the author kept its operations three times and
+            # the stuck repair failed the order. A statement of what named functions do is functional.
+            out.append(("DESIGN_CONSTRAINT_OPERATIONS", "a design constraint is not allocated: operations is []; a "
+                        "statement of what the named delivered function(s) do is type functional and keeps them in "
+                        "operations"))
         if rules.get("functional_operations_required") and r["type"] == "functional" and not ops:
             out.append(("OPERATION_MISSING", "a functional requirement names the delivered function(s) it is about in "
                         "operations"))
