@@ -117,19 +117,35 @@ def last_finished(ws: Path, phase: str, log: str = "visits.jsonl") -> str:
     return done[-1]["at"] if done else ""
 
 
+_SERIES = re.compile(r"^(WO-[A-Z0-9]+-SWE\d-[A-Z0-9-]+-L\d+)([A-Z]{0,2})$")
+
+
+def series_predecessors(wo: str | None) -> list[str]:
+    """Feature 021 T009 (FR-006): the earlier attempts of a line order's own series, newest first (attempt n appends
+    B, C, ... - afo/line_campaign.retry_suffix): a retry keeps the author tasks they already validated."""
+    m = _SERIES.match(wo or "")
+    if not m or not m.group(2):
+        return []
+    from ..afo.line_campaign import retry_suffix
+
+    n = 0
+    for ch in m.group(2):  # bijective base 26: B -> 2, Z -> 26, AA -> 27
+        n = n * 26 + ord(ch) - 64
+    return [m.group(1) + retry_suffix(k) for k in range(n - 1, 0, -1)]
+
+
 def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict | None:
     """Reuse a validated author task, never an incomplete phase's PASS or inspector.
 
-    The existing resume lineage supplies the sole source workspace. Full packet
-    identity, current output schema and current task validator must all match.
-    Old attempts/usage remain in their own evidence and the shared mission ledger;
-    importing one output neither creates model usage nor grants a phase verdict.
+    The existing resume lineage supplies a source workspace whose record must match the full packet identity. Feature
+    021 T009 (FR-006, partial phase carry) adds the earlier attempts of the order's own series: their records match by
+    the run-identity-free semantic key (structured.semantic_key; a record written before it existed is never carried).
+    The current output schema and task validator must accept the answer in both cases. Old attempts/usage remain in
+    their own evidence and the shared mission ledger; importing one output neither creates model usage nor grants a
+    phase verdict.
     """
     if base.get("role") != f"swe{phase[-1]}-author":
         return None
-    from ..brownfield.resume import source_workspace
-    from ..common import sha256_bytes, sha256_file, state_dir
-
     manifest = Path(ws) / ".forge-run/manifest.json"
     metadata = json.loads(manifest.read_text()) if manifest.is_file() else {}
     lineage = metadata.get("resumed_from")
@@ -140,8 +156,19 @@ def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict |
         source, fresh_bound = fresh.get("work_order"), fresh.get("source_manifest_sha256")
         if not isinstance(fresh_bound, str) or len(fresh_bound) != 64:
             return None
-    if not source:
-        return None
+    sources = ([(source, False)] if source else []) + [(wo, True) for wo in series_predecessors(metadata.get("work_order"))
+                                                       if wo != source]
+    for src, semantic in sources:
+        rec = _inherit_from(ws, src, phase, task, base, check, fresh_bound if src == source else None, semantic)
+        if rec is not None:
+            return rec
+    return None
+
+
+def _inherit_from(ws: Path, source: str, phase: str, task: str, base: dict, check, fresh_bound, semantic: bool):
+    from ..brownfield.resume import source_workspace
+    from ..common import sha256_bytes, sha256_file, state_dir
+
     try:
         parent = source_workspace(source)
         candidate = _ckpt(parent, phase, task)
@@ -155,14 +182,20 @@ def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict |
             return None
         raw = candidate.read_bytes()
         old = json.loads(raw)
-        if (old.get("task") != task or old.get("status") != "VALID" or old.get("base_hash") != base["input_hash"]
+        same = (old.get("semantic_key") == S.semantic_key(base) if semantic
+                else old.get("base_hash") == base["input_hash"])
+        if (old.get("task") != task or old.get("status") != "VALID" or not same
                 or S.validate(old.get("doc"), base["output_schema"]) or check(old["doc"])):
             return None
     except (OSError, ValueError, KeyError, TypeError):
         return None  # Unusable old evidence is not authority to skip the current task.
-    return {**old, "inherited_from": {"source_work_order": source,
-                                      "record_path": str(candidate.relative_to(parent)),
-                                      "record_sha256": sha256_bytes(raw), "validated_at": utc_now()}}
+    out = {**old, "inherited_from": {"source_work_order": source,
+                                     "record_path": str(candidate.relative_to(parent)),
+                                     "record_sha256": sha256_bytes(raw), "validated_at": utc_now(),
+                                     **({"match": "semantic_key"} if semantic else {})}}
+    if semantic:  # this run's own packet identity from here on (the record is reused by run_task like its own)
+        out["base_hash"] = base["input_hash"]
+    return out
 
 
 def _rework_mark(budget: dict, findings: list[str] | None) -> dict | None:
@@ -349,7 +382,8 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             limit += 1
         p = build(errs[:REPAIR_FINDINGS_MAX], r["doc"]) if r["doc"] is not None and not r["errors"] else p
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
-           "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False}
+           "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False,
+           "semantic_key": S.semantic_key(base)}  # feature 021 T009: a later attempt of the series may inherit it
     if mark and rec["status"] == "VALID":
         rec["rework"] = mark
     earlier = ((prev or {}).get("history") or []) + ((prev or {}).get("attempts") or []) if findings else []
