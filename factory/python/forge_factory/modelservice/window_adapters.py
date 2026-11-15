@@ -18,6 +18,7 @@ The model tier is started with `recipe apply` (refused outside a window) and sto
 """
 from __future__ import annotations
 
+import calendar
 import contextlib
 import json
 import os
@@ -33,6 +34,9 @@ LRTX, QUAL = F / "lrtx", F / "qualification"
 DEPLOYER = Path("/mnt/data/forge-c/owner-autodeploy/deployer")
 INTENT = Path("/home/omniverse2/.config/forge-c/line-local/operations-intent.json")
 ACTIVE = ("RUNNING", "ADMITTED", "VALIDATING", "WAITING_RECOVERY", "QUEUED")
+# CAPA-266: a WAITING_RECOVERY order with no lifecycle event for this long is stalled (its recovery can not move: L51D,
+# CAPA-265), not an active lane; the other idle checks still hold and the window stops the lane model.
+STALLED_RECOVERY_S = 1800
 QUIET_AND_STOP_S = 9 * 3600  # the deployer waits up to 8 h for a quiet line, then stops and proves the stop
 
 HOLD = """import json,os,sys
@@ -124,11 +128,33 @@ class OwnerLane:
     def release_hold(self) -> None:
         self._set("0", "feature 017 qualification window ended: lane restored")
 
+    clock = staticmethod(time.time)
+
+    def _stalled_recoveries(self, c: sqlite3.Connection) -> int:
+        """CAPA-266: WAITING_RECOVERY orders whose newest lifecycle event is older than STALLED_RECOVERY_S (none
+        without that evidence: an order with no recorded event, or no lifecycle table, stays active)."""
+        try:
+            rows = c.execute("SELECT o.order_id, max(e.occurred_utc) FROM afo_work_orders o JOIN afo_lifecycle_events e "
+                             "ON e.order_id = o.order_id WHERE o.state = 'WAITING_RECOVERY' GROUP BY o.order_id").fetchall()
+        except sqlite3.OperationalError:
+            return 0
+        now, n = self.clock(), 0
+        for _, last in rows:
+            try:
+                t = calendar.timegm(time.strptime(str(last)[:19], "%Y-%m-%dT%H:%M:%S"))  # occurred_utc is UTC
+            except ValueError:
+                continue
+            n += now - t >= STALLED_RECOVERY_S
+        return n
+
     def idle(self) -> tuple[bool, str]:
         with contextlib.closing(self._db()) as c:
             marks = ",".join("?" * len(ACTIVE))  # fixed placeholders; the values are bound
             busy = c.execute(f"SELECT state,count(*) FROM afo_work_orders WHERE state IN ({marks}) GROUP BY state",  # noqa: S608
                              ACTIVE).fetchall()
+            stalled = self._stalled_recoveries(c) if any(s == "WAITING_RECOVERY" for s, _ in busy) else 0
+            busy = [(s, n - stalled if s == "WAITING_RECOVERY" else n) for s, n in busy]
+            busy = [(s, n) for s, n in busy if n > 0]
             if busy:
                 return False, "ORDERS_ACTIVE:" + ",".join(f"{s}={n}" for s, n in busy)
             held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
