@@ -81,8 +81,11 @@ def test_defect_mode_runs_once_per_capa_on_a_gated_base(tmp_path, owner, factory
         env[key] = old
     p = plan()
     assert p["capa"]["capa_id"] == "CAPA-904" and p["base"] == live and p["ws"].endswith(WO + "/workspace")
+    # CAPA-267: two maintainer attempts per CAPA (an unknown record counts as one), then exhausted
     (dep / "maintenance-attempts.json").write_text(json.dumps({"defect:CAPA-904": {}}))
-    assert plan() == {"skip": "ALREADY_ATTEMPTED_FOR_THIS_CAPA"}
+    assert plan()["attempt_key"] == "defect:CAPA-904#2"
+    (dep / "maintenance-attempts.json").write_text(json.dumps({"defect:CAPA-904": {}, "defect:CAPA-904#2": {}}))
+    assert plan() == {"skip": "ATTEMPTS_EXHAUSTED_FOR_THIS_CAPA"}
 
 
 def test_defect_mode_waits_for_an_idle_lane_and_records_nothing_before(tmp_path, owner, factory, monkeypatch):  # noqa: F811

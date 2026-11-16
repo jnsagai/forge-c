@@ -36,7 +36,8 @@ INTENT = Path("/home/omniverse2/.config/forge-c/line-local/operations-intent.jso
 ACTIVE = ("RUNNING", "ADMITTED", "VALIDATING", "WAITING_RECOVERY", "QUEUED")
 # CAPA-266: a WAITING_RECOVERY order with no lifecycle event for this long is stalled (its recovery can not move: L51D,
 # CAPA-265), not an active lane; the other idle checks still hold and the window stops the lane model.
-STALLED_RECOVERY_S = 1800
+STALLED_RECOVERY_S = 8100  # 2 h 15 min: after the host stalled-recovery rule (2 h) has closed the order, so the window
+# never drains the lane against the reviewed stop tool, which refuses any WAITING_RECOVERY order (owner 2026-11-16)
 QUIET_AND_STOP_S = 9 * 3600  # the deployer waits up to 8 h for a quiet line, then stops and proves the stop
 
 HOLD = """import json,os,sys

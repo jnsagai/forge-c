@@ -22,6 +22,7 @@ What it does, for one CRE CAPA:
 stopped). The drill (`spec["drill"]`) keeps every record in its own state directory, so no importer ever sees it."""
 from __future__ import annotations
 
+import calendar
 import json
 import os
 import re
@@ -455,8 +456,12 @@ def defect_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot
         return {"skip": "NO_UNFIXED_DEFECT_CAPA"}
     attempts_p = deployer / "maintenance-attempts.json"
     attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
-    if f"defect:{capa['capa_id']}" in attempts:
-        return {"skip": "ALREADY_ATTEMPTED_FOR_THIS_CAPA"}  # one window per CAPA; the line's bounded wait then retries
+    tried = defect_attempts(attempts, capa["capa_id"])
+    if tried["running"]:
+        return {"skip": "ATTEMPT_IN_PROGRESS"}
+    if tried["ran"] >= MAX_DEFECT_ATTEMPTS:
+        return {"skip": "ATTEMPTS_EXHAUSTED_FOR_THIS_CAPA"}
+    key = f"defect:{capa['capa_id']}" + (f"#{tried['records'] + 1}" if tried["records"] else "")
     ws = Path(workorders) / capa["work_order"] / "workspace"
     if not ws.is_dir():
         return {"skip": "WORK_ORDER_WORKSPACE_MISSING"}
@@ -468,7 +473,33 @@ def defect_plan(*, deployer: Path = DEPLOYER, owner_cre: Path = OWNER_CRE, qroot
         return {"skip": "TIER_IN_USE"}
     repo = (Path(qroot) / f"owner-allowance-{live[:8]}-main-20261107/newS" if tip == live else
             Path(qroot) / f"maintenance-{tip[:8]}/src")
-    return {"capa": capa, "base": tip, "live": live, "repo": str(repo), "ws": str(ws)}
+    return {"capa": capa, "base": tip, "live": live, "repo": str(repo), "ws": str(ws), "attempt_key": key}
+
+
+# CAPA-267 (owner 2026-11-16: a second maintainer attempt per CAPA after a gate rejection; "I WANT OMNIVERSE AUTONOMOUS")
+MAX_DEFECT_ATTEMPTS = 2  # windows in which the maintainer actually ran
+ATTEMPT_RUNNING_S = 5 * 3600  # an unfinished record younger than this is a window in progress; older: a crashed one
+
+
+def defect_attempts(attempts: dict, cid: str) -> dict:
+    """The defect-mode records of one CAPA: how many exist, how many count as a maintainer attempt (the agent ran, the
+    window errored, or the record is unknown/crashed), and whether one is still running. A window refused before the
+    maintainer ran (no agent, no outcome, no error) does not count."""
+    recs = [v for k, v in attempts.items() if k == f"defect:{cid}" or k.startswith(f"defect:{cid}#")]
+    now, ran, running = time.time(), 0, False
+    for v in recs:
+        v = v if isinstance(v, dict) else {}
+        try:
+            started = calendar.timegm(time.strptime(str(v.get("started")), "%Y%m%d%H%M"))
+        except ValueError:
+            started = None
+        if not v.get("ended") and started is not None and now - started < ATTEMPT_RUNNING_S:
+            running = True
+            continue
+        r = v.get("result") or {}
+        if not v.get("ended") or "agent_exit" in r or r.get("outcome") or r.get("error"):
+            ran += 1
+    return {"records": len(recs), "ran": ran, "running": running}
 
 
 def _window(minutes: int, execute: bool) -> dict:
@@ -503,7 +534,8 @@ def defect(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 1
     cid = plan["capa"]["capa_id"]
     attempts_p = deployer / "maintenance-attempts.json"
     attempts = json.loads(attempts_p.read_text()) if attempts_p.is_file() else {}
-    attempts[f"defect:{cid}"] = {"capa_id": cid, "base": plan["base"], "work_order": plan["capa"]["work_order"], "started": stamp}
+    key = plan.get("attempt_key") or f"defect:{cid}"
+    attempts[key] = {"capa_id": cid, "base": plan["base"], "work_order": plan["capa"]["work_order"], "started": stamp}
     attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True))
     D = STATE / "maintenance" / f"defect-{stamp}"
     D.mkdir(parents=True, exist_ok=True)
@@ -525,7 +557,7 @@ def defect(*, execute: bool = False, deployer: Path = DEPLOYER, minutes: int = 1
         r = subprocess.run([sys.executable if Path(sys.executable).exists() else "python3", str(deployer / "autodeploy.py"),
                             "import"], capture_output=True, text=True, timeout=1800)
         result["import"] = (r.stdout + r.stderr).strip()[-600:]
-    attempts[f"defect:{cid}"].update(ended=time.strftime("%Y%m%d%H%M", time.gmtime()), result=result)
+    attempts[key].update(ended=time.strftime("%Y%m%d%H%M", time.gmtime()), result=result)
     attempts_p.write_text(json.dumps(attempts, indent=1, sort_keys=True, default=str))
     (D / "result.json").write_text(json.dumps(result, indent=1, default=str))
     return result
