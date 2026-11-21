@@ -310,6 +310,14 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         clock_known(a, b) and probes_known(b)
         for a, b in zip([head, *samples], samples, strict=False)
     )
+    intent_unchanged = None
+    if collection is not None:
+        intent = collection["campaign_intent"]
+        if len(intent["observations"]) > 1:
+            intent_unchanged = False
+        elif (duration_ok and telemetry_ok and intent["observed_samples"] >= 2 and intent["unknown_samples"] == 0
+              and intent["boundary"] is not None and intent["boundary"]["intent"] == intent["observations"][0]["intent"]):
+            intent_unchanged = True
     pass_all = (
         duration_ok
         and manifest_bound
@@ -336,7 +344,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "unverified_work_records": len(work) - accounted_work,
         "post_campaign_continuity": later,
         "rolling_30_day_slo": "NOT_DEMONSTRATED",
-        "service_intent_unchanged": None,  # requires the independent intent timeline; never assume it from a report call
+        "service_intent_unchanged": intent_unchanged,
         "native_model_capability": "SEPARATE_QUALIFICATION",
         "collection": collection,
     }

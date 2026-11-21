@@ -78,6 +78,13 @@ receipts. Save that array as `SEGMENT_REFS` for `verify-segments`.
 segment when a host plan was configured. It records failed capture attempts
 even when later samples recover the missing bytes.
 
+The report also includes `collection.campaign_intent`, with the source
+references for observed changes in desired mode or epoch and a count of
+missing observations. `service_intent_unchanged` is false when an in-window
+change was observed. A true result requires complete sampled telemetry and
+corroboration at the end of the window. The host audit is still required to
+establish what caused a change or to account for external interventions.
+
 Replay validates artifact hashes/plan bindings, sequence/parent references, exact
 adjacent byte ranges, rolling anchors and retained source contents. It rejects
 missing/reordered/duplicated ranges, changed/truncated/deleted history and altered

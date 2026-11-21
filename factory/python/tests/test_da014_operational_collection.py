@@ -11,7 +11,7 @@ from forge_factory.afo import operational_campaign as R
 from forge_factory.afo import operational_collection as C
 from forge_factory.afo import qualification as Q
 from forge_factory.afo import soak
-from forge_factory.afo.durable import Refused, immutable_json
+from forge_factory.afo.durable import Refused, digest, immutable_json
 from test_da014_fault_observer import setup  # noqa: F401
 from test_da014_qualification import identity
 
@@ -100,6 +100,57 @@ def test_capture_resume_and_report_replay(collector):
     report = R.report(p.manifest, p.soak_id, observer_plan_ref=p.ref)
     assert report["status"] == "INCOMPLETE" and report["collection"]["samples"] == 2
     assert report["missing_faults"] and report["real_work_exposures"] == 0
+
+
+def test_replayed_campaign_intent_retains_changes_and_explicit_gaps(collector, monkeypatch):
+    p = collector
+    p.collector(p.soak_id)
+    partial = R.report(p.manifest, p.soak_id, observer_plan_ref=p.ref)
+    assert partial["service_intent_unchanged"] is None
+    assert partial["collection"]["campaign_intent"]["observed_samples"] == 1
+
+    intent_path = Path(p.raw["intent"])
+    intent_path.chmod(0o600)
+    intent_path.write_text(json.dumps({"mode": "STOPPED", "epoch": 4}))
+    p.collector(p.soak_id)
+    monkeypatch.setattr(C.O, "capture", lambda *a: (_ for _ in ()).throw(Refused("INTENT_OBSERVATION_LOST")))
+    p.collector(p.soak_id)
+
+    report = R.report(p.manifest, p.soak_id, observer_plan_ref=p.ref)
+    intent = report["collection"]["campaign_intent"]
+    assert report["service_intent_unchanged"] is False
+    assert report["collection"]["unexpected_interventions"] is None
+    assert intent["observed_samples"] == 2 and intent["unknown_samples"] == 1
+    assert [row["intent"] for row in intent["observations"]] == [
+        {"mode": "RUNNING", "epoch": 3}, {"mode": "STOPPED", "epoch": 4},
+    ]
+    assert [row["observation_ref"] for row in intent["observations"]] == report["collection"]["observation_refs"][:2]
+
+
+@pytest.mark.parametrize(("boundary_epoch", "expected"), [(3, True), (4, None), (None, None)])
+def test_campaign_unchanged_verdict_requires_corroboration_at_end(collector, monkeypatch, boundary_epoch, expected):
+    p = collector
+    head = p.collector.history()[0]
+    samples = [
+        {"kind": "sample", "wall": head["wall"] + elapsed, "mono": head["mono"] + elapsed, "boot_id": head["boot_id"],
+         "probes": dict.fromkeys(("conductor", "fabro", "gateway", "data_volume"), True)}
+        for elapsed in range(0, 24 * 3600 + 1, 60)
+    ]
+    rows = [head, *samples]
+    p.collector.log.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    intent = {"mode": "RUNNING", "epoch": 3}
+    collection_result = {
+        "history_sha256": digest(rows),
+        "campaign_intent": {
+            "observed_samples": len(samples) - 1, "unknown_samples": 0, "observations": [{"intent": intent}],
+            "boundary": {"intent": {**intent, "epoch": boundary_epoch} if boundary_epoch is not None else None},
+        },
+    }
+    # Exercise the report combiner after replay. The preceding test covers real capture and replay.
+    monkeypatch.setattr(C.Collector, "verify", lambda _: collection_result)
+    report = R.report(p.manifest, p.soak_id, observer_plan_ref=p.ref)
+    assert report["telemetry_complete"] is True
+    assert report["service_intent_unchanged"] is expected
 
 
 def test_crash_after_receipt_before_append_reuses_capture(collector, monkeypatch):
