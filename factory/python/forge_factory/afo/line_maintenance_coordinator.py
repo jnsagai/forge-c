@@ -81,6 +81,7 @@ def _authorized(store, job, eff):
     mission = MissionLedger(store).snapshot(job['mission_id'])
     if job.get('line_role_authority_ref'):
         from .line_recovery_control import configuration
+        from .mission_lifetime import control_limits
 
         control = configuration(job['line_role_authority_ref'], eff, request=L.request_for(order))
         with store.tx() as c:
@@ -92,7 +93,7 @@ def _authorized(store, job, eff):
                 or registered.get('lineage') != control['mission']['lineage']
                 # The snapshot replays validated amendments. The raw registration
                 # continues to bind the original authority and lineage below.
-                or mission.get('limits') != control['mission']['limits']
+                or control_limits(mission) != control['mission']['limits']
                 or registered.get('authorization_ref') != development.mission_authority(control)):
             raise Refused('LINE_MAINTENANCE_CONTROL_MISSION_OR_INTENT_CHANGED')
     if time.time() >= _review_deadline(store, job, mission=mission):

@@ -382,14 +382,28 @@ def test_agent_context_cannot_issue_record(supervised, monkeypatch):
         )
 
 
-@pytest.fixture
-def native_job(supervised, tmp_path, monkeypatch):
+@pytest.fixture(params=[False, True], ids=["finite", "standing"])
+def native_job(supervised, tmp_path, monkeypatch, request):
     from forge_factory import workorder
     from forge_factory.afo import line_product_context, product_job
     from forge_factory.afo.execution_lifecycle import Executions
     from forge_factory.lrtx.profile import load
     from test_afo_m2_queue import _env
 
+    if request.param:
+        from forge_factory.afo import mission_lifetime as lifetime
+
+        monkeypatch.delenv(D.FILE)
+        monkeypatch.delenv(D.SHA)
+        lifetime.enable(supervised["store"], directive=lifetime.DIRECTIVE,
+                        snapshot_sha256=digest(MissionLedger(supervised["store"]).snapshot(D.MISSION)))
+        D.close_guardian(supervised["ref"])
+        ref = D.create(supervised["store"], control_ref=supervised["control_ref"],
+                       runtime_policy=supervised["runtime"], line_policy=supervised["line"], directive=D.DIRECTIVE)
+        monkeypatch.setenv(D.FILE, ref["path"])
+        monkeypatch.setenv(D.SHA, ref["sha256"])
+        request.addfinalizer(lambda: D.close_guardian(ref))
+        supervised = {**supervised, "ref": ref, "ticket": None}
     store = supervised["store"]
     control = supervised["control"]
     eff = policy.load(supervised["runtime"])
@@ -409,7 +423,10 @@ def native_job(supervised, tmp_path, monkeypatch):
         authorization_id="OWNER_SUPERVISED_DEVELOPMENT",
         max_concurrent=1,
     )
-    MissionLedger(store).link(D.MISSION, oid)
+    from forge_factory.afo.line_recovery_product import link_mission
+
+    # Exercise the real line admission boundary, not only the lower-level job ledger.
+    link_mission(store, store.order(oid), control, {})
     attempt = store.attempts(oid)[-1]
     assert attempt["attempt_id"] == aid
     attempt["record"]["workspace_ref"] = "workorder:" + D.ORDERS[0]
@@ -454,6 +471,19 @@ def native_job(supervised, tmp_path, monkeypatch):
             temperature=None,
         ),
     )
+
+
+def test_line_mission_link_rejects_changed_caps_without_reserving_more_work(native_job):
+    from forge_factory.afo.line_recovery_product import link_mission
+
+    p = native_job
+    before = MissionLedger(p["store"]).snapshot(D.MISSION)
+    for key in D.CAPS:
+        changed = copy.deepcopy(p["control"])
+        changed["mission"]["limits"][key] += 1
+        with pytest.raises(Refused, match="LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH"):
+            link_mission(p["store"], p["store"].order(p["job"]["order_id"]), changed, {})
+    assert MissionLedger(p["store"]).snapshot(D.MISSION) == before
 
 
 def test_existing_role_request_ledger_and_nonce_integration(native_job):

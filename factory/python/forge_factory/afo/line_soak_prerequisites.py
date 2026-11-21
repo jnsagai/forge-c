@@ -183,14 +183,17 @@ def bound_mission(store, control, *, code="LINE_SOAK_PENDING_MISSION_CHANGED"):
     Current control cryptography is still checked by configuration() at callers.
     """
     from .mission_ledger import MissionLedger
+    from .mission_lifetime import control_limits
+    from .owner_supervised_development import mission_authority
 
     expected = control["mission"]
     with store.tx() as c:
         current = MissionLedger._snapshot(c, expected["mission_id"])
         base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?",
                                     (expected["mission_id"],)).fetchone()[0])
-        if (base["authorization_ref"] != control["authorization_ref"]
-                or any(current[k] != expected[k] for k in ("mission_id", "lineage", "limits"))):
+        if (base["authorization_ref"] != mission_authority(control)
+                or any(current[k] != expected[k] for k in ("mission_id", "lineage"))
+                or control_limits(current) != expected["limits"]):
             raise Refused(code)
     return current
 

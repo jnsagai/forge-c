@@ -17,6 +17,7 @@ from . import line_recovery_control as C
 from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
+from .mission_lifetime import control_limits
 
 SCHEMA = "forge-c/line-product-launch/1"
 
@@ -99,7 +100,8 @@ def link_mission(store, row, control, spec):
             snapshot = MissionLedger._snapshot(c, control["mission"]["mission_id"])
             if base["authorization_ref"] != development.mission_authority(control):
                 raise Refused("LINE_PRODUCT_MISSION_AUTHORITY_CHANGED")
-            if any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage", "limits")):
+            if (any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage"))
+                    or control_limits(snapshot) != control["mission"]["limits"]):
                 raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
     if not base_row:
         if existing:
@@ -115,7 +117,8 @@ def link_mission(store, row, control, spec):
         ledger.link(control["mission"]["mission_id"], row["order_id"], continuation_of=parent["order_id"] if parent else None)
     # Effective amendments are checked; initial registration cannot refill a ledger.
     snapshot = ledger.snapshot(control["mission"]["mission_id"])
-    if any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage", "limits")):
+    if (any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage"))
+            or control_limits(snapshot) != control["mission"]["limits"]):
         raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
     return snapshot
 
