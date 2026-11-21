@@ -275,20 +275,49 @@ def test_chronological_comparison_includes_learning_cost_and_holdout(memory):
         "configuration_sha256": "abc",
     }
 
-    def row(cost):
+    def row(cost, condition):
         return {
             "case_id": "B",
             "configuration_sha256": "abc",
             "manifest_sha256": digest(manifest),
             "independent_pass": True,
             "costs": dict.fromkeys(comparison.COSTS, cost),
+            "measurement": {"condition": condition, "native_run_id": f"test-native-{condition}", "started_at": 3,
+                            "false_ready": False, "critical_defect_missed": False,
+                            "lesson_exposure_ids": ["fixture-validated-lesson-use"] if condition == "memory" else []},
         }
 
-    baseline, learned = row(10), row(8)
+    baseline, learned = row(10, "baseline"), row(8, "memory")
     learned["costs"]["curation_tokens"] = 100
     assert not comparison.compare(manifest, [baseline], [learned])["benefit_demonstrated"]
     learned["costs"]["curation_tokens"] = 0
     assert comparison.compare(manifest, [baseline], [learned])["benefit_demonstrated"]
+    prior = copy.deepcopy(learned)
+    prior.pop("measurement")
+    assert comparison.compare(manifest, [baseline], [prior])["status"] == "INSUFFICIENT_EVIDENCE"
+    for field in comparison.QUALITY:
+        unsafe = copy.deepcopy(learned)
+        unsafe["measurement"][field] = True
+        result = comparison.compare(manifest, [baseline], [unsafe])
+        assert result["status"] == "QUALITY_REGRESSION" and result["quality_findings"][field]["memory"] == ["B"]
+        assert not result["benefit_demonstrated"]
+
+    reused = copy.deepcopy(learned)
+    reused["measurement"]["native_run_id"] = baseline["measurement"]["native_run_id"]
+    with pytest.raises(Refused, match="LEARNING_NATIVE_RUN_REUSED"):
+        comparison.compare(manifest, [baseline], [reused])
+    early = copy.deepcopy(learned)
+    early["measurement"]["started_at"] = 1.5
+    with pytest.raises(Refused, match="LEARNING_CHRONOLOGY_INVALID"):
+        comparison.compare(manifest, [baseline], [early])
+    contaminated = copy.deepcopy(baseline)
+    contaminated["measurement"]["lesson_exposure_ids"] = ["fixture-other-use"]
+    with pytest.raises(Refused, match="LEARNING_BASELINE_EXPOSED"):
+        comparison.compare(manifest, [contaminated], [learned])
+    assert comparison.compare(
+        manifest, [{**baseline, "independent_pass": False}], [{**learned, "independent_pass": False}]
+    )["status"] == "NO_MEASURED_BENEFIT"
+
     bad = copy.deepcopy(manifest)
     bad["learning_ids"] = ["B"]
     with pytest.raises(Refused):
