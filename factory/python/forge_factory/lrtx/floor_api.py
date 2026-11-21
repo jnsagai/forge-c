@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import glob
 import json
+import math
 import os
 import time
 from pathlib import Path
@@ -157,21 +158,31 @@ def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | No
                 lines = f.read().decode(errors="replace").splitlines()
         except OSError:
             continue
+        cloud = name.startswith("cloud-bridge")
         for line in lines:
             try:
-                r = json.loads(line)
-            except ValueError:
+                record = json.loads(line)
+                if not isinstance(record, dict):
+                    continue
+                usage = record.get("usage") if cloud else record
+                model = record.get("model")
+                if not isinstance(usage, dict) or not isinstance(model, str) or not model:
+                    continue
+                latency = record.get("wall_ms" if cloud else "latency_ms")
+                tokens = usage.get("completion_tokens" if cloud else "tokens_output")
+                if (type(latency) not in (int, float) or not math.isfinite(latency) or latency <= 0
+                        or type(tokens) not in (int, float) or not math.isfinite(tokens) or tokens < 0):
+                    continue
+                at = _ts(record.get("ts" if cloud else "ts_utc"))
+            except (ValueError, OverflowError, OSError):
                 continue
-            cloud = name.startswith("cloud-bridge")
-            latency = r.get("wall_ms") if cloud else r.get("latency_ms")
-            tokens = (r.get("usage") or {}).get("completion_tokens") if cloud else r.get("tokens_output")
-            at = _ts(r.get("ts") if cloud else r.get("ts_utc")) or 0
-            # Bridge timestamps mark request start; the measurement is available when the call finishes.
-            if cloud and isinstance(latency, (int, float)):
+            if at is None:
+                continue
+            # Bridge timestamps mark request start. The measurement arrives after the call.
+            if cloud:
                 at += latency / 1000
-            if (r.get("model") and isinstance(latency, (int, float)) and latency > 0
-                    and isinstance(tokens, (int, float)) and tokens >= 0 and 0 <= now - at <= window_s):
-                rows.append({"model": r["model"], "latency_ms": latency, "tokens_output": tokens, "at": at})
+            if 0 <= now - at <= window_s:
+                rows.append({"model": model, "latency_ms": latency, "tokens_output": tokens, "at": at})
         if rows:  # avoid counting the same call in both gateway and bridge meters
             basis = "cloud bridge output tokens / wall time" if name.startswith("cloud-bridge") else basis
             break
@@ -181,7 +192,11 @@ def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | No
     model = rows[-1]["model"]
     mine = [r for r in rows if r["model"] == model][-calls:]
     lat = sum(float(r["latency_ms"]) for r in mine) / 1000
-    return {"model": model, "tok_s": round(sum(int(r["tokens_output"]) for r in mine) / lat) if lat else None,
+    try:
+        rate = sum(int(r["tokens_output"]) for r in mine) / lat if 0 < lat < math.inf else None
+    except OverflowError:
+        rate = None
+    return {"model": model, "tok_s": round(rate) if rate is not None and math.isfinite(rate) else None,
             "calls": len(mine), "basis": basis, "age_s": round(now - mine[-1]["at"])}
 
 

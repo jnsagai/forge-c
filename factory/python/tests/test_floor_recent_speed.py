@@ -26,3 +26,35 @@ def test_recent_speed_is_the_latest_model_from_gateway_calls(tmp_path, monkeypat
 def test_no_gateway_meter_no_speed(tmp_path, monkeypatch):
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
     assert F.recent_speed(time.time()) is None
+
+
+def test_damaged_measurements_do_not_hide_valid_gateway_throughput(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    (tmp_path / "llm-gateway").mkdir()
+    rows = [
+        _row("valid", 1000, 40000, 30),
+        [],
+        None,
+        _row("infinite-tokens", float("inf"), 30, 2),
+        _row("overflow", 10**400, 30, 2),
+        _row("boolean-latency", 2000, True, 1),
+        _row({"model": "shaped-wrong"}, 2000, 1000, 1),
+        {**_row("missing-time", 2000, 1000, 1), "ts_utc": None},
+    ]
+    path = tmp_path / "llm-gateway/usage.jsonl"
+    path.write_text("".join(json.dumps(row) + "\n" for row in rows) + '{"partial":')
+    rate = F.recent_speed(time.time())
+    assert (rate["model"], rate["tok_s"], rate["calls"]) == ("valid", 25, 1)
+
+
+def test_bad_cloud_usage_shape_does_not_hide_valid_throughput(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    (tmp_path / "cloud-bridge").mkdir()
+    at = _row("ignored", 0, 1, 60)["ts_utc"]
+    rows = [
+        {"model": "cloud-valid", "wall_ms": 30000, "usage": {"completion_tokens": 1200}, "ts": at},
+        {"model": "bad-shape", "wall_ms": 30000, "usage": ["invalid"], "ts": at},
+    ]
+    (tmp_path / "cloud-bridge/calls.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+    rate = F.recent_speed(time.time())
+    assert (rate["model"], rate["tok_s"], rate["calls"]) == ("cloud-valid", 40, 1)
