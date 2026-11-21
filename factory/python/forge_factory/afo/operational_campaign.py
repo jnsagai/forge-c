@@ -21,6 +21,7 @@ from . import qualification, soak
 from .durable import Refused, digest, immutable_json
 
 SIGNALS = {"clean-exit": "TERM", "crash": "KILL", "hang": "STOP"}
+POST_CAMPAIGN_FAULTS = {"post-campaign-continuity", "later-authorized-intake"}
 
 
 def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_plan_ref=None):
@@ -270,11 +271,18 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     # recovery. New observer verdicts are recomputed from their original sources.
     from .fault_observer import verify as verify_observation
 
-    verified = set()
+    verified = {}
+    out_of_window = set()
     for row in [*faults, *continuity]:
         if row.get("schema") == "forge-c/independent-operational-fault/1":
             verify_observation(manifest, row)
-            verified.add(digest(row))
+            identity = digest(row)
+            receipt = observer.bound_json(row["injection_ref"])
+            if fault_in_window(manifest, row, receipt["at"], head["wall"], expected_end, samples[-1]["wall"]):
+                verified[identity] = row
+            else:
+                out_of_window.add(row["fault"])
+    fault_records = [*faults, *(r for r in continuity if r.get("fault") in POST_CAMPAIGN_FAULTS)]
     work = read(work_refs)
     verified_work = []
     for row in work:
@@ -290,10 +298,10 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         and operational_work.work_in_window(r, expected_end, samples[-1]["wall"])
         and r["native_terminal_observed_at"] > expected_end
     ]
-    missing = sorted(set(manifest["faults"]) - {r["fault"] for r in faults})
+    missing = sorted(set(manifest["faults"]) - {r["fault"] for r in fault_records})
     failed = [
         r["fault"]
-        for r in faults
+        for r in fault_records
         if digest(r) not in verified
         or r.get("independently_restored") is not True
         or type(r.get("restoration_seconds")) not in (int, float)
@@ -301,9 +309,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         or r.get("unexpected_interventions") != 0
     ]
     duration_ok = samples[-1]["wall"] >= expected_end
-    later = continuity_verdict(
-        manifest, [r for r in [*faults, *continuity] if digest(r) in verified], post_campaign_work, expected_end
-    )
+    later = continuity_verdict(manifest, verified.values(), post_campaign_work, expected_end)
     accounted_work = len(campaign_work) + len(post_campaign_work)
     work_ok = bool(campaign_work) and accounted_work == len(work)
     telemetry_ok = all(
@@ -324,10 +330,12 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         and telemetry_ok
         and not missing
         and not failed
+        and not out_of_window
         and later
         and work_ok
         and all(
-            r.get("ledger_reset") is False and r.get("duplicate_effects") == 0 and r.get("false_ready") is False for r in faults
+            r.get("ledger_reset") is False and r.get("duplicate_effects") == 0 and r.get("false_ready") is False
+            for r in fault_records
         )
     )
     return {
@@ -339,6 +347,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "gross_24_7_window": gross,
         "missing_faults": missing,
         "failed_faults": failed,
+        "out_of_window_faults": sorted(out_of_window),
         "real_work_exposures": len(campaign_work),
         "post_campaign_work_exposures": len(post_campaign_work),
         "unverified_work_records": len(work) - accounted_work,
@@ -348,6 +357,17 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "native_model_capability": "SEPARATE_QUALIFICATION",
         "collection": collection,
     }
+
+
+def fault_in_window(manifest, record, at, start, expected_end, last_observed):
+    """Check the operation and its measured recovery against the observed stage."""
+    duration = record["restoration_seconds"]
+    restored = at if duration is None else at + duration
+    if record["fault"] in POST_CAMPAIGN_FAULTS:
+        if record["fault"] == "post-campaign-continuity":
+            restored = at + manifest["bounds"]["post_campaign_seconds"]
+        return expected_end <= at <= restored <= last_observed
+    return start <= at < expected_end and at <= restored <= min(expected_end, last_observed)
 
 
 def continuity_verdict(manifest, records, work, expected_end):

@@ -8,6 +8,7 @@ from forge_factory.afo import operational_campaign as R
 from forge_factory.afo import operational_work as W
 from forge_factory.afo import soak
 from forge_factory.afo.durable import Refused, digest
+from test_da014_fault_observer import fixture_evaluation
 from test_da014_operational_work import audited, put, setup, work  # noqa: F401
 
 
@@ -140,6 +141,44 @@ def test_missing_or_contradictory_telemetry_is_not_complete(work, change):  # no
     if change in ("clock-jump", "negative-monotonic", "missing-probe", "truthy-probe"):
         assert result["gross_24_7_window"]["available_seconds"] == 0
         assert any(r["control_plane"] == "UNKNOWN" for r in result["gross_24_7_window"]["intervals"])
+
+
+@pytest.mark.parametrize("when", ["in-window", "before-start", "after-last-sample"])
+def test_replayed_fault_is_bound_to_the_observed_campaign_window(work, when):  # noqa: F811
+    p = work
+    path, rows = timeline(p)
+    if when == "before-start":
+        rows = [{**r, "wall": r["wall"] + 30, "mono": r["mono"] + 30} for r in rows]
+    elif when == "after-last-sample":
+        rows[-1].update(wall=115, mono=115)
+    write_rows(path, rows)
+    receipt, captures = fixture_evaluation(p)
+    from forge_factory.afo import fault_observer
+
+    fault = fault_observer.evaluate(p.manifest, p.ref, receipt, captures, None)
+    assert fault["independently_restored"] is True
+    ref = put(p.tmp / "observed-crash.json", fault)
+    report = R.report(p.manifest, "soak-operational-report", fault_refs=[ref])
+    assert report["out_of_window_faults"] == ([] if when == "in-window" else ["crash"])
+    assert "crash" in report["failed_faults"]  # Native recovery still requires an independent host audit.
+
+
+@pytest.mark.parametrize(
+    ("case", "at", "recovery", "result"),
+    [
+        ("crash", 95, 9, False),
+        ("crash", 95, 4, True),
+        ("crash", 100, 0, False),
+        ("later-authorized-intake", 99, 1, False),
+        ("later-authorized-intake", 100, 10, True),
+        ("later-authorized-intake", 1399, 2, False),
+        ("post-campaign-continuity", 100, 0, True),
+        ("post-campaign-continuity", 300, 0, False),
+    ],
+)
+def test_fault_windows_distinguish_campaign_and_continuation(case, at, recovery, result):
+    record = {"fault": case, "restoration_seconds": recovery}
+    assert R.fault_in_window({"bounds": {"post_campaign_seconds": 1200}}, record, at, 80, 100, 1400) is result
 
 
 def test_a_soak_without_its_frozen_manifest_cannot_be_bound(work):  # noqa: F811
