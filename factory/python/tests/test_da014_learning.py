@@ -18,11 +18,12 @@ def memory(tmp_path, monkeypatch):
     return LessonStore()
 
 
-def candidate(store, tmp_path, *, outcome="PASS", version=1, source_version="v1", constraints=""):
+def candidate(store, tmp_path, *, outcome="PASS", version=1, source_version="v1", constraints="", phase="SWE.3",
+              lesson_fields=None):
     eid = experience.capture(
         store,
         "native-job-A",
-        "SWE.3",
+        phase,
         outcome,
         facts={"closed_obligations": ["OB-1"]},
         source_refs=["independent-gate:receipt-A"],
@@ -41,6 +42,7 @@ def candidate(store, tmp_path, *, outcome="PASS", version=1, source_version="v1"
         "evidence_refs": ["independent-gate:receipt-A"],
         "tool_versions": {"gcc": "14"},
         "validation_tests": [{"id": "applicable-and-adverse", "status": "PASS", "evidence_ref": "fixture:oracle"}],
+        **(lesson_fields or {}),
     }
     with store._conn() as db:
         sourcehash = db.execute("SELECT source_hash FROM job_experience WHERE experience_id=?", (eid,)).fetchone()[0]

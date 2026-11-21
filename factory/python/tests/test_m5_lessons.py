@@ -81,6 +81,16 @@ def test_t032_second_workflow_gets_only_validated_bounded_with_provenance(env):
     assert len(env["ls"].find("gateway", run_id="r", k=99)["lessons"]) <= 3
 
 
+def test_functional_source_cannot_receive_a_validated_but_unscoped_legacy_lesson(env):
+    store = env["ls"]
+    legacy = store.validate(store.propose(lesson(env["inc"]), phase="SWE.1")["lesson_id"])
+    args = {"query": "gateway runtime config", "run_id": "fixture", "phase": "SWE.1", "role": "swe1-author",
+            "source_version": "functional-fingerprint", "record_usage": False}
+    assert legacy["state"] == "VALIDATED"
+    assert [item["lesson_id"] for item in store.find(**args)["lessons"]] == [legacy["lesson_id"]]
+    assert store.find(**args, require_exact_source=True)["lessons"] == []
+
+
 def test_t033_retraction_and_tool_regression_invalidation(env):
     a = env["ls"].validate(env["ls"].propose(lesson(env["inc"]))["lesson_id"])
     env["ls"].find("gateway port", run_id="RUN-A")

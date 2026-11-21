@@ -288,8 +288,7 @@ def rework_packet(ws: Path, ref: dict, model: str, sources: list[dict], fixes: l
                         artifacts=_iq_artifacts(ref),
                         criteria=["only this requirement, same key", "every finding resolved", "EARS, one 'shall'",
                                   "functional level: no register-level vocabulary"],
-                        output_schema=F.rework_schema(ws), model=model, findings=findings, previous=previous,
-                        with_lessons=False)
+                        output_schema=F.rework_schema(ws), model=model, findings=findings, previous=previous)
     sysname = swe1.system_name(ws)
     req = swe1._req_schema(ws)
     obl = swe1.owner_obligations(ws)

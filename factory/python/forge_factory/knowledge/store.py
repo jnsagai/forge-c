@@ -280,6 +280,7 @@ class LessonStore:
         source_version: str | None = None,
         tool_versions: dict | None = None,
         record_usage: bool = True,
+        require_exact_source: bool = False,
     ) -> dict:
         self.expire()
         k = max(0, min(3, k))
@@ -333,6 +334,10 @@ class LessonStore:
                     self.retract(rec["lesson_id"], "source-specific qualification became stale")
                     continue
             app = rec.get("applicability")
+            # Functional SWE.1 uses a distinct source fingerprint and never takes
+            # an unscoped legacy lesson from register-level work.
+            if require_exact_source and (rec.get("contract_version") != "2.0" or not app or not source_version):
+                continue
             if app and (
                 phase not in app["phases"]
                 or role not in app["roles"]

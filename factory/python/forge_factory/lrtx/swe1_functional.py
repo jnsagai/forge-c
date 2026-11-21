@@ -680,8 +680,7 @@ def task_packet(ws: Path, task: dict, model: str, findings: list[str] | None = N
         crit.append("every function of the service group is covered or named in open_points")
     return S.packet(phase=PHASE, task=task["id"], role="swe1-author", instructions=instr,
                     sources=task_sources(ws, task, inv) + [GP.skill_reference()], artifacts=art, criteria=crit,
-                    output_schema=answer_schema(ctx["template"]), model=model, findings=findings, previous=previous,
-                    with_lessons=False)
+                    output_schema=answer_schema(ctx["template"]), model=model, findings=findings, previous=previous)
 
 
 # ---- assembly --------------------------------------------------------------------------------------------------------

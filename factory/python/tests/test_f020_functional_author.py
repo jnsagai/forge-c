@@ -65,6 +65,54 @@ def test_packets_are_bounded_and_use_the_contract_schema(ws):
     assert "inputs/hal_guideline.md" in [s["path"] for s in d["sources"]]
 
 
+def test_functional_author_and_rework_offer_only_qualified_lessons_for_their_source(ws, tmp_path):
+    from forge_factory.knowledge.context import applicability
+    from forge_factory.knowledge.store import LessonStore
+    from forge_factory.lrtx import swe1_functional as F
+    from forge_factory.lrtx import swe1_quality as Q
+    from forge_factory.lrtx.runner import _call
+    from test_da014_learning import candidate
+
+    manifest_path = ws / ".forge-run/manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    functional_scope = applicability(ws)
+    register = tmp_path / "register/.forge-run"
+    register.mkdir(parents=True)
+    (register / "manifest.json").write_text(json.dumps({k: v for k, v in manifest.items() if not k.startswith("swe1_")}))
+    register_scope = applicability(register.parent)
+    assert functional_scope["source_version"] != register_scope["source_version"]
+
+    store = LessonStore()
+    delivered = {}
+    for version, (kind, scope) in enumerate((("register", register_scope), ("functional", functional_scope)), 1):
+        lesson = candidate(store, tmp_path, phase="SWE.1", version=version, lesson_fields={
+            "symptoms": "functional-level software requirement service group",
+            "root_cause": "A requirement mixes two distinct public behaviours.",
+            "remedy": ("REGISTER_GUIDANCE_FIXTURE" if kind == "register" else
+                       "Keep the public behaviour separate from the response condition."),
+            "constraints": f"Qualified only for the {kind} fixture scope.",
+            "applicability": {"phases": ["SWE.1"], "roles": ["swe1-author"], "targets": [scope["target"]],
+                              "source_versions": [scope["source_version"]]},
+            "tool_versions": scope["tool_versions"],
+        })
+        record = store.validate(store.propose(lesson, phase="SWE.1")["lesson_id"])
+        assert record["state"] == "VALIDATED", record["_reasons"]
+        delivered[kind] = record["lesson_id"]
+
+    task = F.plan(ws)[0]
+    packet = _call(ws, F.task_packet, ws, task, MODEL)
+    ref = {"task": task["id"], "key": "q1", "obj": {"key": "q1"}, "siblings": []}
+    rewrite = _call(ws, Q.rework_packet, ws, ref, MODEL, [], ["Keep the public response separate"])
+    assert packet["lessons_offered"] == rewrite["lessons_offered"] == [delivered["functional"]]
+    assert store.exposures(manifest["work_order"], "SWE.1") == [delivered["functional"]]
+    assert "REGISTER_GUIDANCE_FIXTURE" not in repr(packet["_messages"])
+    assert "REGISTER_GUIDANCE_FIXTURE" not in repr(rewrite["_messages"])
+
+    manifest_path.write_text(json.dumps({**manifest, "evaluation_holdout": True}))
+    heldout = _call(ws, F.task_packet, ws, task, MODEL)
+    assert "lessons_offered" not in heldout
+
+
 def test_the_template_config_yields_the_contract_schema(ws):
     from forge_factory.governance import level as L
     from forge_factory.lrtx import swe1_functional as F
