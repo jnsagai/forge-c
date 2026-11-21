@@ -52,7 +52,7 @@ def validate_plan(plan):
     return digest(plan)
 
 
-def _campaign(plan, bundle, identity, *, preregistered=False):
+def _campaign(plan, bundle, identity, *, seen_native_runs, preregistered=False):
     manifest = O.bound_json(bundle["manifest_ref"])
     sha = Q.validate(manifest)
     if manifest["identity"] != identity or manifest.get("execution_host") not in ("omniverse", "omniverse2"):
@@ -91,6 +91,13 @@ def _campaign(plan, bundle, identity, *, preregistered=False):
     for row in rows:
         if row.get("manifest_sha256") != sha:
             raise Refused("COMPARISON_RESULT_UNBOUND")
+        native_id = row.get("native_run_id")
+        if native_id is not None:
+            if not isinstance(native_id, str) or not native_id:
+                raise Refused("COMPARISON_NATIVE_RUN_ID_INVALID")
+            if native_id in seen_native_runs:
+                raise Refused("COMPARISON_NATIVE_RUN_REUSED")
+            seen_native_runs.add(native_id)
         audit = C.independent_audit(None, manifest, row["trial_id"], row)
         if audit is None:
             unknown.append({"trial_id": row["trial_id"], "reason": "INDEPENDENT_AUDIT_MISSING"})
@@ -110,6 +117,8 @@ def _campaign(plan, bundle, identity, *, preregistered=False):
         if settings.get("identity") != identity or settings.get("native_run_id") != row.get("native_run_id"):
             raise Refused("COMPARISON_OBSERVED_SETTINGS_CHANGED")
         not_started = (row.get("execution") or {}).get("execution_liveness") == "NOT_STARTED" and row.get("request_count") == 0
+        if not_started and native_id is not None:
+            raise Refused("COMPARISON_NATIVE_RUN_CONTRADICTS_NOT_STARTED")
         if (
             any(type(measurement.get(k)) is not int or not 0 <= measurement[k] <= 2**63 - 1 for k in COSTS[:3])
             or any(
@@ -124,7 +133,7 @@ def _campaign(plan, bundle, identity, *, preregistered=False):
             or any(not isinstance(d, str) or not d for d in measurement["closed_defect_ids"])
             or type(measurement.get("started_at")) not in (float, int)
             or not math.isfinite(measurement["started_at"])
-            or (not not_started and (not isinstance(row.get("native_run_id"), str) or not row["native_run_id"]))
+            or (not not_started and native_id is None)
         ):
             raise Refused("COMPARISON_MEASUREMENT_INVALID")
         if measurement.get("includes_all_attempts_and_learning") is not True:
@@ -144,8 +153,8 @@ def _campaign(plan, bundle, identity, *, preregistered=False):
         metrics["accepted_work_orders"] += accepted
         metrics["failed_or_blocked"] += not accepted
         closed.update(measurement["closed_defect_ids"])
-        if row.get("native_run_id"):
-            native.append(row["native_run_id"])
+        if native_id is not None:
+            native.append(native_id)
     metrics["independently_closed_defects"] = len(closed)
     accepted = metrics["accepted_work_orders"]
     total_tokens = sum(costs[k] for k in ("input_tokens", "output_tokens", "learning_tokens"))
@@ -202,6 +211,7 @@ def report(plan, baseline=None, candidate=None):
         "operational_availability": "SEPARATE_CAMPAIGN",
         "recommendation": "INSUFFICIENT_COMPARABLE_EVIDENCE",
     }
+    seen_native_runs = set()
     for lane, bundle, identity in (
         ("baseline", baseline, plan["baseline_identity"]),
         ("candidate", candidate, plan["candidate_identity"]),
@@ -209,7 +219,9 @@ def report(plan, baseline=None, candidate=None):
         if bundle is None:
             result["blockers"].append(lane.upper() + "_MEASUREMENT_NOT_RUN")
         else:
-            result[lane] = _campaign(plan, bundle, identity, preregistered=lane == "candidate")
+            result[lane] = _campaign(
+                plan, bundle, identity, seen_native_runs=seen_native_runs, preregistered=lane == "candidate"
+            )
             if not result[lane]["complete"]:
                 result["blockers"].append(lane.upper() + "_MEASUREMENTS_INCOMPLETE")
     if baseline is not None and candidate is not None:

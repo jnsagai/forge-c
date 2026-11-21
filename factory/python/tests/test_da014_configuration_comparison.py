@@ -17,7 +17,8 @@ def put(path, doc):
 
 
 @pytest.fixture
-def data(tmp_path, monkeypatch):
+def data(tmp_path, monkeypatch, request):
+    variant = getattr(request, "param", None)
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     a = identity()
     b = {**a, "context_tokens": 4096}
@@ -61,6 +62,13 @@ def data(tmp_path, monkeypatch):
                 "observed": "BLOCKED" if i == 0 else "ACCEPTED",
                 "reported_tokens": 30,
             }
+            if lane == "candidate" and i == 1:
+                if variant == "reused-within-cohort":
+                    row["native_run_id"] = "candidate-native-0"
+                elif variant == "reused-across-cohorts":
+                    row["native_run_id"] = "baseline-native-1"
+                elif variant == "not-started":
+                    row.update(execution={"execution_liveness": "NOT_STARTED"}, request_count=0)
             m = {
                 **dict.fromkeys(C.BOOL_FACTS, False),
                 "useful_plan": i != 0,
@@ -126,6 +134,20 @@ def test_measured_report_counts_failed_attempt_costs_and_learning(data):
         assert row["costs"]["learning_tokens"] == 10 and row["costs"]["learning_wall_seconds"] == 2
         assert row["end_to_end_output_tokens_per_second"] == 5
         assert row["backend_decode_tokens_per_second"] is None
+
+
+@pytest.mark.parametrize("data", ["reused-within-cohort", "reused-across-cohorts"], indirect=True)
+def test_same_native_run_cannot_satisfy_multiple_comparison_cases(data):
+    plan, baseline, candidate, _ = data
+    with pytest.raises(Refused, match="COMPARISON_NATIVE_RUN_REUSED"):
+        C.report(plan, baseline, candidate)
+
+
+@pytest.mark.parametrize("data", ["not-started"], indirect=True)
+def test_native_run_cannot_also_be_counted_as_never_started(data):
+    plan, baseline, candidate, _ = data
+    with pytest.raises(Refused, match="COMPARISON_NATIVE_RUN_CONTRADICTS_NOT_STARTED"):
+        C.report(plan, baseline, candidate)
 
 
 def test_missing_row_cannot_shrink_denominator_or_hide_cost(data):
