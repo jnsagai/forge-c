@@ -367,6 +367,65 @@ def test_disposable_cleanup_retains_pins_and_refuses_unmarked_evidence(tmp_path)
         clean(tmp_path)
 
 
+def test_housekeeping_stops_at_scan_bound_without_following_links(tmp_path, monkeypatch):
+    from forge_factory.afo import housekeeping as H
+
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    scratch.joinpath(".forge-disposable").write_text("forge-c-scratch-v1")
+    protected = tmp_path.joinpath("sealed-record")
+    protected.write_text("preserve")
+    scratch.joinpath("link").symlink_to(protected)
+    for n in range(30):
+        scratch.joinpath(f"recent-{n}").write_text("keep")
+    monkeypatch.setattr(H, "SCRATCH_SCAN_LIMIT", 8)
+    result = H.clean(scratch)
+    assert result["scanned_entries"] == 8 and result["scan_limit_reached"] is True
+    assert result["deleted_files"] == 0 and protected.read_text() == "preserve"
+    with pytest.raises(Refused, match="DISPOSABLE_ROOT_REQUIRED"):
+        H.clean(tmp_path)
+
+
+@pytest.mark.parametrize("bounds", [{"max_files": 1.5}, {"max_bytes": float("nan")},
+                                    {"older_than": float("nan")}, {"now": float("inf")}])
+def test_housekeeping_refuses_ambiguous_bounds_before_deletion(tmp_path, bounds):
+    from forge_factory.afo.housekeeping import clean
+
+    tmp_path.joinpath(".forge-disposable").write_text("forge-c-scratch-v1")
+    disposable = tmp_path.joinpath("recent")
+    disposable.write_text("still recent")
+    with pytest.raises(Refused, match="HOUSEKEEPING_BOUND_INVALID"):
+        clean(tmp_path, **bounds)
+    assert disposable.exists()
+
+
+def test_housekeeping_does_not_follow_a_rebound_scratch_path(tmp_path, monkeypatch):
+    from forge_factory.afo import housekeeping as H
+
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    scratch.joinpath(".forge-disposable").write_text("forge-c-scratch-v1")
+    disposable = scratch / "disposable"
+    disposable.write_text("discard")
+    moved = tmp_path / "renamed"
+    protected = tmp_path / "sealed"
+    protected.mkdir()
+    protected.joinpath(disposable.name).write_text("preserve")
+    scandir = H.os.scandir
+
+    def rebind_root(fd):
+        scratch.rename(moved)
+        scratch.symlink_to(protected, target_is_directory=True)
+        return scandir(fd)
+
+    with monkeypatch.context() as m:
+        m.setattr(H.os, "scandir", rebind_root)
+        result = H.clean(scratch, now=time.time() + 90000)
+    assert result["deleted_files"] == 1
+    assert not (moved / disposable.name).exists()
+    assert protected.joinpath(disposable.name).read_text() == "preserve"
+
+
 def test_crash_between_execution_intent_and_job_projection_never_relaunches(protocol, monkeypatch):
     p = protocol
     job = ready(p, monkeypatch)
