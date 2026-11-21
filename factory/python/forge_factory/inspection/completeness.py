@@ -31,6 +31,8 @@ from ..common import pretty_json, utc_now
 MARK = "NOT_EXAMINED"
 INCOMPLETE = "INSPECTION_INCOMPLETE"
 NOT_PERFORMED = "INSPECTION_NOT_PERFORMED"
+RETRY_EXHAUSTED = "INSPECTOR_CHECK_RETRY_EXHAUSTED"
+RETRY_REASONS = frozenset({"ATTEMPT_LIMIT", "REPEATED_VALIDATION_ERRORS"})
 INCOMPLETE_LIMIT = 3
 NOT_PERFORMED_LIMIT = 3
 
@@ -102,6 +104,28 @@ def gate_outcome(ws: Path, phase: str, bl: dict, last: dict | None, since: str) 
         return "BLOCKED", (f"{INCOMPLETE}_REPEATEDLY: {len(mine)} inspections of {bl['baseline_id']} did not examine "
                            f"the evidence of {items}; inspection outcome, not a product finding")
     return "REINSPECT", f"{INCOMPLETE}:{newest['inspection_id']}:{items}"
+
+
+def retry_exhaustion(ws: Path, phase: str, bl: dict, last: dict | None, since: str) -> str | None:
+    """An exhausted structured check blocks this baseline until a later completed inspection."""
+    log = Path(ws) / ".forge-run/lrtx" / phase / "inspections.jsonl"
+    if not log.is_file():
+        return None
+    since = max(since, bl.get("frozen_at") or "")
+    recorded_at = (last or {}).get("recorded_at", "") if (last or {}).get("baseline_hash") == bl["baseline_hash"] else ""
+    for line in reversed(log.read_text().splitlines()):
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        exhausted = row.get("retry_exhaustion")
+        if (row.get("status") != "FAILED" or row.get("at", "") < since or row.get("at", "") <= recorded_at
+                or not isinstance(exhausted, dict) or exhausted.get("baseline_hash") != bl["baseline_hash"]):
+            continue
+        item, reason = exhausted.get("item"), exhausted.get("reason")
+        if (isinstance(item, str) and re.fullmatch(r"[A-Z0-9_.-]+", item)
+                and isinstance(reason, str) and reason in RETRY_REASONS):
+            return f"{RETRY_EXHAUSTED}:{item}:{reason}"
+    return None
 
 
 # ---- not performed: an inspector visit that recorded nothing ------------------------------------------------------

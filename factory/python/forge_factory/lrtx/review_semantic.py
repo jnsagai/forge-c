@@ -1229,6 +1229,9 @@ def _visit(ws: Path, model: str, budget: dict) -> dict:
                                                                                      fi, pr, les, smp, offered),
                          lambda d, ipaths=ipaths: validate(d, ipaths), budget)
         if rec["status"] != "VALID":
+            exhausted = R._retry_exhaustion(ws, "SWE.1", bl, it["id"], rec, budget)
+            if exhausted is not None:
+                return exhausted
             issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
             continue
         d = rec["doc"]

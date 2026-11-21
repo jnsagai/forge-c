@@ -607,6 +607,9 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                          lambda d, it=it, ipaths=ipaths: validate_verdict(d, ipaths, ws, phase, it["id"]), budget)
         d = rec["doc"]
         if rec["status"] != "VALID":
+            exhausted = _retry_exhaustion(ws, phase, bl, it["id"], rec, budget)
+            if exhausted is not None:
+                return exhausted
             # lrtx8 (2026-10-21): an inspector that keeps a finding the evidence refutes after its repairs. The verdict
             # is recorded as given with ALL its findings (LRTX-FR-015: never waived); the refutations are recorded
             # beside it as contested, measured false-rejection candidates. Any other defect leaves the item missing.
@@ -661,8 +664,20 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                   list(res.get("artifact_refs") or []))
 
 
+def _retry_exhaustion(ws: Path, phase: str, bl: dict, item: str, rec: dict, budget: dict) -> dict | None:
+    from ..inspection.completeness import RETRY_EXHAUSTED
+
+    reason = (rec.get("inspector_retry") or {}).get("exhaustion")
+    if reason is None:
+        return None
+    issues = [f"{RETRY_EXHAUSTED}:{item}:{reason}", *[f"{item}: {e}" for e in rec["errors"][:3]]]
+    return _reply(ws, phase, "FAILED", issues, budget,
+                  retry_exhaustion={"baseline_hash": bl["baseline_hash"], "item": item, "reason": reason,
+                                    "attempts": len(rec["attempts"])})
+
+
 def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | None = None,
-           artifacts: list[str] | None = None) -> dict:
+           artifacts: list[str] | None = None, *, retry_exhaustion: dict | None = None) -> dict:
     doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:V.ISSUE_MAX] for i in issues[:20]],
            "next_action": "next" if status == "PASS" else "rework"}  # CAPA-098: the agent-output contract bound
     S.record(ws, f"{phase}/inspect-reply.json", doc)
@@ -671,7 +686,9 @@ def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | 
         V.close_visit(budget)
     p = Path(ws) / ".forge-run/lrtx" / phase / "inspections.jsonl"
     p.parent.mkdir(parents=True, exist_ok=True)
+    row = {"at": utc_now(), "status": status, "calls": (budget or {}).get("calls", 0), "issues": doc["issues"][:10]}
+    if retry_exhaustion is not None:
+        row["retry_exhaustion"] = retry_exhaustion
     with p.open("a") as f:
-        f.write(json.dumps({"at": utc_now(), "status": status, "calls": (budget or {}).get("calls", 0),
-                            "issues": doc["issues"][:10]}, sort_keys=True) + "\n")
+        f.write(json.dumps(row, sort_keys=True) + "\n")
     return doc

@@ -59,6 +59,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from ..common import REPO_ROOT, state_dir
+from ..inspection.completeness import RETRY_EXHAUSTED
 
 SCHEMA_ID = "forge-c/supervisor-issues/1"
 SCHEMA_PATH = REPO_ROOT / "specs/014-durable-local-autonomy/contracts/supervisor-issues.schema.json"
@@ -605,6 +606,8 @@ def _codes(rec: dict, phase: str) -> tuple[list[str], int | None, str]:
         return [], None, ""
     b = blocked[-1]
     reason = str((b.get("gate") or {}).get("reason") or "")
+    if reason.startswith(RETRY_EXHAUSTED + ":"):
+        return [], b["_line"], RETRY_EXHAUSTED
     route = "STUCK" if reason.upper().startswith("STUCK") else \
         "REWORK_BUDGET_EXHAUSTED" if "budget exhausted" in reason.lower() else "BLOCKED"
     rej = [e for e in rec["log"] if e.get("phase") == phase and e.get("step") == "author" and e["_line"] < b["_line"]
@@ -784,7 +787,7 @@ def classify_order(rec: dict, life: str | None, capa_of: dict, *, completed_run=
             cls = "PRODUCT" if up else "MODEL_CONVERGENCE"
         if cls != b["failure_class"]:
             error_code = codes[0]
-    stuck = stuck_checks(rec, ph) if not up and not completed_upstream else []
+    stuck = stuck_checks(rec, ph) if not up and not completed_upstream and route != RETRY_EXHAUSTED else []
     if stuck and cls != "FACTORY_DEFECT":
         # CAPA-260: the factory's own check could not guide the author to a valid answer - the factory is the suspect
         # (its check, finding text or packet), so the line waits for a fix (bounded: line_orders SUSPECTED_WAIT_S) and

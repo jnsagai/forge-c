@@ -452,11 +452,14 @@ class Store:
             stale = self.stale_reason(phase, bl)
             last = ins[-1] if ins else None
             from . import item_binding
-            from .completeness import gate_outcome
+            from .completeness import gate_outcome, retry_exhaustion
 
             incomplete = None if stale else gate_outcome(self.workspace, phase, bl, last, started)  # CAPA-123
+            exhausted = None if stale else retry_exhaustion(self.workspace, phase, bl, last, started)
             if stale:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
+            elif exhausted:
+                decision, reason = "BLOCKED", exhausted
             elif incomplete:
                 decision, reason = incomplete
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:

@@ -27,6 +27,7 @@ import re
 from pathlib import Path
 
 from ..common import sha256_file
+from ..inspection.completeness import RETRY_EXHAUSTED
 from . import contracts
 
 PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
@@ -261,7 +262,8 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
             return None
         ph = last_phase(ws)
         return _unavailable_bundle(ws, order_id, attempt_id, ph, agent_unavailable(ws, ph), "")
-    err = agent_unavailable(ws, phase)
+    inspection_exhausted = reason.startswith(RETRY_EXHAUSTED + ":")
+    err = None if inspection_exhausted else agent_unavailable(ws, phase)
     if err:  # the phase stopped on files its errored agent turn never changed: not a product finding
         return _unavailable_bundle(ws, order_id, attempt_id, phase, err, reason)
     obs = sorted((o for o in from_workspace(ws) if o.get("phase") == phase and o.get("disposition") == "ACTIVE"),
@@ -269,7 +271,8 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
     route = [o for o in obs if o["operation"].endswith("/route")]
     work = [o for o in obs if not o["operation"].endswith("/route")]
     refused = [o for o in work + route if factory_refusal(o)]  # CAPA-190/191: the refusal caused the outputs beside it
-    dom = (refused or work or route or [None])[-1]
+    exhaustion = [o for o in route if o["error_code"].startswith(RETRY_EXHAUSTED + ":")] if inspection_exhausted else []
+    dom = (exhaustion or refused or work or route or [None])[-1]
     if dom is None:
         return None
     open_capa = _capa_fingerprints() if open_capa is None else open_capa

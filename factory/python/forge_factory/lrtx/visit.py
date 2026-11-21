@@ -8,7 +8,7 @@ import re
 import time
 from pathlib import Path
 
-from ..common import pretty_json, utc_now
+from ..common import canonical_json, pretty_json, sha256_bytes, utc_now
 from ..inspection import outage as O
 from . import structured as S
 
@@ -259,8 +259,18 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     base = build(None, None)
     if budget.get("outage"):  # CAPA-122: the visit's model calls are refused; no further call, checkpoint untouched
         return _outage_rec(task, prev, base, [], budget)
-    # author tasks only: an inspector's repeated round keeps its existing behaviour (inspection independence)
     author = str(base.get("role", "")).endswith("-author")
+    inspector = str(base.get("role", "")).endswith("-inspector")
+    retry_scope = None
+    if inspector and budget.get("visit"):
+        retry_scope = {"visit": budget["visit"], "findings_sha256": sha256_bytes(canonical_json(findings or []))}
+    retry = (prev or {}).get("inspector_retry") or {}
+    same_retry = (retry_scope is not None and isinstance(retry, dict) and retry.get("scope") == retry_scope
+                  and prev.get("base_hash") == base["input_hash"])
+    if same_retry and retry.get("settled"):
+        if prev["status"] == "INVALID" or not (S.validate(prev.get("doc"), base["output_schema"]) or check(prev["doc"])):
+            return {**prev, "reused": True}
+        same_retry = False
     mark = _rework_mark(budget, findings) if author else None
     keep = (budget.get("keep_fixed") or {}).get(task) if author else None
     plain = build
@@ -292,13 +302,22 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if not errors:
             return {**prev, "reused": True}
         prev = {**prev, "status": "INVALID", "errors": errors}
-    if prev and not findings and prev.get("base_hash") == base["input_hash"] and prev.get("doc") is not None:
+    if same_retry:
+        findings = prev.get("errors") or None
+    elif prev and not findings and prev.get("base_hash") == base["input_hash"] and prev.get("doc") is not None:
         findings = prev.get("errors") or None  # an INVALID checkpoint on unchanged inputs: repair it, not restart
     start = prev["doc"] if (prev and findings and prev.get("doc") is not None) else None
     p = build(findings, start) if start is not None else base
-    attempts, doc, errs = [], start, list(findings or [])
-    limit = max_repairs + 1
-    n = -1
+    attempts = list(prev["attempts"]) if same_retry else []
+    doc, errs = start, list(findings or [])
+    earlier = list((prev or {}).get("history") or []) if findings else []
+    if findings and not same_retry:
+        earlier += (prev or {}).get("attempts") or []
+    initial_attempts = len(attempts)
+    limit = min(retry["limit"], max_repairs + 3) if same_retry else max_repairs + 1
+    n = initial_attempts - 1
+    retry_exhaustion = None
+    refused = False
     seen_outage = None
     while n + 1 < limit:
         n += 1
@@ -306,11 +325,14 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             errs = (errs or []) + ["VISIT_CALL_BUDGET_EXHAUSTED"]
             break
         if budget.get("deadline") and time.monotonic() > budget["deadline"]:
-            if attempts:  # keep the progress of this task: the next node execution repairs from here
+            if len(attempts) > initial_attempts:
                 ck.parent.mkdir(parents=True, exist_ok=True)
                 ck.write_text(pretty_json({"task": task, "status": "INVALID", "doc": doc if doc is not None else
                                            start, "errors": errs, "base_hash": base["input_hash"],
-                                           "attempts": attempts, "at": utc_now(), "reused": False}))
+                                           "attempts": attempts, "at": utc_now(), "reused": False,
+                                           **({"inspector_retry": {"scope": retry_scope, "limit": limit, "settled": False}}
+                                              if retry_scope is not None else {}),
+                                           **({"history": earlier[-12:]} if retry_scope is not None and earlier else {})}))
             raise Continue(task)
         budget["calls"] += 1
         if "schema_mode" not in budget:  # LRTX-T012: the probed mode of the served model, recorded once per visit
@@ -354,6 +376,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             # CAPA-076 (owner option A): a rejected inspector answer's findings stay auditable, so a repair that
             # drops them is visible (lrtx.review reports them as withdrawn_in_repair)
             attempts[-1]["rejected_findings"] = [str(f)[:600] for f in rejected[:10]]
+        validation_errors = None
+        if retry_scope is not None and errs and r["doc"] is not None:
+            validation_errors = sha256_bytes(canonical_json(sorted(errs)))
+            attempts[-1]["validation_errors_sha256"] = validation_errors
         budget.setdefault("log", []).append({"task": task, **attempts[-1]})
         _save_calls(budget)
         # one line per model call: Fabro's stall watchdog ends a command node that shows no activity for 1800 s
@@ -364,11 +390,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if not errs:
             break
         if any(error in NON_REPAIRABLE_REFUSALS for error in errs):
+            refused = True
             break
         before = attempts[-2]["errors"] if len(attempts) > 1 else (list(findings or [])[:20] if start is not None else None)
-        # only a parsed AUTHOR answer can be stuck (schema or check findings): a call that returned no answer
-        # (technical failure, refusal) is retried by design, and an inspector keeping its finding is recorded as
-        # contested (lrtx8)
+        # A call that returned no author answer (technical failure, refusal) is retried by design.
         judged = r["doc"] is not None and p.get("role", "").endswith("-author")
         if judged and before is not None and sorted(errs[:20]) == sorted(before[:20]):
             # CAPA-084 (runs -06/-08): a repair that answers with exactly the findings it was given is stuck; more
@@ -376,17 +401,27 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             errs = errs + ["LRTX_REPAIR_STUCK: the repair answer has the same findings as the answer it repaired"]
             attempts[-1]["errors"] = errs[:20]
             break
+        if (validation_errors is not None and len(attempts) >= 2
+                and validation_errors == attempts[-2].get("validation_errors_sha256")):
+            retry_exhaustion = "REPEATED_VALIDATION_ERRORS"
+            break
         # bounded extension (at most 2 extra repairs, inside the visit's shared budget) while the answer improves
         if n + 1 == limit and limit < max_repairs + 3 and len(attempts) > 1 and \
                 len(attempts[-1]["errors"]) < len(attempts[-2]["errors"]):
             limit += 1
         p = build(errs[:REPAIR_FINDINGS_MAX], r["doc"]) if r["doc"] is not None and not r["errors"] else p
+    if (retry_scope is not None and errs and not refused and len(attempts) >= limit
+            and any(a.get("validation_errors_sha256") for a in attempts)):
+        retry_exhaustion = retry_exhaustion or "ATTEMPT_LIMIT"
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
            "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False,
            "semantic_key": S.semantic_key(base)}  # feature 021 T009: a later attempt of the series may inherit it
+    if retry_scope is not None:
+        rec["inspector_retry"] = {"scope": retry_scope, "limit": limit, "settled": True}
+        if retry_exhaustion is not None:
+            rec["inspector_retry"]["exhaustion"] = retry_exhaustion
     if mark and rec["status"] == "VALID":
         rec["rework"] = mark
-    earlier = ((prev or {}).get("history") or []) + ((prev or {}).get("attempts") or []) if findings else []
     if earlier:  # CAPA-079: a repair round keeps the earlier rounds' attempts (errors, usage), bounded
         rec["history"] = earlier[-12:]
     ck.parent.mkdir(parents=True, exist_ok=True)

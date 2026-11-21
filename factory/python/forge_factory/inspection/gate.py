@@ -588,11 +588,10 @@ def step_route(store: Store, phase: str) -> int:
         emit("workflow", "WARN", f"{phase} {outage.INFRA}: {outage.CODE} -> BLOCKED (retryable)", phase=phase)
         print(json.dumps(g))
         return 1
-    over = completeness.route_outcome(store.workspace, phase)
+    exhausted = g["decision"] == "BLOCKED" and g["reason"].startswith(completeness.RETRY_EXHAUSTED + ":")
+    over = g if exhausted else completeness.route_outcome(store.workspace, phase)
     if over is not None:
-        # CAPA-123: the inspection was INCOMPLETE (evidence not examined) or NOT PERFORMED (the visit recorded nothing):
-        # re-inspect the same baseline (bounded by the inspect gate) - no rework cycle, no development reservation,
-        # no author finding; BLOCKED once the bound is reached
+        # Inspection outcomes never spend an author rework cycle or development reservation.
         _state(store.workspace, phase, {"step": "route", "gate": over, "inspection_outcome": over["reason"][:120]})
         emit("workflow", "WARN", f"{phase} {over['reason'][:120]} -> {over['decision']}", phase=phase)
         print(json.dumps(over))

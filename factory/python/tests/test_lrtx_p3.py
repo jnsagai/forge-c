@@ -348,26 +348,64 @@ def test_every_schema_valid_verdict_fits_the_check_inspection_contract():
                                                          *["x"] * 8]}})
 
 
-def test_a_persisting_refuted_finding_is_recorded_with_all_findings_and_marked_contested(ws1, monkeypatch):  # noqa: F811
-    """lrtx8 (2026-10-21): the inspector kept the recorded-gap finding through every repair; the visit recorded no
-    inspection and lost a rework cycle. The verdict is now recorded as given (findings preserved, LRTX-FR-015) and
-    the refutation is recorded beside it."""
-    gap = "HSI contract is NOT_PROVIDED in the manifest, creating a gap in traceability as per upstream_gaps.md."
+@pytest.mark.parametrize(("paths", "expected"), [
+    ([], "REPEATED_VALIDATION_ERRORS"),
+    (["missing-a.md", "missing-b.md", "missing-c.md"], "ATTEMPT_LIMIT"),
+])
+def test_rejected_inspector_check_exhausts_across_continuations(ws1, monkeypatch, paths, expected):  # noqa: F811
+    from forge_factory.afo import bundle
+    from forge_factory.inspection import gate
+    from forge_factory.lrtx import visit as V
+
+    calls = []
+    ticks = 10.0
+    check = "SWE1-02"
+    earlier = _items(ws1)[0]
+    assert earlier != check
+    unsupported = "SWR-011 has no verification criterion and is not measurable."
+    answers = iter(paths or [swe1.REQS, swe1.REQS])
 
     def insp(p):
-        if p["task"].endswith("SWE1-01"):
-            return {"verdict": "FAIL", "findings": [gap], "evidence_checked": [swe1.REQS]}
-        return {"verdict": "PASS", "findings": [], "evidence_checked": [swe1.REQS]}
-    calls = []
+        nonlocal ticks
+        ticks += 2
+        if p["task"].endswith(":" + check):
+            return {"verdict": "FAIL", "findings": [unsupported], "evidence_checked": [next(answers)]}
+        return _inspector({})(p)
+
+    monkeypatch.setattr(V.time, "monotonic", lambda: ticks)
     monkeypatch.setattr(S, "call", _scripted(Answers({}, insp), calls))
-    rep = review.visit(ws1, "SWE.1", "m")
-    assert rep["status"] == "REWORK"
-    assert any(i.startswith("LRTX_INSPECTOR_FINDING_CONTESTED:SWE1-01:") for i in rep["issues"])
-    ins = json.loads(sorted((ws1 / "inspection/SWE.1").glob("INS-*.json"))[-1].read_text())
-    assert ins["items"]["SWE1-01"]["verdict"] == "FAIL" and ins["items"]["SWE1-01"]["findings"] == [gap]
-    rec = json.loads((ws1 / ".forge-run/lrtx/SWE.1/inspection-record.json").read_text())
-    assert list(rec["contested_findings"]) == ["SWE1-01"]
-    assert sum(1 for p in calls if p["task"].endswith("SWE1-01")) == 3  # first answer + 2 repairs, then recorded
+    visits = [review.visit(ws1, "SWE.1", "m", time_budget_s=1)]
+    count = len(paths) or 2
+    for _ in range(count):
+        visits.append(review.visit(ws1, "SWE.1", "m", resume=True, time_budget_s=1))
+    reason = f"INSPECTOR_CHECK_RETRY_EXHAUSTED:{check}:{expected}"
+    assert [visit["status"] for visit in visits] == ["CONTINUE"] * count + ["FAILED"]
+    assert visits[-1]["issues"][0] == reason
+    assert [p["task"].rsplit(":", 1)[1] for p in calls] == [earlier] + [check] * count
+    store = Store(ws1)
+    prefix = f"inspect:{store.latest_baseline('SWE.1')['baseline_hash'][:16]}:"
+    checkpoint = json.loads(V._ckpt(ws1, "SWE.1", prefix + check).read_text())
+    assert [a["n"] for a in checkpoint["attempts"]] == list(range(count))
+    assert all(a["rejected_findings"] == [unsupported] for a in checkpoint["attempts"])
+    assert "history" not in checkpoint
+    assert json.loads(V._ckpt(ws1, "SWE.1", prefix + earlier).read_text())["status"] == "VALID"
+    assert not list((ws1 / "inspection/SWE.1").glob("INS-*.json"))
+
+    blocked = store.gate("SWE.1")
+    assert (blocked["decision"], blocked["reason"], blocked["failed_inspections"]) == ("BLOCKED", reason, 0)
+    assert _gate(ws1, "SWE.1", "inspect", monkeypatch, "inspect-reply.json") != 0
+    assert gate.step_route(store, "SWE.1") == 1
+    failure = bundle.build(ws1, "WO-T", "ATT-TEST", open_capa=set())
+    assert failure["failure_class"] == "UNKNOWN"
+    assert failure["error_code"] == f"INSPECTOR_CHECK_RETRY_EXHAUSTED:{check}"
+    assert reason in failure["redacted_summary"]
+
+    # A fresh explicit inspection of the same baseline can supply the missing evidence.
+    calls.clear()
+    monkeypatch.setattr(S, "call", _scripted(Answers({}, _inspector({})), calls))
+    assert review.visit(ws1, "SWE.1", "m")["status"] == "PASS"
+    assert earlier not in {p["task"].rsplit(":", 1)[1] for p in calls}
+    assert Store(ws1).gate("SWE.1")["decision"] == "PASS"
 
 
 def test_an_item_with_other_defects_is_still_never_recorded(ws1, monkeypatch):  # noqa: F811

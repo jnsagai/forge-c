@@ -11,8 +11,9 @@ import re
 from dataclasses import dataclass
 
 from ..common import canonical_json
+from ..inspection.completeness import RETRY_EXHAUSTED
 
-CLASSIFIER_VERSION = "cre-rules-1.5"  # bump on any rule change; superseded observations are retracted, not deleted
+CLASSIFIER_VERSION = "cre-rules-1.6"  # bump on any rule change; superseded observations are retracted, not deleted
 CLASSES = ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY", "POLICY_SECURITY", "UNKNOWN")
 CATEGORIES = ("INFRASTRUCTURE", "WORKFLOW_ORCHESTRATION", "MCP_TOOL", "RESOURCE_BUDGET", "TRANSIENT_ENVIRONMENT",
               "PRODUCT_ENGINEERING", "REQUIREMENTS_SPEC", "AGENT_OUTPUT", "POLICY_SECURITY", "UNKNOWN")
@@ -31,6 +32,8 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     # policy / security (fail closed)
     (r"WRITE_SCOPE_DENIED|PATH_(?:ESCAPE|TRAVERSAL|INVALID)|ROBOT_POLICY:|FORGE_POLICY:(?!TURN_BUDGET)|"
      r"TOOL_NOT_GRANTED|ROLE_NOT_ALLOWED|PROTECTED_PATH|SECURITY_DENIAL", "POLICY_SECURITY", "POLICY_DENIAL"),
+    (rf"^{RETRY_EXHAUSTED}:(?P<item>[A-Z0-9_.-]+):",
+     "UNKNOWN", RETRY_EXHAUSTED + ":{item}"),
     # resource budgets set by the owner
     (r"TOKEN_BUDGET_EXHAUSTED", "RESOURCE_BUDGET", "TOKEN_BUDGET_EXHAUSTED"),
     (r"cost cap .* reached|COST_CAP", "RESOURCE_BUDGET", "COST_CAP_REACHED"),

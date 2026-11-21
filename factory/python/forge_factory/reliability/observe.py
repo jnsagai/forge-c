@@ -22,6 +22,7 @@ from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_bytes, state_dir
 from ..events.redact import redact_text
+from ..inspection.completeness import RETRY_EXHAUSTED
 from ..kpi.sources import order_of
 from . import events as E
 from .store import CREStore
@@ -125,7 +126,9 @@ def from_workspace(ws: Path) -> list[dict]:
                 out.append(_obs(ctx, raw=str(raw), component="gate", phase=phase, step="author", ts=ts,
                                 outcome="REWORK", source_ref=src, line=raw_line, source_kind=kind))
         elif step == "route" and res == "BLOCKED":
-            out.append(_obs(ctx, raw=f"REWORK_BUDGET_EXHAUSTED {g.get('reason', '')}", component="gate", phase=phase,
+            reason = str(g.get("reason") or "")
+            raw = reason if reason.startswith(RETRY_EXHAUSTED + ":") else f"REWORK_BUDGET_EXHAUSTED {reason}"
+            out.append(_obs(ctx, raw=raw, component="gate", phase=phase,
                             step="route", ts=ts, outcome="BLOCKED", source_ref=src, line=raw_line, source_kind="GATE"))
         elif step == "governor" and res:
             out.append(_obs(ctx, raw=str(res), component="governor", phase=phase, step="governor", ts=ts,
