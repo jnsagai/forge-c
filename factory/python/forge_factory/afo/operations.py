@@ -77,10 +77,13 @@ class Intent:
         except (OSError, ValueError, KeyError, TypeError):
             return {"mode": "UNKNOWN", "epoch": 0, "effective_stop": False}
 
-    def _write(self, rec):
+    def _write(self, rec, *, new_control=False, authentication=None):
         fd, tmp = tempfile.mkstemp(prefix=".intent-", dir=self.path.parent)
         try:
             with os.fdopen(fd, "wb") as f:
+                if new_control:
+                    rec["control_context"] = control_context(self.path, rec, authentication=authentication,
+                                                             publication_path=Path(tmp))
                 f.write(canonical(rec))
                 f.flush()
                 os.fsync(f.fileno())
@@ -116,9 +119,8 @@ class Intent:
                 "pending_start": old.get("pending_start", False),
                 "last_recovery": old.get("last_recovery"),
             }
-            rec["control_context"] = control_context(self.path, rec, authentication=authentication)
             # Commit STOPPED before bounded cancellation/stop; all start actors share this lock.
-            self._write(rec)
+            self._write(rec, new_control=True, authentication=authentication)
             # Keep database controls under the same intent fence. An older
             # resume must not overwrite a newer stop after dropping this lock.
             if apply is not None:
@@ -204,7 +206,7 @@ def observed_unit():
     return dict(line.split("=", 1) for line in r.stdout.splitlines() if "=" in line)
 
 
-def control_context(location, record, *, authentication=None):
+def control_context(location, record, *, authentication=None, publication_path=None):
     """Facts from the existing caller/OS boundary, never an intervention verdict.
 
     Failure to observe a process must not prevent an authenticated operator stop.
@@ -236,7 +238,8 @@ def control_context(location, record, *, authentication=None):
             if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value):
                 auth[key] = value
     body = {
-        "schema": "forge-c/control-source-context/1", "intent_epoch": record["epoch"], "mode": record["mode"],
+        "schema": "forge-c/control-source-context/2" if publication_path is not None else "forge-c/control-source-context/1",
+        "intent_epoch": record["epoch"], "mode": record["mode"],
         "intent_path_sha256": hashlib.sha256(str(location.absolute()).encode()).hexdigest(),
         "intent_request_sha256": digest({k: record[k] for k in ("epoch", "mode", "actor", "reason", "changed_at")}),
         "producer_source_sha256": producer_sha,
@@ -244,6 +247,8 @@ def control_context(location, record, *, authentication=None):
         "user_namespace": user_namespace, "uid_map": uid_map, "authentication": auth,
         "scope": "CALLER_AND_OS_SOURCE_FACTS_NOT_INDEPENDENT_HOST_AUDIT",
     }
+    if publication_path is not None:
+        body["publication_path_sha256"] = hashlib.sha256(str(publication_path.absolute()).encode()).hexdigest()
     return {**body, "control_id": "control-" + digest(body)}
 
 

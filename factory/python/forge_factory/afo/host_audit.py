@@ -31,7 +31,8 @@ HEADER = re.compile(
     r"^(?:node=(?P<node>\S+) )?type=(?P<kind>[A-Z0-9_]{1,64}) "
     r"msg=audit\((?P<epoch>\d{1,16}\.\d{1,9}):(?P<serial>\d{1,20})\): ?(?P<body>.*)$"
 )
-PATH_NAME = re.compile(r'^item=(?P<item>[0-9]{1,8}) name=(?:"(?P<quoted>[!#-~]+)"|(?P<hex>[a-fA-F0-9]+))(?= |$)')
+PATH_NAME = re.compile(r'^item=(?P<item>[0-9]{1,8}) name=(?:"(?P<quoted>[!#-~]+)"|(?P<hex>(?:[a-fA-F0-9]{2})+))(?= |$)')
+PUBLICATION_SUFFIX = re.compile(rb"[a-z0-9_]{8}")
 # Linux native syscall numbers, keyed by the audit architecture, not the verifier's architecture.
 RENAME_SYSCALLS = {
     "c000003e": {82: "rename", 264: "renameat", 316: "renameat2"},
@@ -94,9 +95,9 @@ class EventReplay:
             raise Refused("HOST_AUDIT_EVENT_REPLAY_BOUND_INVALID")
         self.host, self.keys = host, keys
         self.intent_path = intent_path
-        intent_bytes = intent_path.encode() if intent_path is not None else b""
-        self.intent_path_hex = intent_bytes.hex()
-        self.intent_path_sha256 = hashlib.sha256(intent_bytes).hexdigest() if intent_bytes else None
+        self.intent_path_bytes = intent_path.encode() if intent_path is not None else b""
+        self.intent_path_sha256 = hashlib.sha256(self.intent_path_bytes).hexdigest() if self.intent_path_bytes else None
+        self.publication_prefix = str(Path(intent_path).with_name(".intent-")).encode() if intent_path is not None else None
         self.groups = {}
         self.records = self.duplicates = self.input_bytes = 0
         self.partial = b""
@@ -145,7 +146,7 @@ class EventReplay:
         if not math.isfinite(epoch):
             raise Refused("HOST_AUDIT_EVENT_CLOCK_INVALID")
         identity = (node, m["epoch"], int(m["serial"]))
-        fields, path_item, path_role = None, None, None
+        fields, path_item, path_role, publication_sha256 = None, None, None, None
         if m["kind"] == "SYSCALL":
             fields = _fields(m["body"])
             if not all(re.fullmatch(r"\d{1,20}", fields.get(k, "")) for k in ("pid", "ppid", "uid", "auid", "syscall", "items")):
@@ -166,12 +167,20 @@ class EventReplay:
             if not re.fullmatch(r"\d{1,8}", path.get("item", "")):
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
             path_item = int(path["item"])
-            if name and (name["quoted"] == self.intent_path or (name["hex"] or "").lower() == self.intent_path_hex):
+            if name:
+                name_bytes = name["quoted"].encode() if name["quoted"] is not None else bytes.fromhex(name["hex"])
                 role = path.get("nametype")
-                path_role = role if role in ("NORMAL", "PARENT", "DELETE", "CREATE") else "UNKNOWN"
+                if name_bytes == self.intent_path_bytes:
+                    path_role = role if role in ("NORMAL", "PARENT", "DELETE", "CREATE") else "UNKNOWN"
+                elif (
+                    role == "DELETE" and name_bytes.startswith(self.publication_prefix)
+                    and PUBLICATION_SUFFIX.fullmatch(name_bytes[len(self.publication_prefix):])
+                ):
+                    publication_sha256 = hashlib.sha256(name_bytes).hexdigest()
         return {"identity": identity, "kind": m["kind"], "sha256": hashlib.sha256(line.encode()).hexdigest(),
                 "syscall": fields, "path_item": path_item,
-                **({"intent_path_role": path_role} if path_role is not None else {})}
+                **({"intent_path_role": path_role} if path_role is not None else {}),
+                **({"publication_sha256": publication_sha256} if publication_sha256 is not None else {})}
 
     def _line(self, line):
         self._record(self.selected_record(line))
@@ -200,7 +209,7 @@ class EventReplay:
         elif record["kind"] == "PATH":
             if record["path_item"] in group["paths"]:
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
-            group["paths"][record["path_item"]] = record.get("intent_path_role")
+            group["paths"][record["path_item"]] = record.get("intent_path_role"), record.get("publication_sha256")
 
     def finish(self, *, legacy=False):
         if self.closed or self.failed:
@@ -249,13 +258,17 @@ class EventReplay:
                 }
             )
             intent_path_matches = [{"item": item, "role": role}
-                                   for item, role in sorted(group["paths"].items()) if role is not None]
+                                   for item, (role, _) in sorted(group["paths"].items()) if role is not None]
             if intent_path_matches:
                 event = selected[-1]
                 event.update(intent_path_sha256=self.intent_path_sha256, intent_path_matches=intent_path_matches)
                 rename = RENAME_SYSCALLS.get(event["arch"], {}).get(event["syscall"])
                 if rename is not None and any(match["role"] in ("CREATE", "DELETE") for match in intent_path_matches):
                     event["intent_rename"] = {"syscall": rename, "reported_success": event["success"]}
+                    publications = [{"item": item, "path_sha256": sha}
+                                    for item, (_, sha) in sorted(group["paths"].items()) if sha is not None]
+                    if publications:
+                        event["intent_rename"]["publication_candidates"] = publications
         facts = {
             "events": selected,
             "integrity_events": integrity,

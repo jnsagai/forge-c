@@ -95,6 +95,14 @@ and writer attribution unresolved.
 [x86-64 syscall table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl)
 [AArch64 syscall numbers](https://github.com/torvalds/linux/blob/master/include/uapi/asm-generic/unistd.h)
 
+New control-intent receipts include the digest of the staging pathname assigned
+by the actual atomic write. Later writes that update counters or stop settlement
+preserve the original control receipt. If a selected rename names the intent
+file, its fact may also include matching DELETE items for staging names in the
+same directory. An exact staging digest gives a candidate link between the two
+sources. Existing receipts remain readable without that link. Direction,
+authenticated actor attribution, and coverage still require independent evidence.
+
 Native audit loss, complete record/window interpretation, boot correlation,
 authenticated actor/control/write/service attribution and all-channel coverage
 remain separate qualification. `unexpected_interventions` is always unknown here.

@@ -66,6 +66,9 @@ def test_frozen_capture_preserves_exact_safe_sources_actual_rows_and_private_fie
     assert hashlib.sha256(event["record"].encode()).hexdigest() == event["record_sha256"]
     assert event["facts"]["producer_source_matches"] is True
     assert captured["intent_control_source"]["context"] == rec["control_context"]
+    context = json.loads(event["record"])["payload"]["context"]
+    assert context == rec["control_context"]
+    assert len(context["publication_path_sha256"]) == 64
     C.verify_sources(captured["ledger"], {**captured["intent"], "control_source": captured["intent_control_source"]}, config())
     assert "PRIVATE-OWNER" not in json.dumps(captured) and "PRIVATE-REASON" not in json.dumps(captured)
     assert "NOT_HOST_INTERVENTION" in captured["ledger"]["control_source"]["scope"]
@@ -90,7 +93,8 @@ def test_historical_producer_is_retained_as_unmatched_not_reclassified_as_authen
 
 
 @pytest.mark.parametrize("mutation", ["extra-context", "extra-auth", "extra-process", "wrong-source-type", "mode-type",
-                                       "uid-map-overlap", "uid-map-zero", "uid-map-overflow", "uid-mismatch", "hash"])
+                                       "uid-map-overlap", "uid-map-zero", "uid-map-overflow", "uid-mismatch", "hash",
+                                       "publication", "missing-publication", "publication-in-legacy"])
 def test_untrusted_contexts_never_export_arbitrary_data_or_become_valid(observed, mutation):
     p, _, _, _, _, _ = observed
     row, actions = event_row(p.store)
@@ -116,6 +120,12 @@ def test_untrusted_contexts_never_export_arbitrary_data_or_become_valid(observed
         ctx["authentication"]["uid"] += 1
     elif mutation == "hash":
         ctx["control_id"] = "control-" + "0" * 64
+    elif mutation == "publication":
+        ctx["publication_path_sha256"] = "DO-NOT-EXPORT"
+    elif mutation == "missing-publication":
+        ctx.pop("publication_path_sha256")
+    elif mutation == "publication-in-legacy":
+        ctx["schema"] = "forge-c/control-source-context/1"
     if mutation != "hash":
         rehash(ctx)
     record["payload_sha256"] = digest(record["payload"])
@@ -123,6 +133,14 @@ def test_untrusted_contexts_never_export_arbitrary_data_or_become_valid(observed
     result = C.event(row, actions, config())
     assert result["status"] == "UNKNOWN" and "record" not in result
     assert "DO-NOT-EXPORT" not in json.dumps(result)
+
+
+def test_legacy_source_context_still_replays(observed):
+    _, _, rec, _, _, _ = observed
+    ctx = copy.deepcopy(rec["control_context"])
+    ctx.pop("publication_path_sha256")
+    ctx["schema"] = "forge-c/control-source-context/1"
+    assert C.context(rehash(ctx), config())["producer_source_matches"] is True
 
 
 @pytest.mark.parametrize("mutation", ["missing-action", "changed-action", "duplicate-seq", "payload", "wrapper", "producer"])

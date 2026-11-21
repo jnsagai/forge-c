@@ -64,9 +64,13 @@ def configuration(value):
 
 def context(value, config):
     """Validate before export; do not leak untrusted extra fields or exception text."""
+    schema = value.get("schema") if isinstance(value, dict) else None
+    has_publication = schema == "forge-c/control-source-context/2"
+    keys = CONTEXT_KEYS | ({"publication_path_sha256"} if has_publication else set())
     if (
-        not isinstance(value, dict) or set(value) != CONTEXT_KEYS
-        or value.get("schema") != "forge-c/control-source-context/1" or value.get("scope") != SCOPE
+        not isinstance(value, dict) or set(value) != keys
+        or (not has_publication and schema != "forge-c/control-source-context/1") or value.get("scope") != SCOPE
+        or (has_publication and not _sha(value["publication_path_sha256"]))
         or not isinstance(value.get("mode"), str) or value["mode"] not in MODES
         or not _int(value.get("intent_epoch"), minimum=1)
         or not _int(value.get("pid"), 2**31 - 1, 1)

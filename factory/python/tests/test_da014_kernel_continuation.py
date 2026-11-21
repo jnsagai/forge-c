@@ -14,6 +14,7 @@ import pytest
 from forge_factory.afo import audit_segments as S
 from forge_factory.afo import host_audit as H
 from forge_factory.afo import kernel_replay as K
+from forge_factory.afo import operations as O
 from forge_factory.afo import qualification as Q
 from forge_factory.afo.durable import Refused, canonical, digest, immutable_json
 from forge_factory.common import sha256_file
@@ -98,6 +99,44 @@ def test_intent_rename_fact_requires_the_native_abi_and_a_child_path(tmp_path, a
     result, pages = invoke(tmp_path, [raw], intent_path=target)
     fact = pages[0]["groups"][0]["facts"]["events"][0]
     assert fact.get("intent_rename") == ({"syscall": operation, "reported_success": success} if operation else None)
+    assert result["unexpected_interventions"] is None
+
+
+@pytest.mark.parametrize("directory", ["plain", "with space"])
+def test_replayed_rename_and_real_intent_write_share_the_staging_digest(tmp_path, monkeypatch, directory):
+    operations = tmp_path / directory
+    operations.mkdir(mode=0o700)
+    intent = O.Intent(operations / "intent.json")
+    real_replace = os.replace
+    staged = []
+
+    def remember(source, destination):
+        if Path(destination) == intent.path:
+            staged.append(source)
+        real_replace(source, destination)
+
+    with monkeypatch.context() as capture:
+        capture.setattr(O.os, "replace", remember)
+        first = intent.set("RUNNING", actor="fixture", reason="start", initialize=True)
+        second = intent.set("PAUSED", actor="fixture", reason="pause")
+        intent._write({**second, "pending_start": True})
+
+    assert len(staged) == 3
+    publication = second["control_context"]["publication_path_sha256"]
+    assert publication != first["control_context"]["publication_path_sha256"]
+    assert publication == intent.read()["control_context"]["publication_path_sha256"]
+
+    target = str(intent.path)
+    raw = raw_event(items=4).replace(b"syscall=257 success=yes exit=3", b"syscall=82 success=yes exit=0")
+    for i, (path, role) in enumerate(((staged[1], "DELETE"), (target, "DELETE"),
+                                      (staged[2], "NORMAL"), ("/other/.intent-a1b2c3d4", "DELETE"))):
+        encoded_name = path.encode().hex() if " " in path else f'"{path}"'
+        raw = raw.replace(f'item={i} name="/private/DO-NOT-EXPORT"'.encode(),
+                          f"item={i} name={encoded_name} nametype={role}".encode())
+    result, pages = invoke(tmp_path, [raw], intent_path=target)
+    fact = pages[0]["groups"][0]["facts"]["events"][0]
+    assert fact["intent_rename"]["publication_candidates"] == [{"item": 0, "path_sha256": publication}]
+    assert target not in json.dumps(pages) and ".intent-" not in json.dumps(pages)
     assert result["unexpected_interventions"] is None
 
 
