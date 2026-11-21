@@ -53,6 +53,12 @@ Fence every queued start/restart effect with its operations epoch and serialize 
 
 Separate four dimensions: desired service mode, observed control-plane availability, worker/dependency readiness, and engineering progress/quality. A healthy waiting controller with Qwen down is not an available inference worker or a successful product run. Missing telemetry is UNKNOWN and counted as unavailable in availability calculations. Operator maintenance, host power loss, disk faults, forced reboot and recovery time remain in the gross 24/7 service-window report, with causes; any scoped availability measure is separately labeled and cannot erase gross outages.
 
+Gross reports count unknown control-plane and worker time separately. A measured
+Conductor observation remains valid when worker probes are missing. Worker
+readiness requires all three dependency probes to confirm readiness, and a
+confirmed dependency outage makes the worker unready. A clock discontinuity
+leaves both dimensions unknown across the affected interval.
+
 Retain the existing rolling-30-day 99% availability and p95 transient restoration of at most 10 minutes as objectives until measured. Record detection time, restoration time, blocked duration, queue age, overdue probes, intervention count, restart count and useful completed work separately. Fault exposure, sample count, censored/unrecovered faults and denominator rules must be visible. Never infer product progress from uptime or number of restarts.
 
 One Omniverse2 cannot compute while it has no power or functioning hardware. Require unattended startup after power/OS/storage prerequisites return and test persistent-state reconciliation. Hardware replacement, UPS sizing, redundant hosts and host-level reboot permission are outside this amendment; list uncovered failure classes honestly rather than claiming zero physical downtime. No purchase, deployment or host reboot is authorized by this specification.

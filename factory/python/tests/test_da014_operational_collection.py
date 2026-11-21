@@ -102,6 +102,23 @@ def test_capture_resume_and_report_replay(collector):
     assert report["missing_faults"] and report["real_work_exposures"] == 0
 
 
+def test_replay_preserves_known_probes_without_claiming_full_health(collector, monkeypatch):
+    p = collector
+    monkeypatch.setattr(C.O, "health", lambda *_: {
+        "conductor": True, "fabro": True, "gateway": None, "data_volume": True, "extra": True,
+    })
+    for _ in range(2):
+        sample = p.collector(p.soak_id)
+        assert sample["probes"] == {"conductor": True, "fabro": True, "data_volume": True}
+        assert sample["healthy"] is False and sample["observation_complete"] is True
+    report = R.report(p.manifest, p.soak_id, observer_plan_ref=p.ref)
+    assert report["collection"]["status"] == "SOURCE_REPLAY_PASS"
+    assert report["telemetry_complete"] is False
+    gross = report["gross_24_7_window"]
+    assert gross["available_seconds"] > 0 and gross["worker_ready_seconds"] == 0
+    assert gross["worker_unknown_seconds"] == gross["window_seconds"]
+
+
 def test_replayed_campaign_intent_retains_changes_and_explicit_gaps(collector, monkeypatch):
     p = collector
     p.collector(p.soak_id)

@@ -229,21 +229,16 @@ class Collector:
 
     @staticmethod
     def observed_sample(row):
-        probes = row.get("health")
-        if (
-            not isinstance(probes, dict)
-            or set(probes) != {"conductor", "fabro", "gateway", "data_volume"}
-            or any(type(v) is not bool for v in probes.values())
-        ):
-            probes = {}
+        keys = ("conductor", "fabro", "gateway", "data_volume")
+        health = row.get("health")
         # A healthy HTTP endpoint alone cannot turn an incomplete independent capture into known telemetry.
-        if row.get("complete") is not True:
-            probes = {}
+        probes = ({key: health[key] for key in keys if type(health.get(key)) is bool}
+                  if row.get("complete") is True and isinstance(health, dict) else {})
         return {
             **{k: row[k] for k in ("wall", "mono", "boot_id")},
             "utc": row.get("utc"),
             "probes": probes,
-            "healthy": bool(probes) and all(probes.values()),
+            "healthy": len(probes) == len(keys) and all(probes.values()),
             "observation_complete": row.get("complete") is True,
         }
 

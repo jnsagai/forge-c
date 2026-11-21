@@ -221,6 +221,12 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
             type(v) is bool for v in observed.values()
         )
 
+    def worker_readiness(s):
+        dependencies = [probes(s).get(k) for k in ("gateway", "fabro", "data_volume")]
+        if any(value is False for value in dependencies):
+            return False
+        return True if all(value is True for value in dependencies) else None
+
     def clock_known(a, b):
         return (
             a["boot_id"] == b["boot_id"]
@@ -229,29 +235,25 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
             and abs((b["wall"] - a["wall"]) - (b["mono"] - a["mono"])) <= soak.CLOCK_SKEW_S
         )
 
-    gross = timeline(
-        [
-            {
-                "at": s["wall"],
-                "control_plane": probes(s).get("conductor") is True,
-                "worker_ready": all(probes(s).get(k) is True for k in ("gateway", "fabro", "data_volume")),
-                "telemetry_known": probes_known(s) and (
-                    i == len(samples) - 1 or (probes_known(samples[i + 1]) and clock_known(s, samples[i + 1]))
-                ),
-                "cause": "BOOT_CHANGED_INTERVAL_UNOBSERVED"
-                if i + 1 < len(samples) and s["boot_id"] != samples[i + 1]["boot_id"]
-                else "UNKNOWN_OR_CONTRADICTORY_TELEMETRY"
-                if not probes_known(s) or (i + 1 < len(samples) and (
-                    not probes_known(samples[i + 1]) or not clock_known(s, samples[i + 1])
-                ))
-                else "OBSERVED_HEALTH" if all(s["probes"].values()) else "DEPENDENCY_OR_CONTROL_OUTAGE",
-            }
-            for i, s in enumerate(samples)
-        ],
-        head["wall"],
-        max(head["wall"] + 0.000001, end),
-        stale_after=head["interval_s"] * 2,
-    )
+    observations = []
+    for a, b in zip(samples, [*samples[1:], None], strict=True):
+        clock_ok = b is None or clock_known(a, b)
+        control = probes(a).get("conductor")
+        worker = worker_readiness(a)
+        if b is not None and type(probes(b).get("conductor")) is not bool:
+            control = None
+        if b is not None and worker_readiness(b) is None:
+            worker = None
+        if b is not None and a["boot_id"] != b["boot_id"]:
+            cause = "BOOT_CHANGED_INTERVAL_UNOBSERVED"
+        elif not clock_ok or not probes_known(a) or (b is not None and not probes_known(b)):
+            cause = "UNKNOWN_OR_CONTRADICTORY_TELEMETRY"
+        else:
+            cause = "OBSERVED_HEALTH" if control and worker else "DEPENDENCY_OR_CONTROL_OUTAGE"
+        observations.append({"at": a["wall"], "control_plane": control, "worker_ready": worker,
+                             "telemetry_known": clock_ok, "cause": cause})
+    gross = timeline(observations, head["wall"], max(head["wall"] + 0.000001, end),
+                     stale_after=head["interval_s"] * 2)
 
     byte_budget = observer.MAX_TRACE_BYTES
 

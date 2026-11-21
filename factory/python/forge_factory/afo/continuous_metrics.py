@@ -3,15 +3,25 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 
 from .durable import Refused
 
 
 def timeline(samples, start, end, *, stale_after=120):
-    if end <= start or stale_after < 1:
+    if (
+        any(type(v) not in (int, float) or not math.isfinite(v) for v in (start, end, stale_after))
+        or end <= start or stale_after < 1
+    ):
         raise Refused("AVAILABILITY_WINDOW_INVALID")
-    rows = sorted(samples, key=lambda s: s["at"])
+    rows = list(samples)
+    if any(
+        not isinstance(row, dict) or type(row.get("at")) not in (int, float) or not math.isfinite(row["at"])
+        for row in rows
+    ):
+        raise Refused("AVAILABILITY_OBSERVATION_INVALID")
+    rows.sort(key=lambda s: s["at"])
     if len({r["at"] for r in rows}) != len(rows):
         raise Refused("AVAILABILITY_DUPLICATE_OBSERVATION")
     points = sorted(
@@ -19,6 +29,7 @@ def timeline(samples, start, end, *, stale_after=120):
     )
     intervals = []
     healthy = worker = 0.0
+    control_unknown = worker_unknown = 0.0
     cursor = 0
     prior = None
     for a, b in zip(points, points[1:], strict=False):
@@ -28,17 +39,20 @@ def timeline(samples, start, end, *, stale_after=120):
             prior = rows[cursor]
             cursor += 1
         known = prior is not None and a - prior["at"] < stale_after and prior.get("telemetry_known", True) is True
-        control = known and prior.get("control_plane") is True
-        ready = known and prior.get("worker_ready") is True
-        healthy += (b - a) if control else 0
-        worker += (b - a) if ready else 0
+        control = prior.get("control_plane") if known else None
+        ready = prior.get("worker_ready") if known else None
+        seconds = b - a
+        healthy += seconds if control is True else 0
+        worker += seconds if ready is True else 0
+        control_unknown += seconds if type(control) is not bool else 0
+        worker_unknown += seconds if type(ready) is not bool else 0
         intervals.append(
             {
                 "start": a,
                 "end": b,
-                "seconds": b - a,
-                "control_plane": "AVAILABLE" if control else "UNAVAILABLE" if known else "UNKNOWN",
-                "worker": "READY" if ready else "UNREADY" if known else "UNKNOWN",
+                "seconds": seconds,
+                "control_plane": "AVAILABLE" if control is True else "UNAVAILABLE" if control is False else "UNKNOWN",
+                "worker": "READY" if ready is True else "UNREADY" if ready is False else "UNKNOWN",
                 "cause": prior.get("cause", "OBSERVED")
                 if known or (prior is not None and prior.get("telemetry_known") is False)
                 else "MISSING_OR_STALE_TELEMETRY",
@@ -51,7 +65,9 @@ def timeline(samples, start, end, *, stale_after=120):
         "available_seconds": healthy,
         "unavailable_seconds": end - start - healthy,
         "gross_availability": healthy / (end - start),
+        "control_plane_unknown_seconds": control_unknown,
         "worker_ready_seconds": worker,
+        "worker_unknown_seconds": worker_unknown,
         "intervals": intervals,
         "rolling_30_day_status": "NOT_DEMONSTRATED" if end - start < 30 * 86400 else "REQUIRES_SLO_EVALUATION",
     }

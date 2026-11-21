@@ -387,6 +387,28 @@ def test_gross_timeline_keeps_unknown_and_operator_maintenance():
     assert report["worker_ready_seconds"] == 0 and report["rolling_30_day_status"] == "NOT_DEMONSTRATED"
 
 
+def test_gross_timeline_does_not_treat_unmeasured_dimensions_as_outages():
+    from forge_factory.afo.continuous_metrics import timeline
+
+    report = timeline([
+        {"at": 0, "control_plane": True}, {"at": 10, "worker_ready": False},
+        {"at": 20, "control_plane": "yes", "worker_ready": True},
+    ], 0, 30)
+    assert [(i["control_plane"], i["worker"]) for i in report["intervals"]] == [
+        ("AVAILABLE", "UNKNOWN"), ("UNKNOWN", "UNREADY"), ("UNKNOWN", "READY")
+    ]
+    assert report["available_seconds"] == report["worker_ready_seconds"] == 10
+    assert report["control_plane_unknown_seconds"] == 20 and report["worker_unknown_seconds"] == 10
+
+
+@pytest.mark.parametrize("invalid", [None, True, float("nan"), float("inf")])
+def test_gross_timeline_refuses_invalid_sample_clocks(invalid):
+    from forge_factory.afo.continuous_metrics import timeline
+
+    with pytest.raises(Refused, match="AVAILABILITY_OBSERVATION_INVALID"):
+        timeline([{"at": invalid}], 0, 30)
+
+
 def test_disposable_cleanup_retains_pins_and_refuses_unmarked_evidence(tmp_path):
     from forge_factory.afo.housekeeping import clean
 

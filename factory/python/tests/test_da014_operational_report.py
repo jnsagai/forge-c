@@ -149,6 +149,28 @@ def test_missing_or_contradictory_telemetry_is_not_complete(work, change):  # no
         assert any(r["control_plane"] == "UNKNOWN" for r in result["gross_24_7_window"]["intervals"])
 
 
+@pytest.mark.parametrize(
+    ("changed", "control_state", "worker_state"),
+    [({"gateway": None}, "AVAILABLE", "UNKNOWN"), ({"conductor": None}, "UNKNOWN", "READY"),
+     ({"gateway": None, "data_volume": False}, "AVAILABLE", "UNREADY")],
+)
+def test_campaign_keeps_control_and_worker_observations_independent(work, changed, control_state, worker_state):  # noqa: F811
+    p = work
+    path, rows = timeline(p)
+    for sample in rows[1:]:
+        sample["probes"].update(changed)
+    write_rows(path, rows)
+    result = R.report(p.manifest, "soak-operational-report")
+    assert result["telemetry_complete"] is False
+    gross = result["gross_24_7_window"]
+    interval = next(row for row in gross["intervals"] if row["start"] == 100)
+    assert (interval["control_plane"], interval["worker"]) == (control_state, worker_state)
+    assert gross["available_seconds"] == (30 if control_state == "AVAILABLE" else 0)
+    assert gross["worker_ready_seconds"] == (30 if worker_state == "READY" else 0)
+    assert gross["control_plane_unknown_seconds"] == 10 + (30 if control_state == "UNKNOWN" else 0)
+    assert gross["worker_unknown_seconds"] == 10 + (30 if worker_state == "UNKNOWN" else 0)
+
+
 @pytest.mark.parametrize("when", ["in-window", "before-start", "after-last-sample"])
 def test_replayed_fault_is_bound_to_the_observed_campaign_window(work, when):  # noqa: F811
     p = work
