@@ -150,6 +150,13 @@ class Intent:
             if not (authorize or operational_authorized)():
                 return {"action": "WAITING_FOR_PREAUTHORIZED_OPERATIONAL_RECIPE"}
             state = probe()
+            job = state.get("Job")
+            stable = state.get("ActiveState") in ("active", "inactive", "failed")
+            if job not in (None, "", "0") or (rec.get("pending_start") and (job is None or not stable)):
+                return {"action": "WAITING_FOR_SYSTEMD_JOB_SETTLEMENT", "state": state}
+            if rec.get("pending_start"):
+                rec["pending_start"] = False
+                self._write(rec)
             # An explicit systemctl stop produces inactive/success; never undo it. Disabled/masked is deliberate.
             if (
                 state.get("UnitFileState") not in ("enabled", "enabled-runtime")

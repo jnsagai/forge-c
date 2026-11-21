@@ -2,6 +2,7 @@
 # ruff: noqa: F811  # imported pytest fixtures are also named function parameters
 
 import json
+import subprocess
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -258,6 +259,38 @@ def test_operator_start_is_fenced_and_cooldown_survives_restart(tmp_path):
     )
     assert Intent(i.path).start(run["epoch"], probe=state, authorize=lambda: True, now=101)["action"] == "COOLDOWN"
     assert len(calls) == 1 and not stopped["effective_stop"]
+
+
+@pytest.mark.parametrize("settled_state", ["active", "failed"])
+def test_timed_out_systemd_start_must_settle_before_another_recovery(tmp_path, settled_state):
+    i = Intent(tmp_path / "intent.json")
+    run = i.set("RUNNING", actor="owner", reason="fixture", initialize=True)
+    state = {"UnitFileState": "enabled", "ActiveState": "failed", "Result": "start-limit-hit", "Job": "0"}
+    calls = []
+
+    def start(argv):
+        calls.append(argv)
+        if len(calls) == 1:
+            raise subprocess.TimeoutExpired(argv, 20)
+        return SimpleNamespace(returncode=0)
+
+    options = {"probe": lambda: state, "runner": start, "authorize": lambda: True}
+    with pytest.raises(subprocess.TimeoutExpired):
+        i.start(run["epoch"], now=100, **options)
+    restart = Intent(i.path)
+    assert restart.read()["pending_start"] is True
+    state.pop("Job")
+    for job in (None, "17"):
+        if job is not None:
+            state["Job"] = job
+        result = restart.start(run["epoch"], now=701, **options)
+        assert result["action"] == "WAITING_FOR_SYSTEMD_JOB_SETTLEMENT"
+        assert restart.read()["pending_start"] is True and len(calls) == 1
+    state.update(ActiveState=settled_state, Job="0")
+    result = restart.start(run["epoch"], now=702, **options)
+    assert result["action"] == ("NO_APPROVED_RECOVERY" if settled_state == "active" else "START_REQUESTED")
+    assert len(calls) == (1 if settled_state == "active" else 2)
+    assert restart.read()["pending_start"] is False
 
 
 def test_start_stop_race_serializes_effect_before_effective_stop(tmp_path):
