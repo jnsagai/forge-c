@@ -182,6 +182,7 @@ class Collector:
         elif previous_ref is not None:
             raise Refused("OPERATIONAL_COLLECTION_RECEIPT_UNBOUND")
         expected_host = previous_host
+        observation_ref = host_segment_ref = None
         for kind in ("observation", "host"):
             attempt_ref = record.get(kind + "_attempt_ref")
             if kind == "host" and self.host_plan_ref is None:
@@ -199,6 +200,7 @@ class Collector:
                     raise Refused("OPERATIONAL_COLLECTION_ATTEMPT_UNBOUND")
                 if kind == "observation":
                     row, _ = O.load_sample(self.manifest, self.plan_ref, ref, frozen=self.frozen)
+                    observation_ref = ref
                     if record["sample"] != self.observed_sample(row):
                         raise Refused("OPERATIONAL_COLLECTION_SAMPLE_CHANGED")
                 else:
@@ -207,6 +209,8 @@ class Collector:
                     if capture.get("previous_capture_ref") != previous_host:
                         raise Refused("OPERATIONAL_COLLECTION_HOST_CHAIN_CHANGED")
                     expected_host = ref
+                    if "kernel_segment" in capture:
+                        host_segment_ref = ref
             elif kind == "observation":
                 expected = {k: attempt[k] for k in ("wall", "mono", "boot_id", "utc")}
                 expected.update(probes={}, healthy=False, observation_complete=False)
@@ -214,7 +218,7 @@ class Collector:
                     raise Refused("OPERATIONAL_COLLECTION_FAILURE_CHANGED")
         if record.get("last_host_ref") != expected_host:
             raise Refused("OPERATIONAL_COLLECTION_HOST_CHAIN_CHANGED")
-        return record
+        return record, observation_ref, host_segment_ref
 
     @staticmethod
     def observed_sample(row):
@@ -245,9 +249,9 @@ class Collector:
             if sequence >= self.config["max_samples"]:
                 raise Refused("OPERATIONAL_COLLECTION_SAMPLE_ALLOWANCE_EXHAUSTED")
             previous_ref = rows[-1].get("collection_ref")
-            prior = self.replay(sequence - 1, rows[-2].get("collection_ref")) if sequence else None
-            if sequence and previous_ref != reference(self.directory(sequence - 1) / "receipt.json"):
-                raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+            prior = None
+            if sequence:
+                prior, _, _ = self.replay(sequence - 1, rows[-2].get("collection_ref"), receipt_ref=previous_ref)
             if prior is not None and self._sample(prior) != {k: v for k, v in rows[-1].items() if k != "collection_ref"}:
                 raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
             path = self.directory(sequence) / "receipt.json"
@@ -283,7 +287,7 @@ class Collector:
                     "host_coverage": "INCOMPLETE_SOURCE_COVERAGE" if self.host_plan_ref else "NOT_COLLECTED",
                 }
                 immutable_json(path, record)
-            record = self.replay(sequence, previous_ref)
+            record, _, _ = self.replay(sequence, previous_ref)
             row = {**self._sample(record), "collection_ref": reference(path)}
             last = rows[-1]
             if row["wall"] <= last["wall"] or (row["boot_id"] == last["boot_id"] and row["mono"] <= last["mono"]):
@@ -304,7 +308,9 @@ class Collector:
             rows = self.history()
         if len(rows) - 1 > self.config["max_samples"]:
             raise Refused("OPERATIONAL_COLLECTION_HISTORY_ALLOWANCE_EXCEEDED")
-        previous_ref, observations, total_bytes = None, [], 0
+        previous_ref, total_bytes = None, 0
+        observations, host_segments = [], []
+        host_segment_gaps = 0
         for sequence, row in enumerate(rows[1:]):
             # Five individually bounded files fit one batch. Repeated semantic
             # reads also remain individually bounded; this counts source bytes,
@@ -316,10 +322,16 @@ class Collector:
                     source_bytes += len(O.read_bytes(p))
             if source_bytes > O.MAX_TRACE_BYTES:
                 raise Refused("OPERATIONAL_COLLECTION_BATCH_BYTE_BOUND_EXCEEDED")
-            record = self.replay(sequence, previous_ref, receipt_ref=row["collection_ref"])
+            record, observation_ref, host_segment_ref = self.replay(
+                sequence, previous_ref, receipt_ref=row["collection_ref"]
+            )
             if row != {**self._sample(record), "collection_ref": row["collection_ref"]}:
                 raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
-            observations.append(O.bound_json(record["observation_attempt_ref"])["artifact_ref"])
+            observations.append(observation_ref)
+            if host_segment_ref is not None:
+                host_segments.append(host_segment_ref)
+            elif self.host_plan_ref is not None:
+                host_segment_gaps += 1
             previous_ref = row["collection_ref"]
             total_bytes += source_bytes
             yield {"status": "SOURCE_REPLAY_PARTIAL", "samples": sequence + 1,
@@ -334,7 +346,9 @@ class Collector:
                "history_sha256": digest(rows), "source_bytes": total_bytes,
                "unexpected_interventions": None,
                "host_coverage": "SEPARATE_INDEPENDENT_VERIFICATION_REQUIRED",
-               "observation_refs": observations}
+               "observation_refs": observations,
+               "host_segment_refs": host_segments,
+               "host_segment_gaps": host_segment_gaps}
 
     def verify(self):
         """Consume all batches; only a fully replayed prefix produces success."""

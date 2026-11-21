@@ -71,6 +71,13 @@ Keep failed captures as immutable history. Their intervals remain unobserved eve
 when later byte coverage succeeds. The replay list contains successful captures
 starting at sequence zero, including every intervening successful range.
 
+For a campaign using the collector, the operational report exposes this array
+as `collection.host_segment_refs` after replaying the original collection
+receipts. Save that array as `SEGMENT_REFS` for `verify-segments`.
+`collection.host_segment_gaps` counts collection samples without a kernel
+segment when a host plan was configured. It records failed capture attempts
+even when later samples recover the missing bytes.
+
 Replay validates artifact hashes/plan bindings, sequence/parent references, exact
 adjacent byte ranges, rolling anchors and retained source contents. It rejects
 missing/reordered/duplicated ranges, changed/truncated/deleted history and altered

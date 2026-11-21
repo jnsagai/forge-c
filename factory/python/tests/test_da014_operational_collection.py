@@ -275,4 +275,15 @@ def test_host_cursor_chain_retains_failed_capture_and_resumes(collector, tmp_pat
     assert resumed["kernel_segment"]["source"]["offset"] == 6
     assert resumed["previous_capture_ref"] == C.reference(c.directory(1) / "host.json")
     assert resumed["kernel_segment"]["sequence"] == 1
-    assert c.verify()["unexpected_interventions"] is None
+    result = c.verify()
+    first_ref = C.reference(c.directory(0) / "host.json")
+    resumed_ref = C.reference(c.directory(2) / "host.json")
+    assert result["host_segment_refs"] == [first_ref, resumed_ref]
+    assert result["host_segment_gaps"] == 1
+    assert result["unexpected_interventions"] is None
+    host_replay = H.verify_segments(
+        manifest, p.ref, C.reference(host_plan), result["host_segment_refs"], p.tmp / "host-replay.json"
+    )
+    assert host_replay["byte_chain"]["bytes"] == len(b"first\nsecond\n")
+    assert host_replay["status"] == "INCOMPLETE_SOURCE_COVERAGE"
+    assert host_replay["unexpected_interventions"] is None
