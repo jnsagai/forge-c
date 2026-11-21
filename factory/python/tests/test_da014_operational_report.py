@@ -263,18 +263,41 @@ def test_a_soak_without_its_frozen_manifest_cannot_be_bound(work):  # noqa: F811
     assert R.report(p.manifest, "soak-operational-report")["manifest_bound"] is False
 
 
-@pytest.mark.parametrize("days, verified", [(29, True), (30, False), (30, True)])
-def test_rolling_availability_uses_verified_observations_beyond_the_soak(work, monkeypatch, days, verified):  # noqa: F811
+@pytest.mark.parametrize("days, verified, scheduled", [
+    (29, True, False), (30, False, False), (30, True, False),
+    (30, True, True), (30, False, True),
+])
+def test_rolling_availability_uses_verified_observations_beyond_the_soak(  # noqa: F811
+    work, monkeypatch, days, verified, scheduled,
+):
     from forge_factory.afo.operational_collection import Collector
 
     p = work
     path, original = timeline(p)
     head, sample = original[:2]
     head["interval_s"] = 300
+    if scheduled:
+        from forge_factory.afo import qualification
+        from test_da014_qualification import identity
+
+        start, end = head["wall"], head["wall"] + 30 * 86400
+        schedule_path = p.tmp / "availability-schedule.json"
+        put(schedule_path, {
+            "schema": "forge-c/availability-schedule/1", "valid_from": start, "valid_through": end,
+            "service_windows": [{"start": start + 600, "end": end - 600}],
+            "exclusions": [{"start": start + 1200, "end": start + 1800, "reason": "PLANNED_POWER_OUTAGE"}],
+        })
+        p.manifest = qualification.freeze("operation-24", p.tmp / "schedule-manifest.json",
+                                         identity=identity(), availability_schedule=schedule_path)
+        path.with_suffix(".manifest.json").unlink()  # Replace only the generated test fixture.
+        put(path.with_suffix(".manifest.json"), p.manifest)
     rows = [head]
     for offset in range(0, days * 86400 + 1, 300):
         at = head["wall"] + offset
-        rows.append({**sample, "wall": at, "mono": at})
+        probes = sample["probes"].copy()
+        if scheduled and offset in (0, 1200, 1500, 2100):
+            probes["conductor"] = False
+        rows.append({**sample, "wall": at, "mono": at, "probes": probes})
     write_rows(path, rows)
     if verified:
         def replay(_):
@@ -286,15 +309,65 @@ def test_rolling_availability_uses_verified_observations_beyond_the_soak(work, m
         monkeypatch.setattr(Collector, "verify", replay)
     report = R.report(p.manifest, "soak-operational-report", observer_plan_ref=p.ref if verified else None)
     assert report["gross_24_7_window"]["window_seconds"] == 86400
-    assert report["rolling_30_day_slo"] == "NOT_DEMONSTRATED"
+    assert report["rolling_30_day_slo"] == ("TARGET_MET" if verified and scheduled else "NOT_DEMONSTRATED")
     rolling = report["rolling_30_day_gross_availability"]
     if verified and days == 30:
-        assert (rolling["status"], rolling["window_seconds"], rolling["gross_availability"]) == (
-            "TARGET_MET", 30 * 86400, 1.0,
+        assert (rolling["status"], rolling["window_seconds"], rolling["unavailable_seconds"]) == (
+            "TARGET_MET", 30 * 86400, 1200 if scheduled else 0,
         )
     else:
         assert rolling["status"] == "NOT_DEMONSTRATED"
         assert rolling["reason"] == ("FULL_WINDOW_REQUIRED" if verified else "VERIFIED_COLLECTION_REQUIRED")
+    if verified and scheduled:
+        scoped = report["rolling_30_day_scheduled_availability"]
+        assert scoped["schedule_ref"] == p.manifest["availability_schedule_ref"]
+        assert scoped["outside_schedule_seconds"] == 1200 and scoped["unavailable_seconds"] == 300
+        assert scoped["exclusions"][0]["seconds"] == 600 and scoped["exclusions"][0]["available_seconds"] == 0
+
+
+@pytest.mark.parametrize("changed", ["overlap", "unplanned", "outside", "unfrozen"])
+def test_schedule_must_be_preregistered_without_overlapping_or_unplanned_exclusions(work, changed):  # noqa: F811
+    from forge_factory.afo import qualification as Q
+    from test_da014_qualification import identity
+
+    schedule = {
+        "schema": "forge-c/availability-schedule/1", "valid_from": 0, "valid_through": 31 * 86400,
+        "service_windows": [{"start": 0, "end": 2000}, {"start": 3000, "end": 4000}],
+        "exclusions": [{"start": 300, "end": 400, "reason": "OPERATOR_MAINTENANCE"}],
+    }
+    if changed == "overlap":
+        schedule["service_windows"][1]["start"] = 10
+    elif changed == "unplanned":
+        schedule["exclusions"][0]["reason"] = "UNPLANNED_OUTAGE"
+    elif changed == "outside":
+        schedule["exclusions"][0].update(start=2500, end=2600)
+    path = work.tmp / "schedule.json"
+    ref = put(path, schedule)
+    with pytest.raises(Refused, match="AVAILABILITY_(SCHEDULE|EXCLUSION)"):
+        if changed == "unfrozen":
+            Q.validate({**work.manifest, "availability_schedule_ref": ref})
+        else:
+            Q.freeze("operation-24", work.tmp / "scheduled.json", identity=identity(), availability_schedule=path)
+
+
+@pytest.mark.parametrize("deficit, reason", [
+    ("horizon", "SCHEDULE_HORIZON_DOES_NOT_COVER_ROLLING_WINDOW"),
+    ("no-seconds", "NO_SCHEDULED_SECONDS_AFTER_EXCLUSIONS"),
+])
+def test_a_schedule_without_coverage_or_eligible_seconds_stays_undemonstrated(deficit, reason):
+    from forge_factory.afo.continuous_metrics import rolling_gross_availability, validate_availability_schedule
+
+    month = 30 * 86400
+    schedule = validate_availability_schedule({
+        "schema": "forge-c/availability-schedule/1", "valid_from": 0,
+        "valid_through": month if deficit == "horizon" else month + 1,
+        "service_windows": [{"start": 1, "end": 120}],
+        "exclusions": [{"start": 1, "end": 120, "reason": "OPERATOR_MAINTENANCE"}],
+    })
+    result = rolling_gross_availability([], 0, month + 1, stale_after=60, schedule=schedule)
+    assert result["scheduled"]["status"] == "NOT_DEMONSTRATED"
+    assert result["scheduled"]["reason"] == reason
+    assert result["unavailable_seconds"] == month
 
 
 def continuity(p, *, intake_at=87700, continued_at=86500, last=87700, order="later-order"):

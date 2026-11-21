@@ -76,6 +76,7 @@ def freeze(
     job_token_reservations=None,
     protocol_faults=None,
     mission=None,
+    availability_schedule=None,
 ):
     from ..lrtx.role_capability import key
 
@@ -107,8 +108,11 @@ def freeze(
                     }
                 )
     count = expected_trial_count(stage, cases)
+    input_paths = list(inputs)
+    if availability_schedule is not None and availability_schedule not in input_paths:
+        input_paths.append(availability_schedule)
     refs = []
-    for raw in inputs:
+    for raw in input_paths:
         p = Path(raw)
         if p.is_symlink() or not p.is_file():
             raise Refused("QUALIFICATION_INPUT_UNAVAILABLE", str(p))
@@ -164,6 +168,9 @@ def freeze(
         manifest["protocol_faults"] = protocol_faults
     if mission is not None:
         manifest["mission"] = mission
+    if availability_schedule is not None:
+        manifest["availability_schedule_ref"] = next(ref for ref in refs
+                                                    if ref["path"] == str(Path(availability_schedule).resolve()))
     validate(manifest)
     immutable_json(Path(destination), manifest)
     return manifest
@@ -273,6 +280,10 @@ def validate(manifest):
         p = Path(ref["path"])
         if not p.is_file() or p.is_symlink() or sha256_file(p) != ref["sha256"]:
             raise Refused("CAMPAIGN_FROZEN_INPUT_CHANGED")
+    if "availability_schedule_ref" in manifest:
+        from .continuous_metrics import frozen_availability_schedule
+
+        frozen_availability_schedule(manifest)
     if manifest["service_persists_after_campaign"] is not True:
         raise Refused("CAMPAIGN_CANNOT_STOP_FACTORY")
     return digest(manifest)
@@ -1054,6 +1065,7 @@ def main(argv=None):
     ap.add_argument("--stage", choices=STAGES, default="protocol")
     ap.add_argument("--identity", type=Path)
     ap.add_argument("--input", type=Path, action="append", default=[])
+    ap.add_argument("--availability-schedule", type=Path, help="freeze: UTC service windows for rolling availability")
     ap.add_argument("--jobs", type=Path)
     ap.add_argument("--mission", type=Path, help="explicit finite qualification mission and lineage, frozen before signing")
     ap.add_argument(
@@ -1071,6 +1083,8 @@ def main(argv=None):
     ap.add_argument("--model-profile")
     ap.add_argument("--baseline", type=Path, help="freeze: preregistered comparison baseline (comparison_factor)")
     args = ap.parse_args(argv)
+    if args.availability_schedule and args.command != "freeze":
+        ap.error("--availability-schedule is only valid with freeze")
     if args.trial and args.command in ("freeze", "report", "capability-report"):
         ap.error("--trial scopes readiness/provisioning/stepping; freeze and report always retain the whole campaign")
     if args.command == "freeze":
@@ -1087,6 +1101,7 @@ def main(argv=None):
             protocol_faults=json.loads(args.protocol_faults.read_text()) if args.protocol_faults else None,
             mission=json.loads(args.mission.read_text()) if args.mission else None,
             baseline=json.loads(args.baseline.read_text()) if args.baseline else None,
+            availability_schedule=args.availability_schedule,
         )
         out = {"status": "FROZEN_NOT_RUN", "manifest_sha256": digest(manifest)}
     else:

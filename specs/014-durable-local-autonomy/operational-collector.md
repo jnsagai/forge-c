@@ -51,7 +51,23 @@ If collection continues after the finite soak, the campaign report projects
 `rolling_30_day_gross_availability` over the 30 days ending at the latest
 replayed sample. It requires a full window and matching source replay.
 Unavailable and unknown time stay in the denominator, including maintenance.
-This measurement is separate from the configured scheduled-window SLO.
+
+To report the scheduled-window SLO, pass `--availability-schedule SCHEDULE.json`
+when freezing the qualification manifest. The schedule uses
+`forge-c/availability-schedule/1` with integer UTC seconds in `valid_from`,
+`valid_through`, and the `start` and `end` of each service window and exclusion.
+List windows and exclusions in chronological order. Exclusions must fit inside
+a service window and carry `OPERATOR_MAINTENANCE`, `PLANNED_STORAGE_OUTAGE`, or
+`PLANNED_POWER_OUTAGE` as their reason. The existing signed manifest binds the
+schedule before collection starts. The report publishes all excluded seconds
+and their observed availability separately. Unplanned outages and unknown time
+inside the scheduled scope count as unavailable. The gross measurement still
+includes the entire wall-clock window. When no eligible scheduled seconds or
+no full horizon exist, the scheduled objective stays undemonstrated.
+
+A one-minute probe interval requires 43,201 sample slots to bracket 30 days,
+plus allowance for a later rolling window. Configure the frozen collector
+accordingly when measuring this objective.
 
 `unexpected_interventions` remains null: byte preservation and healthy HTTP probes
 are not independent proof of authenticated host-wide intervention coverage. Current

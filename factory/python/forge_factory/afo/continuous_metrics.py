@@ -10,6 +10,7 @@ from .durable import Refused
 
 ROLLING_WINDOW_SECONDS = 30 * 86400
 AVAILABILITY_OBJECTIVE = 0.99
+MAINTENANCE_REASONS = {"OPERATOR_MAINTENANCE", "PLANNED_STORAGE_OUTAGE", "PLANNED_POWER_OUTAGE"}
 
 
 def timeline(samples, start, end, *, stale_after=120):
@@ -77,13 +78,116 @@ def timeline(samples, start, end, *, stale_after=120):
     }
 
 
-def rolling_gross_availability(samples, observed_since, observed_until, *, stale_after):
+def validate_availability_schedule(schedule):
+    """Frozen UTC service windows and separately accounted planned exclusions."""
+    keys = {"schema", "valid_from", "valid_through", "service_windows", "exclusions"}
+
+    def epoch(value):
+        return type(value) is int and 0 <= value < 2**53
+
+    if (
+        not isinstance(schedule, dict) or set(schedule) != keys
+        or schedule["schema"] != "forge-c/availability-schedule/1"
+        or not all(epoch(schedule[k]) for k in ("valid_from", "valid_through"))
+        or schedule["valid_through"] - schedule["valid_from"] < ROLLING_WINDOW_SECONDS
+    ):
+        raise Refused("AVAILABILITY_SCHEDULE_INVALID")
+    for field in ("service_windows", "exclusions"):
+        entries = schedule[field]
+        if not isinstance(entries, list) or len(entries) > 10000 or (field == "service_windows" and not entries):
+            raise Refused("AVAILABILITY_SCHEDULE_INVALID")
+        prior_end = schedule["valid_from"]
+        for entry in entries:
+            expected = {"start", "end"} if field == "service_windows" else {"start", "end", "reason"}
+            if (
+                not isinstance(entry, dict) or set(entry) != expected
+                or not all(epoch(entry[k]) for k in ("start", "end"))
+                or not prior_end <= entry["start"] < entry["end"] <= schedule["valid_through"]
+                or (field == "exclusions" and (
+                    not isinstance(entry["reason"], str) or entry["reason"] not in MAINTENANCE_REASONS
+                ))
+            ):
+                raise Refused("AVAILABILITY_SCHEDULE_INVALID")
+            prior_end = entry["end"]
+    service = iter(schedule["service_windows"])
+    window = next(service)
+    for excluded in schedule["exclusions"]:
+        while window is not None and window["end"] <= excluded["start"]:
+            window = next(service, None)
+        if window is None or not window["start"] <= excluded["start"] < excluded["end"] <= window["end"]:
+            raise Refused("AVAILABILITY_EXCLUSION_OUTSIDE_SERVICE_WINDOW")
+    return schedule
+
+
+def frozen_availability_schedule(manifest):
+    if "availability_schedule_ref" not in manifest:
+        return None
+    ref = manifest["availability_schedule_ref"]
+    if not manifest["stage"].startswith("operation-") or ref not in manifest["inputs"]:
+        raise Refused("AVAILABILITY_SCHEDULE_NOT_FROZEN")
+    from .fault_observer import bound_json
+
+    return validate_availability_schedule(bound_json(ref))
+
+
+def measure_windows(intervals, windows, start, end):
+    observations = iter(intervals)
+    row = next(observations, None)
+    for window in windows:
+        a, b = max(start, window["start"]), min(end, window["end"])
+        if a >= b:
+            continue
+        while row is not None and row["end"] <= a:
+            row = next(observations, None)
+        available = unknown = 0.0
+        while row is not None and row["start"] < b:
+            seconds = min(b, row["end"]) - max(a, row["start"])
+            available += seconds if row["control_plane"] == "AVAILABLE" else 0
+            unknown += seconds if row["control_plane"] == "UNKNOWN" else 0
+            if row["end"] >= b:
+                break
+            row = next(observations, None)
+        yield {**window, "start": a, "end": b, "seconds": b - a,
+               "available_seconds": available, "unknown_seconds": unknown}
+
+
+def scheduled_availability(intervals, start, end, schedule):
+    if not schedule["valid_from"] <= start < end <= schedule["valid_through"]:
+        return {"status": "NOT_DEMONSTRATED", "reason": "SCHEDULE_HORIZON_DOES_NOT_COVER_ROLLING_WINDOW"}
+    scheduled = list(measure_windows(intervals, schedule["service_windows"], start, end))
+    exclusions = list(measure_windows(intervals, schedule["exclusions"], start, end))
+    denominator_before_exclusions = sum(row["seconds"] for row in scheduled)
+    denominator = denominator_before_exclusions - sum(row["seconds"] for row in exclusions)
+    if denominator <= 0:
+        return {"status": "NOT_DEMONSTRATED", "reason": "NO_SCHEDULED_SECONDS_AFTER_EXCLUSIONS",
+                "exclusions": exclusions, "scheduled_seconds_before_exclusions": denominator_before_exclusions}
+    available = sum(row["available_seconds"] for row in scheduled) - sum(row["available_seconds"] for row in exclusions)
+    unknown = sum(row["unknown_seconds"] for row in scheduled) - sum(row["unknown_seconds"] for row in exclusions)
+    fraction = available / denominator
+    return {
+        "status": "TARGET_MET" if fraction >= AVAILABILITY_OBJECTIVE else "TARGET_MISSED",
+        "scope": "SCHEDULED_CONTROL_PLANE_FROZEN_SERVICE_WINDOWS",
+        "start": start,
+        "end": end,
+        "target": AVAILABILITY_OBJECTIVE,
+        "scheduled_seconds_before_exclusions": denominator_before_exclusions,
+        "outside_schedule_seconds": end - start - denominator_before_exclusions,
+        "scheduled_seconds": denominator,
+        "available_seconds": available,
+        "unavailable_seconds": denominator - available,
+        "control_plane_unknown_seconds": unknown,
+        "availability": fraction,
+        "exclusions": exclusions,
+    }
+
+
+def rolling_gross_availability(samples, observed_since, observed_until, *, stale_after, schedule=None):
     """Evaluate the last full 30 days of a verified, unadjusted wall-clock history."""
     start = observed_until - ROLLING_WINDOW_SECONDS
     if observed_since > start:
         return {"status": "NOT_DEMONSTRATED", "reason": "FULL_WINDOW_REQUIRED"}
     measured = timeline(samples, start, observed_until, stale_after=stale_after)
-    return {
+    result = {
         "status": "TARGET_MET" if measured["gross_availability"] >= AVAILABILITY_OBJECTIVE else "TARGET_MISSED",
         "scope": "GROSS_24_7_WALL_CLOCK_NO_EXCLUSIONS",
         "start": start,
@@ -92,6 +196,9 @@ def rolling_gross_availability(samples, observed_since, observed_until, *, stale
         **{k: measured[k] for k in ("window_seconds", "available_seconds", "unavailable_seconds",
                                    "control_plane_unknown_seconds", "gross_availability")},
     }
+    if schedule is not None:
+        result["scheduled"] = scheduled_availability(measured["intervals"], start, observed_until, schedule)
+    return result
 
 
 def status(store):
