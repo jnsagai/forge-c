@@ -102,6 +102,68 @@ def test_capture_resume_and_report_replay(collector):
     assert report["missing_faults"] and report["real_work_exposures"] == 0
 
 
+def test_uninterrupted_writer_uses_its_tail_and_full_verification_still_reads_history(collector, monkeypatch):
+    p = collector
+    reads = []
+    history = p.collector.history
+
+    def read_history():
+        reads.append(1)
+        return history()
+
+    monkeypatch.setattr(p.collector, "history", read_history)
+    first = p.collector(p.soak_id)
+    first["collection_ref"]["sha256"] = "0" * 64  # Returned objects are not writer state.
+    for sequence in (1, 2):
+        assert p.collector(p.soak_id)["collection_sequence"] == sequence
+    assert len(reads) == 1
+    assert p.collector.verify()["samples"] == 3
+    assert len(reads) == 3
+    peer = C.Collector(p.manifest, p.soak_id, p.ref)
+    assert peer(p.soak_id)["collection_sequence"] == 3
+    assert p.collector(p.soak_id)["collection_sequence"] == 4
+    assert len(reads) == 4
+
+
+@pytest.mark.parametrize("during_capture", [False, True])
+def test_writer_detects_rebinding_before_or_during_an_append(collector, monkeypatch, during_capture):
+    p = collector
+    p.collector(p.soak_id)
+    original = p.collector.log.read_bytes()
+
+    def change():
+        text = original.replace(b'"kind": "sample"', b'"kind": "forged"', 1)
+        assert len(text) == len(original) and text != original
+        p.collector.log.write_bytes(text)
+
+    if during_capture:
+        attempt = p.collector._attempt
+
+        def change_during_capture(*args):
+            result = attempt(*args)
+            change()
+            return result
+
+        monkeypatch.setattr(p.collector, "_attempt", change_during_capture)
+        expected = "OPERATIONAL_COLLECTION_LOG_CHANGED"
+    else:
+        change()
+        expected = "OPERATIONAL_COLLECTION_HISTORY_UNBOUND"
+    with pytest.raises(Refused, match=expected):
+        p.collector(p.soak_id)
+    assert p.collector.log.stat().st_size == len(original)
+
+
+def test_cached_writer_still_refuses_to_exceed_the_log_byte_bound(collector, monkeypatch):
+    p = collector
+    p.collector(p.soak_id)
+    original = p.collector.log.read_bytes()
+    monkeypatch.setattr(C.O, "MAX_TRACE_BYTES", len(original))
+    with pytest.raises(Refused, match="OPERATIONAL_COLLECTION_HISTORY_BYTE_BOUND_EXCEEDED"):
+        p.collector(p.soak_id)
+    assert p.collector.log.read_bytes() == original
+
+
 def test_replay_preserves_known_probes_without_claiming_full_health(collector, monkeypatch):
     p = collector
     monkeypatch.setattr(C.O, "health", lambda *_: {

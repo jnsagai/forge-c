@@ -33,6 +33,12 @@ The collector refuses mixed/unbound histories, partial tails and clock reversal.
 It neither truncates nor repairs evidence automatically. Disk reserve and finite
 sample exhaustion stop only that collector invocation, with explicit refusal codes.
 
+An uninterrupted collector keeps the last append position in memory. It re-reads
+the history after another writer appends or either the log or frozen manifest
+changes. The append checks the expected log identity under the writer lock.
+A restart begins with a full read, and independent verification still replays
+every receipt and capture from sequence zero.
+
 Each sequence publishes host and independent operational captures, bounded attempt
 records, then an immutable chained receipt, then fsyncs the existing soak JSONL.
 A crash before log append replays the original receipt/capture and measured clocks.

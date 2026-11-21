@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import time
+from copy import deepcopy
 from pathlib import Path
 
 from ..common import sha256_file, utc_now
@@ -74,6 +75,7 @@ class Collector:
         self.frozen = O.plan(manifest, plan_ref)
         self.config = configuration(self.frozen.get("collection"))
         self.log = soak.path(soak_id)
+        self._writer_tail = None
         if host_plan_ref is not None:
             _, host = H._plans(manifest, plan_ref, host_plan_ref)
             if host.get("segments") is None:
@@ -119,6 +121,22 @@ class Collector:
             ):
                 raise Refused("OPERATIONAL_COLLECTION_CLOCK_ORDER_INVALID")
         return rows
+
+    def _writer_position(self):
+        # Only an uninterrupted writer can reuse this position. External
+        # appends and replacements revalidate the full log under the lock.
+        manifest_path = self.log.with_suffix(".manifest.json")
+        log_state = soak._log_identity(self.log.lstat())
+        manifest_state = (soak._log_identity(manifest_path.lstat()), digest(self.manifest))
+        cached = self._writer_tail
+        if cached is not None and cached["log_state"] == log_state and cached["manifest_state"] == manifest_state:
+            return cached
+        rows = self.history()
+        if (log_state != soak._log_identity(self.log.lstat())
+                or manifest_state[0] != soak._log_identity(manifest_path.lstat())):
+            raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+        return {"log_state": log_state, "manifest_state": manifest_state, "sequence": len(rows) - 1,
+                "previous_ref": rows[-2].get("collection_ref") if len(rows) > 1 else None, "last": rows[-1]}
 
     def _attempt(self, sequence, kind, previous_host_ref):
         directory = self.directory(sequence)
@@ -246,15 +264,16 @@ class Collector:
         if soak_id != self.soak_id or probes is not None:
             raise Refused("OPERATIONAL_COLLECTION_CANNOT_OVERRIDE_PROBES")
         with soak.locked(self.log):
-            rows = self.history()
-            sequence = len(rows) - 1
+            position = self._writer_position()
+            sequence = position["sequence"]
             if sequence >= self.config["max_samples"]:
                 raise Refused("OPERATIONAL_COLLECTION_SAMPLE_ALLOWANCE_EXHAUSTED")
-            previous_ref = rows[-1].get("collection_ref")
+            last = position["last"]
+            previous_ref = last.get("collection_ref")
             prior = None
             if sequence:
-                prior, *_ = self.replay(sequence - 1, rows[-2].get("collection_ref"), receipt_ref=previous_ref)
-            if prior is not None and self._sample(prior) != {k: v for k, v in rows[-1].items() if k != "collection_ref"}:
+                prior, *_ = self.replay(sequence - 1, position["previous_ref"], receipt_ref=previous_ref)
+            if prior is not None and self._sample(prior) != {k: v for k, v in last.items() if k != "collection_ref"}:
                 raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
             path = self.directory(sequence) / "receipt.json"
             if not path.exists():
@@ -291,11 +310,17 @@ class Collector:
                 immutable_json(path, record)
             record, *_ = self.replay(sequence, previous_ref)
             row = {**self._sample(record), "collection_ref": reference(path)}
-            last = rows[-1]
             if row["wall"] <= last["wall"] or (row["boot_id"] == last["boot_id"] and row["mono"] <= last["mono"]):
                 raise Refused("OPERATIONAL_COLLECTION_CLOCK_ORDER_INVALID")
-            soak._append_locked(self.log, row)
-            return row
+            manifest_path = self.log.with_suffix(".manifest.json")
+            if position["manifest_state"][0] != soak._log_identity(manifest_path.lstat()):
+                raise Refused("OPERATIONAL_COLLECTION_HEAD_UNBOUND")
+            state = soak._append_locked(self.log, row, position["log_state"], O.MAX_TRACE_BYTES)
+            if state != soak._log_identity(self.log.lstat()):
+                raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+            self._writer_tail = {"log_state": state, "manifest_state": position["manifest_state"],
+                                 "sequence": sequence + 1, "previous_ref": previous_ref, "last": row}
+            return deepcopy(row)
 
     def verify_batches(self):
         """Replay every original capture in finite, single-sample batches.

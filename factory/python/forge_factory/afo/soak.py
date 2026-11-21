@@ -54,18 +54,27 @@ def locked(p: Path):
         os.close(fd)
 
 
-def _append_locked(p: Path, rec: dict) -> None:
+def _log_identity(s):
+    return (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns, s.st_mode, s.st_uid, s.st_nlink)
+
+
+def _append_locked(p: Path, rec: dict, expected_state=None, maximum_bytes=None):
     """Caller owns locked(p). Publish one bounded line and fsync before return."""
     from .durable import Refused
 
     raw = (json.dumps(rec, sort_keys=True, allow_nan=False) + "\n").encode()
     if len(raw) > 65536:
         raise Refused("SOAK_SAMPLE_BYTE_BOUND_EXCEEDED")
-    fd = os.open(p, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    flags = os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK
+    fd = os.open(p, flags | (os.O_CREAT if expected_state is None else 0), 0o600)
     try:
         s = os.fstat(fd)
         if not stat.S_ISREG(s.st_mode) or s.st_uid != os.getuid() or s.st_mode & 0o022:
             raise Refused("SOAK_LOG_NOT_PROTECTED")
+        if expected_state is not None and _log_identity(s) != expected_state:
+            raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
+        if maximum_bytes is not None and s.st_size + len(raw) > maximum_bytes:
+            raise Refused("OPERATIONAL_COLLECTION_HISTORY_BYTE_BOUND_EXCEEDED")
         count = 0
         while count < len(raw):
             written = os.write(fd, raw[count:])
@@ -73,11 +82,15 @@ def _append_locked(p: Path, rec: dict) -> None:
                 raise Refused("SOAK_APPEND_INCOMPLETE")
             count += written
         os.fsync(fd)
+        current = os.fstat(fd)
+        if expected_state is not None and current.st_size != s.st_size + len(raw):
+            raise Refused("OPERATIONAL_COLLECTION_LOG_CHANGED")
         parent = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY)
         try:
             os.fsync(parent)
         finally:
             os.close(parent)
+        return _log_identity(current)
     finally:
         os.close(fd)
 
