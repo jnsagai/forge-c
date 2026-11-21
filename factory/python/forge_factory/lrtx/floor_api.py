@@ -692,6 +692,7 @@ def order(ws: Path, now: float | None = None) -> dict:
                        for f in glob.glob(str(ws / ".forge-run/lrtx" / at / "packets/*.json"))] + [0])
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
             "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node, "wp": wp,
+            "native_running_observed": life == "running",
             "tools": tools, "progress": tool_prog, "tool_detail": detail, "newest_task": newest_task,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 

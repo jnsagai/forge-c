@@ -162,6 +162,8 @@ renderRuntime({monitor:{operations:{desired:'RUNNING',epoch:1},conductor:{observ
  connection:{reachable:true,source_state:'CURRENT',feed_age_s:3},work:{drivers:[],jobs:{available:false}},throughput:{tok_s:null}}});
 const text = $('#runtime-monitor').innerHTML;
 if (!text.includes('Observing only; no orders are placed.') || !text.includes('Operations RUNNING does not imply a running job.') || !text.includes('No recent completed-call measurement; not zero.')) throw Error('false activity/speed label');
+renderRuntime({monitor:{work:{driver_activity:'UNKNOWN',unconfirmed_orders:1,drivers:[],jobs:{available:false}}}});
+if (!$('#runtime-monitor').innerHTML.includes('1 open order lacks current Fabro run evidence.')) throw Error('unconfirmed driver not shown');
 renderRuntime({monitor:{operations:{desired:'<PRIVATE>'},work:{drivers:[],jobs:{available:false}}}});
 if ($('#runtime-monitor').innerHTML.includes('<PRIVATE>')) throw Error('unescaped data');
 disconnectedRuntime();

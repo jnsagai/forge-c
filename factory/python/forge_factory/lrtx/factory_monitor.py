@@ -152,14 +152,19 @@ def snapshot(supervisor, orders, station, speed, *, now=None):
         if mode in ("STOPPED", "PAUSED", "DRAINING"):
             ready = mode
     drivers = []
+    unconfirmed = 0
     for order in orders:
         if order.get("state") != "RUNNING":
             continue
         node = order.get("node") or {}
+        if not node.get("node") and order.get("native_running_observed") is not True:
+            unconfirmed += 1
+            continue
         drivers.append({"work_order": _text(order.get("wo")), "phase": _text(order.get("at")),
                         "agent": _text(node.get("cell")), "node": _text(node.get("node")),
                         "observed_model": _text(node.get("model")),
                         "reworks": sum(p.get("reworks", 0) for p in order.get("phases", {}).values())})
+    driver_activity = "OBSERVED" if drivers else "UNKNOWN" if unconfirmed else "NO_CURRENT_DRIVER_OBSERVED"
     issues = [{k: _text(i.get(k)) for k in ("issue_id", "status", "class", "phase", "error_code")}
               for i in supervisor.get("issues") or [] if i.get("status") != "RESOLVED"]
     measured = (isinstance(speed, dict) and _number(speed.get("tok_s")) and speed["tok_s"] >= 0
@@ -184,6 +189,6 @@ def snapshot(supervisor, orders, station, speed, *, now=None):
                            "model": _text(speed.get("model")) if measured else None,
                            "age_s": speed.get("age_s") if measured else None,
                            "kind": "RECENT_CALL_MEASUREMENT" if measured else "UNKNOWN"},
-            "work": {"driver_activity": "OBSERVED" if drivers else "NO_CURRENT_DRIVER_OBSERVED",
+            "work": {"driver_activity": driver_activity, "unconfirmed_orders": unconfirmed,
                      "drivers": drivers[:20], "jobs": _jobs(root, now)},
             "recovery": {"open_observed": len(issues), "issues": issues[:20]}}

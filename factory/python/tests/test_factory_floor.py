@@ -77,6 +77,20 @@ def test_orders_get_a_state_and_a_plain_note(plant):
     assert by["WO-RUN"]["route"] == {"SWE.1": "ok", "SWE.2": "run"}
 
 
+def test_runtime_monitor_requires_fabro_evidence_beyond_an_open_visit(plant, monkeypatch):
+    ws = plant / "workorders/WO-RUN/workspace"
+    (ws / ".forge-run/fabro_run_id").write_text("RUN1")
+    monkeypatch.setattr(F, "fabro_lifecycle", lambda rid: None)
+    monitor = F.floor(now=NOW, since=NOW - 86400)["monitor"]["work"]
+    assert monitor["driver_activity"] == "UNKNOWN"
+    assert monitor["drivers"] == [] and monitor["unconfirmed_orders"] == 1
+
+    monkeypatch.setattr(F, "fabro_lifecycle", lambda rid: "running" if rid == "RUN1" else None)
+    monitor = F.floor(now=NOW, since=NOW - 86400)["monitor"]["work"]
+    assert monitor["driver_activity"] == "OBSERVED" and monitor["unconfirmed_orders"] == 0
+    assert [driver["work_order"] for driver in monitor["drivers"]] == ["WO-RUN"]
+
+
 def test_halls_and_kpis_count_recorded_decisions_only(plant):
     d = F.floor(now=NOW, since=NOW - 86400)
     h = {x["id"]: x for x in d["halls"]}

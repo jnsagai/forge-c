@@ -801,6 +801,9 @@ function renderRuntime(d) {
   const age = (v) => Number.isFinite(v) && v >= 0 ? `${Math.round(v)} s ago` : "age unknown";
   const tile = (name, value, note, id = "") => `<div class="kpi"><span class="label">${esc(name)}</span><span class="v"${id ? ` id="${id}"` : ""}>${esc(known(value))}</span><span class="n">${esc(note)}</span></div>`;
   const current = work.drivers || [];
+  const unconfirmed = Number.isInteger(work.unconfirmed_orders) ? work.unconfirmed_orders : 0;
+  const driverNote = unconfirmed ? `${unconfirmed} open ${unconfirmed === 1 ? "order lacks" : "orders lack"} current Fabro run evidence.` :
+    "Operations RUNNING does not imply a running job.";
   const source = c.source_state || "UNKNOWN";
   const connection = c.reachable ? `Connected · source ${source}` : `Reading source · ${source}`;
   const readiness = conductor.readiness || "UNKNOWN";
@@ -815,7 +818,7 @@ function renderRuntime(d) {
       ${tile("Admission", readiness, readinessNote)}
       ${tile("Last reported model", model.last_reported_loaded, `${model.fresh ? "Recent successful swap" : "Current loaded model not verified"} · ${age(model.age_s)}`)}
       ${tile("Recent throughput", measurement, speed.model ? `${speed.model} · completed-call measurement · ${age(speed.age_s)}` : "No recent completed-call measurement; not zero.")}
-      ${tile("Driver activity", work.driver_activity === "OBSERVED" ? `${current.length} observed` : work.driver_activity === "NO_CURRENT_DRIVER_OBSERVED" ? "No current driver observed" : "UNKNOWN", "Operations RUNNING does not imply a running job.")}
+      ${tile("Driver activity", work.driver_activity === "OBSERVED" ? `${current.length} observed` : work.driver_activity === "NO_CURRENT_DRIVER_OBSERVED" ? "No current driver observed" : "UNKNOWN", driverNote)}
       ${tile("Healthy model calls", conductor.model_calls_healthy, "Conductor monitoring; no model calls are made for health.")}</div>
     <div>${current.map((j) => `<div><b>${esc(j.work_order || "UNKNOWN")}</b> · ${esc(j.phase || "UNKNOWN")} · ${esc(j.agent || "agent UNKNOWN")} · ${esc(j.observed_model || "actual model UNKNOWN")} · ${Number(j.reworks || 0)} recorded reworks</div>`).join("")}</div>
     <div class="runtime-jobs"><div class="label">Durable product / repair jobs · ${jobs.available ? "observed records" : "UNKNOWN: queue not observed"}</div>
