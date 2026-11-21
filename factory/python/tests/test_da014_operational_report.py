@@ -78,6 +78,17 @@ def test_real_work_is_recomputed_from_existing_audit_and_native_capture(work):  
     assert report["status"] == "INCOMPLETE" and report["missing_faults"]
 
 
+def test_verified_work_after_campaign_end_is_only_post_campaign_evidence(work):  # noqa: F811
+    p = work
+    timeline(p, start=100 - 24 * 3600)
+    row, _, _ = audited(p)
+    ref = put(p.tmp / "post-campaign-work.json", W.evaluate(p.manifest, p.ref, row, p.samples))
+    report = R.report(p.manifest, "soak-operational-report", work_refs=[ref])
+    assert report["real_work_exposures"] == 0
+    assert report["post_campaign_work_exposures"] == 1
+    assert report["unverified_work_records"] == 0
+
+
 def test_work_outside_the_observed_campaign_window_does_not_count(work):  # noqa: F811
     p = work
     path, rows = timeline(p)
@@ -138,7 +149,7 @@ def test_a_soak_without_its_frozen_manifest_cannot_be_bound(work):  # noqa: F811
     assert R.report(p.manifest, "soak-operational-report")["manifest_bound"] is False
 
 
-def continuity(p, *, intake_at=86500, continued_at=86500, last=87700, order="later-order"):
+def continuity(p, *, intake_at=87700, continued_at=86500, last=87700, order="later-order"):
     fixture = put(p.tmp / "later-fixture.json", {"parameters": {"order_id": order}})
     post = put(p.tmp / "post-receipt.json", {"at": continued_at})
     intake = put(p.tmp / "later-receipt.json", {"at": intake_at, "fixture_ref": fixture})
@@ -179,13 +190,15 @@ def test_continuity_requires_post_window_and_later_independently_verified_native
 
 
 @pytest.mark.parametrize(
-    "change", ["early-intake", "early-continuity", "short-window", "different-plan", "gap", "unverified-work"]
+    "change", ["early-intake", "premature-intake", "early-continuity", "short-window", "different-plan", "gap", "unverified-work"]
 )
 def test_continuity_cannot_be_declared_from_a_different_or_incomplete_window(work, change):  # noqa: F811
     p = work
     kwargs = {}
     if change == "early-intake":
         kwargs["intake_at"] = 86499
+    if change == "premature-intake":
+        kwargs["intake_at"] = 87699
     if change == "early-continuity":
         kwargs["continued_at"] = 86499
     if change == "short-window":

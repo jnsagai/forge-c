@@ -280,9 +280,15 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     for row in work:
         if row.get("schema") == operational_work.SCHEMA:
             verified_work.append(operational_work.verify(manifest, row))
-    window_work = [
+    campaign_work = [
         r for r in verified_work
-        if operational_work.work_in_window(r, head["wall"], samples[-1]["wall"])
+        if r["independently_verified"] is True and operational_work.work_in_window(r, head["wall"], end)
+    ]
+    post_campaign_work = [
+        r for r in verified_work
+        if r["independently_verified"] is True
+        and operational_work.work_in_window(r, expected_end, samples[-1]["wall"])
+        and r["native_terminal_observed_at"] > expected_end
     ]
     missing = sorted(set(manifest["faults"]) - {r["fault"] for r in faults})
     failed = [
@@ -296,9 +302,10 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     ]
     duration_ok = samples[-1]["wall"] >= expected_end
     later = continuity_verdict(
-        manifest, [r for r in [*faults, *continuity] if digest(r) in verified], window_work, expected_end
+        manifest, [r for r in [*faults, *continuity] if digest(r) in verified], post_campaign_work, expected_end
     )
-    work_ok = bool(work) and len(window_work) == len(work) and all(r["independently_verified"] is True for r in window_work)
+    accounted_work = len(campaign_work) + len(post_campaign_work)
+    work_ok = bool(campaign_work) and accounted_work == len(work)
     telemetry_ok = all(
         clock_known(a, b) and probes_known(b)
         for a, b in zip([head, *samples], samples, strict=False)
@@ -324,8 +331,9 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "gross_24_7_window": gross,
         "missing_faults": missing,
         "failed_faults": failed,
-        "real_work_exposures": sum(r["independently_verified"] for r in window_work),
-        "unverified_work_records": len(work) - sum(r["independently_verified"] for r in window_work),
+        "real_work_exposures": len(campaign_work),
+        "post_campaign_work_exposures": len(post_campaign_work),
+        "unverified_work_records": len(work) - accounted_work,
         "post_campaign_continuity": later,
         "rolling_30_day_slo": "NOT_DEMONSTRATED",
         "service_intent_unchanged": None,  # requires the independent intent timeline; never assume it from a report call
@@ -345,7 +353,8 @@ def continuity_verdict(manifest, records, work, expected_end):
     for continued in post:
         end_rows = [bound_json(ref) for ref in continued["sample_refs"]]
         receipt = bound_json(continued["injection_ref"])
-        if receipt["at"] < expected_end or end_rows[-1]["wall"] < expected_end + manifest["bounds"]["post_campaign_seconds"]:
+        continuous_until = receipt["at"] + manifest["bounds"]["post_campaign_seconds"]
+        if receipt["at"] < expected_end or end_rows[-1]["wall"] < continuous_until:
             continue
         for admitted in later:
             if admitted["plan_ref"] != continued["plan_ref"]:
@@ -353,7 +362,7 @@ def continuity_verdict(manifest, records, work, expected_end):
             intake = bound_json(admitted["injection_ref"])
             fixture = bound_json(intake["fixture_ref"])
             oid = fixture["parameters"]["order_id"]
-            if intake["at"] < expected_end:
+            if intake["at"] < continuous_until:
                 continue
             if any(
                 w["independently_verified"] is True
