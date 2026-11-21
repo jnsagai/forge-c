@@ -58,11 +58,8 @@ def verify_on_freeze(ws: Path, phase: str, baseline: dict, store=None) -> list[s
     m = Path(ws) / ".forge-run/manifest.json"
     run_id = (json.loads(m.read_text()) if m.is_file() else {}).get("work_order")
     store = store or LessonStore()
-    with store._conn() as c:
-        exposed = {(r["lesson_id"], (r.get("data") or {}).get("packet_input_hash"))
-                   for r in (json.loads(x[0]) for x in
-                             c.execute("SELECT record FROM lesson_transfers WHERE kind='EXPOSURE'"))
-                   if r.get("run_id") == run_id}
+    exposed = {(r["lesson_id"], (r.get("data") or {}).get("packet_input_hash"))
+               for _, r in store.exposure_records(run_id)}
     out = []
     for d in (json.loads(x) for x in f.read_text().splitlines() if x.strip()):
         if d.get("phase") != phase:

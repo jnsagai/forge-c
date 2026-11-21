@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS learning_history (
  seq INTEGER PRIMARY KEY AUTOINCREMENT, experience_id TEXT NOT NULL, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS lesson_qualifications (qualification_id TEXT PRIMARY KEY, record TEXT NOT NULL, sha256 TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS lesson_transfers (transfer_id TEXT PRIMARY KEY, kind TEXT NOT NULL, record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS lesson_exposure_by_run ON lesson_transfers (
+  CASE WHEN json_valid(record) THEN json_extract(record, '$.run_id') END
+) WHERE kind='EXPOSURE';
 CREATE TRIGGER IF NOT EXISTS experiences_no_update BEFORE UPDATE ON job_experience BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
 CREATE TRIGGER IF NOT EXISTS experiences_no_delete BEFORE DELETE ON job_experience BEGIN SELECT RAISE(ABORT, 'APPEND_ONLY'); END;
 """

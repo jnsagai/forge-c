@@ -8,10 +8,10 @@ from ..afo.durable import Refused, digest
 
 COSTS = ("product_tokens", "retrieval_tokens", "curation_tokens", "validation_tokens", "wall_seconds", "energy_joules")
 QUALITY = ("false_ready", "critical_defect_missed")
-MEASUREMENT_FIELDS = {"condition", "native_run_id", "started_at", "lesson_exposure_ids", *QUALITY}
+MEASUREMENT_FIELDS = {"condition", "native_run_id", "consumer_id", "started_at", "lesson_exposure_ids", *QUALITY}
 
 
-def compare(manifest, baseline, memory):
+def compare(manifest, baseline, memory, *, lesson_store=None):
     """Combine independently verified rows from matched, preregistered cohorts."""
     ids = manifest["evaluation_ids"]
     if not ids or len(set(ids)) != len(ids) or set(ids) & set(manifest["learning_ids"]):
@@ -21,7 +21,7 @@ def compare(manifest, baseline, memory):
         raise Refused("LEARNING_CHRONOLOGY_INVALID")
 
     manifest_hash = digest(manifest)
-    seen_runs = set()
+    seen_runs, seen_consumers = set(), set()
     incomplete = []
 
     def normalized(rows, condition):
@@ -44,9 +44,11 @@ def compare(manifest, baseline, memory):
             if not isinstance(measurement, dict) or not MEASUREMENT_FIELDS <= set(measurement):
                 raise Refused("LEARNING_MEASUREMENT_INVALID")
             run = measurement["native_run_id"]
+            consumer = measurement["consumer_id"]
             at = measurement["started_at"]
             exposures = measurement["lesson_exposure_ids"]
             if (measurement["condition"] != condition or not isinstance(run, str) or not run
+                    or not isinstance(consumer, str) or not consumer
                     or any(type(measurement[k]) is not bool for k in QUALITY)
                     or not isinstance(exposures, list) or any(not isinstance(e, str) or not e for e in exposures)
                     or len(set(exposures)) != len(exposures)):
@@ -56,8 +58,19 @@ def compare(manifest, baseline, memory):
             if run in seen_runs:
                 raise Refused("LEARNING_NATIVE_RUN_REUSED")
             seen_runs.add(run)
+            if consumer in seen_consumers:
+                raise Refused("LEARNING_CONSUMER_REUSED")
+            seen_consumers.add(consumer)
             if condition == "baseline" and exposures:
                 raise Refused("LEARNING_BASELINE_EXPOSED")
+            if lesson_store is None:
+                incomplete.append({"condition": condition, "case_id": r["case_id"], "reason": "LESSON_LEDGER_NOT_VERIFIED"})
+            else:
+                recorded = {receipt for receipt, _ in lesson_store.exposure_records(consumer)}
+                if condition == "baseline" and recorded:
+                    raise Refused("LEARNING_BASELINE_EXPOSED")
+                if recorded != set(exposures):
+                    raise Refused("LEARNING_EXPOSURE_RECEIPTS_MISMATCH")
         return {r["case_id"]: r for r in rows}
 
     a, b = normalized(baseline, "baseline"), normalized(memory, "memory")

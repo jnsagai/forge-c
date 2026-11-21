@@ -266,7 +266,7 @@ def test_retraction_removes_qualified_memory_and_retains_consumers(memory, tmp_p
     assert result[0]["impacted_runs"] == ["job-B"] and memory.get(rec["lesson_id"])["state"] == "RETRACTED"
 
 
-def test_chronological_comparison_includes_learning_cost_and_holdout(memory):
+def test_chronological_comparison_includes_learning_cost_and_holdout(memory, tmp_path):
     manifest = {
         "evaluation_ids": ["B"],
         "learning_ids": ["A"],
@@ -274,6 +274,20 @@ def test_chronological_comparison_includes_learning_cost_and_holdout(memory):
         "evaluation_start": 2,
         "configuration_sha256": "abc",
     }
+
+    lesson = candidate(memory, tmp_path)
+    memory.validate(memory.propose(lesson, phase="SWE.3")["lesson_id"])
+
+    def deliver(consumer):
+        return memory.find("register mapping", consumer, phase="SWE.3", role="swe3-author", target="STM32N6",
+                           source_version="v1", tool_versions={"gcc": "14"})
+
+    assert deliver("consumer-memory")
+    exposure_ids = [receipt for receipt, _ in memory.exposure_records("consumer-memory")]
+    assert len(exposure_ids) == 1
+
+    def report(a, b):
+        return comparison.compare(manifest, [a], [b], lesson_store=memory)
 
     def row(cost, condition):
         return {
@@ -283,48 +297,67 @@ def test_chronological_comparison_includes_learning_cost_and_holdout(memory):
             "independent_pass": True,
             "costs": dict.fromkeys(comparison.COSTS, cost),
             "measurement": {"condition": condition, "native_run_id": f"test-native-{condition}", "started_at": 3,
+                            "consumer_id": f"consumer-{condition}",
                             "false_ready": False, "critical_defect_missed": False,
-                            "lesson_exposure_ids": ["fixture-validated-lesson-use"] if condition == "memory" else []},
+                            "lesson_exposure_ids": exposure_ids if condition == "memory" else []},
         }
 
     baseline, learned = row(10, "baseline"), row(8, "memory")
     learned["costs"]["curation_tokens"] = 100
-    assert not comparison.compare(manifest, [baseline], [learned])["benefit_demonstrated"]
+    assert not report(baseline, learned)["benefit_demonstrated"]
     learned["costs"]["curation_tokens"] = 0
-    assert comparison.compare(manifest, [baseline], [learned])["benefit_demonstrated"]
+    assert report(baseline, learned)["benefit_demonstrated"]
     prior = copy.deepcopy(learned)
     prior.pop("measurement")
-    assert comparison.compare(manifest, [baseline], [prior])["status"] == "INSUFFICIENT_EVIDENCE"
+    assert report(baseline, prior)["status"] == "INSUFFICIENT_EVIDENCE"
     for field in comparison.QUALITY:
         unsafe = copy.deepcopy(learned)
         unsafe["measurement"][field] = True
-        result = comparison.compare(manifest, [baseline], [unsafe])
+        result = report(baseline, unsafe)
         assert result["status"] == "QUALITY_REGRESSION" and result["quality_findings"][field]["memory"] == ["B"]
         assert not result["benefit_demonstrated"]
 
     reused = copy.deepcopy(learned)
     reused["measurement"]["native_run_id"] = baseline["measurement"]["native_run_id"]
     with pytest.raises(Refused, match="LEARNING_NATIVE_RUN_REUSED"):
-        comparison.compare(manifest, [baseline], [reused])
+        report(baseline, reused)
     early = copy.deepcopy(learned)
     early["measurement"]["started_at"] = 1.5
     with pytest.raises(Refused, match="LEARNING_CHRONOLOGY_INVALID"):
-        comparison.compare(manifest, [baseline], [early])
+        report(baseline, early)
     contaminated = copy.deepcopy(baseline)
     contaminated["measurement"]["lesson_exposure_ids"] = ["fixture-other-use"]
     with pytest.raises(Refused, match="LEARNING_BASELINE_EXPOSED"):
-        comparison.compare(manifest, [contaminated], [learned])
-    assert comparison.compare(
-        manifest, [{**baseline, "independent_pass": False}], [{**learned, "independent_pass": False}]
-    )["status"] == "NO_MEASURED_BENEFIT"
+        report(contaminated, learned)
+    assert report({**baseline, "independent_pass": False}, {**learned, "independent_pass": False})["status"] == "NO_MEASURED_BENEFIT"
+
+    assert comparison.compare(manifest, [baseline], [learned])["status"] == "INSUFFICIENT_EVIDENCE"
+    forged = copy.deepcopy(learned)
+    forged["measurement"]["lesson_exposure_ids"] = ["unrecorded-exposure"]
+    with pytest.raises(Refused, match="LEARNING_EXPOSURE_RECEIPTS_MISMATCH"):
+        report(baseline, forged)
+    reused_consumer = copy.deepcopy(learned)
+    reused_consumer["measurement"]["consumer_id"] = baseline["measurement"]["consumer_id"]
+    with pytest.raises(Refused, match="LEARNING_CONSUMER_REUSED"):
+        report(baseline, reused_consumer)
 
     bad = copy.deepcopy(manifest)
     bad["learning_ids"] = ["B"]
     with pytest.raises(Refused):
         comparison.compare(bad, [baseline], [learned])
-    learned["costs"].pop("validation_tokens")
-    with pytest.raises(Refused):
-        comparison.compare(manifest, [baseline], [learned])
+    missing_cost = copy.deepcopy(learned)
+    missing_cost["costs"].pop("validation_tokens")
+    with pytest.raises(Refused, match="LEARNING_OVERHEAD_UNKNOWN"):
+        report(baseline, missing_cost)
+
+    with memory._conn() as db:
+        db.execute("UPDATE lesson_transfers SET record=json_set(record,'$.data.damage',1) WHERE transfer_id=?",
+                   (exposure_ids[0],))
+    with pytest.raises(Refused, match="LESSON_EXPOSURE_RECEIPT_CHANGED"):
+        report(baseline, learned)
+    assert deliver("consumer-baseline")
+    with pytest.raises(Refused, match="LEARNING_BASELINE_EXPOSED"):
+        report(baseline, learned)
 
 
 def test_detached_failed_job_capture_survives_absent_package_and_keeps_unknown(tmp_path, monkeypatch):

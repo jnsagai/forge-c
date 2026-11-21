@@ -404,7 +404,7 @@ class LessonStore:
 
     def expose(self, items, run_id, *, data=None):
         """All-or-none delivery fence and consumer receipt; retraction cannot race this commit."""
-        from ..afo.durable import digest, canonical
+        from ..afo.durable import canonical, digest
 
         with self._conn() as c:
             c.execute("BEGIN IMMEDIATE")
@@ -413,7 +413,8 @@ class LessonStore:
                 return False
             for it in items:
                 c.execute(
-                    "INSERT INTO lesson_usage(lesson_id,run_id,used_at) SELECT ?,?,? WHERE NOT EXISTS (SELECT 1 FROM lesson_usage WHERE lesson_id=? AND run_id=?)",
+                    "INSERT INTO lesson_usage(lesson_id,run_id,used_at) SELECT ?,?,? "
+                    "WHERE NOT EXISTS (SELECT 1 FROM lesson_usage WHERE lesson_id=? AND run_id=?)",
                     (it["lesson_id"], run_id, utc_now(), it["lesson_id"], run_id),
                 )
                 record = {
@@ -431,12 +432,32 @@ class LessonStore:
         return True
 
     # -- T033 retraction -----------------------------------------------------------------------------
+    def exposure_records(self, run_id: str) -> list[tuple[str, dict]]:
+        """Read the immutable delivery receipts for one consumer and replay their IDs."""
+        from ..afo.durable import Refused, digest
+
+        if not isinstance(run_id, str) or not run_id:
+            return []
+        with self._conn() as c:
+            rows = c.execute(
+                """SELECT transfer_id,record FROM lesson_transfers
+                   WHERE kind='EXPOSURE' AND
+                   CASE WHEN json_valid(record) THEN json_extract(record, '$.run_id') END = ?
+                   ORDER BY transfer_id""",
+                (run_id,),
+            ).fetchall()
+        receipts = []
+        for transfer_id, raw in rows:
+            record = json.loads(raw)
+            if record.get("kind") != "EXPOSURE" or transfer_id != "transfer-" + digest(record)[:24]:
+                raise Refused("LESSON_EXPOSURE_RECEIPT_CHANGED")
+            receipts.append((transfer_id, record))
+        return receipts
+
     def exposures(self, run_id: str, phase: str | None = None) -> list[str]:
         """Lesson ids delivered to this run (optionally to one phase): the lessons rung of a gap's attempt record."""
-        with self._conn() as c:
-            recs = [json.loads(r[0]) for r in c.execute("SELECT record FROM lesson_transfers WHERE kind='EXPOSURE'")]
-        return sorted({r["lesson_id"] for r in recs if r.get("run_id") == run_id
-                       and (phase is None or (r.get("data") or {}).get("phase") == phase)})
+        return sorted({r["lesson_id"] for _, r in self.exposure_records(run_id)
+                       if phase is None or (r.get("data") or {}).get("phase") == phase})
 
     def consumers(self, lesson_id: str) -> list[str]:
         with self._conn() as c:
