@@ -26,6 +26,14 @@ from test_line_maintenance_dispatch import prepare_job
 from test_line_soak_prerequisites import ref
 
 
+@pytest.fixture(autouse=True)
+def line_queue_path(monkeypatch, tmp_path):
+    from forge_factory.afo import queue
+
+    # Seed the same isolated queue that the normal line provenance reader opens.
+    monkeypatch.setattr(queue, "default_path", lambda: tmp_path / "state/supervisor/line-queue.sqlite3")
+
+
 @pytest.fixture
 def offline(terminal, monkeypatch, tmp_path):
     from forge_factory import workorder
