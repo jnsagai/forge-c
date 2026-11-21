@@ -10,8 +10,8 @@ development can check it holds the same frozen inputs; prompts are reproducible 
 Vendor inputs and document indexes are NEVER_CONTENT. Inside exported JSON, keys that carry prompts or reasoning are
 removed and secrets redacted; both are counted per file in the manifest, so nothing disappears silently. Building the
 same runs twice gives byte-identical bundles. REPORT.md and a matching .md sidecar present the structured evidence
-for manual development review. Unparseable record text is omitted from the report and counted. Nothing here opens a
-network connection.
+for manual development review. Unparseable records are counted and their contents omitted from both outputs. Nothing
+here opens a network connection.
 """
 from __future__ import annotations
 
@@ -30,6 +30,7 @@ from ..common import REPO_ROOT
 SCHEMA = "forge-c/offline-export/1"
 CONTRACT = REPO_ROOT / "specs/014-durable-local-autonomy/contracts/offline-export-manifest.schema.json"
 FIXED_TIME = (1980, 1, 1, 0, 0, 0)
+OMITTED_RECORD = "[UNPARSEABLE_RECORD_OMITTED]"
 RECORDS = (".forge-run/manifest.json", ".forge-run/model-profile.json", ".forge-run/local-profile.json",
            ".forge-run/binding.json", ".forge-run/durable-binding.json", ".forge-run/preflight.json",
            ".forge-run/package.json", ".forge-run/safety_scope.json", ".forge-run/recovery-plan.json",
@@ -73,23 +74,33 @@ def _clean(o, n: list[int]):
     return o
 
 
-def _export_bytes(rel: str, data: bytes) -> tuple[bytes, int, int]:
-    n = [0, 0]
-    text = data.decode("utf-8", errors="replace")
-    if rel.endswith(".json"):
+def _export_bytes(rel: str, data: bytes) -> tuple[bytes, int, int, int]:
+    counts = [0, 0]
+    omitted = 0
+
+    def record(raw: bytes, *, indent=None) -> str:
+        nonlocal omitted
         try:
-            return (json.dumps(_clean(json.loads(text), n), indent=1, sort_keys=True) + "\n").encode(), n[0], n[1]
-        except ValueError:
+            value = json.loads(raw.decode("utf-8"))
+            if isinstance(value, (dict, list)):
+                return json.dumps(_clean(value, counts), indent=indent, sort_keys=True, allow_nan=False)
+        except (ValueError, RecursionError):
             pass
+        omitted += 1
+        return OMITTED_RECORD
+
+    if rel.endswith(".json"):
+        text = record(data, indent=1) + "\n"
     elif rel.endswith(".jsonl"):
-        lines = []
-        for line in text.splitlines():
-            try:
-                lines.append(json.dumps(_clean(json.loads(line), n), sort_keys=True))
-            except ValueError:
-                lines.append(_clean(line, n))
-        return ("\n".join(lines) + "\n" if lines else "").encode(), n[0], n[1]
-    return _clean(text, n).encode(), n[0], n[1]  # unparsable record: text with secrets redacted
+        text = "".join(record(line) + "\n" for line in data.splitlines() if line.strip())
+    else:
+        identity = data.decode("ascii", errors="replace").strip()
+        if re.fullmatch(r"[A-Za-z0-9._:-]{1,160}", identity):
+            text = _clean(identity, counts) + "\n"
+        else:
+            omitted = 1
+            text = OMITTED_RECORD + "\n"
+    return text.encode(), counts[0], counts[1], omitted
 
 
 def _walk(ws: Path):
@@ -110,30 +121,43 @@ def _revision() -> tuple[str, bool]:
         return "UNKNOWN", False
 
 
-def _run(ws: Path) -> tuple[dict, dict[str, bytes]]:
-    man = json.loads((ws / ".forge-run/manifest.json").read_text()) if (ws / ".forge-run/manifest.json").is_file() else {}
-    prof = json.loads((ws / ".forge-run/model-profile.json").read_text()) \
-        if (ws / ".forge-run/model-profile.json").is_file() else {}
-    wo = str(man.get("work_order") or ws.parent.name)
+def _run(ws: Path) -> tuple[dict, dict[str, bytes], int]:
     files, blobs = [], {}
+    omitted_records = 0
     for rel, p in _walk(ws):
         data = p.read_bytes()
         row = {"path": rel, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
         if _under(rel, NEVER_CONTENT):
             row["content"] = "NEVER_CONTENT"
         elif _under(rel, RECORDS) and rel.endswith(RECORD_SUFFIXES):
-            out, stripped, red = _export_bytes(rel, data)
+            out, stripped, red, omitted = _export_bytes(rel, data)
             row.update(content="INCLUDED", exported_sha256=hashlib.sha256(out).hexdigest(), stripped_keys=stripped,
                        redactions=red)
+            omitted_records += omitted
             blobs[rel] = out
         else:
             row["content"] = "HASH_ONLY"
         files.append(row)
+    def metadata(path: str) -> dict:
+        if path not in blobs:
+            return {}
+        try:
+            value = json.loads(blobs[path])
+        except ValueError:
+            return {}
+        return value if isinstance(value, dict) else {}
+
+    man = metadata(".forge-run/manifest.json")
+    prof = metadata(".forge-run/model-profile.json")
+    wo = man.get("work_order")
+    if not isinstance(wo, str) or not wo:
+        wo = _clean(ws.parent.name, [0, 0])
     ident = hashlib.sha256("".join(f"{f['path']}\0{f['sha256']}\n" for f in files).encode()).hexdigest()[:12]
     key = re.sub(r"[^A-Za-z0-9._-]", "_", wo) + "-" + ident
     local = man.get("local_profile") if isinstance(man.get("local_profile"), dict) else {}
-    return {"run_key": key, "workorder": wo, "profile": local.get("id") if isinstance(local.get("id"), str) else None,
-            "model": prof.get("default") if isinstance(prof.get("default"), str) else None, "files": files}, blobs
+    run = {"run_key": key, "workorder": wo, "profile": local.get("id") if isinstance(local.get("id"), str) else None,
+           "model": prof.get("default") if isinstance(prof.get("default"), str) else None, "files": files}
+    return run, blobs, omitted_records
 
 
 def _check(manifest: dict) -> None:
@@ -198,8 +222,10 @@ def build(workspaces: list[Path], out: Path) -> dict:
     if report_path == out:
         raise ValueError("EXPORT_REPORT_PATH_COLLISION: choose a bundle name such as export.zip")
     runs, blobs = [], {}
+    omitted_records = 0
     for ws in workspaces:
-        r, b = _run(Path(ws))
+        r, b, omitted = _run(Path(ws))
+        omitted_records += omitted
         if r["run_key"] in {x["run_key"] for x in runs}:
             raise ValueError(f"DUPLICATE_RUN: {r['run_key']}")
         runs.append(r)
@@ -234,7 +260,8 @@ def build(workspaces: list[Path], out: Path) -> dict:
     digest = hashlib.sha256(buf.getvalue()).hexdigest()
     out.with_name(out.name + ".sha256").write_text(f"{digest}  {out.name}\n")
     return {"bundle": str(out), "sha256": digest, "report": str(report_path),
-            "report_sha256": hashlib.sha256(report).hexdigest(), **manifest["totals"], "factory": manifest["factory"]}
+            "report_sha256": hashlib.sha256(report).hexdigest(), **manifest["totals"],
+            "omitted_records": omitted_records, "factory": manifest["factory"]}
 
 
 def verify(bundle: Path) -> list[str]:

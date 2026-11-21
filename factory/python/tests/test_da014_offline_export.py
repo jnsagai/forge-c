@@ -56,7 +56,7 @@ def test_two_exports_of_the_same_runs_are_byte_identical_and_intact(tmp_path):
 
 def test_records_travel_and_vendor_inputs_prompts_reasoning_and_secrets_do_not(tmp_path):
     ws = _ws(tmp_path)
-    X.build([ws], tmp_path / "export.zip")
+    result = X.build([ws], tmp_path / "export.zip")
     files = _files(tmp_path / "export.zip")
     m = json.loads(files["MANIFEST.json"])
     run = m["runs"][0]
@@ -76,10 +76,31 @@ def test_records_travel_and_vendor_inputs_prompts_reasoning_and_secrets_do_not(t
     ins = rows[".forge-run/lrtx/SWE.1/inspection-record.json"]
     assert ins["content"] == "INCLUDED" and ins["stripped_keys"] == 3  # prompt, reasoning, messages: counted
     assert rows[".forge-run/model-profile.json"]["redactions"] == 1
-    assert rows[".forge-run/gates/gate-log.jsonl"]["redactions"] == 1  # the unparsable line is redacted text
+    assert X.OMITTED_RECORD.encode() in files[f"runs/{run['run_key']}/.forge-run/gates/gate-log.jsonl"]
     assert {".forge-run/advisory/SWE.1.jsonl", "inspection/SWE.1/INS-SWE.1-001.json",
             ".forge-run/acp/swe1_inspector.proxy.jsonl"} <= {p for p, f in rows.items() if f["content"] == "INCLUDED"}
-    assert m["totals"]["stripped_keys"] == 3 and m["totals"]["redactions"] == 2
+    assert m["totals"]["stripped_keys"] == 3 and m["totals"]["redactions"] == 1
+    assert result["omitted_records"] == 1
+
+
+def test_unparseable_and_unstructured_records_never_travel_in_either_output(tmp_path):
+    ws = _ws(tmp_path)
+    profile = ws / ".forge-run/model-profile.json"
+    profile.write_text('{"raw_response": "PRIVATE_INCOMPLETE_RESPONSE"')
+    gates = ws / ".forge-run/gates/gate-log.jsonl"
+    gates.write_bytes(gates.read_bytes() + b'{"reasoning":"PRIVATE_PARTIAL_THOUGHT"\n'
+                      b'"PRIVATE_UNSTRUCTURED_REPLY"\n{"prompt":"PRIVATE_BROKEN_UTF8_\xff"}\n')
+    (ws / ".forge-run/fabro_run_id").write_text('not an identifier PRIVATE_BAD_ID')
+    bundle = tmp_path / "export.zip"
+    result = X.build([ws], bundle)
+    files = _files(bundle)
+    manifest = json.loads(files["MANIFEST.json"])
+    assert result["omitted_records"] == 6
+    assert manifest["runs"][0]["model"] is None
+    assert b'"decision": "FROZEN"' in files["REPORT.md"]
+    for value in [*files.values(), (tmp_path / "export.md").read_bytes()]:
+        assert b"PRIVATE_" not in value and b"not json," not in value
+    assert X.verify(bundle) == []
 
 
 def test_tampering_with_any_exported_file_or_adding_content_is_detected(tmp_path):
