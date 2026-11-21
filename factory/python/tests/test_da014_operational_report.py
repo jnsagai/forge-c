@@ -191,6 +191,74 @@ def test_replayed_fault_is_bound_to_the_observed_campaign_window(work, when):  #
     assert "crash" in report["failed_faults"]  # Native recovery still requires an independent host audit.
 
 
+@pytest.mark.parametrize("case, outcome, elapsed", [
+    ("recovered", "RECOVERED", 10), ("censored", "RIGHT_CENSORED", None),
+    ("late", "RECOVERED", 695), ("gap", "RECOVERY_UNVERIFIED", None),
+])
+def test_restoration_metric_replays_detection_and_keeps_censored_or_late_faults(work, case, outcome, elapsed):  # noqa: F811
+    from forge_factory.afo import fault_observer as observer
+
+    p = work
+    if case in ("censored", "late"):
+        receipt, captures = external_case(p)
+        if case == "late":
+            middle = observer.bound_json(captures[1])
+            middle.update(wall=400, mono=400, completed_wall=400)
+            end_sample = observer.bound_json(captures[2])
+            end_sample.update(wall=800, mono=800, completed_wall=800)
+            end_sample["heartbeat"].update(epoch=800, cycle=800)
+            captures[2:] = [put(p.tmp / "observed-outage.json", middle), put(p.tmp / "observed-late.json", end_sample)]
+    else:
+        receipt, captures = fixture_evaluation(p)
+        if case == "gap":
+            sample = observer.bound_json(captures[-1])
+            sample["mono"] += 100
+            captures[-1] = put(p.tmp / "clock-gap.json", sample)
+    path, rows = timeline(p)
+    if case == "late":
+        rows[-1].update(wall=830, mono=830)
+        write_rows(path, rows)
+    record = observer.evaluate(p.manifest, p.ref, receipt, captures, None)
+    if case == "late":
+        assert record["independently_restored"] is False and record["restoration_seconds"] is None
+    ref = put(p.tmp / "transient-evaluation.json", record)
+    receipt_copy = put(p.tmp / "second-injection-receipt.json",
+                       {**observer.bound_json(receipt), "authorization_ref": "SECOND-FIXTURE-RECEIPT"})
+    other = put(p.tmp / "second-transient-evaluation.json",
+                observer.evaluate(p.manifest, p.ref, receipt_copy, captures, None))
+    result = R.report(p.manifest, "soak-operational-report", fault_refs=[ref, other])
+    metrics = result["transient_restoration"]
+    incident, = metrics["incidents"]
+    assert incident["outcome"] == outcome and incident["restoration_seconds"] == elapsed
+    assert incident["detection_seconds"] == (5 if case in ("censored", "late") else 10)
+    assert metrics["p95_denominator"] == (elapsed is not None)
+    assert metrics["p95_seconds"] == elapsed and metrics["status"] == "NOT_DEMONSTRATED"
+    assert metrics["recoveries_over_objective"] == (case == "late")
+    assert metrics["by_outcome"][outcome] == 1
+    assert "HOST_INTERVENTION_EVIDENCE_REQUIRED" in metrics["blockers"]
+
+
+def test_restoration_summary_uses_nearest_rank_without_hiding_unconfirmed_faults():
+    recoveries = {}
+    for i in range(20):
+        recoveries[str(i)] = [{
+            "fault": sorted(R.TRANSIENT_RECOVERY_FAULTS)[i % len(R.TRANSIENT_RECOVERY_FAULTS)],
+            "exposed": True, "prerequisite_lost": False, "coverage_complete": True,
+            "detection_seconds": 1, "restoration_seconds": 570 + i,
+            "observed_seconds_after_injection": 610, "no_unexpected_interventions": True,
+        }]
+    result = R.restoration_summary(recoveries, 0)
+    assert result["p95_seconds"] == 588 and result["nearest_rank"] == 19 and result["status"] == "TARGET_MET"
+    extra = {**recoveries["0"][0], "exposed": False, "detection_seconds": None, "restoration_seconds": None}
+    result = R.restoration_summary({**recoveries, "missing": [extra]}, 0)
+    assert result["p95_denominator"] == 20 and result["by_outcome"]["UNCONFIRMED_EXPOSURE"] == 1
+    assert result["status"] == "NOT_DEMONSTRATED"
+    conflicting = {**recoveries["0"][0], "restoration_seconds": 605}
+    result = R.restoration_summary({**recoveries, "0": [*recoveries["0"], conflicting]}, 0)
+    assert result["p95_denominator"] == 19 and result["by_outcome"]["AMBIGUOUS"] == 1
+    assert result["status"] == "NOT_DEMONSTRATED"
+
+
 @pytest.mark.parametrize(
     ("scenario", "unexplained", "accounted", "uptime"),
     [

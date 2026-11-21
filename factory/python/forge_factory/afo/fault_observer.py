@@ -530,7 +530,7 @@ def load_samples(manifest, plan_ref, refs):
     return rows
 
 
-def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, work_refs=()):
+def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, work_refs=(), source_details=None):
     """Correlate objective signal-fault restoration; no hand-entered success flags."""
     frozen = plan(manifest, plan_ref)
     receipt = bound_json(injection_ref, path=artifact(frozen, injection_ref["path"]))
@@ -581,6 +581,12 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, wor
         ),
         None,
     )
+    if source_details is not None:
+        source_details.update(
+            receipt=receipt, samples=rows,
+            detected_at=affected[0]["wall"] if exposure and affected else None,
+            restored_at=restored["wall"] if exposure and restored is not None else None,
+        )
     if fault not in SIGNALS:
         fixture_ref = receipt.get("fixture_ref")
         if (
@@ -594,7 +600,9 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, wor
             raise Refused("OBSERVER_EXTERNAL_EXPOSURE_NOT_FROZEN")
         fixture = bound_json(fixture_ref)
         parameters = operational_facts.validate_fixture(fixture, fault, plan_ref, frozen["unit"])
-        exposure, restored = operational_facts.external(manifest, fault, parameters, receipt, rows)
+        if source_details is not None:
+            source_details["fixture_parameters"] = parameters
+        exposure, restored = operational_facts.external(manifest, fault, parameters, receipt, rows, details=source_details)
     boot_changes = []
     gaps = False
     for a, b in zip(rows, rows[1:], strict=False):
@@ -652,12 +660,12 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, wor
     return record
 
 
-def verify(manifest, record):
+def verify(manifest, record, *, source_details=None):
     if record.get("schema") != "forge-c/independent-operational-fault/1":
         raise Refused("INDEPENDENT_OPERATIONAL_OBSERVER_REQUIRED")
     actual = evaluate(
         manifest, record["plan_ref"], record["injection_ref"], record["sample_refs"], None,
-        work_refs=record.get("work_refs", ()),
+        work_refs=record.get("work_refs", ()), source_details=source_details,
     )
     if actual != record:
         raise Refused("OPERATIONAL_OBSERVER_VERDICT_CHANGED")

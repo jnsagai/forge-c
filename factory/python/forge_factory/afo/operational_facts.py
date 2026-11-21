@@ -147,7 +147,7 @@ def _no_admission_during_stop(rows, bound):
     )
 
 
-def external(manifest, fault, params, receipt, rows):
+def external(manifest, fault, params, receipt, rows, *, details=None):
     """Return exposure and the first observed recovery; unknown classes never default to success."""
 
     def ok(sample):
@@ -271,5 +271,7 @@ def external(manifest, fault, params, receipt, rows):
             return s in changed
         return True
 
-    recovery = next((s for s in known if restored(s) and (fault == "post-campaign-continuity" or s["wall"] - at <= bound)), None)
-    return True, recovery
+    recovery = next((s for s in known if restored(s)), None)
+    if details is not None:
+        details.update(detected_at=first["wall"], restored_at=recovery["wall"] if recovery is not None else None)
+    return True, recovery if recovery is not None and (fault == "post-campaign-continuity" or recovery["wall"] - at <= bound) else None

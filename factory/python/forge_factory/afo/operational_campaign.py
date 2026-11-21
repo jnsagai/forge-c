@@ -22,6 +22,8 @@ from .durable import Refused, digest, immutable_json
 
 SIGNALS = {"clean-exit": "TERM", "crash": "KILL", "hang": "STOP"}
 POST_CAMPAIGN_FAULTS = {"post-campaign-continuity", "later-authorized-intake"}
+TRANSIENT_RECOVERY_FAULTS = {*SIGNALS, "dependency-outage", "restart-limit"}
+TRANSIENT_RESTORE_OBJECTIVE_SECONDS = 600
 
 
 def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_plan_ref=None):
@@ -296,12 +298,21 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
 
     verified = {}
     verified_reboots = {}
+    recoveries = {}
+    unverified_recovery_records = 0
     out_of_window = set()
-    for row in [*faults, *continuity]:
+    for index, row in enumerate([*faults, *continuity]):
+        transient = index < len(faults) and row.get("fault") in TRANSIENT_RECOVERY_FAULTS
         if row.get("schema") == "forge-c/independent-operational-fault/1":
-            verify_observation(manifest, row)
+            source = {}
+            verify_observation(manifest, row, source_details=source)
             identity = digest(row)
-            receipt = observer.bound_json(row["injection_ref"])
+            receipt = source["receipt"]
+            if transient and head["wall"] <= receipt["at"] < end:
+                measurement = restoration_measurement(row, source, end, observer_plan_ref)
+                injection = {k: receipt[k] for k in ("host", "unit", "fault", "at")}
+                injection["parameters"] = source.get("fixture_parameters", {})
+                recoveries.setdefault(digest(injection), []).append(measurement)
             if fault_in_window(manifest, row, receipt["at"], head["wall"], expected_end, samples[-1]["wall"]):
                 verified[identity] = row
                 if (
@@ -313,8 +324,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
                     # Replay already proved that this trace contains exactly one
                     # boot transition straddling the frozen injection.
                     before = after = None
-                    for ref in row["sample_refs"]:
-                        sample = observer.bound_json(ref)
+                    for sample in source["samples"]:
                         if sample["wall"] > receipt["at"]:
                             after = sample
                             break
@@ -323,6 +333,8 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
                         verified_reboots.setdefault((before["boot_id"], after["boot_id"]), set()).add(receipt["at"])
             else:
                 out_of_window.add(row["fault"])
+        elif transient:
+            unverified_recovery_records += 1
     fault_records = [*faults, *(r for r in continuity if r.get("fault") in POST_CAMPAIGN_FAULTS)]
     work = read(work_refs)
     verified_work = []
@@ -409,9 +421,99 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "rolling_30_day_slo": rolling_scheduled["status"],
         "rolling_30_day_gross_availability": rolling_gross,
         "rolling_30_day_scheduled_availability": rolling_scheduled,
+        "transient_restoration": restoration_summary(recoveries, unverified_recovery_records),
         "service_intent_unchanged": intent_unchanged,
         "native_model_capability": "SEPARATE_QUALIFICATION",
         "collection": collection,
+    }
+
+
+def restoration_measurement(record, source, cutoff, observer_plan_ref):
+    at = source["receipt"]["at"]
+    detected, restored = source["detected_at"], source["restored_at"]
+    detected_in_window = record["fault_exposed"] is True and detected is not None and at <= detected <= cutoff
+    observed_until = min(cutoff, source["samples"][-1]["wall"])
+    effects_end = min(restored, observed_until) if restored is not None else observed_until
+    before = [s for s in source["samples"] if s["wall"] <= at][-1:]
+    relevant = [*before, *(s for s in source["samples"] if at < s["wall"] <= effects_end)]
+    storage = [(s.get("health") or {}).get("data_volume") for s in relevant]
+    known_boots = {s.get("boot_id") for s in relevant}
+    prerequisite_lost = (
+        source.get("fixture_parameters", {}).get("dependency") == "data_volume"
+        or any(value is False for value in storage)
+        or len(known_boots - {None, "", "unknown"}) > 1
+    )
+    comparable = observer_plan_ref is None or record["plan_ref"] == observer_plan_ref
+    covered = (
+        bool(storage) and all(value is True for value in storage)
+        and len(known_boots) == 1 and not known_boots & {None, "", "unknown"}
+        and record["observation_gaps"] is False and comparable
+    )
+    interventions = record["unexpected_interventions"]
+    return {
+        "fault": record["fault"], "exposed": detected_in_window and comparable, "prerequisite_lost": prerequisite_lost,
+        "coverage_complete": covered,
+        "detection_seconds": detected - at if detected_in_window and comparable else None,
+        "restoration_seconds": restored - at if (detected_in_window and covered and not prerequisite_lost
+                                                 and restored is not None and detected <= restored <= observed_until) else None,
+        "observed_seconds_after_injection": max(0, observed_until - at),
+        "no_unexpected_interventions": interventions == 0 if type(interventions) is int else None,
+    }
+
+
+def restoration_summary(recoveries, unverified):
+    """Empirical nearest-rank p95 of distinct, replayed in-scope recoveries."""
+    results = []
+    for identity, rows in sorted(recoveries.items()):
+        elapsed = {r["restoration_seconds"] for r in rows if r["restoration_seconds"] is not None}
+        detections = [r["detection_seconds"] for r in rows if r["detection_seconds"] is not None]
+        prerequisite_lost = any(r["prerequisite_lost"] for r in rows)
+        if prerequisite_lost:
+            outcome = "OUTSIDE_TRANSIENT_SCOPE"
+        elif not any(r["exposed"] for r in rows):
+            outcome = "UNCONFIRMED_EXPOSURE"
+        elif len(elapsed) == 1:
+            outcome = "RECOVERED"
+        elif len(elapsed) > 1:
+            outcome = "AMBIGUOUS"
+        elif any(r["coverage_complete"] and r["exposed"] for r in rows):
+            outcome = "RIGHT_CENSORED"
+        else:
+            outcome = "RECOVERY_UNVERIFIED"
+        interventions = [r["no_unexpected_interventions"] for r in rows]
+        results.append({
+            "injection_identity_sha256": identity, "fault": rows[0]["fault"], "outcome": outcome,
+            "detection_seconds": min(detections, default=None),
+            "restoration_seconds": next(iter(elapsed)) if outcome == "RECOVERED" else None,
+            "observed_seconds_after_injection": max(r["observed_seconds_after_injection"] for r in rows),
+            "no_unexpected_interventions": (False if any(v is False for v in interventions)
+                                            else True if all(v is True for v in interventions) else None),
+        })
+    recovered = sorted(r["restoration_seconds"] for r in results if r["outcome"] == "RECOVERED")
+    counts = {outcome: sum(r["outcome"] == outcome for r in results) for outcome in (
+        "RECOVERED", "OUTSIDE_TRANSIENT_SCOPE", "UNCONFIRMED_EXPOSURE", "AMBIGUOUS", "RIGHT_CENSORED",
+        "RECOVERY_UNVERIFIED",
+    )}
+    rank = (95 * len(recovered) + 99) // 100
+    p95 = recovered[rank - 1] if rank else None
+    missing = sorted(TRANSIENT_RECOVERY_FAULTS - {r["fault"] for r in results if r["outcome"] == "RECOVERED"})
+    blockers = []
+    if not rank or rank == len(recovered):
+        blockers.append("NO_TAIL_RESOLUTION_BEYOND_SAMPLE_MAXIMUM")
+    if unverified or any(counts[k] for k in ("UNCONFIRMED_EXPOSURE", "AMBIGUOUS", "RIGHT_CENSORED", "RECOVERY_UNVERIFIED")) or missing:
+        blockers.append("INCOMPLETE_ELIGIBLE_RECOVERY_EVIDENCE")
+    if any(r["no_unexpected_interventions"] is None for r in results if r["outcome"] != "OUTSIDE_TRANSIENT_SCOPE"):
+        blockers.append("HOST_INTERVENTION_EVIDENCE_REQUIRED")
+    if any(r["no_unexpected_interventions"] is False for r in results if r["outcome"] != "OUTSIDE_TRANSIENT_SCOPE"):
+        blockers.append("UNEXPECTED_INTERVENTION_OBSERVED")
+    return {
+        "status": ("NOT_DEMONSTRATED" if blockers else "TARGET_MET" if p95 <= TRANSIENT_RESTORE_OBJECTIVE_SECONDS
+                   else "TARGET_MISSED"),
+        "objective_seconds": TRANSIENT_RESTORE_OBJECTIVE_SECONDS,
+        "p95_seconds": p95, "nearest_rank": rank or None, "p95_denominator": len(recovered),
+        "recoveries_over_objective": sum(seconds > TRANSIENT_RESTORE_OBJECTIVE_SECONDS for seconds in recovered),
+        "by_outcome": counts, "unverified_records": unverified, "missing_recovered_fault_classes": missing,
+        "blockers": blockers, "incidents": results,
     }
 
 

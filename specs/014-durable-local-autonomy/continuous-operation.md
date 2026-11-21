@@ -61,6 +61,16 @@ leaves both dimensions unknown across the affected interval.
 
 Retain the existing rolling-30-day 99% availability and p95 transient restoration of at most 10 minutes as objectives until measured. Record detection time, restoration time, blocked duration, queue age, overdue probes, intervention count, restart count and useful completed work separately. Fault exposure, sample count, censored/unrecovered faults and denominator rules must be visible. Never infer product progress from uptime or number of restarts.
 
+Campaign recovery reports time from the fault receipt to the first independent
+detection and restoration observation. The nearest-rank p95 uses distinct
+replayed process-exit, crash, hang, dependency-outage and restart-limit recoveries
+within the observation window. Planned boot and storage-loss cases remain in
+the campaign fault register. Late observed recoveries retain their measured
+duration. The report shows separately the cases unresolved at cutoff, cases
+with gaps, conflicting evidence and unconfirmed exposures. It leaves the
+objective undemonstrated while evidence is incomplete, the p95 is only the
+sample maximum, or independent intervention evidence is absent.
+
 One Omniverse2 cannot compute while it has no power or functioning hardware. Require unattended startup after power/OS/storage prerequisites return and test persistent-state reconciliation. Hardware replacement, UPS sizing, redundant hosts and host-level reboot permission are outside this amendment; list uncovered failure classes honestly rather than claiming zero physical downtime. No purchase, deployment or host reboot is authorized by this specification.
 
 ## Qualification and delivery
