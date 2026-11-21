@@ -19,10 +19,14 @@ def timeline(samples, start, end, *, stale_after=120):
     )
     intervals = []
     healthy = worker = 0.0
+    cursor = 0
+    prior = None
     for a, b in zip(points, points[1:], strict=False):
         if b <= a:
             continue
-        prior = next((r for r in reversed(rows) if r["at"] <= a), None)
+        while cursor < len(rows) and rows[cursor]["at"] <= a:
+            prior = rows[cursor]
+            cursor += 1
         known = prior is not None and a - prior["at"] < stale_after and prior.get("telemetry_known", True) is True
         control = known and prior.get("control_plane") is True
         ready = known and prior.get("worker_ready") is True

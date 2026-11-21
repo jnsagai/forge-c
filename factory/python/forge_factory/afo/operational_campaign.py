@@ -213,11 +213,11 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         )
 
     def clock_known(a, b):
-        return b["wall"] - a["wall"] <= max_gap and (
-            a["boot_id"] != b["boot_id"] or (
-                b["mono"] >= a["mono"]
-                and abs((b["wall"] - a["wall"]) - (b["mono"] - a["mono"])) <= soak.CLOCK_SKEW_S
-            )
+        return (
+            a["boot_id"] == b["boot_id"]
+            and b["wall"] - a["wall"] <= max_gap
+            and b["mono"] >= a["mono"]
+            and abs((b["wall"] - a["wall"]) - (b["mono"] - a["mono"])) <= soak.CLOCK_SKEW_S
         )
 
     gross = timeline(
@@ -225,11 +225,13 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
             {
                 "at": s["wall"],
                 "control_plane": (s.get("probes") or {}).get("conductor") is True,
-                "worker_ready": all((s.get("probes") or {}).get(k) is True for k in ("gateway", "fabro")),
+                "worker_ready": all((s.get("probes") or {}).get(k) is True for k in ("gateway", "fabro", "data_volume")),
                 "telemetry_known": probes_known(s) and (
                     i == len(samples) - 1 or (probes_known(samples[i + 1]) and clock_known(s, samples[i + 1]))
                 ),
-                "cause": "UNKNOWN_OR_CONTRADICTORY_TELEMETRY"
+                "cause": "BOOT_CHANGED_INTERVAL_UNOBSERVED"
+                if i + 1 < len(samples) and s["boot_id"] != samples[i + 1]["boot_id"]
+                else "UNKNOWN_OR_CONTRADICTORY_TELEMETRY"
                 if not probes_known(s) or (i + 1 < len(samples) and (
                     not probes_known(samples[i + 1]) or not clock_known(s, samples[i + 1])
                 ))

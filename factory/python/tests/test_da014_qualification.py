@@ -195,6 +195,34 @@ def test_operational_campaign_cannot_pass_idle_duration_without_faults_and_later
     assert report["gross_24_7_window"]["unavailable_seconds"] > 0 and report["rolling_30_day_slo"] == "NOT_DEMONSTRATED"
 
 
+def test_operational_availability_does_not_infer_uptime_across_a_reboot(tmp_path, monkeypatch):
+    from forge_factory.afo import operational_campaign as O
+    from forge_factory.afo import soak
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    manifest = Q.freeze("operation-24", tmp_path / "manifest.json", identity=identity(), model_profile="qwen-fixture")
+    sid = "soak-014-reboot"
+    head = soak.start(sid, 24, 30, "AUTH-fixture")
+    probes = dict(conductor=True, fabro=True, gateway=True, data_volume=True)
+    for seconds, boot, mono, volume in (
+        (0, head["boot_id"], head["mono"], True),
+        (10, "fixture-next-boot", 1, False),
+        (20, "fixture-next-boot", 11, True),
+        (30, "fixture-next-boot", 21, True),
+    ):
+        soak._append(soak.path(sid), dict(kind="sample", wall=head["wall"] + seconds, mono=mono,
+                                         boot_id=boot, probes={**probes, "data_volume": volume}))
+    report = O.report(manifest, sid)
+    gross = report["gross_24_7_window"]
+    assert report["telemetry_complete"] is False
+    assert gross["available_seconds"] == 20 and gross["worker_ready_seconds"] == 10
+    assert [(r["control_plane"], r["worker"], r["cause"]) for r in gross["intervals"]] == [
+        ("UNKNOWN", "UNKNOWN", "BOOT_CHANGED_INTERVAL_UNOBSERVED"),
+        ("AVAILABLE", "UNREADY", "DEPENDENCY_OR_CONTROL_OUTAGE"),
+        ("AVAILABLE", "READY", "OBSERVED_HEALTH"),
+    ]
+
+
 def test_independent_inspection_cannot_pass_unknown_or_same_model_agreement():
     claims = {"SWR-001": "PASS"}
     assert (
