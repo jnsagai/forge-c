@@ -41,6 +41,12 @@ host source retains the existing host reader's last successful cursor through it
 failed capture. Reports recompute observations from original source artifacts and
 reject altered health claims. Incomplete captures produce unknown telemetry.
 
+Campaign reports keep the time between boot IDs unknown in availability totals.
+A replayed recovery for the scheduled reboot can account for that interval when
+the boot IDs and injection time match and both observations meet the frozen probe
+gap bound. The report lists those intervals separately from unexplained gaps.
+The recovery record still requires independent host intervention evidence.
+
 `unexpected_interventions` remains null: byte preservation and healthy HTTP probes
 are not independent proof of authenticated host-wide intervention coverage. Current
 all-channel correlation, genuine product oracles, native boot/reboot/mount windows

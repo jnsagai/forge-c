@@ -185,7 +185,10 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         or not math.isfinite(head["interval_s"])
         or not 5 <= head["interval_s"] <= 600
         or any(type(s.get(k)) not in (int, float) or not math.isfinite(s[k]) for s in [head, *samples] for k in ("wall", "mono"))
-        or any(not s.get("boot_id") or s["boot_id"] == "unknown" for s in [head, *samples])
+        or any(
+            not isinstance(s.get("boot_id"), str) or s["boot_id"] in ("", "unknown")
+            for s in [head, *samples]
+        )
         or (samples and samples[0]["wall"] < head["wall"])
         or any(b["wall"] <= a["wall"] for a, b in zip(samples, samples[1:], strict=False))
     ):
@@ -208,9 +211,14 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     end = min(expected_end, samples[-1]["wall"])
     max_gap = min(head["interval_s"] * 2, manifest["bounds"]["probe_gap_seconds"])
 
+    def probes(s):
+        value = s.get("probes")
+        return value if isinstance(value, dict) else {}
+
     def probes_known(s):
-        return set(s.get("probes") or {}) == {"conductor", "fabro", "gateway", "data_volume"} and all(
-            type(v) is bool for v in s["probes"].values()
+        observed = probes(s)
+        return set(observed) == {"conductor", "fabro", "gateway", "data_volume"} and all(
+            type(v) is bool for v in observed.values()
         )
 
     def clock_known(a, b):
@@ -225,8 +233,8 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         [
             {
                 "at": s["wall"],
-                "control_plane": (s.get("probes") or {}).get("conductor") is True,
-                "worker_ready": all((s.get("probes") or {}).get(k) is True for k in ("gateway", "fabro", "data_volume")),
+                "control_plane": probes(s).get("conductor") is True,
+                "worker_ready": all(probes(s).get(k) is True for k in ("gateway", "fabro", "data_volume")),
                 "telemetry_known": probes_known(s) and (
                     i == len(samples) - 1 or (probes_known(samples[i + 1]) and clock_known(s, samples[i + 1]))
                 ),
@@ -272,6 +280,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     from .fault_observer import verify as verify_observation
 
     verified = {}
+    verified_reboots = {}
     out_of_window = set()
     for row in [*faults, *continuity]:
         if row.get("schema") == "forge-c/independent-operational-fault/1":
@@ -280,6 +289,23 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
             receipt = observer.bound_json(row["injection_ref"])
             if fault_in_window(manifest, row, receipt["at"], head["wall"], expected_end, samples[-1]["wall"]):
                 verified[identity] = row
+                if (
+                    row["fault"] == "reboot"
+                    and row["independently_restored"] is True and row["observation_gaps"] is False
+                    and row["restoration_seconds"] <= manifest["bounds"]["restore_seconds"]
+                    and (observer_plan_ref is None or row["plan_ref"] == observer_plan_ref)
+                ):
+                    # Replay already proved that this trace contains exactly one
+                    # boot transition straddling the frozen injection.
+                    before = after = None
+                    for ref in row["sample_refs"]:
+                        sample = observer.bound_json(ref)
+                        if sample["wall"] > receipt["at"]:
+                            after = sample
+                            break
+                        before = sample
+                    if before is not None and after is not None:
+                        verified_reboots.setdefault((before["boot_id"], after["boot_id"]), set()).add(receipt["at"])
             else:
                 out_of_window.add(row["fault"])
     fault_records = [*faults, *(r for r in continuity if r.get("fault") in POST_CAMPAIGN_FAULTS)]
@@ -312,10 +338,21 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     later = continuity_verdict(manifest, verified.values(), post_campaign_work, expected_end)
     accounted_work = len(campaign_work) + len(post_campaign_work)
     work_ok = bool(campaign_work) and accounted_work == len(work)
-    telemetry_ok = all(
-        clock_known(a, b) and probes_known(b)
-        for a, b in zip([head, *samples], samples, strict=False)
-    )
+    accounted_reboots = []
+    unexplained_telemetry = 0
+    for a, b in zip([head, *samples], samples, strict=False):
+        if clock_known(a, b) and probes_known(b):
+            continue
+        injections = verified_reboots.get((a["boot_id"], b["boot_id"]), ())
+        if (
+            b["wall"] - a["wall"] <= manifest["bounds"]["probe_gap_seconds"]
+            and probes_known(a) and probes_known(b)
+            and any(a["wall"] <= at < b["wall"] for at in injections)
+        ):
+            accounted_reboots.append({"start": a["wall"], "end": b["wall"]})
+        else:
+            unexplained_telemetry += 1
+    telemetry_ok = unexplained_telemetry == 0 and not accounted_reboots
     intent_unchanged = None
     if collection is not None:
         intent = collection["campaign_intent"]
@@ -327,7 +364,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
     pass_all = (
         duration_ok
         and manifest_bound
-        and telemetry_ok
+        and unexplained_telemetry == 0
         and not missing
         and not failed
         and not out_of_window
@@ -344,6 +381,8 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "target_hours": target_hours,
         "manifest_bound": manifest_bound,
         "telemetry_complete": telemetry_ok,
+        "accounted_reboot_intervals": accounted_reboots,
+        "unexplained_telemetry_intervals": unexplained_telemetry,
         "gross_24_7_window": gross,
         "missing_faults": missing,
         "failed_faults": failed,
