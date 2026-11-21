@@ -409,6 +409,22 @@ def test_gross_timeline_refuses_invalid_sample_clocks(invalid):
         timeline([{"at": invalid}], 0, 30)
 
 
+@pytest.mark.parametrize("maintenance_hours, expected", [(2, "TARGET_MET"), (8, "TARGET_MISSED")])
+def test_rolling_gross_availability_keeps_all_in_window_outages(maintenance_hours, expected):
+    from forge_factory.afo.continuous_metrics import rolling_gross_availability
+
+    day, hour = 86400, 3600
+    rows = [
+        {"at": i * hour, "control_plane": i >= 24 + maintenance_hours,
+         "desired_mode": "STOPPED" if i < 24 + maintenance_hours else "RUNNING"}
+        for i in range(31 * 24 + 1) if i != 31 * 24 - 1
+    ]
+    result = rolling_gross_availability(rows, 0, 31 * day, stale_after=hour)
+    assert (result["start"], result["end"], result["status"]) == (day, 31 * day, expected)
+    assert result["unavailable_seconds"] == (maintenance_hours + 1) * hour
+    assert result["control_plane_unknown_seconds"] == hour
+
+
 def test_disposable_cleanup_retains_pins_and_refuses_unmarked_evidence(tmp_path):
     from forge_factory.afo.housekeeping import clean
 

@@ -47,6 +47,12 @@ the boot IDs and injection time match and both observations meet the frozen prob
 gap bound. The report lists those intervals separately from unexplained gaps.
 The recovery record still requires independent host intervention evidence.
 
+If collection continues after the finite soak, the campaign report projects
+`rolling_30_day_gross_availability` over the 30 days ending at the latest
+replayed sample. It requires a full window and matching source replay.
+Unavailable and unknown time stay in the denominator, including maintenance.
+This measurement is separate from the configured scheduled-window SLO.
+
 `unexpected_interventions` remains null: byte preservation and healthy HTTP probes
 are not independent proof of authenticated host-wide intervention coverage. Current
 all-channel correlation, genuine product oracles, native boot/reboot/mount windows

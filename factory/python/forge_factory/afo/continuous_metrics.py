@@ -8,6 +8,9 @@ import time
 
 from .durable import Refused
 
+ROLLING_WINDOW_SECONDS = 30 * 86400
+AVAILABILITY_OBJECTIVE = 0.99
+
 
 def timeline(samples, start, end, *, stale_after=120):
     if (
@@ -69,7 +72,25 @@ def timeline(samples, start, end, *, stale_after=120):
         "worker_ready_seconds": worker,
         "worker_unknown_seconds": worker_unknown,
         "intervals": intervals,
-        "rolling_30_day_status": "NOT_DEMONSTRATED" if end - start < 30 * 86400 else "REQUIRES_SLO_EVALUATION",
+        "rolling_30_day_status": ("NOT_DEMONSTRATED" if end - start < ROLLING_WINDOW_SECONDS
+                                  else "REQUIRES_SLO_EVALUATION"),
+    }
+
+
+def rolling_gross_availability(samples, observed_since, observed_until, *, stale_after):
+    """Evaluate the last full 30 days of a verified, unadjusted wall-clock history."""
+    start = observed_until - ROLLING_WINDOW_SECONDS
+    if observed_since > start:
+        return {"status": "NOT_DEMONSTRATED", "reason": "FULL_WINDOW_REQUIRED"}
+    measured = timeline(samples, start, observed_until, stale_after=stale_after)
+    return {
+        "status": "TARGET_MET" if measured["gross_availability"] >= AVAILABILITY_OBJECTIVE else "TARGET_MISSED",
+        "scope": "GROSS_24_7_WALL_CLOCK_NO_EXCLUSIONS",
+        "start": start,
+        "end": observed_until,
+        "target": AVAILABILITY_OBJECTIVE,
+        **{k: measured[k] for k in ("window_seconds", "available_seconds", "unavailable_seconds",
+                                   "control_plane_unknown_seconds", "gross_availability")},
     }
 
 

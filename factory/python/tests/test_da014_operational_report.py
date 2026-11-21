@@ -263,6 +263,40 @@ def test_a_soak_without_its_frozen_manifest_cannot_be_bound(work):  # noqa: F811
     assert R.report(p.manifest, "soak-operational-report")["manifest_bound"] is False
 
 
+@pytest.mark.parametrize("days, verified", [(29, True), (30, False), (30, True)])
+def test_rolling_availability_uses_verified_observations_beyond_the_soak(work, monkeypatch, days, verified):  # noqa: F811
+    from forge_factory.afo.operational_collection import Collector
+
+    p = work
+    path, original = timeline(p)
+    head, sample = original[:2]
+    head["interval_s"] = 300
+    rows = [head]
+    for offset in range(0, days * 86400 + 1, 300):
+        at = head["wall"] + offset
+        rows.append({**sample, "wall": at, "mono": at})
+    write_rows(path, rows)
+    if verified:
+        def replay(_):
+            return {"history_sha256": digest(rows), "status": "SOURCE_REPLAY_PASS",
+                    "campaign_intent": {"observations": [], "observed_samples": 0}}
+
+        # Exercise the report projection after the collector's source verification.
+        monkeypatch.setattr(Collector, "__init__", lambda *_: None)
+        monkeypatch.setattr(Collector, "verify", replay)
+    report = R.report(p.manifest, "soak-operational-report", observer_plan_ref=p.ref if verified else None)
+    assert report["gross_24_7_window"]["window_seconds"] == 86400
+    assert report["rolling_30_day_slo"] == "NOT_DEMONSTRATED"
+    rolling = report["rolling_30_day_gross_availability"]
+    if verified and days == 30:
+        assert (rolling["status"], rolling["window_seconds"], rolling["gross_availability"]) == (
+            "TARGET_MET", 30 * 86400, 1.0,
+        )
+    else:
+        assert rolling["status"] == "NOT_DEMONSTRATED"
+        assert rolling["reason"] == ("FULL_WINDOW_REQUIRED" if verified else "VERIFIED_COLLECTION_REQUIRED")
+
+
 def continuity(p, *, intake_at=87700, continued_at=86500, last=87700, order="later-order"):
     fixture = put(p.tmp / "later-fixture.json", {"parameters": {"order_id": order}})
     post = put(p.tmp / "post-receipt.json", {"at": continued_at})

@@ -168,7 +168,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
            observer_plan_ref=None, host_plan_ref=None):
     from . import fault_observer as observer
     from . import operational_work
-    from .continuous_metrics import timeline
+    from .continuous_metrics import rolling_gross_availability, timeline
 
     sha = qualification.validate(manifest)
     raw = observer.read_bytes(soak.path(soak_id), observer.MAX_TRACE_BYTES)
@@ -254,6 +254,11 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
                              "telemetry_known": clock_ok, "cause": cause})
     gross = timeline(observations, head["wall"], max(head["wall"] + 0.000001, end),
                      stale_after=head["interval_s"] * 2)
+    rolling_gross = {"status": "NOT_DEMONSTRATED", "reason": "VERIFIED_COLLECTION_REQUIRED"}
+    if manifest_bound and collection is not None and collection.get("status") == "SOURCE_REPLAY_PASS":
+        rolling_gross = rolling_gross_availability(
+            observations, head["wall"], samples[-1]["wall"], stale_after=head["interval_s"] * 2,
+        )
 
     byte_budget = observer.MAX_TRACE_BYTES
 
@@ -394,6 +399,7 @@ def report(manifest, soak_id, *, fault_refs=(), work_refs=(), continuity_refs=()
         "unverified_work_records": len(work) - accounted_work,
         "post_campaign_continuity": later,
         "rolling_30_day_slo": "NOT_DEMONSTRATED",
+        "rolling_30_day_gross_availability": rolling_gross,
         "service_intent_unchanged": intent_unchanged,
         "native_model_capability": "SEPARATE_QUALIFICATION",
         "collection": collection,
