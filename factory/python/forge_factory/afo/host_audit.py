@@ -32,6 +32,11 @@ HEADER = re.compile(
     r"msg=audit\((?P<epoch>\d{1,16}\.\d{1,9}):(?P<serial>\d{1,20})\): ?(?P<body>.*)$"
 )
 PATH_NAME = re.compile(r'^item=(?P<item>[0-9]{1,8}) name=(?:"(?P<quoted>[!#-~]+)"|(?P<hex>[a-fA-F0-9]+))(?= |$)')
+# Linux native syscall numbers, keyed by the audit architecture, not the verifier's architecture.
+RENAME_SYSCALLS = {
+    "c000003e": {82: "rename", 264: "renameat", 316: "renameat2"},
+    "c00000b7": {38: "renameat", 276: "renameat2"},
+}
 STATUS_FIELDS = {"enabled", "pid", "rate_limit", "backlog_limit", "lost", "backlog"}
 MAX_EVENTS = 10000
 MAX_LINE = 65536
@@ -246,7 +251,11 @@ class EventReplay:
             intent_path_matches = [{"item": item, "role": role}
                                    for item, role in sorted(group["paths"].items()) if role is not None]
             if intent_path_matches:
-                selected[-1].update(intent_path_sha256=self.intent_path_sha256, intent_path_matches=intent_path_matches)
+                event = selected[-1]
+                event.update(intent_path_sha256=self.intent_path_sha256, intent_path_matches=intent_path_matches)
+                rename = RENAME_SYSCALLS.get(event["arch"], {}).get(event["syscall"])
+                if rename is not None and any(match["role"] in ("CREATE", "DELETE") for match in intent_path_matches):
+                    event["intent_rename"] = {"syscall": rename, "reported_success": event["success"]}
         facts = {
             "events": selected,
             "integrity_events": integrity,

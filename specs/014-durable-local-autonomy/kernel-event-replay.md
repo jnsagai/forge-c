@@ -86,6 +86,15 @@ attribution, and intervention coverage unverified.
 [Linux audit PATH records](https://github.com/torvalds/linux/blob/master/kernel/auditsc.c)
 [Linux audit string encoding](https://github.com/torvalds/linux/blob/master/kernel/audit.c)
 
+The report identifies native x86-64 and AArch64 rename calls whose CREATE or
+DELETE item names the intent file. It records the syscall and reported outcome.
+The kernel can label an existing destination DELETE, and a rename can involve
+the file as a source or exchange operand. The fact therefore leaves direction
+and writer attribution unresolved.
+[Linux rename audit hooks](https://github.com/torvalds/linux/blob/master/fs/namei.c)
+[x86-64 syscall table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl)
+[AArch64 syscall numbers](https://github.com/torvalds/linux/blob/master/include/uapi/asm-generic/unistd.h)
+
 Native audit loss, complete record/window interpretation, boot correlation,
 authenticated actor/control/write/service attribution and all-channel coverage
 remain separate qualification. `unexpected_interventions` is always unknown here.

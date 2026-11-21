@@ -70,6 +70,37 @@ def test_only_the_exact_intent_path_is_reported(tmp_path, encoding):
     assert "/private/" not in json.dumps(pages) and result["unexpected_interventions"] is None
 
 
+@pytest.mark.parametrize(
+    ("arch", "nr", "role", "success", "operation"),
+    [
+        ("c000003e", 82, "CREATE", True, "rename"),
+        ("c000003e", 82, "DELETE", True, "rename"),
+        ("c000003e", 264, "DELETE", False, "renameat"),
+        ("c000003e", 316, "DELETE", True, "renameat2"),
+        ("c00000b7", 38, "CREATE", True, "renameat"),
+        ("c00000b7", 276, "CREATE", True, "renameat2"),
+        ("c00000b7", 82, "CREATE", True, None),
+        ("40000003", 82, "CREATE", True, None),
+        ("c000003e", 257, "CREATE", True, None),
+        ("c000003e", 82, "PARENT", True, None),
+        ("c000003e", 82, "NORMAL", True, None),
+        ("c000003e", 82, "unrecognized", True, None),
+    ],
+)
+def test_intent_rename_fact_requires_the_native_abi_and_a_child_path(tmp_path, arch, nr, role, success, operation):
+    target = "/private/owner.json"
+    raw = (
+        raw_event()
+        .replace(b"arch=c000003e syscall=257", f"arch={arch} syscall={nr}".encode())
+        .replace(b"success=yes exit=3", b"success=yes exit=0" if success else b"success=no exit=-13")
+        .replace(b'name="/private/DO-NOT-EXPORT"', f'name="{target}" nametype={role}'.encode())
+    )
+    result, pages = invoke(tmp_path, [raw], intent_path=target)
+    fact = pages[0]["groups"][0]["facts"]["events"][0]
+    assert fact.get("intent_rename") == ({"syscall": operation, "reported_success": success} if operation else None)
+    assert result["unexpected_interventions"] is None
+
+
 @pytest.mark.parametrize("size", [1, 7, 113, 65536])
 def test_cross_batch_utf8_interleaving_duplicates_and_private_fields(size, tmp_path):
     a, b = raw_event(secret="PRIVATE-é-雪"), raw_event(serial=2)
@@ -323,7 +354,11 @@ def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continu
                             inputs=[observer_path, host_path])
         continuous_plan = p, active, cfg, host, manifest
     name = f'name="{p.raw["intent"]}" nametype=DELETE'.encode()
-    active.write_bytes(raw_event(host=H.socket.gethostname()).replace(b'name="/private/DO-NOT-EXPORT"', name))
+    active.write_bytes(
+        raw_event(host=H.socket.gethostname())
+        .replace(b'name="/private/DO-NOT-EXPORT"', name)
+        .replace(b"syscall=257 success=yes exit=3", b"syscall=82 success=yes exit=0")
+    )
     refs = capture_refs(continuous_plan, (active.stat().st_size + cfg["max_bytes"] - 1) // cfg["max_bytes"])
     result = H.verify_segments(manifest, p.ref, host, refs, p.tmp / "result.json")
     assert result["schema"] == "forge-c/host-audit-segment-replay/2"
@@ -335,6 +370,7 @@ def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continu
     assert page["binding"]["host_plan_ref"] == host and page["previous_page_ref"] is None
     event = page["groups"][0]["facts"]["events"][0]
     assert event.get("intent_path_matches") == ([{"item": 0, "role": "DELETE"}] if with_controls else None)
+    assert event.get("intent_rename") == ({"syscall": "rename", "reported_success": True} if with_controls else None)
     if with_controls:
         assert page["binding"]["boot_id"] == H.observer.bound_json(refs[0])["boot_id"]
         assert event["intent_path_sha256"] == hashlib.sha256(p.raw["intent"].encode()).hexdigest()
