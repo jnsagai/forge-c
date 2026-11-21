@@ -18,6 +18,19 @@ def replace_once(source, old, new):
     return source.replace(old, new)
 
 
+def bind_verified_intent_epoch(source):
+    """Use the verified stop observation as the epoch fence for the new start."""
+    source = replace_once(
+        source, "    prerequisites.require_poststop(b,x.stop_result_sha256,allowance=True)",
+        "    poststop = prerequisites.require_poststop(b,x.stop_result_sha256,allowance=True)\n"
+        "    stop_intent = poststop['expectation']['Intent']\n"
+        "    stop_epoch = stop_intent.get('epoch')\n"
+        "    need(stop_intent.get('mode') == 'RUNNING' and type(stop_epoch) is int and stop_epoch > 0,\n"
+        "         'VERIFIED_RUNNING_INTENT_EPOCH_REQUIRED')",
+    )
+    return replace_once(source, "operations.fenced_call(1,request_start)", "operations.fenced_call(stop_epoch,request_start)")
+
+
 def standing_start(source):
     source = replace_once(source, "a.add_argument('--start-reviewed',action='store_true');a.add_argument('--ticket',type=Path)",
                           "a.add_argument('--start-reviewed',action='store_true');a.add_argument('--ticket',type=Path)\n"
@@ -38,6 +51,7 @@ def standing_start(source):
         raise ValueError('OWNER_PACKAGE_FINAL_TIME_FENCES_CHANGED')
     source = source.replace('D.validate_expiry_ticket(ticket,1795057626.0)', 'require_standing_time()')
     source = replace_once(source, "'--expiry-ticket',str(x.ticket),", '')
+    source = bind_verified_intent_epoch(source)
     compile(source, '<standing-owner-start>', 'exec')
     return source
 

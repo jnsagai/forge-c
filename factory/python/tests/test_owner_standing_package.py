@@ -17,6 +17,40 @@ P = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(P)
 
 
+def test_standing_start_uses_observed_epoch_across_owner_resume(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from forge_factory.afo import operations
+    from forge_factory.afo.durable import Refused
+
+    path = tmp_path / "private" / "intent.json"
+    path.parent.mkdir(mode=0o700)
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(path))
+    intent = operations.Intent()
+    intent.set("RUNNING", actor="FIXTURE", reason="initialize", initialize=True)
+    intent.set("STOPPED", actor="FIXTURE", reason="pause work")
+    resumed = intent.set("RUNNING", actor="FIXTURE", reason="resume work")
+    issued = []
+
+    def need(ok, code):
+        if not ok:
+            raise ValueError(code)
+
+    source = """def start(b, x):
+    prerequisites.require_poststop(b,x.stop_result_sha256,allowance=True)
+    return operations.fenced_call(1,request_start)
+"""
+    ns = dict(operations=operations, need=need, request_start=lambda: issued.append(1),
+              prerequisites=SimpleNamespace(require_poststop=lambda *_, **__: {"expectation": {"Intent": resumed}}))
+    exec(compile(P.bind_verified_intent_epoch(source), "<bound-start>", "exec"), ns)
+    ns["start"]({}, SimpleNamespace(stop_result_sha256="fixture"))
+    assert issued == [1] and resumed["epoch"] > 1
+    intent.set("STOPPED", actor="FIXTURE", reason="stop before stale starter acts")
+    with pytest.raises(Refused, match="OPERATIONS_ADMISSION_FENCED"):
+        ns["start"]({}, SimpleNamespace(stop_result_sha256="fixture"))
+    assert issued == [1]
+
+
 @pytest.mark.parametrize('actor,paused,extra,passes', [
     ('model-service-qualification-window','0',False,True),
     ('owner-development-source-fix-hold','0',False,True),
