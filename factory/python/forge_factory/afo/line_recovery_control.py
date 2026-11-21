@@ -119,7 +119,7 @@ def role_inputs(ref, eff):
 def require_job_binding(job, control, *, store=None):
     """Intersect a signed control with the actual intent and linked effective mission; never refill it."""
     from ..common import state_dir
-    from . import mission_capacity, mission_deadline
+    from . import mission_capacity, mission_deadline, mission_lifetime
     from .queue import ReadSnapshot
 
     if store is None:
@@ -146,8 +146,9 @@ def require_job_binding(job, control, *, store=None):
         if not link or link[0] != job["mission_id"] or not row:
             raise Refused("LINE_ROLE_LINKED_MISSION_REQUIRED")
         base = json.loads(row[0])
-        current = mission_capacity.effective(c, base, mission_deadline.effective(c, base))
-    if current["lineage"] != control["mission"]["lineage"] or current["limits"] != control["mission"]["limits"]:
+        current = mission_lifetime.effective(c, base, mission_capacity.effective(c, base, mission_deadline.effective(c, base)))
+    if (current["lineage"] != control["mission"]["lineage"]
+            or mission_lifetime.control_limits(current) != control["mission"]["limits"]):
         raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
     return True
 

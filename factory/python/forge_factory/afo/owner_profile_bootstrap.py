@@ -286,8 +286,9 @@ def _coordinate(
             "FINAL_EFFECT_FENCE_CHANGED",
         )
         require(
-            time.monotonic() < min(stop_at, record["expiry_ticket"]["deadline_monotonic"])
-            and time.clock_gettime(time.CLOCK_BOOTTIME) < min(boot_stop, record["expiry_boottime_deadline"]),
+            time.monotonic() < stop_at
+            and time.clock_gettime(time.CLOCK_BOOTTIME) < boot_stop
+            and D.time_authority_current(record, clock=time),
             "FINAL_EFFECT_DEADLINE_EXHAUSTED",
         )
 

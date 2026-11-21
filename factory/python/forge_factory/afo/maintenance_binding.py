@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ..common import sha256_bytes, sha256_file, state_dir
 from .durable import Refused, digest, immutable_bytes, immutable_json, strict_json
+from .mission_lifetime import end as mission_end
 
 PREFIX = "SYMPTOM_PRESENT:"
 
@@ -35,7 +36,7 @@ def _allowed(store, job, eff, fence):
     if Executions(store).pending() or not fence():
         raise Refused('MAINTENANCE_BINDING_NOT_QUIESCENT_OR_FENCED')
     snapshot = MissionLedger(store).snapshot(job['mission_id'])
-    if time.time() >= min(job['deadline_epoch'], snapshot['limits']['deadline']):
+    if time.time() >= min(job['deadline_epoch'], mission_end(snapshot['limits'])):
         raise Refused('MISSION_DEADLINE_EXHAUSTED')
 
 

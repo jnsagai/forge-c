@@ -21,6 +21,7 @@ from pathlib import Path
 
 from ..common import REPO_ROOT
 from . import authority, host
+from .mission_lifetime import end as mission_end
 from .policy import load, record
 from .queue import QueueError, Store
 
@@ -71,8 +72,8 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
     env = json.loads(order["envelope"])
     if not p.get("mount", lambda: host.preflight()["ok"])():
         issues.append("DATA_VOLUME_NOT_READY")
-    from .housekeeping import capacity
     from ..common import data_root
+    from .housekeeping import capacity
 
     if not p.get("capacity", lambda: capacity(data_root())["ok"])():
         issues.append("CONTROL_PLANE_STORAGE_RESERVE_LOW")
@@ -103,14 +104,14 @@ def preflight(order: dict, eff, store: Store, probes: dict | None = None) -> lis
             elif intake:
                 # A protocol-only mission spends finite jobs/requests/tokens, never product attempts.
                 if (
-                    time.time() >= limits["deadline"]
+                    time.time() >= mission_end(limits)
                     or snap["jobs"] >= limits["max_jobs"]
                     or snap["requests"] >= limits["max_requests"]
                     or snap["charged_tokens"] + intake["job_token_reservation"] > limits["max_tokens"]
                 ):
                     issues.append("MISSION_ALLOWANCE_EXHAUSTED")
             elif (
-                time.time() >= limits["deadline"]
+                time.time() >= mission_end(limits)
                 or snap["attempts"] >= limits["max_attempts"]
                 or snap["charged_tokens"] >= limits["max_tokens"]
             ):
@@ -182,7 +183,7 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
         if expired:
             out["expired_waiting"] = expired
     # WAITING_EXTERNAL_CHANGE holds no capacity (not an ACTIVE state): unrelated approved orders keep being scheduled
-    from .operations import configured, Intent
+    from .operations import Intent, configured
 
     if configured() and Intent().read()["mode"] != "RUNNING":
         return {**out, "action": "operations_wait"}

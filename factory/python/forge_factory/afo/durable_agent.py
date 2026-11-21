@@ -16,6 +16,7 @@ from .diagnosis_packet import evidence, load, measure_request
 from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
+from .mission_lifetime import end as mission_end
 
 
 def freeze(store, bundle, workspace, budget):
@@ -51,7 +52,7 @@ def poll(store, order, job, eff, client, launch_fn):
             job["state"] = "REVOKED"
         else:
             # A job reserved before its mission deadline never dispatches after it.
-            deadline = MissionLedger(store).snapshot(job["mission_id"])["limits"]["deadline"]
+            deadline = mission_end(MissionLedger(store).snapshot(job["mission_id"])["limits"])
             if time.time() >= min(deadline, fault.get("effective_mission_deadline", deadline)):
                 job.update(state="FAILED", error="MISSION_DEADLINE_EXHAUSTED")
                 ex.revoke(job["job_id"], "EXPIRED")

@@ -15,6 +15,7 @@ import zipfile
 from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_file, utc_now
+from .mission_lifetime import end as mission_end
 from .queue import QueueError, Store
 
 GRACE_S = 180  # a launch younger than this may still appear in Fabro's listing
@@ -400,7 +401,7 @@ def enforce_deadlines(store: Store, eff, client=None, now: float | None = None) 
             from .mission_ledger import MissionLedger
 
             ledger = MissionLedger(store)
-            deadline = min(deadline, ledger.snapshot(ledger.for_order(order["order_id"]))["limits"]["deadline"])
+            deadline = min(deadline, mission_end(ledger.snapshot(ledger.for_order(order["order_id"]))["limits"]))
         expired = now >= deadline
         allowed = authority.decide("launch_workorder", request_for(order), afo=eff, log=False).allow
         if not expired and allowed:

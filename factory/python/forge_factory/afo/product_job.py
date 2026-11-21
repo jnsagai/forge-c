@@ -11,6 +11,7 @@ from ..common import state_dir
 from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
+from .mission_lifetime import end as mission_end
 
 
 def product_workspace(attempt, work_order):
@@ -56,7 +57,7 @@ def prepare(store, order, attempt, nonce, manifest, eff, *, work_order=None):
         "model": manifest.get("model_profile") or manifest.get("model"),
         "policy_sha256": eff.sha256,
         "deadline_epoch": min(order["created_epoch"] + float(eff.get("budgets.max_order_wall_seconds")),
-                              MissionLedger(store).snapshot(mission)["limits"]["deadline"]),
+                              mission_end(MissionLedger(store).snapshot(mission)["limits"])),
         "reserved_tokens": int(eff.get("budgets.max_model_tokens_per_order")),
     }
     if eff.mode == "OWNER_SUPERVISED_DEVELOPMENT":

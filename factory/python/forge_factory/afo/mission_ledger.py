@@ -12,6 +12,7 @@ import time
 
 from ..common import utc_now
 from .durable import Refused, canonical, digest
+from .mission_lifetime import end as mission_end
 
 
 def validate_limits(limits):
@@ -78,8 +79,9 @@ class MissionLedger:
         m = json.loads(row[0])
         from .mission_capacity import effective as capacity_effective
         from .mission_deadline import effective
+        from .mission_lifetime import effective as lifetime_effective
 
-        m = capacity_effective(c, m, effective(c, m))
+        m = lifetime_effective(c, m, capacity_effective(c, m, effective(c, m)))
         ex = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_mission_executions WHERE mission_id=?", (mission_id,))]
         req = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_request_ledger WHERE mission_id=?", (mission_id,))]
         # An imported native job and its observed requests must not both charge the same tokens.
@@ -177,7 +179,7 @@ class MissionLedger:
             if not imported:
                 if snap["unbounded_historical_usage"]:
                     raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
-                if (time.time() if now is None else now) >= limits["deadline"]:
+                if (time.time() if now is None else now) >= mission_end(limits):
                     raise Refused("MISSION_DEADLINE_EXHAUSTED")
                 count, cap = ("attempts", "max_attempts") if kind == "PRODUCT" else ("jobs", "max_jobs")
                 if snap[count] >= limits[cap] or snap["charged_tokens"] + reserved_tokens > limits["max_tokens"]:
@@ -228,7 +230,7 @@ class MissionLedger:
             if swap_in_progress(c, job_id):  # CAPA-193: the committed swap fence replaces the held write lock
                 raise Refused("MODEL_SWAP_IN_PROGRESS")
             snap = self._snapshot(c, mission_id)
-            if not authorize() or (time.time() if now is None else now) >= snap["limits"]["deadline"]:
+            if not authorize() or (time.time() if now is None else now) >= mission_end(snap["limits"]):
                 raise Refused("REQUEST_NOT_AUTHORIZED")
             if snap["unbounded_historical_usage"]:
                 raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")

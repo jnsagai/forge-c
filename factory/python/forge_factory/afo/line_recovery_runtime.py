@@ -15,6 +15,7 @@ from . import line_launcher as LL
 from . import line_orders as LO
 from . import line_recovery as R
 from . import local_agent as L
+from .mission_lifetime import end as mission_end
 from .queue import Store
 
 
@@ -43,7 +44,7 @@ def authorize(job, store=None):
 
     mission = MissionLedger(store).snapshot(job["mission_id"])
     execution = Executions(store).get(job["job_id"])
-    if (time.time() >= mission["limits"]["deadline"] or not execution
+    if (time.time() >= mission_end(mission["limits"]) or not execution
             or execution["authorization_state"] != "VALID" or execution["resource_lease"] != "HELD"
             or execution["mission_id"] != job["mission_id"] or execution["launch_nonce"] != job["nonce"]):
         return False

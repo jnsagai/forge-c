@@ -282,9 +282,7 @@ def final_authority(record):
         "GUARD_FINAL_INTENT_FENCED",
     )
     need(
-        P.boot_id() == record["expiry_ticket"]["remote_boot_id"]
-        and time.monotonic() < record["expiry_ticket"]["deadline_monotonic"]
-        and time.clock_gettime(time.CLOCK_BOOTTIME) < record["expiry_boottime_deadline"],
+        D.time_authority_current(record, clock=time),
         "GUARD_FINAL_ACTUAL_UTC_DEADLINE_EXPIRED",
     )
 

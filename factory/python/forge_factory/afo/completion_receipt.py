@@ -16,6 +16,7 @@ from . import recovery, semantic_proposal
 from .diagnosis_packet import load as load_packet
 from .durable import Refused, canonical, digest, immutable_json, validate
 from .mission_ledger import MissionLedger
+from .mission_lifetime import end as mission_end
 
 
 @dataclass(frozen=True)
@@ -231,7 +232,7 @@ class Receipts:
             snap = MissionLedger(self.store).snapshot(rec["mission_id"])
             import time
 
-            if time.time() >= snap["limits"]["deadline"] or snap["charged_tokens"] > snap["limits"]["max_tokens"]:
+            if time.time() >= mission_end(snap["limits"]) or snap["charged_tokens"] > snap["limits"]["max_tokens"]:
                 raise Refused("MISSION_ALLOWANCE_EXHAUSTED")
             proposal = self.proposal(rec)
             from .diagnosis_packet import select_obligation

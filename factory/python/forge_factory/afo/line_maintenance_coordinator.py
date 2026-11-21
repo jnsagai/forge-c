@@ -19,9 +19,9 @@ from pathlib import Path
 from ..common import REPO_ROOT, sha256_file, state_dir
 from . import line_maintenance as binding
 from . import line_recovery
-from . import owner_supervised_development as development
 from . import local_agent as L
 from . import maintainer as M
+from . import owner_supervised_development as development
 from .durable import Refused, digest
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
@@ -45,13 +45,15 @@ def _saved(store, job_id):
 
 def _review_deadline(store, job, *, mission=None):
     mission = mission or MissionLedger(store).snapshot(job['mission_id'])
-    deadlines = [job.get('deadline_epoch'), mission['limits'].get('deadline')]
+    from .mission_lifetime import end
+
+    deadlines = [job.get('deadline_epoch')]
     queued = VerificationJobs(store).get(job['job_id'])
     if queued and queued['record'].get('deadline_epoch') is not None:
         deadlines.append(queued['record']['deadline_epoch'])
     if any(type(value) not in (int, float) or not math.isfinite(value) for value in deadlines):
         raise Refused('LINE_MAINTENANCE_DEADLINE_INVALID')
-    return min(deadlines)
+    return min(*deadlines, end(mission['limits']))
 
 
 def _authorized(store, job, eff):

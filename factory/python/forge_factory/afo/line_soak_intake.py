@@ -13,6 +13,7 @@ from pathlib import Path
 
 from ..common import state_dir
 from .durable import Refused
+from .mission_lifetime import end as mission_end
 
 SCHEMA = "forge-c/line-soak-planned-intake/1"
 
@@ -192,7 +193,7 @@ def check(manifest, plan, binding, descriptor, store, eff):
         raise Refused("LINE_SOAK_PLANNED_CONTROL_CHANGED")
     snap = P.bound_mission(store, ctl)
     tokens = int(eff.get("budgets.max_model_tokens_per_order"))
-    if (time.time() >= snap["limits"]["deadline"] or snap["unbounded_historical_usage"]
+    if (time.time() >= mission_end(snap["limits"]) or snap["unbounded_historical_usage"]
             or snap["attempts"] >= snap["limits"]["max_attempts"]
             or snap["charged_tokens"] + tokens > snap["limits"]["max_tokens"]
             or snap["requests"] >= snap["limits"]["max_requests"]):

@@ -615,15 +615,16 @@ def mission_authority(control):
 
 def _mission(store, control, *, anchor=None):
     from .mission_ledger import MissionLedger
+    from .mission_lifetime import LIFETIME, control_limits, end
 
     prior_conserved(store)
     mission = MissionLedger(store).snapshot(MISSION)
     limits = mission["limits"]
     if (
-        control["mission"] != {k: mission[k] for k in ("mission_id", "lineage", "limits")}
+        control["mission"] != dict(mission_id=mission["mission_id"], lineage=mission["lineage"], limits=control_limits(mission))
         or mission["lineage"] != LINEAGE
         or any(limits.get(k) != v for k, v in CAPS.items())
-        or not time.time() < limits["deadline"] <= DEADLINE
+        or not (limits.get("authorization_lifetime") == LIFETIME or time.time() < end(limits) <= DEADLINE)
         or mission.get("initial_authorization_ref", mission["authorization_ref"]) != ALLOWANCE_REF
         or mission["unbounded_historical_usage"]
     ):
@@ -638,6 +639,21 @@ def _mission(store, control, *, anchor=None):
         if anchor["usage_unknown"] and not mission["usage_unknown"]:
             _fail("HISTORICAL_UNKNOWN_USAGE_CHANGED")
     return mission, base
+
+
+def time_authority_current(record, *, clock=None):
+    """Standing issuance has no calendar timer; kernel identity and Intent still fence it."""
+    from .mission_lifetime import LIFETIME
+
+    clock = clock or time
+    if record.get("authorization_lifetime") == LIFETIME:
+        return (record.get("expiry_ticket") is None and record.get("expiry_boottime_deadline") is None
+                and isinstance(record.get("standing_authority_ref"), dict)
+                and record.get("guardian", {}).get("boot_id") == Path("/proc/sys/kernel/random/boot_id").read_text().strip())
+    ticket = record["expiry_ticket"]
+    return (ticket["remote_boot_id"] == Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+            and clock.monotonic() < ticket["deadline_monotonic"]
+            and clock.clock_gettime(clock.CLOCK_BOOTTIME) < record["expiry_boottime_deadline"])
 
 
 def _snapshot_store():
@@ -813,7 +829,7 @@ def validate_expiry_ticket(ticket, deadline):
         _fail("ACTUAL_UTC_EXPIRY_TICKET_INVALID")
 
 
-def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry_ticket, controller_revision=None):
+def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry_ticket=None, controller_revision=None):
     """External operator only. Does not amend, admit, reserve or reset a mission.
 
     It must stay alive as the guardian. Production MCP does not expose creation,
@@ -879,7 +895,13 @@ def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry
             _fail("POLICY_INVALID")
         _trial_envelopes(control, envelopes=ROLE_ENVELOPES_E)
         mission, base = _mission(store, control)
-        validate_expiry_ticket(expiry_ticket, mission["limits"]["deadline"])
+        standing = mission.get("standing_authority")
+        if standing:
+            if (expiry_ticket is not None or standing["intent_path"] != str(intent.path)
+                    or any(standing["control_context"].get(k) != context[k] for k in ("user_namespace", "uid_map"))):
+                _fail("STANDING_AUTHORITY_CONTEXT_CHANGED")
+        else:
+            validate_expiry_ticket(expiry_ticket, mission["limits"]["deadline"])
         parent = intent.path.parent / "owner-supervised-development"
         parent.mkdir(mode=0o700, exist_ok=True)
         _private(parent, directory=True)
@@ -899,6 +921,7 @@ def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry
             # BOOTTIME includes suspend; MONOTONIC alone would extend UTC authority.
             expiry_boottime_deadline=(
                 expiry_ticket["remote_boottime"] + expiry_ticket["deadline_monotonic"] - expiry_ticket["remote_monotonic"]
+                if expiry_ticket is not None else None
             ),
             guardian_socket=str(socket_path),
             guardian_socket_identity=dict(device=socket_stat.st_dev, inode=socket_stat.st_ino),
@@ -932,6 +955,9 @@ def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry
             trial_refs=control.get("product_role_trials") or {},
             issued_at=time.time(),
         )
+        if standing:
+            record.update(authorization_lifetime=standing["authorization_lifetime"],
+                          standing_authority_ref=standing["owner_record_ref"])
         parent = intent.path.parent / "owner-supervised-development"
         parent.mkdir(mode=0o700, exist_ok=True)
         _private(parent, directory=True)
@@ -982,11 +1008,7 @@ def current(*, store=None):
     ):
         _fail("RECORD_INVALID")
     state = intent.read()
-    if (
-        record["expiry_ticket"]["remote_boot_id"] != Path("/proc/sys/kernel/random/boot_id").read_text().strip()
-        or time.monotonic() >= record["expiry_ticket"]["deadline_monotonic"]
-        or time.clock_gettime(time.CLOCK_BOOTTIME) >= record["expiry_boottime_deadline"]
-    ):
+    if not time_authority_current(record):
         _fail("ACTUAL_UTC_WINDOW_EXPIRED")
     current_context = state.get("control_context") or {}
     if (
@@ -1034,7 +1056,11 @@ def current(*, store=None):
         ref = record[key]
         if sha256_file(Path(ref["path"])) != ref["sha256"]:
             _fail("POLICY_CHANGED")
-    _mission(store, control, anchor=record["mission_anchor"])
+    mission, _ = _mission(store, control, anchor=record["mission_anchor"])
+    standing = mission.get("standing_authority")
+    if (bool(standing) != (record.get("authorization_lifetime") == "UNTIL_OWNER_STOP")
+            or standing and record.get("standing_authority_ref") != standing["owner_record_ref"]):
+        _fail("STANDING_AUTHORITY_CHANGED")
     return record
 
 
@@ -1116,7 +1142,7 @@ class DevelopmentGrant:
         self.allow = True
         self.code = "OWNER_SUPERVISED_DEVELOPMENT_UNACCEPTED"
         self.authorization_id = "owner-development-" + digest(record)[:24]
-        self.expires_utc = (
+        self.expires_utc = None if record.get("authorization_lifetime") == "UNTIL_OWNER_STOP" else (
             __import__("datetime")
             .datetime.fromtimestamp(record["mission"]["limits"]["deadline"], __import__("datetime").UTC)
             .isoformat()
@@ -1304,7 +1330,7 @@ def main(argv=None):
     ap.add_argument("--runtime-policy", required=True, type=Path)
     ap.add_argument("--line-policy", required=True, type=Path)
     ap.add_argument("--campaigns", required=True, type=Path)
-    ap.add_argument("--expiry-ticket", required=True, type=Path)
+    ap.add_argument("--expiry-ticket", type=Path, help="finite mode only; standing owner authority needs no expiry ticket")
     ap.add_argument("--interval", type=float, default=30)
     ap.add_argument("--max-cycles", type=int)
     ap.add_argument("--bootstrap-managed-profile", action="store_true",
@@ -1336,7 +1362,7 @@ def main(argv=None):
         runtime_policy=a.runtime_policy,
         line_policy=a.line_policy,
         directive=DIRECTIVE,
-        expiry_ticket=strict_json(a.expiry_ticket.read_bytes(), 65536),
+        expiry_ticket=strict_json(a.expiry_ticket.read_bytes(), 65536) if a.expiry_ticket else None,
         controller_revision=revision()["commit"],
     )
     old_env = {key: os.environ.get(key) for key in (FILE, SHA, "FORGE_AFO_POLICY")}

@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from .durable import Refused, digest
+from .mission_lifetime import end as mission_end
 
 SCHEMA = "forge-c/line-soak-prerequisites/1"
 LIMIT = 1024 * 1024
@@ -246,7 +247,7 @@ def _job(manifest, plan, binding, ref, store, eff):
     if job.get("operations_epoch") != plan["_intent_epoch"]:
         raise Refused("LINE_SOAK_JOB_INTENT_CHANGED")
     mission = bound_mission(store, control, code="LINE_SOAK_JOB_MISSION_AUTHORITY_CHANGED")
-    if time.time() >= min(mission["limits"]["deadline"], job["deadline_epoch"]):
+    if time.time() >= min(mission_end(mission["limits"]), job["deadline_epoch"]):
         raise Refused("LINE_SOAK_JOB_AUTHORITY_EXPIRED")
     spent = {"max_attempts": "attempts", "max_jobs": "jobs", "max_requests": "requests", "max_tokens": "charged_tokens",
              "max_tools": "tools", "max_corrections": "corrections"}
@@ -395,7 +396,7 @@ def _pending(manifest, plan, binding, descriptor, store, eff):
     if old or (link and link[0] != expected["mission_id"]) or (store.attempts(oid) and not link):
         raise Refused("LINE_SOAK_PENDING_HISTORY_UNBOUND")
     tokens = int(eff.get("budgets.max_model_tokens_per_order"))
-    if (time.time() >= snap["limits"]["deadline"] or snap["unbounded_historical_usage"]
+    if (time.time() >= mission_end(snap["limits"]) or snap["unbounded_historical_usage"]
             or snap["attempts"] >= snap["limits"]["max_attempts"]
             or snap["charged_tokens"] + tokens > snap["limits"]["max_tokens"]
             or snap["requests"] >= snap["limits"]["max_requests"]):
@@ -666,7 +667,7 @@ def admission_boundary(manifest, plan, snapshot, *, fault=False):
                         raise Refused("LINE_SOAK_BOUNDARY_MISSION_CHANGED")
                     if mission["unbounded_historical_usage"]:
                         raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
-                    deadline = min(mission["limits"]["deadline"], job.get("deadline_epoch", mission["limits"]["deadline"]))
+                    deadline = min(mission_end(mission["limits"]), job.get("deadline_epoch", mission_end(mission["limits"])))
                     deadlines.append(deadline)
                     if time.time() >= deadline:
                         raise Refused("LINE_SOAK_START_AUTHORITY_EXPIRED")

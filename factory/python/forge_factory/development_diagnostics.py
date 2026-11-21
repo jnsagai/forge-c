@@ -13,6 +13,7 @@ from itertools import islice
 from pathlib import Path
 
 from .afo.durable import Refused, canonical, digest, immutable_json, strict_json
+from .afo.mission_lifetime import end as mission_end
 from .common import sha256_file, utc_now
 
 RECIPE = "unchanged-accepted-unit-recheck-v1"
@@ -188,7 +189,7 @@ def recheck(store):
                 raise Refused("DIAGNOSTIC_ACTIVE_EXECUTION_REQUIRED")
             if live["mission_id"] != job["mission_id"]:
                 raise Refused("DIAGNOSTIC_MISSION_BINDING_CHANGED")
-            deadline = MissionLedger(queue).snapshot(job["mission_id"])["limits"]["deadline"]
+            deadline = mission_end(MissionLedger(queue).snapshot(job["mission_id"])["limits"])
             if time.time() >= deadline:
                 raise Refused("DIAGNOSTIC_MISSION_TIME_EXHAUSTED")
             evidence = proof(store)

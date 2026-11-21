@@ -20,6 +20,7 @@ from pathlib import Path
 
 from ..common import utc_now
 from .durable import Refused, canonical, digest, strict_json
+from .mission_lifetime import end as mission_end
 
 MODES = {"RUNNING", "PAUSED", "DRAINING", "STOPPED"}
 # Fixed approved operational recipe: Conductor only; no recursive supervisor restarts.
@@ -325,7 +326,7 @@ def recover_profile(store, *, external=False):
                 live = ex.get(owner)
                 if not live:
                     return {"ok": False, "code": "NATIVE_OWNER_IDENTITY_UNPROVEN"}
-                expired = time.time() >= MissionLedger(store).snapshot(live["mission_id"])["limits"]["deadline"]
+                expired = time.time() >= mission_end(MissionLedger(store).snapshot(live["mission_id"])["limits"])
                 table = "afo_product_jobs" if owner.startswith("afo-product-") else "afo_local_agent_jobs"
                 with store.tx() as c:
                     job = c.execute(f"SELECT record FROM {table} WHERE job_id=?", (owner,)).fetchone()  # noqa: S608 - two fixed tables

@@ -33,6 +33,10 @@ def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
     from .queue import Store
 
     trial = resolve(ref)
+    from . import owner_supervised_development as development
+
+    standing = (eff.mode == development.MODE
+                and development.current(store=store).get("authorization_lifetime") == "UNTIL_OWNER_STOP")
     if store is None:
         store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
     order = store.order(job["order_id"])
@@ -59,7 +63,7 @@ def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
         or trial.get("profile") != job.get("profile")
         or trial.get("model") != job.get("model")
         or type(trial.get("deadline_epoch")) not in (int, float)
-        or not time.time() < trial["deadline_epoch"]
+        or not (standing or time.time() < trial["deadline_epoch"])
     ):
         raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
     roles = trial.get("roles")

@@ -6,19 +6,19 @@ remain mandatory after this boundary. No raw incident text becomes a trusted ins
 """
 from __future__ import annotations
 
-import json
-from pathlib import Path
 import time
+from pathlib import Path
 
 from ..common import REPO_ROOT, canonical_json, sha256_bytes
 from . import bundle, line_recovery, local_agent, maintainer
 from .mission_ledger import MissionLedger
+from .mission_lifetime import end as mission_end
 from .queue import QueueError
 
 
 def prepare(store, order_id, attempt_id, workspace, origin, *, eff=None, repo=REPO_ROOT):
-    from .policy import load
     from ..reliability import isolation
+    from .policy import load
 
     eff = eff or load()
     order = store.order(order_id)
@@ -37,7 +37,7 @@ def prepare(store, order_id, attempt_id, workspace, origin, *, eff=None, repo=RE
     if not incident or incident.get("failure_class") != "FACTORY_CODE_DEFECT":
         raise QueueError("LINE_MAINTENANCE_REQUIRES_FACTORY_DEFECT")
     mission = MissionLedger(store).for_order(order_id)
-    if time.time() >= MissionLedger(store).snapshot(mission)["limits"]["deadline"]:
+    if time.time() >= mission_end(MissionLedger(store).snapshot(mission)["limits"]):
         raise QueueError("LINE_MAINTENANCE_MISSION_EXPIRED")
     if not isolation.available():
         raise QueueError("MAINTAINER_SANDBOX_UNAVAILABLE")

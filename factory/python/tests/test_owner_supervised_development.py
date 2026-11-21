@@ -133,6 +133,8 @@ def supervised(tmp_path, monkeypatch):
     monkeypatch.setattr(D, "ROLE_ENVELOPES_E", dict(D.LEGACY_ROLE_ENVELOPES))
     store = Store(tmp_path / "state/supervisor/line-queue.sqlite3")
     limits = dict(D.CAPS, deadline=time.time() + 300)
+    # Synthetic finite authority must remain testable after the real historical window closed.
+    monkeypatch.setattr(D, "DEADLINE", limits["deadline"])
     seed_spent_original(store)
     MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.ALLOWANCE_REF, authorize=lambda *_: True)
     from forge_factory.common import load_yaml
@@ -246,6 +248,60 @@ def test_explicit_owner_context_is_unaccepted_not_auth_ok(supervised):
     )
     assert MissionLedger(supervised["store"]).snapshot(D.MISSION)["charged_tokens"] == 0
     assert MissionLedger(supervised["store"]).snapshot(D.PRIOR_MISSION)["charged_tokens"] == 4194304
+
+
+def test_standing_owner_guardian_survives_old_cutoff_and_still_obeys_stop(supervised, monkeypatch):
+    from forge_factory.afo import mission_lifetime as lifetime
+    from forge_factory.afo import owner_launch_guard
+    from forge_factory.afo.line_orders import load_policy
+
+    store = supervised["store"]
+    monkeypatch.delenv(D.FILE)
+    monkeypatch.delenv(D.SHA)
+    before = MissionLedger(store).snapshot(D.MISSION)
+    receipt = lifetime.enable(store, directive=lifetime.DIRECTIVE, snapshot_sha256=digest(before))
+    D.close_guardian(supervised["ref"])
+    ref = D.create(store, control_ref=supervised["control_ref"], runtime_policy=supervised["runtime"],
+                   line_policy=supervised["line"], directive=D.DIRECTIVE)
+    monkeypatch.setenv(D.FILE, ref["path"])
+    monkeypatch.setenv(D.SHA, ref["sha256"])
+    try:
+        # A century later: no renewal, expired UTC ticket or changed time source is needed.
+        monkeypatch.setattr(D.time, "time", lambda: before["limits"]["deadline"] + 100*366*86400)
+        record = D.current(store=store)
+        assert record["authorization_lifetime"] == lifetime.LIFETIME
+        assert record["expiry_ticket"] is None and record["expiry_boottime_deadline"] is None
+        assert record["standing_authority_ref"] == receipt["owner_record_ref"]
+        owner_launch_guard.final_authority(record)
+        assert D.DevelopmentGrant(load_policy(supervised["line"])).expires_utc is None
+        from forge_factory.afo import product_role_trial as trials
+
+        trial_ref = record["trial_refs"][D.RUN_MODEL]
+        trial = trials.resolve(trial_ref)
+        identity = next(iter(trial["roles"].values()))[0]
+        job = dict(order_id=D.trial_order_ids()[0], mission_id=D.MISSION,
+                   factory_revision=dict(commit="a"*40, dirty=False), profile=D.PROFILE,
+                   model=D.RUN_MODEL, model_digest=identity["model_digest"], precision=identity["precision"])
+        monkeypatch.setattr(store, "order", lambda _: dict(envelope=json.dumps(
+            dict(request_id=D.ORDERS[0], driver_class=DRIVER, model_profile=D.PROFILE))))
+        assert trials.authorized(trial_ref, job, policy.load(supervised["runtime"]), store=store) == trial
+        foreign = copy.deepcopy(job)
+        foreign["factory_revision"]["commit"] = "b"*40
+        with pytest.raises(Refused):
+            trials.authorized(trial_ref, foreign, policy.load(supervised["runtime"]), store=store)
+        operations.Intent().set("STOPPED", actor="PRIVATE-TEST-OWNER", reason="Owner stops standing authority")
+        with pytest.raises(Refused, match="INTENT_FENCED"):
+            D.current(store=store)
+        with pytest.raises(Refused):
+            owner_launch_guard.final_authority(record)
+    finally:
+        D.close_guardian(ref)
+
+
+def test_omitting_expiry_ticket_does_not_create_standing_permission(supervised):
+    with pytest.raises(Refused, match="EXPIRY_TICKET_INVALID"):
+        D.create(supervised["store"], control_ref=supervised["control_ref"], runtime_policy=supervised["runtime"],
+                 line_policy=supervised["line"], directive=D.DIRECTIVE)
 
 
 @pytest.mark.parametrize(

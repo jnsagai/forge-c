@@ -115,6 +115,8 @@ def extend(store, document, eff):
         if document["snapshot_sha256"] != digest(snapshot):
             raise Refused("MISSION_SNAPSHOT_CHANGED")
         limits = snapshot["limits"]
+        if limits.get("authorization_lifetime") == "UNTIL_OWNER_STOP":
+            raise Refused("MISSION_ALREADY_HAS_STANDING_TIME_AUTHORITY")
         if (snapshot["attempts"] >= limits["max_attempts"] or snapshot["charged_tokens"] >= limits["max_tokens"]
                 or snapshot["requests"] >= limits["max_requests"] or snapshot["tools"] >= limits["max_tools"]
                 or snapshot["unbounded_historical_usage"]):

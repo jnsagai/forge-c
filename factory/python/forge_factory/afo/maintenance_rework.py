@@ -74,7 +74,9 @@ def _allowed(store, job, eff):
         raise Refused('OPERATIONS_ADMISSION_REFUSED')
     snapshot = MissionLedger(store).snapshot(job['mission_id'])
     caps = snapshot['limits']
-    if time.time() >= min(job['deadline_epoch'], caps['deadline']):
+    from .mission_lifetime import end
+
+    if time.time() >= min(job['deadline_epoch'], end(caps)):
         raise Refused('MISSION_DEADLINE_EXHAUSTED')
     jobs = L.records(store, job['order_id'])
     tokens = job['reserved_tokens']
