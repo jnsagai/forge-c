@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import math
 import time
+from collections import Counter
 
 from ..common import utc_now
 from .durable import Refused, canonical, digest
@@ -85,10 +86,12 @@ class MissionLedger:
         ex = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_mission_executions WHERE mission_id=?", (mission_id,))]
         req = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_request_ledger WHERE mission_id=?", (mission_id,))]
         # An imported native job and its observed requests must not both charge the same tokens.
-        jobs_with_requests = {r["job_id"] for r in req}
-        request_charges = {job: sum(r["charge"] for r in req if r["job_id"] == job) for job in jobs_with_requests}
+        request_charges, request_counts = Counter(), Counter()
+        for request in req:
+            job = request["job_id"]
+            request_charges[job] += request["charge"]
+            request_counts[job] += 1
         tokens = sum(max(r["charge"], request_charges.pop(r["identity"], 0)) for r in ex) + sum(request_charges.values())
-        from collections import Counter
 
         # CAPA-205: positional (job_id, kind, n) - the deployer's budget capture uses a plain connection (no row
         # factory), and since CAPA-203 the line queue holds this mission's TOOL counters.
@@ -105,7 +108,7 @@ class MissionLedger:
                 total += max(imported, observed.pop(execution["identity"], 0))
             return total + sum(observed.values())
 
-        requests = count("requests", dict(Counter(r["job_id"] for r in req)))
+        requests = count("requests", request_counts)
         tools = count("tools", {job: n for job, kind, n in counters if kind == "TOOL"})
         corrections = count("corrections", {job: n for job, kind, n in counters if kind == "CORRECTION"})
         return {
@@ -116,7 +119,7 @@ class MissionLedger:
             "tools": tools,
             "corrections": corrections,
             "charged_tokens": tokens,
-            "usage_unknown": any(r.get("reported_tokens") is None for r in ex + req),
+            "usage_unknown": any(r.get("reported_tokens") is None for ledger in (ex, req) for r in ledger),
             "unique_executions": len(ex),
             "unbounded_historical_usage": any(
                 r.get("imported") and r.get("reported_tokens") is None and r.get("reserved_tokens") == 0 for r in ex

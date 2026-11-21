@@ -396,7 +396,7 @@ def test_product_attempt_allocation_cannot_expand_policy_or_use_invalid_counts(p
     from forge_factory.afo import product_job
 
     p = protocol
-    eff = SimpleNamespace(sha256=p.eff.sha256,
+    eff = SimpleNamespace(sha256=p.eff.sha256, mode=p.eff.mode,
                           get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a))
     with pytest.raises(Refused, match="PRODUCT_ATTEMPT_RESERVATION_INVALID"):
         product_job.prepare(p.store, p.order, p.store.attempts(p.order["order_id"])[0], "c" * 32,
@@ -407,7 +407,7 @@ def test_product_attempt_allocation_preserves_cumulative_charge_and_cannot_be_re
     from forge_factory.afo import product_job
 
     p = protocol
-    eff = SimpleNamespace(sha256=p.eff.sha256,
+    eff = SimpleNamespace(sha256=p.eff.sha256, mode=p.eff.mode,
                           get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a))
     attempt = p.store.attempts(p.order["order_id"])[0]
     manifest = {"model": "qwen-fixture", "product_attempt_token_reservations": [8192, 4096]}
@@ -430,7 +430,8 @@ def test_product_and_diagnosis_share_single_ledger_and_native_ownership(protocol
     monkeypatch.setattr(role_capability, "admit_job", lambda *a, **kw: {"fixture": True})
     monkeypatch.setattr(L, "authorized", lambda *a: True)
     eff = SimpleNamespace(
-        sha256=p.eff.sha256, get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a)
+        sha256=p.eff.sha256, mode=p.eff.mode,
+        get=lambda k, *a: 32000 if k == "budgets.max_model_tokens_per_order" else p.eff.get(k, *a)
     )
     attempt = p.store.attempts(p.order["order_id"])[0]
     job = product_job.prepare(p.store, p.order, attempt, "c" * 32, {"model": "qwen-fixture"}, eff)
