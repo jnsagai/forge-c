@@ -579,11 +579,23 @@ def evaluate(manifest, plan_ref, injection_ref, sample_refs, destination, *, wor
         fixture = bound_json(fixture_ref)
         parameters = operational_facts.validate_fixture(fixture, fault, plan_ref, frozen["unit"])
         exposure, restored = operational_facts.external(manifest, fault, parameters, receipt, rows)
-    gaps = any(
-        b["wall"] - a["wall"] > manifest["bounds"]["probe_gap_seconds"]
-        or (a["boot_id"] == b["boot_id"] and abs((b["wall"] - a["wall"]) - (b["mono"] - a["mono"])) > soak.CLOCK_SKEW_S)
-        for a, b in zip(rows, rows[1:], strict=False)
-    )
+    boot_changes = []
+    gaps = False
+    for a, b in zip(rows, rows[1:], strict=False):
+        elapsed = b["wall"] - a["wall"]
+        if elapsed > manifest["bounds"]["probe_gap_seconds"]:
+            gaps = True
+        if a["boot_id"] != b["boot_id"]:
+            boot_changes.append((a["wall"], b["wall"]))
+        elif abs(elapsed - (b["mono"] - a["mono"])) > soak.CLOCK_SKEW_S:
+            gaps = True
+    if boot_changes:
+        # Only the declared reboot can explain a change of clocks within this trace.
+        gaps |= not (
+            fault == "reboot"
+            and len(boot_changes) == 1
+            and boot_changes[0][0] <= receipt["at"] < boot_changes[0][1]
+        )
     facts = invariants(rows)
     from . import operational_work
 

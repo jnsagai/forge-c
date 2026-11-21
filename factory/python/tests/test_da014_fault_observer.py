@@ -404,13 +404,13 @@ def test_aggregate_observation_bytes_are_bounded_before_full_trace_allocation(se
         O.load_samples(p.manifest, p.ref, refs)
 
 
-def external_case(p):
+def external_case(p, fault="dependency-outage"):
     doc = {
         "schema": "forge-c/operational-exposure-fixture/1",
-        "fault": "dependency-outage",
+        "fault": fault,
         "unit": p.raw["unit"],
         "observer_plan_ref": p.ref,
-        "parameters": {"dependency": "gateway"},
+        "parameters": {"dependency": "gateway"} if fault == "dependency-outage" else {},
     }
     file = p.tmp / "external-fixture.json"
     immutable_json(file, doc)
@@ -428,7 +428,7 @@ def external_case(p):
     receipt = {
         "schema": "forge-c/operational-exposure/1",
         "manifest_sha256": digest(p.manifest),
-        "fault": "dependency-outage",
+        "fault": fault,
         "unit": p.raw["unit"],
         "host": "fixture-host",
         "at": 105,
@@ -446,6 +446,34 @@ def test_external_receipt_is_bound_to_frozen_fixture_and_measured_change(setup):
     assert record["fault_exposed"] and record["independently_restored"]
     assert record["restoration_seconds"] == 45
     assert record["unexpected_interventions"] is None
+    assert O.verify(p.manifest, record) == record
+
+
+@pytest.mark.parametrize(
+    ("fault", "boots", "explained"),
+    [
+        ("dependency-outage", ("old", "new", "new"), False),
+        ("reboot", ("old", "new", "new"), True),
+        ("reboot", ("old", "old", "new"), False),
+        ("reboot", ("old", "new", "newer"), False),
+    ],
+)
+def test_only_the_declared_reboot_explains_a_boot_change(setup, fault, boots, explained):
+    p = setup
+    ref, rows = external_case(p, fault)
+    captures = []
+    for index, (row_ref, boot_id) in enumerate(zip(rows, boots, strict=True)):
+        row = O.bound_json(row_ref)
+        row["boot_id"] = boot_id
+        if fault == "reboot":
+            row["health"]["gateway"] = True
+        path = p.tmp / f"boot-fact-{index}.json"
+        immutable_json(path, row)
+        captures.append({"path": str(path), "sha256": sha256_file(path)})
+    record = O.evaluate(p.manifest, p.ref, ref, captures, None)
+    assert record["fault_exposed"] is True
+    assert record["observation_gaps"] is not explained
+    assert record["independently_restored"] is explained
     assert O.verify(p.manifest, record) == record
 
 
