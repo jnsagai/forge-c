@@ -1,6 +1,9 @@
 """AFO M1 (T007-T013; AT-001..AT-009): fail-closed data-volume preflight, rendered units with bounded restarts and the
 preflight, Conductor heartbeat only after completed cycles, external watchdog alerting with dedup."""
+import errno
 import json
+import os
+from pathlib import Path
 
 import pytest
 from forge_factory.afo import conductor, host, policy, services, watchdog
@@ -32,6 +35,46 @@ def test_preflight_passes_only_on_the_recorded_volume(vol):
     with pytest.raises(SystemExit):
         host.init(root)                                                       # refuses to bless the root fs
     assert not host.preflight(root.parent / "absent")["ok"]
+
+
+@pytest.mark.parametrize("value", [{}, [], None, {"uuid": ""}, {"uuid": "U-1"}, "x" * 4097])
+def test_invalid_volume_marker_cannot_reach_write_probe(vol, monkeypatch, value):
+    root, _ = vol
+    (root / host.MARKER).write_text(json.dumps(value))
+    monkeypatch.setattr(host.uuid, "uuid4", lambda: pytest.fail("invalid marker reached write probe"))
+    result = host.preflight(root)
+    assert not result["ok"] and result["issues"][0].startswith("SENTINEL_MISSING_OR_INVALID")
+
+
+@pytest.mark.parametrize("kind", ["symlink", "fifo"])
+def test_preflight_refuses_nonregular_markers_without_following_or_waiting(vol, kind):
+    root, _ = vol
+    marker = root / host.MARKER
+    if kind == "symlink":
+        target = root / "valid.json"
+        target.write_text(json.dumps({"uuid": "U-1", "data_root": str(root)}))
+        marker.symlink_to(target)
+    else:
+        os.mkfifo(marker)
+    assert host.preflight(root)["issues"][0].startswith("SENTINEL_MISSING_OR_INVALID")
+
+
+def test_read_only_volume_refuses_start_and_recovers_on_next_preflight(vol, monkeypatch):
+    root, _ = vol
+    marker = host.init(root)
+    before = marker.read_bytes()
+    real_open = Path.open
+
+    def read_only(path, mode="r", *args, **kwargs):
+        if path.name.startswith(".afo-write-probe-"):
+            raise OSError(errno.EROFS, "read-only fixture")
+        return real_open(path, mode, *args, **kwargs)
+
+    with monkeypatch.context() as fault:
+        fault.setattr(Path, "open", read_only)
+        assert host.preflight(root)["issues"] == ["WRITE_PROBE_FAILED:OSError"]
+    assert host.preflight(root)["ok"]
+    assert marker.read_bytes() == before and sorted((root / "state").iterdir()) == [marker]
 
 
 def test_rendered_units_are_complete_bounded_and_preflighted():

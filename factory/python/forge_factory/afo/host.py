@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import stat
 import subprocess
 import sys
 import uuid
@@ -21,16 +22,35 @@ from pathlib import Path
 from ..common import data_root, utc_now
 
 MARKER = "state/.forge-volume-id"
+MAX_SENTINEL_BYTES = 4096
 
 
 def fs_info(path: Path) -> dict:
-    r = subprocess.run(["findmnt", "-n", "-J", "-o", "TARGET,SOURCE,FSTYPE,UUID", "--target", str(path)],
-                       capture_output=True, text=True, timeout=10)
     try:
+        r = subprocess.run(["findmnt", "-n", "-J", "-o", "TARGET,SOURCE,FSTYPE,UUID", "--target", str(path)],
+                           capture_output=True, text=True, timeout=10, check=True)
         fs = json.loads(r.stdout)["filesystems"][0]
-    except (ValueError, KeyError, IndexError):
+        if not isinstance(fs, dict) or not all(isinstance(fs.get(k), str) and fs[k] for k in ("target", "source")):
+            return {}
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, IndexError, TypeError):
         return {}
     return {k: fs.get(k) or "" for k in ("target", "source", "fstype", "uuid")}
+
+
+def read_sentinel(path: Path) -> dict:
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as stream:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise ValueError("volume sentinel must be a regular file")
+        data = stream.read(MAX_SENTINEL_BYTES + 1)
+    if len(data) > MAX_SENTINEL_BYTES:
+        raise ValueError("volume sentinel is too large")
+    sentinel = json.loads(data)
+    if not isinstance(sentinel, dict) or any(
+        not isinstance(sentinel.get(key), str) or not sentinel[key].strip() for key in ("uuid", "data_root")
+    ):
+        raise ValueError("volume sentinel requires a UUID and data root")
+    return sentinel
 
 
 def preflight(root: Path | None = None, marker: str = MARKER) -> dict:
@@ -39,25 +59,28 @@ def preflight(root: Path | None = None, marker: str = MARKER) -> dict:
     if not root.is_dir():
         return {"ok": False, "issues": [f"DATA_ROOT_MISSING:{root}"], "root": str(root)}
     fs, rootfs = fs_info(root), fs_info(Path("/"))
-    if not fs:
+    if not fs or not rootfs:
         issues.append("MOUNT_UNKNOWN")
-    elif fs["target"] == "/" or (rootfs and fs.get("source") == rootfs.get("source")):
+    elif fs["target"] == "/" or fs.get("source") == rootfs.get("source"):
         issues.append(f"DATA_ROOT_ON_ROOT_FS:{fs.get('source')} (volume not mounted?)")
+    elif not isinstance(fs.get("uuid"), str) or not fs["uuid"].strip():
+        issues.append("MOUNT_UUID_UNAVAILABLE")
     s = root / marker
-    sentinel = {}
     try:
-        sentinel = json.loads(s.read_text())
+        sentinel = read_sentinel(s)
     except (OSError, ValueError):
         issues.append(f"SENTINEL_MISSING_OR_INVALID:{s}")
-    if sentinel:
+    else:
         if fs and sentinel.get("uuid") != fs.get("uuid"):
             issues.append(f"VOLUME_UUID_MISMATCH:sentinel={sentinel.get('uuid')} mounted={fs.get('uuid')}")
         if sentinel.get("data_root") != str(root):
             issues.append(f"SENTINEL_FOR_OTHER_ROOT:{sentinel.get('data_root')}")
     if not issues:
         probe = root / "state" / f".afo-write-probe-{os.getpid()}-{uuid.uuid4().hex[:8]}"
+        created = False
         try:
-            with probe.open("wb") as f:
+            with probe.open("xb") as f:
+                created = True
                 f.write(b"forge")
                 f.flush()
                 os.fsync(f.fileno())
@@ -66,10 +89,11 @@ def preflight(root: Path | None = None, marker: str = MARKER) -> dict:
             ok = False
             issues.append(f"WRITE_PROBE_FAILED:{type(exc).__name__}")
         finally:
-            try:
-                probe.unlink()
-            except OSError:
-                pass
+            if created:
+                try:
+                    probe.unlink()
+                except OSError as exc:
+                    issues.append(f"WRITE_PROBE_CLEANUP_FAILED:{type(exc).__name__}")
         if not ok and not issues:
             issues.append("WRITE_PROBE_MISMATCH")
     return {"ok": not issues, "issues": issues, "root": str(root), "filesystem": fs, "checked_at": utc_now()}
