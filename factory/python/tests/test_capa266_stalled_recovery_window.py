@@ -45,3 +45,25 @@ def test_a_recovery_that_moved_recently_still_holds_the_window(tmp_path):
 def test_without_lifecycle_evidence_a_recovery_stays_active(tmp_path):
     assert _lane(tmp_path, last_event_age=None).idle() == (False, "ORDERS_ACTIVE:WAITING_RECOVERY=1")
     assert _lane(tmp_path / "x", lifecycle=False).idle() == (False, "ORDERS_ACTIVE:WAITING_RECOVERY=1")
+
+
+def test_idle_check_never_combines_queue_and_lease_state_from_different_transactions(tmp_path, monkeypatch):
+    lane = _lane(tmp_path, last_event_age=W.STALLED_RECOVERY_S + 60)
+    db = lane.lrtx / "state/supervisor/line-queue.sqlite3"
+    with sqlite3.connect(db) as writer:
+        assert writer.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
+        writer.execute("INSERT INTO afo_resource_ownership VALUES ('inference','job-a')")
+
+    check_recoveries = lane._stalled_recoveries
+
+    def settle_and_admit(connection):
+        # Each committed state is busy. A split read sees the old queue and new lease.
+        with sqlite3.connect(db) as writer:
+            writer.execute("DELETE FROM afo_resource_ownership WHERE resource='inference'")
+            writer.execute("INSERT INTO afo_work_orders VALUES ('o2','RUNNING')")
+        return check_recoveries(connection)
+
+    monkeypatch.setattr(lane, "_stalled_recoveries", settle_and_admit)
+    assert lane.idle() == (False, "INFERENCE_OWNER_PRESENT")
+    monkeypatch.setattr(lane, "_stalled_recoveries", check_recoveries)
+    assert lane.idle() == (False, "ORDERS_ACTIVE:RUNNING=1")

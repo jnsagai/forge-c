@@ -29,6 +29,9 @@ from pathlib import Path
 
 import httpx
 
+from ..afo.durable import Refused
+from ..afo.owner_profile_bootstrap import quiet_ledger
+
 F = Path("/mnt/data/forge-c/swe1-fabro-20261031")
 LRTX, QUAL = F / "lrtx", F / "qualification"
 DEPLOYER = Path("/mnt/data/forge-c/owner-autodeploy/deployer")
@@ -150,6 +153,8 @@ class OwnerLane:
 
     def idle(self) -> tuple[bool, str]:
         with contextlib.closing(self._db()) as c:
+            # Replay may update the queue and its leases together while this check runs.
+            c.execute("BEGIN")
             marks = ",".join("?" * len(ACTIVE))  # fixed placeholders; the values are bound
             busy = c.execute(f"SELECT state,count(*) FROM afo_work_orders WHERE state IN ({marks}) GROUP BY state",  # noqa: S608
                              ACTIVE).fetchall()
@@ -158,15 +163,10 @@ class OwnerLane:
             busy = [(s, n) for s, n in busy if n > 0]
             if busy:
                 return False, "ORDERS_ACTIVE:" + ",".join(f"{s}={n}" for s, n in busy)
-            held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
-            if held and held[0]:
-                return False, "INFERENCE_OWNER_PRESENT"
-            if any(json.loads(r[0]).get("resource_lease") != "RELEASED" for r in c.execute("SELECT record FROM afo_execution_liveness")):
-                return False, "EXECUTION_LEASE_NOT_RELEASED"
-            if c.execute("SELECT 1 FROM afo_request_ledger WHERE state IS NULL OR state!='QUIESCENT' LIMIT 1").fetchone():
-                return False, "REQUEST_NOT_QUIESCENT"
-            if c.execute("SELECT 1 FROM afo_commands_outbox WHERE state IS NULL OR state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1").fetchone():
-                return False, "COMMAND_OUTCOME_UNRESOLVED"
+            try:
+                quiet_ledger(c)
+            except Refused as exc:
+                return False, exc.code.removeprefix("OWNER_BOOTSTRAP_")
         return True, "IDLE"
 
     @contextlib.contextmanager
