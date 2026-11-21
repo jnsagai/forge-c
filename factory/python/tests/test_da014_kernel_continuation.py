@@ -379,19 +379,24 @@ def continuous_plan(segmented_plan):
     return p, active, cfg, host_ref, manifest
 
 
+def with_control_sources(continuous_plan):
+    p, active, cfg, host, _ = continuous_plan
+    observer_path = p.tmp / "observer-control-plan.json"
+    immutable_json(observer_path, {**p.raw, "control_sources": control_config()})
+    p.ref = {"path": str(observer_path), "sha256": sha256_file(observer_path)}
+    host_path = p.tmp / "host-control-plan.json"
+    immutable_json(host_path, {**H.observer.bound_json(host), "observer_plan_ref": p.ref})
+    host = {"path": str(host_path), "sha256": sha256_file(host_path)}
+    manifest = Q.freeze("operation-24", p.tmp / "control-campaign.json", identity=identity(),
+                        inputs=[observer_path, host_path])
+    return p, active, cfg, host, manifest
+
+
 @pytest.mark.parametrize("with_controls", [False, True])
 def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continuous_plan, with_controls):
-    p, active, cfg, host, manifest = continuous_plan
     if with_controls:
-        observer_path = p.tmp / "observer-control-plan.json"
-        immutable_json(observer_path, {**p.raw, "control_sources": control_config()})
-        p.ref = {"path": str(observer_path), "sha256": sha256_file(observer_path)}
-        host_path = p.tmp / "host-control-plan.json"
-        immutable_json(host_path, {**H.observer.bound_json(host), "observer_plan_ref": p.ref})
-        host = {"path": str(host_path), "sha256": sha256_file(host_path)}
-        manifest = Q.freeze("operation-24", p.tmp / "control-campaign.json", identity=identity(),
-                            inputs=[observer_path, host_path])
-        continuous_plan = p, active, cfg, host, manifest
+        continuous_plan = with_control_sources(continuous_plan)
+    p, active, cfg, host, manifest = continuous_plan
     name = f'name="{p.raw["intent"]}" nametype=DELETE'.encode()
     active.write_bytes(
         raw_event(host=H.socket.gethostname())
@@ -414,6 +419,86 @@ def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continu
         assert page["binding"]["boot_id"] == H.observer.bound_json(refs[0])["boot_id"]
         assert event["intent_path_sha256"] == hashlib.sha256(p.raw["intent"].encode()).hexdigest()
     assert H.verify_segments(manifest, p.ref, host, refs, p.tmp / "result.json") == result
+
+
+@pytest.mark.parametrize(
+    ("change", "status"),
+    [("matched", "UNIQUE_CANDIDATE"), ("pid", "UNMATCHED"), ("uid", "UNMATCHED"),
+     ("time", "UNMATCHED"), ("digest", "UNMATCHED"), ("ambiguous", "AMBIGUOUS"), ("unapplied", None),
+     ("boot", "KERNEL_REPLAY_UNAVAILABLE"), ("changed-sample", None)],
+)
+def test_control_correlation_replays_both_bound_sources(continuous_plan, monkeypatch, change, status):
+    scoped = with_control_sources(continuous_plan)
+    p, active, cfg, host, manifest = scoped
+    target = p.raw["intent"]
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", target)
+    real_replace, staged = os.replace, []
+
+    def remember(source, destination):
+        if str(destination) == target:
+            staged.append(source)
+        real_replace(source, destination)
+
+    method = "OS_STATE_DIRECTORY_OWNER"
+    authentication = {"method": method, "source_sha256": control_config()["authentication_sources"][method]}
+    with monkeypatch.context() as capture:
+        capture.setattr(O.os, "replace", remember)
+        if change == "unapplied":
+            receipt = O.Intent().set("PAUSED", actor="fixture", reason="unapplied", authentication=authentication)
+        else:
+            receipt = O.synchronize(p.store, "pause", "fixture", "mode change", authentication=authentication)
+    path = p.tmp / "control-sample.json"
+    sample = H.observer.capture(manifest, p.ref, path)
+    assert sample["complete"] is True
+    controls = [{"path": str(path), "sha256": sha256_file(path)}]
+    ctx = receipt["control_context"]
+    staging_name = staged[0]
+    if change == "digest":
+        staging_name = staging_name[:-1] + ("x" if staging_name[-1] != "x" else "y")
+    pid = ctx["pid"] + (change == "pid")
+    uid = ctx["process"]["uid"] + (change == "uid")
+    at = ctx["at"] - 1 if change == "time" else ctx["at"]
+    raw = (
+        raw_event(items=2, at=f"{int(at * 1000) / 1000:.3f}", host=sample["host"])
+        .replace(b"syscall=257 success=yes exit=3", b"syscall=82 success=yes exit=0")
+        .replace(b" pid=13 uid=1000 ", f" pid={pid} uid={uid} ".encode())
+        .replace(b'item=0 name="/private/DO-NOT-EXPORT"', f'item=0 name="{staging_name}" nametype=DELETE'.encode())
+        .replace(b'item=1 name="/private/DO-NOT-EXPORT"', f'item=1 name="{target}" nametype=DELETE'.encode())
+    )
+    active.write_bytes(raw + raw.replace(b":1):", b":2):") if change == "ambiguous" else raw)
+    with monkeypatch.context() as capture:
+        if change == "boot":
+            capture.setattr(H.soak, "_boot_id", lambda: "unknown")
+        refs = capture_refs(scoped, (active.stat().st_size + cfg["max_bytes"] - 1) // cfg["max_bytes"])
+    if change == "changed-sample":
+        controls[0]["sha256"] = "0" * 64
+        with pytest.raises(Refused, match="OBSERVER_SAMPLE_UNBOUND"):
+            H.verify_segments(manifest, p.ref, host, refs, p.tmp / "result.json", control_sample_refs=controls)
+        assert not (p.tmp / "result.json").exists()
+        return
+    destination = p.tmp / "result.json"
+    if change == "matched":
+        args = ["verify-segments", "--out", str(destination)]
+        for key, value in (("manifest", manifest), ("observer-plan-ref", p.ref), ("host-plan-ref", host),
+                           ("segment-refs", refs), ("control-sample-refs", controls)):
+            path = p.tmp / ("correlation-cli-" + key + ".json")
+            immutable_json(path, value)
+            args.extend(("--" + key, str(path)))
+        assert H.main(args) == 2  # A correlation doesn't satisfy host coverage.
+        result = H.observer.read_json(destination)
+    else:
+        result = H.verify_segments(manifest, p.ref, host, refs, destination, control_sample_refs=controls)
+    assert result["control_sample_refs_sha256"] == digest(controls)
+    assert result["unexpected_interventions"] is None and result["status"] == "INCOMPLETE_SOURCE_COVERAGE"
+    if status is None:
+        assert result["control_correlations"] == []
+        return
+    correlation, = result["control_correlations"]
+    assert correlation["status"] == status and correlation["control_id"] == ctx["control_id"]
+    if status == "UNIQUE_CANDIDATE":
+        assert correlation["kernel_fact"]["serial"] == 1
+    else:
+        assert correlation["kernel_fact"] is None
 
 
 def test_metadata_allowance_counts_original_serialized_whitespace(continuous_plan, monkeypatch):

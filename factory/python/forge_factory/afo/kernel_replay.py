@@ -27,6 +27,73 @@ MODULUS = 2**256
 PAGE_BYTES = 8 * 1024 * 1024
 
 
+def control_receipts(manifest, plan_ref, frozen, refs, host, budget):
+    """Index only a matching current intent and applied ledger receipt."""
+    if "control_sources" not in frozen or not isinstance(refs, list) or not 1 <= len(refs) <= frozen["max_rows"]:
+        raise Refused("KERNEL_REPLAY_CONTROL_SAMPLES_INVALID")
+    receipts = {}
+    remaining = O.MAX_TRACE_BYTES
+    for ref in refs:
+        budget()
+        if remaining <= 0:
+            raise Refused("KERNEL_REPLAY_CONTROL_SAMPLE_BYTE_BOUND_EXCEEDED")
+        row, size = O.load_sample(manifest, plan_ref, ref, frozen=frozen, limit=remaining)
+        remaining -= size
+        if (
+            row.get("host") != host or row.get("complete") is not True
+            or row.get("ledger") is None or row.get("intent") is None
+        ):
+            continue
+        intent = row.get("intent_control_source") or {}
+        ctx = intent.get("context") or {}
+        facts = intent.get("facts") or {}
+        pub = ctx.get("publication_path_sha256")
+        if (
+            pub is None or intent.get("status") != "APPLICATION_INTENT_CAPTURED"
+            or not all(facts.get(k) is True for k in (
+                "authentication_source_matches", "producer_source_matches", "process_identity_known"
+            ))
+            or ctx["process"]["boot_id"] != row.get("boot_id")
+        ):
+            continue
+        matching_events = [
+            event for event in row["ledger"]["control_source"]["events"]
+            if event["status"] == "APPLICATION_RECEIPT_CAPTURED"
+            and event["facts"]["control_id"] == ctx["control_id"]
+            and json.loads(event["record"])["payload"]["context"] == ctx
+        ]
+        if len(matching_events) != 1:
+            continue
+        record = {
+            "context": ctx,
+            "event_id": matching_events[0]["event_id"],
+            "sample_wall": row["wall"],
+            "matches": [],
+        }
+        prior = receipts.get(pub)
+        if prior is not None and (prior["context"] != ctx or prior["event_id"] != record["event_id"]):
+            raise Refused("KERNEL_REPLAY_PUBLICATION_IDENTITY_AMBIGUOUS")
+        if prior is None or row["wall"] < prior["sample_wall"]:
+            receipts[pub] = record
+    return receipts
+
+
+def match_control_rename(receipts, event, boot_id, bound):
+    rename = event.get("intent_rename") or {}
+    if rename.get("reported_success") is not True:
+        return
+    for pub in {c["path_sha256"] for c in rename.get("publication_candidates", ())} & receipts.keys():
+        row = receipts[pub]
+        ctx = row["context"]
+        if (
+            event["intent_path_sha256"] == ctx["intent_path_sha256"] and boot_id == ctx["process"]["boot_id"]
+            and event["pid"] == ctx["pid"] and event["uid"] == ctx["process"]["uid"]
+            and ctx["at"] - 0.001 <= event["at"] <= min(ctx["at"] + bound, row["sample_wall"])
+            and len(row["matches"]) < 2
+        ):
+            row["matches"].append({"serial": event["serial"], "at": event["at"], "sha256": digest(event)})
+
+
 def configuration(value):
     bounds = {"max_source_bytes": (1, 2**40), "max_records": (1, 10000000),
               "max_scratch_bytes": (65536, 8 * 1024**3), "max_output_bytes": (16384, 1024**3),
@@ -179,17 +246,17 @@ class Replay:
                 raise Refused("KERNEL_REPLAY_SCRATCH_UNAVAILABLE", type(exc).__name__) from exc
             raise
 
-    def finish(self, publish, binding):
+    def finish(self, publish, binding, *, observe_event=None):
         """Publish bounded factual pages; never an intervention or campaign PASS."""
         try:
-            return self._finish(publish, binding)
+            return self._finish(publish, binding, observe_event)
         except (OSError, ValueError, sqlite3.Error) as exc:
             self.failed = True
             if isinstance(exc, sqlite3.Error):
                 raise Refused("KERNEL_REPLAY_SCRATCH_UNAVAILABLE", type(exc).__name__) from exc
             raise
 
-    def _finish(self, publish, binding):
+    def _finish(self, publish, binding, observe_event):
         self._budget()
         totals = dict(source_events=0, source_records=0, duplicate_records=0, events=0,
                       integrity_events=0, pending_events=0, orphan_compound_groups=0)
@@ -214,6 +281,9 @@ class Replay:
             nonlocal page_size
             result = parser.finish()
             facts = result["facts"]
+            if observe_event is not None:
+                for event in facts["events"]:
+                    observe_event(event)
             group = {"facts": facts, "pending_events": result["pending_events"],
                      "orphan_compound_groups": result["orphan_compound_groups"]}
             size = len(canonical(group))
@@ -294,7 +364,7 @@ def _captures(manifest, frozen, plan, observer_plan_ref, host_plan_ref, refs, bu
     return segments, boots
 
 
-def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
+def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination, *, control_sample_refs=None):
     """Opt-in existing host-audit command; every original capture starts at zero."""
     from . import audit_segments as S
 
@@ -317,6 +387,10 @@ def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
     with Replay(config, host=plan["host"], keys=plan["keys"], scratch_parent=destination.parent,
                 intent_path=intent_path) as replay:
         replay.started, replay.cpu_started = started, cpu_started
+        receipts = None
+        if control_sample_refs is not None:
+            receipts = control_receipts(manifest, observer_plan_ref, frozen, control_sample_refs, plan["host"], replay._budget)
+            binding["control_sample_refs_sha256"] = digest(control_sample_refs)
         segments, boots = _captures(manifest, frozen, plan, observer_plan_ref, host_plan_ref, refs, replay._budget)
         boot_known = (len(boots) == 1 and isinstance(next(iter(boots)), str)
                       and H.re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", next(iter(boots))))
@@ -330,7 +404,10 @@ def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
         if boot_known:
             if intent_path is not None:
                 binding["boot_id"] = next(iter(boots))
-            events = replay.finish(publish, binding)
+            def observe(event):
+                match_control_rename(receipts, event, binding["boot_id"], manifest["bounds"]["control_cycle_seconds"])
+
+            events = replay.finish(publish, binding, observe_event=observe if receipts is not None else None)
             if events["input_bytes"] != byte_chain["bytes"]:
                 raise Refused("HOST_AUDIT_EVENT_REPLAY_INPUT_MISMATCH")
         else:
@@ -345,6 +422,14 @@ def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
                   "KERNEL_AUDIT_FULL_RECORD_AND_WINDOW_QUALIFICATION_REQUIRED",
                   "HOST_AUDIT_ALL_CHANNEL_CONTINUOUS_COVERAGE_REQUIRED"])),
               "scope": "CAPTURED_BYTE_PREFIX_NOT_HOST_INTERVENTION_VERIFICATION"}
+    if receipts is not None:
+        result["control_correlations"] = [
+            {"control_id": row["context"]["control_id"], "event_id": row["event_id"],
+             "status": ("KERNEL_REPLAY_UNAVAILABLE" if events["status"] == "BLOCKED"
+                        else ("UNMATCHED", "UNIQUE_CANDIDATE", "AMBIGUOUS")[len(row["matches"])]),
+             "kernel_fact": row["matches"][0] if len(row["matches"]) == 1 else None}
+            for _, row in sorted(receipts.items())
+        ]
     if len(canonical(result)) > O.MAX_BYTES:
         raise Refused("HOST_AUDIT_SEGMENT_REPLAY_OUTPUT_BOUND_EXCEEDED")
     immutable_json(destination, result)

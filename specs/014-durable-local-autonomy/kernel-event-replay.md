@@ -103,6 +103,15 @@ same directory. An exact staging digest gives a candidate link between the two
 sources. Existing receipts remain readable without that link. Direction,
 authenticated actor attribution, and coverage still require independent evidence.
 
+`verify-segments --control-sample-refs REFS.json` replays the hash-bound
+operational samples alongside the protected audit ranges. A correlation
+requires the same current intent and applied ledger receipt, matching frozen
+source fingerprints, and a successful rename with the same staging digest,
+intent digest, boot, PID and UID within the declared control-cycle bound.
+The result binds the supplied sample list and retains unmatched and ambiguous
+eligible controls. A unique candidate describes the replayed prefix only.
+It leaves the host-wide intervention count unknown.
+
 Native audit loss, complete record/window interpretation, boot correlation,
 authenticated actor/control/write/service attribution and all-channel coverage
 remain separate qualification. `unexpected_interventions` is always unknown here.

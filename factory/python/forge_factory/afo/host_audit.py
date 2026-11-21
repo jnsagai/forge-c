@@ -608,7 +608,7 @@ def capture(manifest, observer_plan_ref, host_plan_ref, destination, *, previous
     return result
 
 
-def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destination):
+def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destination, *, control_sample_refs=None):
     """Replay an explicitly bounded, hash-bound successful-capture chain.
 
     Failed captures remain separate immutable history. They cannot advance the
@@ -620,7 +620,10 @@ def verify_segments(manifest, observer_plan_ref, host_plan_ref, refs, destinatio
     if "continuous_replay" in plan:
         from . import kernel_replay
 
-        return kernel_replay.verify(manifest, observer_plan_ref, host_plan_ref, refs, destination)
+        return kernel_replay.verify(manifest, observer_plan_ref, host_plan_ref, refs, destination,
+                                    control_sample_refs=control_sample_refs)
+    if control_sample_refs is not None:
+        raise Refused("KERNEL_REPLAY_CONTROL_SAMPLES_REQUIRE_CONTINUOUS_REPLAY")
     if plan.get("segments") is None:
         raise Refused("HOST_AUDIT_SEGMENT_PLAN_REQUIRED_FOR_REPLAY")
     if not isinstance(refs, list) or not 1 <= len(refs) <= audit_segments.MAX_SEGMENTS:
@@ -703,8 +706,11 @@ def main(argv=None):
     p.add_argument("--host-plan-ref", type=Path)
     p.add_argument("--previous-ref", type=Path)
     p.add_argument("--segment-refs", type=Path)
+    p.add_argument("--control-sample-refs", type=Path, help="Hash-bound application observer samples for verify-segments")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
+    if args.control_sample_refs and args.command != "verify-segments":
+        p.error("control-sample-refs is only valid for verify-segments")
     if args.command == "preflight":
         result = preflight()
         immutable_json(args.out, result)
@@ -721,7 +727,8 @@ def main(argv=None):
         if args.command == "verify-segments":
             if not args.segment_refs or args.previous_ref:
                 p.error("verify-segments requires segment-refs and no previous-ref")
-            result = verify_segments(*shared, observer.read_json(args.segment_refs), args.out)
+            controls = observer.read_json(args.control_sample_refs) if args.control_sample_refs else None
+            result = verify_segments(*shared, observer.read_json(args.segment_refs), args.out, control_sample_refs=controls)
         else:
             if args.segment_refs:
                 p.error("segment-refs is only valid for verify-segments")
