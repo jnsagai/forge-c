@@ -31,6 +31,7 @@ HEADER = re.compile(
     r"^(?:node=(?P<node>\S+) )?type=(?P<kind>[A-Z0-9_]{1,64}) "
     r"msg=audit\((?P<epoch>\d{1,16}\.\d{1,9}):(?P<serial>\d{1,20})\): ?(?P<body>.*)$"
 )
+PATH_NAME = re.compile(r'^item=(?P<item>[0-9]{1,8}) name=(?:"(?P<quoted>[!#-~]+)"|(?P<hex>[a-fA-F0-9]+))(?= |$)')
 STATUS_FIELDS = {"enabled", "pid", "rate_limit", "backlog_limit", "lost", "backlog"}
 MAX_EVENTS = 10000
 MAX_LINE = 65536
@@ -82,11 +83,15 @@ class EventReplay:
     selected-field parser, not a replacement for the native audit/retention stack.
     """
 
-    def __init__(self, *, host, keys, maximum=None):
+    def __init__(self, *, host, keys, maximum=None, intent_path=None):
         self.maximum = observer.MAX_TRACE_BYTES if maximum is None else maximum
         if type(self.maximum) is not int or not 1 <= self.maximum <= observer.MAX_TRACE_BYTES:
             raise Refused("HOST_AUDIT_EVENT_REPLAY_BOUND_INVALID")
         self.host, self.keys = host, keys
+        self.intent_path = intent_path
+        intent_bytes = intent_path.encode() if intent_path is not None else b""
+        self.intent_path_hex = intent_bytes.hex()
+        self.intent_path_sha256 = hashlib.sha256(intent_bytes).hexdigest() if intent_bytes else None
         self.groups = {}
         self.records = self.duplicates = self.input_bytes = 0
         self.partial = b""
@@ -135,7 +140,7 @@ class EventReplay:
         if not math.isfinite(epoch):
             raise Refused("HOST_AUDIT_EVENT_CLOCK_INVALID")
         identity = (node, m["epoch"], int(m["serial"]))
-        fields, path_item = None, None
+        fields, path_item, path_role = None, None, None
         if m["kind"] == "SYSCALL":
             fields = _fields(m["body"])
             if not all(re.fullmatch(r"\d{1,20}", fields.get(k, "")) for k in ("pid", "ppid", "uid", "auid", "syscall", "items")):
@@ -148,12 +153,20 @@ class EventReplay:
             fields = {k: fields[k] for k in ("pid", "ppid", "uid", "auid", "syscall", "items", "success", "arch")}
             fields["key"] = key
         elif m["kind"] == "PATH":
-            path = _fields(m["body"])
+            body = m["body"].split("\x1d", 1)[0]
+            # The kernel copies printable quoted bytes literally, including
+            # backslashes. Parse the name before handing other fields to shlex.
+            name = PATH_NAME.match(body) if self.intent_path is not None else None
+            path = _fields(f"item={name['item']} name=(redacted){body[name.end():]}" if name else body)
             if not re.fullmatch(r"\d{1,8}", path.get("item", "")):
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
             path_item = int(path["item"])
+            if name and (name["quoted"] == self.intent_path or (name["hex"] or "").lower() == self.intent_path_hex):
+                role = path.get("nametype")
+                path_role = role if role in ("NORMAL", "PARENT", "DELETE", "CREATE") else "UNKNOWN"
         return {"identity": identity, "kind": m["kind"], "sha256": hashlib.sha256(line.encode()).hexdigest(),
-                "syscall": fields, "path_item": path_item}
+                "syscall": fields, "path_item": path_item,
+                **({"intent_path_role": path_role} if path_role is not None else {})}
 
     def _line(self, line):
         self._record(self.selected_record(line))
@@ -164,7 +177,7 @@ class EventReplay:
         if identity not in self.groups:
             if len(self.groups) >= MAX_EVENTS:
                 raise Refused("HOST_AUDIT_EVENT_COUNT_BOUND_EXCEEDED")
-            self.groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": set()}
+            self.groups[identity] = {"types": set(), "hashes": set(), "syscall": None, "paths": {}}
         group = self.groups[identity]
         sha = record["sha256"]
         if sha in group["hashes"]:
@@ -182,7 +195,7 @@ class EventReplay:
         elif record["kind"] == "PATH":
             if record["path_item"] in group["paths"]:
                 raise Refused("HOST_AUDIT_PATH_RECORD_AMBIGUOUS")
-            group["paths"].add(record["path_item"])
+            group["paths"][record["path_item"]] = record.get("intent_path_role")
 
     def finish(self, *, legacy=False):
         if self.closed or self.failed:
@@ -205,7 +218,7 @@ class EventReplay:
                 continue
             if int(syscall["items"]) > MAX_RECORDS:
                 raise Refused("HOST_AUDIT_COMPOUND_EVENT_INCOMPLETE")
-            path_coverage = group["paths"] == set(range(int(syscall["items"])))
+            path_coverage = group["paths"].keys() == set(range(int(syscall["items"])))
             boundary = sorted(group["types"] & {"PROCTITLE", "EOE"})
             if legacy and not path_coverage:
                 raise Refused("HOST_AUDIT_COMPOUND_EVENT_INCOMPLETE")
@@ -230,6 +243,10 @@ class EventReplay:
                     "source_record_hashes": sorted(group["hashes"]),
                 }
             )
+            intent_path_matches = [{"item": item, "role": role}
+                                   for item, role in sorted(group["paths"].items()) if role is not None]
+            if intent_path_matches:
+                selected[-1].update(intent_path_sha256=self.intent_path_sha256, intent_path_matches=intent_path_matches)
         facts = {
             "events": selected,
             "integrity_events": integrity,

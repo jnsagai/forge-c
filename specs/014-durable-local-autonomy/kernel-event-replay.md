@@ -76,6 +76,16 @@ neither existing page files nor a supplied cursor can replace earlier verificati
 An interrupted/failed verification may retain factual pages but has no completed
 summary that authorizes a campaign verdict.
 
+When the frozen observer plan enables application control sources, selected
+kernel events also record an exact match against its intent file. Only the
+configured path digest and matching PATH item numbers and roles enter the
+report. Relative paths and aliases provide no exact match. The parser compares
+the kernel's quoted literal bytes or unquoted hexadecimal spelling without
+exporting the names. An exact PATH match alone leaves operation type, writer
+attribution, and intervention coverage unverified.
+[Linux audit PATH records](https://github.com/torvalds/linux/blob/master/kernel/auditsc.c)
+[Linux audit string encoding](https://github.com/torvalds/linux/blob/master/kernel/audit.c)
+
 Native audit loss, complete record/window interpretation, boot correlation,
 authenticated actor/control/write/service attribution and all-channel coverage
 remain separate qualification. `unexpected_interventions` is always unknown here.

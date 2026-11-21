@@ -18,6 +18,7 @@ from forge_factory.afo import qualification as Q
 from forge_factory.afo.durable import Refused, canonical, digest, immutable_json
 from forge_factory.common import sha256_file
 from test_da014_audit_segments import capture_refs, logs, segmented_plan  # noqa: F401
+from test_da014_control_observation import config as control_config
 from test_da014_fault_observer import setup  # noqa: F401
 from test_da014_host_audit import KEYS, raw_event
 from test_da014_qualification import identity
@@ -35,9 +36,10 @@ def no_sort_files(parent):
     assert not list(parent.glob("#* (deleted)"))
 
 
-def invoke(tmp_path, chunks, **changes):
+def invoke(tmp_path, chunks, *, intent_path=None, **changes):
     pages = []
-    with K.Replay(config(**changes), host="omniverse2", keys=KEYS, scratch_parent=tmp_path) as replay:
+    with K.Replay(config(**changes), host="omniverse2", keys=KEYS, scratch_parent=tmp_path,
+                  intent_path=intent_path) as replay:
         for raw in chunks:
             replay.feed(raw)
 
@@ -48,6 +50,24 @@ def invoke(tmp_path, chunks, **changes):
         result = replay.finish(publish, {"fixture": True})
     no_sort_files(tmp_path)
     return result, pages
+
+
+@pytest.mark.parametrize("encoding", ["quoted", "hex", "literal-backslash"])
+def test_only_the_exact_intent_path_is_reported(tmp_path, encoding):
+    target = {"quoted": "/private/owner.json", "hex": "/private/ô wner.json",
+              "literal-backslash": "/private/owner\\"}[encoding]
+    name = target.encode().hex().upper().encode() if encoding == "hex" else f'"{target}"'.encode()
+    selected = raw_event(items=2).replace(b'item=0 name="/private/DO-NOT-EXPORT"', b"item=0 name=" + name + b" nametype=CREATE")
+    other = raw_event(serial=2).replace(b'name="/private/DO-NOT-EXPORT"', b'name="/private/another.json" nametype=CREATE')
+    unused_key = raw_event(serial=3, key="unrelated").replace(b'name="/private/DO-NOT-EXPORT"', b"name=" + name)
+    first, second = selected[:150], selected[150:] + other + unused_key
+    result, pages = invoke(tmp_path, [first, second], intent_path=target)
+    events = [e for p in pages for g in p["groups"] for e in g["facts"]["events"]]
+    assert len(events) == 2
+    assert events[0]["intent_path_sha256"] == hashlib.sha256(target.encode()).hexdigest()
+    assert events[0]["intent_path_matches"] == [{"item": 0, "role": "CREATE"}]
+    assert "intent_path_matches" not in events[1]
+    assert "/private/" not in json.dumps(pages) and result["unexpected_interventions"] is None
 
 
 @pytest.mark.parametrize("size", [1, 7, 113, 65536])
@@ -289,9 +309,21 @@ def continuous_plan(segmented_plan):
     return p, active, cfg, host_ref, manifest
 
 
-def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continuous_plan):
+@pytest.mark.parametrize("with_controls", [False, True])
+def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continuous_plan, with_controls):
     p, active, cfg, host, manifest = continuous_plan
-    active.write_bytes(raw_event(host=H.socket.gethostname()))
+    if with_controls:
+        observer_path = p.tmp / "observer-control-plan.json"
+        immutable_json(observer_path, {**p.raw, "control_sources": control_config()})
+        p.ref = {"path": str(observer_path), "sha256": sha256_file(observer_path)}
+        host_path = p.tmp / "host-control-plan.json"
+        immutable_json(host_path, {**H.observer.bound_json(host), "observer_plan_ref": p.ref})
+        host = {"path": str(host_path), "sha256": sha256_file(host_path)}
+        manifest = Q.freeze("operation-24", p.tmp / "control-campaign.json", identity=identity(),
+                            inputs=[observer_path, host_path])
+        continuous_plan = p, active, cfg, host, manifest
+    name = f'name="{p.raw["intent"]}" nametype=DELETE'.encode()
+    active.write_bytes(raw_event(host=H.socket.gethostname()).replace(b'name="/private/DO-NOT-EXPORT"', name))
     refs = capture_refs(continuous_plan, (active.stat().st_size + cfg["max_bytes"] - 1) // cfg["max_bytes"])
     result = H.verify_segments(manifest, p.ref, host, refs, p.tmp / "result.json")
     assert result["schema"] == "forge-c/host-audit-segment-replay/2"
@@ -301,6 +333,11 @@ def test_existing_command_routes_frozen_opt_in_and_publishes_bound_pages(continu
     page = H.observer.bound_json(events["fact_pages"][0])
     assert page["binding"]["capture_refs_sha256"] == digest(refs)
     assert page["binding"]["host_plan_ref"] == host and page["previous_page_ref"] is None
+    event = page["groups"][0]["facts"]["events"][0]
+    assert event.get("intent_path_matches") == ([{"item": 0, "role": "DELETE"}] if with_controls else None)
+    if with_controls:
+        assert page["binding"]["boot_id"] == H.observer.bound_json(refs[0])["boot_id"]
+        assert event["intent_path_sha256"] == hashlib.sha256(p.raw["intent"].encode()).hexdigest()
     assert H.verify_segments(manifest, p.ref, host, refs, p.tmp / "result.json") == result
 
 

@@ -41,9 +41,9 @@ def configuration(value):
 class Replay:
     """A finite verifier invocation with bounded disk, memory, time and output."""
 
-    def __init__(self, config, *, host, keys, scratch_parent):
+    def __init__(self, config, *, host, keys, scratch_parent, intent_path=None):
         self.config = configuration(config)
-        self.parser = H.EventReplay(host=host, keys=keys)
+        self.parser = H.EventReplay(host=host, keys=keys, intent_path=intent_path)
         self.secret = secrets.token_bytes(32)
         self.expected = self.lines = self.input_bytes = 0
         self.input_hash = hashlib.sha256()
@@ -240,7 +240,7 @@ class Replay:
             if prior != event:
                 if parser is not None:
                     settle(parser)
-                parser = H.EventReplay(host=self.parser.host, keys=self.parser.keys)
+                parser = H.EventReplay(host=self.parser.host, keys=self.parser.keys, intent_path=self.parser.intent_path)
                 prior = event
             parser._record(record)
             parser.duplicates += copies - 1
@@ -313,7 +313,9 @@ def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
         sha = immutable_json(O.artifact(frozen, path), page)
         return {"path": str(path), "sha256": sha}
 
-    with Replay(config, host=plan["host"], keys=plan["keys"], scratch_parent=destination.parent) as replay:
+    intent_path = str(Path(frozen["intent"]).absolute()) if "control_sources" in frozen else None
+    with Replay(config, host=plan["host"], keys=plan["keys"], scratch_parent=destination.parent,
+                intent_path=intent_path) as replay:
         replay.started, replay.cpu_started = started, cpu_started
         segments, boots = _captures(manifest, frozen, plan, observer_plan_ref, host_plan_ref, refs, replay._budget)
         boot_known = (len(boots) == 1 and isinstance(next(iter(boots)), str)
@@ -326,6 +328,8 @@ def verify(manifest, observer_plan_ref, host_plan_ref, refs, destination):
         if not byte_chain or byte_chain["status"] != "CAPTURED_BYTE_PREFIX_REPLAYED":
             raise Refused("KERNEL_REPLAY_BYTE_CHAIN_INCOMPLETE")
         if boot_known:
+            if intent_path is not None:
+                binding["boot_id"] = next(iter(boots))
             events = replay.finish(publish, binding)
             if events["input_bytes"] != byte_chain["bytes"]:
                 raise Refused("HOST_AUDIT_EVENT_REPLAY_INPUT_MISMATCH")
