@@ -450,11 +450,27 @@ def invariants(samples):
         for ident in set(old_commands) & set(new_commands):
             old, new = old_commands[ident], new_commands[ident]
             reset |= old["idempotency_key"] != new["idempotency_key"] or bool(old["ack_ref"] and old["ack_ref"] != new["ack_ref"])
+    runs_by_job, jobs_by_run = {}, {}
+    previous_executions = {}
     for sample in samples:
-        for ex in sample["ledger"]["afo_execution_liveness"]:
-            duplicates = max(duplicates, max(0, len(set(ex["native_run_ids"])) - 1))
+        execution_by_job = _rows(sample, "afo_execution_liveness", "job_id")
+        reset |= not previous_executions.keys() <= execution_by_job.keys()
+        for job_id, ex in execution_by_job.items():
+            old = previous_executions.get(job_id)
+            if old is not None:
+                reset |= (
+                    old["mission_id"] != ex["mission_id"]
+                    or old["launch_nonce"] != ex["launch_nonce"]
+                    or not set(old["native_run_ids"]) <= set(ex["native_run_ids"])
+                )
+            runs_by_job.setdefault(job_id, set()).update(ex["native_run_ids"])
+            for run_id in ex["native_run_ids"]:
+                jobs_by_run.setdefault(run_id, set()).add(job_id)
+        previous_executions = execution_by_job
         keys = [(r["kind"], r["idempotency_key"]) for r in sample["ledger"]["commands"]]
         duplicates = max(duplicates, len(keys) - len(set(keys)))
+    for bindings in (runs_by_job, jobs_by_run):
+        duplicates = max(duplicates, max((len(identities) - 1 for identities in bindings.values()), default=0))
     ready = any(r["state"] == "READY_FOR_OFFLINE_REVIEW" for s in samples for r in s["ledger"]["orders"])
     return {
         "ledger_reset": bool(reset),

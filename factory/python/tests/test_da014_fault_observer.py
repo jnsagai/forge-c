@@ -225,7 +225,7 @@ def test_accounting_and_product_unknowns_are_not_success(setup, mutation):
     if mutation == "reset":
         b["ledger"]["afo_mission_executions"][0]["charge"] = 0
     elif mutation == "duplicate":
-        b["ledger"]["afo_execution_liveness"] = [{"native_run_ids": ["native-A", "native-B"]}]
+        b["ledger"]["afo_execution_liveness"] = [{"job_id": "job-A", "native_run_ids": ["native-A", "native-B"]}]
     else:
         b["ledger"]["orders"] = [{"state": "READY_FOR_OFFLINE_REVIEW"}]
     report = O.invariants([a, b])
@@ -233,6 +233,48 @@ def test_accounting_and_product_unknowns_are_not_success(setup, mutation):
         report[{"reset": "ledger_reset", "duplicate": "duplicate_effects", "ready": "false_ready"}[mutation]]
         == {"reset": True, "duplicate": 1, "ready": None}[mutation]
     )
+
+
+@pytest.mark.parametrize(
+    ("change", "reset", "duplicates"),
+    [
+        ("unchanged", False, 0),
+        ("adopt", False, 0),
+        ("erase-job", True, 0),
+        ("erase-run", True, 0),
+        ("replace-run", True, 1),
+        ("rewrite-nonce", True, 0),
+        ("rewrite-mission", True, 0),
+        ("share-run", False, 1),
+        ("transfer-run", True, 1),
+    ],
+)
+def test_execution_history_keeps_native_bindings_unique_and_append_only(setup, change, reset, duplicates):
+    p = setup
+    first = O.capture(p.manifest, p.ref, p.tmp / "execution-evidence.json")
+    current = {"job_id": "job-A", "launch_nonce": "nonce-A", "mission_id": "mission-A", "native_run_ids": ["native-A"]}
+    first["ledger"]["afo_execution_liveness"] = [current]
+    second = copy.deepcopy(first)
+    executions = second["ledger"]["afo_execution_liveness"]
+    if change == "adopt":
+        current["native_run_ids"] = []
+    elif change == "erase-job":
+        executions.clear()
+    elif change == "erase-run":
+        executions[0]["native_run_ids"] = []
+    elif change == "replace-run":
+        executions[0]["native_run_ids"] = ["native-B"]
+    elif change == "rewrite-nonce":
+        executions[0]["launch_nonce"] = "nonce-B"
+    elif change == "rewrite-mission":
+        executions[0]["mission_id"] = "mission-B"
+    elif change in ("share-run", "transfer-run"):
+        if change == "transfer-run":
+            executions.clear()
+        executions.append({**current, "job_id": "job-B", "launch_nonce": "nonce-B"})
+    verdict = O.invariants([first, second])
+    assert verdict["ledger_reset"] is reset
+    assert verdict["duplicate_effects"] == duplicates
 
 
 @pytest.mark.parametrize("mutation", ["changed", "duplicate-time", "reverse", "foreign-unit", "unobserved-ack"])
