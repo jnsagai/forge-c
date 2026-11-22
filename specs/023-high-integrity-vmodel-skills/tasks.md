@@ -226,12 +226,12 @@ BLOCKED or NOT_RUN.
 
 **Independent Test**: quickstart V5.
 
-- [ ] T054 [P] [US3] Write the profile-switch tests `PKG/tests/test_profile_switch.py`:
+- [x] T054 [P] [US3] Write the profile-switch tests `PKG/tests/test_profile_switch.py`:
   - the same workproducts under generic, iso26262 and iec61508 give each profile's required gates and level names in `gates.md` and the manifest;
   - the skills tree hash is unchanged;
   - an unmapped level is refused
-- [ ] T055 [US3] Implement the profile vocabulary rendering in the reports (`ENG/report.py`). Make T054 pass
-- [ ] T056 [P] [US3] Write the profile-authoring guide `hi-gates/references/profiles/README.md`: how to add DO-178C, EN 50716 or IEC 62304 from `_template.json`; the identifiers-only rule; how rigor values are justified
+- [x] T055 [US3] Implement the profile vocabulary rendering in the reports (`ENG/report.py`). Make T054 pass
+- [x] T056 [P] [US3] Write the profile-authoring guide `hi-gates/references/profiles/README.md`: how to add DO-178C, EN 50716 or IEC 62304 from `_template.json`; the identifiers-only rule; how rigor values are justified
 - [ ] T057 [US3] Run the demo gates under ISO 26262 HI-2 and IEC 61508 HI-2 and store the evidence in `FEAT/evidence/us3-profiles/`, including `git diff --stat` of the skills, which must be empty
 
 ---

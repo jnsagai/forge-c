@@ -119,6 +119,10 @@
     },
     "created_utc": {
       "type": "string"
+    },
+    "level_name": {
+      "type": "string",
+      "description": "The profile's native name of the integrity level (FR-007)."
     }
   },
   "allOf": [

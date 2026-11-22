@@ -20,7 +20,7 @@ import shutil
 import tarfile
 from pathlib import Path
 
-from . import __version__, gate_result, gates, trace
+from . import __version__, gate_result, gates, report, trace
 from .config import effective_rigor, load_profile, load_project, stages
 from .io import read_json, sha256_file, write_json, write_text
 from .provenance import new_run_id, utc_now
@@ -137,11 +137,11 @@ def package_files(root: Path, project: dict) -> list[Path]:
     return [Path(r) for r in sorted(rels) if not r.startswith(".hi/docs/")]
 
 
-def render_findings(root: Path, project: dict) -> str:
-    lines = ["# Inspection findings", ""]
+def render_findings(root: Path, project: dict, profile: dict, level: str) -> str:
+    lines = ["# Inspection findings", ""] + report.header(profile, level)
     for s in trace.checked_stages(project, None):
         fs = gates.findings(root, s)
-        lines += [f"## {s}", ""]
+        lines += [f"## {report.stage_label(profile, s)}", ""]
         if not fs:
             lines += ["No findings recorded.", ""]
             continue
@@ -154,11 +154,12 @@ def render_findings(root: Path, project: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_gates(verdicts: dict, gaps: list[dict], status: str, disclaimer: str) -> str:
-    lines = ["# Gate results and gaps", "", f"**Status: {status}**", "", f"> {disclaimer}", "",
-             "| Stage | Gate | Verdict |", "|---|---|---|"]
+def render_gates(verdicts: dict, gaps: list[dict], status: str, profile: dict, level: str) -> str:
+    lines = ["# Gate results and gaps", "", f"**Status: {status}**", ""] + report.header(profile, level) + [
+        f"> {profile['disclaimer']}", "", "| Stage | Clause references | Gate | Verdict |", "|---|---|---|---|"]
     for s, gs in verdicts.items():
-        lines += [f"| {s} | {g} | {v} |" for g, v in gs.items()]
+        lines += [f"| {report.stage_label(profile, s)} | {report.clause_refs(profile, s)} | {g} | {v} |"
+                  for g, v in gs.items()]
     lines += ["", "## Gaps", ""]
     lines += [f"- `{g['code']}` {g['source']}: {g['message']}" for g in gaps] or ["None."]
     return "\n".join(lines) + "\n"
@@ -197,13 +198,13 @@ def seal(root: Path) -> dict:
         shutil.copyfile(root / rel, dst)
     if (root / "hi/trace-matrix.md").is_file():
         shutil.copyfile(root / "hi/trace-matrix.md", pkg / "trace-matrix.md")
-    write_text(pkg / "findings.md", render_findings(root, project))
-    write_text(pkg / "gates.md", render_gates(verdicts, gaps, status, profile["disclaimer"]))
+    write_text(pkg / "findings.md", render_findings(root, project, profile, rigor["level"]))
+    write_text(pkg / "gates.md", render_gates(verdicts, gaps, status, profile, rigor["level"]))
     names = sorted(p.relative_to(pkg).as_posix() for p in pkg.rglob("*") if p.is_file())
     manifest = {
         "schema": "forge-c-hi/review-manifest@1", "run_id": run_id, "status": status, "gaps": gaps,
         "files": [{"path": n, "sha256": sha256_file(pkg / n)} for n in names if n not in TOP_FILES],
-        "profile": rigor["profile"], "integrity_level": rigor["level"],
+        "profile": rigor["profile"], "integrity_level": rigor["level"], "level_name": rigor["level_name"],
         "provenance_summary": provenance_summary(root, project),
         "tool_versions": {"forge-c-hi": __version__, "python": platform.python_version()},
         "disclaimer": profile["disclaimer"], "created_utc": utc_now(),
