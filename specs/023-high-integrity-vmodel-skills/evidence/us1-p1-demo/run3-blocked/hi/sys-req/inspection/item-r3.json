@@ -1,0 +1,45 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-012",
+      "checklist_item": "IQ-06",
+      "description": "The requirement says to drive the status signal high when the stated conditions hold, but gives no deadline or precise event for doing so. A test cannot determine how long a low signal remains acceptable. OP-SYS-012 records that the inputs do not provide this timing.",
+      "id": "F-sys-req-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:39:19Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T222917Z-83d787",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a source-owner decision and state a measurable response bound or precise event for driving the status signal high.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-030"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-012",
+    "SYS-SUP-013",
+    "SYS-SUP-024",
+    "SYS-SUP-028",
+    "SYS-SUP-030",
+    "SYS-SUP-041",
+    "SYS-SUP-044",
+    "SYS-SUP-045",
+    "SYS-SUP-046",
+    "SYS-SUP-047",
+    "SYS-SUP-048"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

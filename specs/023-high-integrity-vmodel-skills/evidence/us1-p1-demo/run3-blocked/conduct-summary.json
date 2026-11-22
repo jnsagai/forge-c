@@ -1,0 +1,2 @@
+{"cmd":"conduct","events":".hi/runs/r20261122T222917Z-83d787/events.jsonl","run_id":"r20261122T222917Z-83d787","stages":[{"carried":0,"gates":{"independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"outcome":"BLOCKED","reason":"open blocking findings ['F-sys-req-set-r4-001', 'F-sys-req-set-r4-002', 'F-sys-req-set-r4-003', 'F-sys-req-set-r4-004', 'F-sys-req-set-r4-006'] blocking open points ['OP-SYS-008', 'OP-SYS-001', 'OP-SYS-002', 'OP-SYS-003', 'OP-SYS-010']","stage":"sys-req"}],"status":"BLOCKED"}
+exit=1
