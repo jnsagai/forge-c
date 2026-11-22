@@ -465,13 +465,19 @@ class Conductor:
                 carried = [f for f in all_findings if f["status"] == "carried"]
                 prior_set = [f for f in all_findings if f["status"] == "open" and f["phase"] == "set"]
                 new = self.inspect(stage, "set", srnd, [], carried + prior_set)
+                # the set inspector judged the whole current set against its current upstream, including items the
+                # set rework changed: their links are no longer suspect
+                trace.rebaseline(self.root, stage)
                 # the set inspector re-judges the carried findings and the earlier set findings: whatever it does
                 # not raise again is resolved; what it still sees wrong comes back as a new open set finding
-                # a finding that waits on an open point stays carried while that open point exists
+                # a finding that waits on an open point stays carried while that open point exists, unless the
+                # set inspector raised it again: the new finding then replaces it (no duplicate per round)
                 ops_now = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
                            if isinstance(o, dict)}
+                raised = {(f.get("target_id"), f.get("checklist_item")) for f in new}
                 for f in all_findings:
-                    if f.get("blocked_by") in ops_now and f["status"] in ("carried", "open"):
+                    if (f.get("blocked_by") in ops_now and f["status"] in ("carried", "open")
+                            and (f.get("target_id"), f.get("checklist_item")) not in raised):
                         continue
                     if f["status"] == "carried" or (f["status"] == "open" and f["phase"] == "set"):
                         f["status"] = "resolved"

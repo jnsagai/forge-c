@@ -356,3 +356,34 @@ def test_sigterm_clears_the_active_role(tmp_path):
     proc.wait(timeout=20)
     assert proc.returncode != 0
     assert not (root / ".hi/active-role.json").exists()
+
+
+def test_set_rework_changes_are_not_suspect_after_the_set_is_judged_again(tmp_path):
+    # run 2 (2026-11-22): items changed by the set rework kept TR-SUSPECT links ("changed since acceptance"), so the
+    # final trace gate failed although the set inspector had judged the changed set afterwards
+    root = tmp_path / "p"
+    root.mkdir()
+    set_f = dict(F("SQ-05"), target_id="SYS-SUP-001")
+    fixed = "The supervisor shall detect a missing alive indication of a supervised task within 30 ms."
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "set_fix": {"SYS-SUP-001": {"text": fixed}}},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[set_f], []]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert [c["phase"] for c in calls if c["role"] == "author"] == ["create", "rework-set"]
+    assert out["stages"][0]["gates"]["trace"] == "PASS", out
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+
+
+def test_set_inspector_re_raising_a_waiting_finding_does_not_duplicate_it(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = [{"id": "OP-SYS-001", "text": "The repeat count is not given.", "raised_by": "author", "blocks": True}]
+    waits = dict(F("IQ-06", "blocking"), blocked_by="OP-SYS-001")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "open_points": op},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [waits]}],
+                                    "set_rounds": [[dict(waits, target_id="SYS-SUP-001")]]}})
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    fs = json.loads((root / "hi/sys-req/inspection/findings.json").read_text())["findings"]
+    live = [f for f in fs if f["status"] in ("open", "carried")]
+    assert [(f["target_id"], f["checklist_item"], f.get("blocked_by")) for f in live] == \
+        [("SYS-SUP-001", "IQ-06", "OP-SYS-001")]                # the re-raised one replaces the carried one
+    assert code == 1 and "blocking open points" in out["stages"][0]["reason"]
