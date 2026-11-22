@@ -31,3 +31,12 @@
   configuration pins Sonnet and Terra. Evidence and the impact report name the models per run.
 - **Floor:** owner asked to see the runs on the factory floor (:8788). `tools/hi_floor_line.py` serves the conductor
   records read-only as the "Hackathon" line.
+
+## 2026-11-22: demo product decisions, second round (fictional, by Claude)
+
+- **Decision:** `CON-SUP-117..120` answer the four blocking open points left by run 4 (latch count, reading the reset
+  cause, fault-report entity for codes 8 and 9, order of fault report and safe-state entry). Like `CON-SUP-101..116`
+  they are fictional demo-product decisions written by Claude, labelled as such in the input file; the owner has not
+  been asked to make them (question still open in chat).
+- **Effect:** run 4 is continued in update mode with the changed input; the conductor re-authors only what the change
+  affects.
