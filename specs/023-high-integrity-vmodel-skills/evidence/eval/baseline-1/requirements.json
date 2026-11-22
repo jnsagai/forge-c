@@ -1,0 +1,875 @@
+{
+  "baseline_id": "baseline",
+  "items": [
+    {
+      "derived": false,
+      "id": "SYS-CFG-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall get the set of supervised tasks from a static configuration table, built in at compile time, that is separate from the supervisor source code. Adding, removing or re-parameterising a supervised task shall need changes to the configuration table only, not to the supervisor source files.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-006",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "For each supervised task, the configuration table shall define: a unique task identifier; the activation period (10 ms or 100 ms); the latest allowed start time after the nominal activation instant; the maximum allowed execution time; and the task's position in the configured execution sequence of the control cycle.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-006",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The configuration table shall define the control cycle: its length and the ordered sequence of supervised task executions expected within one control cycle. [OPEN: the stakeholder needs do not define 'control cycle'. The product owner must confirm whether it is the 100 ms hyperperiod of the 10 ms and 100 ms tasks.]",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The configuration table shall define these supervision parameters: the maximum number of consecutive identical supervisor-initiated resets before the safe state is latched (SYS-RST-003); the maximum duration of a full runtime program-code check pass (SYS-MEM-004); the IWDG and WWDG timing parameters; and the depth of the fault log (SYS-DIA-006).",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any application task is released, the Safety Supervisor shall check the configuration table for consistency. At minimum it shall check: unique task identifiers; supported periods only (10 ms or 100 ms); maximum execution time not greater than the task period; and a sequence that refers only to configured tasks. If any check fails, the Safety Supervisor shall treat it as a configuration-data fault and react as specified in SYS-SAF-001.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-006",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall detect an alive fault for a supervised task when that task has not reported its execution by its configured latest allowed start time plus its maximum allowed execution time after the task's nominal activation instant.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall detect a late-start fault for a supervised task when that task starts executing later than its configured latest allowed start time after its nominal activation instant.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall detect an execution-time overrun fault for a supervised task when that task has run longer than its configured maximum allowed execution time. Detection shall happen when the budget expires, without waiting for the task to finish.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall detect a program-flow fault when, within one control cycle, the supervised tasks execute in an order other than the configured sequence, or when a task in the configured sequence is skipped before the next task in the sequence executes.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall measure task timing with the TIM time base, at a resolution of 100 µs or finer. [OPEN: the stakeholder needs do not state a resolution. 100 µs is proposed and needs confirmation.]",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SUP-006",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall keep a supervision status for each supervised task, with the values OK or FAULT. It shall also keep a global supervision status, which is OK only when every supervised task status is OK and no memory-integrity fault is pending.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall enable the independent watchdog (IWDG), clocked from its own oscillator independent of the system clock, before any application task is released.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall enable the window watchdog (WWDG) with a configured refresh window before any application task is released. A refresh before the window opens or after it closes shall cause a hardware reset.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall refresh the IWDG and the WWDG only when the global supervision status is OK. It shall refresh the WWDG only inside its configured window.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "If the Safety Supervisor stops executing, or stops refreshing the watchdogs, the IWDG or the WWDG shall generate a hardware reset within the configured watchdog timeout. [OPEN: the product owner must confirm whether the 50 ms reaction bound in STK-SUP-009 also applies to faults handled only by the hardware watchdogs. If it does, the watchdog timeouts must be dimensioned to fit within 50 ms together with the safe-state output behaviour during reset.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-MEM-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any application task is released, the Safety Supervisor shall compute a CRC over the whole program-code memory area with the CRC peripheral and compare it with a reference value stored at build time. On a mismatch it shall raise a program-code integrity fault.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-MEM-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any application task is released, the Safety Supervisor shall compute a CRC over the configuration data area, including the supervision configuration table, and compare it with a reference value stored at build time. On a mismatch it shall raise a configuration-data integrity fault.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-MEM-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "During normal operation, the Safety Supervisor shall repeatedly compute a CRC over the whole program-code memory area in successive bounded segments, compare it with the build-time reference value after each full pass, and raise a program-code integrity fault on a mismatch.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-MEM-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Each full pass of the runtime program-code check shall complete within the configured maximum pass duration. [OPEN: STK-SUP-008 says only 'a bounded time' and gives no value. The product owner must set it.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-MEM-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The runtime program-code check shall not cause any supervised task to miss its configured latest allowed start time or exceed its configured maximum allowed execution time.",
+      "verification_method": "analysis"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the Safety Supervisor detects any fault defined in SYS-SUP-001 to SYS-SUP-004, SYS-MEM-001 to SYS-MEM-003, or SYS-CFG-005, it shall put the controller into the safe state.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "In the safe state, all control-output GPIOs shall be at their configured inactive (switched-off) level, and the status-signal GPIO shall be at the level that indicates 'not operational'. [OPEN: the electrical levels for 'off' and 'not operational' are not stated in the needs and must be defined.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The time from fault occurrence to the controller reaching the safe state shall not exceed 50 ms. For timing faults, fault occurrence is the instant the violated time limit expired. For program-flow faults, it is the execution of the out-of-sequence task. For memory-integrity faults, it is the completion of the CRC comparison that found the mismatch. [OPEN: the product owner must confirm these definitions of 'fault occurrence' for STK-SUP-009, in particular for memory corruption, which is only observable once the check pass completes.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From any reset until the start-up checks (SYS-CFG-005, SYS-MEM-001, SYS-MEM-002) have passed, the control-output GPIOs shall be at their inactive level and the status-signal GPIO shall indicate 'not operational'.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The status-signal GPIO shall indicate 'operational' only after all start-up checks have passed, and only while the global supervision status is OK.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After entering the safe state, and unless the latch condition in SYS-RST-003 applies, the Safety Supervisor shall trigger a software system reset once the fault report in SYS-DIA-001 has been fully transmitted. [OPEN: the needs do not give an upper bound on the time from safe state to reset. One must be defined.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Before triggering a supervisor-initiated reset, the Safety Supervisor shall store the following in memory that keeps its content across a system reset: a supervisor-reset marker, the fault code, the affected task or memory-area identifier, and the consecutive-occurrence count of that fault code.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the same fault code has caused the configured maximum number of consecutive supervisor-initiated resets, the Safety Supervisor shall latch the safe state and shall not trigger a further reset. [OPEN: 'several times in a row' in STK-SUP-010 has no value, and the needs do not say what breaks a series, such as a different fault code or a fault-free run of a minimum duration. Both must be defined.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the safe state is latched, the controller shall stay in the safe state until power is cycled. This shall also hold across any watchdog reset or other non-power-on reset: after such a reset the Safety Supervisor shall detect the stored latch and go back to the safe state without releasing application tasks.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After a power-on reset, the Safety Supervisor shall clear the safe-state latch and the consecutive-occurrence counter.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-006",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After every reset, before any application task is released, the Safety Supervisor shall classify the reset cause as exactly one of: power-on, IWDG, WWDG, supervisor-initiated, or other. It shall do this from the RCC reset flags (ST RM0486, RCC reset section) and the stored supervisor-reset marker, and shall then clear the RCC reset flags and the marker.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-007",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall make the classified reset cause of the last reset available to the application and to the service-tool status query in SYS-DIA-005.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "For every detected fault, the Safety Supervisor shall transmit a fault report on the diagnostic USART containing: the fault code; the identifier of the affected supervised task or memory area; and a time stamp in milliseconds since the last reset, taken from the TIM time base.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Transmitting a fault report shall not delay entry into the safe state beyond the limit in SYS-SAF-003.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After a reset classified as IWDG or WWDG, the Safety Supervisor shall transmit a fault report on the diagnostic USART identifying the watchdog that caused the reset. [OPEN: the time of a watchdog-detected fault is not known after the reset. The product owner must accept that this report is time-stamped with the time since the new reset.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The diagnostic USART shall run at 115200 baud, 8 data bits, no parity and 1 stop bit.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "On request from a service tool over the diagnostic USART, the Safety Supervisor shall respond with the global supervision status, the status of each supervised task, the safe-state and latch status, and the classified cause of the last reset. [OPEN: the request/response protocol is not specified and must be defined in an interface specification.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-006",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall keep a fault log of the most recent detected faults, up to the configured log depth, with the content defined in SYS-DIA-001. On request from a service tool over the diagnostic USART, it shall send the fault log contents. [OPEN: 'the last faults' in STK-SUP-013 gives no number, and the needs do not say whether the log must survive resets or power cycles. Both must be defined.]",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIA-007",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-014",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Handling service-tool requests shall not cause any supervised task to miss its configured latest allowed start time or exceed its configured maximum allowed execution time.",
+      "verification_method": "analysis"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PRF-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-014",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "In normal operation (no fault detected, runtime program-code check active, no service-tool request in progress), the Safety Supervisor shall use no more than 10 % of the processor time, averaged over any one control cycle. [OPEN: the averaging window and whether service-tool traffic counts as 'normal operation' must be confirmed.]",
+      "verification_method": "analysis"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall run on the STMicroelectronics STM32N657X0 (Arm Cortex-M55). It shall use only the IWDG, WWDG, CRC, TIM, USART, GPIO and RCC peripherals.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-004",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall be written in C11, without dynamic memory allocation and without recursion, whether direct or indirect.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Project documentation that refers to the reference manual ST RM0486 shall cite it by document identifier, section and page only, and shall not reproduce its text.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-VER-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall access the hardware through a hardware abstraction layer, so that its supervision logic can be built and run in host unit tests with gcc and measured for coverage with gcovr, without target hardware.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-VER-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The Safety Supervisor shall run, unmodified from the target build, in the Renode simulator using the STM32N6 platform description, including watchdog, reset-cause, CRC, timer, USART and GPIO behaviour.",
+      "verification_method": "demonstration"
+    },
+    {
+      "derived": false,
+      "id": "SYS-VER-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The verification environment shall provide a way to inject each fault class without changes to the Safety Supervisor production code. The fault classes are: a stopped task, a late start, an execution-time overrun, a wrong task order, a skipped task, program-code corruption at start-up and at runtime, configuration-data corruption, missing watchdog refresh, early WWDG refresh, and the repeated-fault latch condition.",
+      "verification_method": "demonstration"
+    }
+  ],
+  "open_points": [],
+  "provenance": {
+    "created_utc": "2026-11-22T17:48:58Z",
+    "harness": "claude-code",
+    "input_hashes": {
+      "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+      "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+    },
+    "model": null,
+    "model_family": "claude",
+    "role": "author",
+    "run_id": "baseline",
+    "skill": "none (plain prompt)",
+    "skill_version": "-"
+  },
+  "schema": "forge-c-hi/requirement-set@1",
+  "stage": "sys-req",
+  "status": "draft"
+}

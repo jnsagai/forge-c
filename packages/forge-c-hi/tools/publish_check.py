@@ -15,7 +15,8 @@ Violation classes:
 - HIDDEN-UNICODE zero-width, bidirectional-control and tag characters (built in), plus `apm audit --file` on every
                Markdown primitive under .apm/ when an apm binary is available (otherwise that part is NOT_RUN).
 
-Prints one JSON object; exit 0 when clean, 1 on any violation, 2 on usage error.
+Prints one JSON object; exit 0 when clean, 1 on any violation, 2 on usage error. QUOTED-TEXT is a heuristic: a hit
+means "review this passage by hand", not proof of copied text.
 """
 from __future__ import annotations
 
@@ -52,12 +53,15 @@ def files(root: Path):
 
 
 def quoted_passages(text: str) -> list[str]:
+    """Quoted or block-quoted passages that sit next to a standard or vendor reference (within 200 characters)."""
     out = []
     for para in re.split(r"\n\s*\n", text):
         lines = para.splitlines()
-        if lines and all(l.lstrip().startswith(">") for l in lines if l.strip()):
+        if lines and all(l.lstrip().startswith(">") for l in lines if l.strip()) and STANDARD_REF.search(para):
             out.append(" ".join(l.lstrip()[1:] for l in lines))
-        out += [m.group(1) for m in QUOTE.finditer(para)]
+        for m in QUOTE.finditer(para):
+            if STANDARD_REF.search(para[max(0, m.start() - 200):m.end()]):
+                out.append(m.group(1))
     return out
 
 
@@ -82,10 +86,8 @@ def check(root: Path, denylist: list[str]) -> list[dict]:
         for m in EMAIL.finditer(text):
             if not ALLOWED_EMAIL_DOMAINS.search(m.group(1)):
                 v.append({"class": "EMAIL", "file": rel, "detail": "e-mail address"})
-        for para in re.split(r"\n\s*\n", text):
-            if not STANDARD_REF.search(para):
-                continue
-            for q in quoted_passages(para):
+        if STANDARD_REF.search(text):
+            for q in quoted_passages(text):
                 if len(q.split()) > 25 and re.search(r"\bshall\b", q, re.I):
                     v.append({"class": "QUOTED-TEXT", "file": rel, "detail": q[:80] + "..."})
     return v
