@@ -48,3 +48,5 @@
 - **Fifth round:** `CON-SUP-124..128`. After pass 4 no open point blocked, but the inspector raised blocking findings
   against five deferred open points (deferral hides a system-level decision, as the skills now ask it to check). The
   product owner decides them. Same status: fictional, by Claude.
+- **Sixth round:** `CON-SUP-129..130` complete the fifth round (CRC-32 parameters; status-state rules). Same status:
+  fictional, by Claude.
