@@ -40,3 +40,6 @@
   been asked to make them (question still open in chat).
 - **Effect:** run 4 is continued in update mode with the changed input; the conductor re-authors only what the change
   affects.
+- **Third round:** `CON-SUP-121..122` answer the two blocking open points that the second round's answers exposed
+  (watchdog servicing between detection and safe state; entity of a program-flow fault). Same status: fictional, by
+  Claude.
