@@ -77,7 +77,7 @@ TOOLS = {
     "hi_seal_package": (
         "Seal a READY_FOR_OFFLINE_REVIEW or BLOCKED review package.",
         _obj({}),
-        lambda r, a: api.not_available("seal", "US5, T043-T044"),
+        lambda r, a: api.seal(r),
     ),
 }
 

@@ -148,9 +148,9 @@ BLOCKED or NOT_RUN.
   - writes `.hi/active-role.json` and `.hi/runs/<id>/events.jsonl`.
 
   Make T028 pass
-- [ ] T035 [P] [US1] Write `hi-conductor/SKILL.md` and `hi-conductor/references/harness-presets.json`. The presets are `claude-code` (`claude -p` with the allowed-tools list), `codex` (`codex exec -s read-only` for the inspector, `-s workspace-write` for the author), `codex-oss-ollama` (`--oss --local-provider ollama`), `manual`, and the reference config (Claude author, GPT inspector)
-- [ ] T036 [P] [US1] Write the `hi-intake/SKILL.md` skill plus the `hi init` input-hashing flow: choose the profile and level (default generic and an explicit level), the input class and entry stage, and hash the inputs into `.hi/inputs.lock.json`. Warn about personal data or secrets in the inputs
-- [ ] T037 [P] [US1] Write `hi-sys-req-author/SKILL.md`. It covers:
+- [x] T035 [P] [US1] Write `hi-conductor/SKILL.md` and `hi-conductor/references/harness-presets.json`. The presets are `claude-code` (`claude -p` with the allowed-tools list), `codex` (`codex exec -s read-only` for the inspector, `-s workspace-write` for the author), `codex-oss-ollama` (`--oss --local-provider ollama`), `manual`, and the reference config (Claude author, GPT inspector)
+- [x] T036 [P] [US1] Write the `hi-intake/SKILL.md` skill plus the `hi init` input-hashing flow: choose the profile and level (default generic and an explicit level), the input class and entry stage, and hash the inputs into `.hi/inputs.lock.json`. Warn about personal data or secrets in the inputs
+- [x] T037 [P] [US1] Write `hi-sys-req-author/SKILL.md`. It covers:
   - the mission;
   - the inputs (needs and constraints);
   - the output `hi/sys-req/requirements.json` per `requirement-set.schema.json`;
@@ -160,13 +160,13 @@ BLOCKED or NOT_RUN.
   - the write scope;
   - the AgentStatus reply;
   - versioned metadata
-- [ ] T038 [P] [US1] Write `hi-sys-req-inspector/SKILL.md`. It covers:
+- [x] T038 [P] [US1] Write `hi-sys-req-inspector/SKILL.md`. It covers:
   - phase `item` (judge each requirement against IQ-01..12 without touching the others);
   - phase `set` (SQ-01..10 plus the carried findings);
   - findings JSON per `finding.schema.json`;
   - read-only;
   - severity rules
-- [ ] T039 [P] [US1] Write `hi-sw-req-author/SKILL.md` (software level; allocation from SYS; middleware and application focus; the driver mode section is added in US2) and `hi-sw-req-inspector/SKILL.md`
+- [x] T039 [P] [US1] Write `hi-sw-req-author/SKILL.md` (software level; allocation from SYS; middleware and application focus; the driver mode section is added in US2) and `hi-sw-req-inspector/SKILL.md`
 - [x] T040 [P] [US1] Write the demo inputs for the **Safety Supervisor** (owner decision 2026-11-22: one real STM32N6 project carried down the whole V): `PKG/examples/safety-supervisor/needs/stakeholder-needs.md` with original natural-language needs (alive, deadline and program-flow supervision of cyclic tasks; IWDG/WWDG servicing only while healthy; CRC self-test of code and configuration at start-up and periodically; safe state and reset within stated times; fault reporting over USART; status pin), `needs/constraints.md` (target STM32N657X0, Cortex-M55, Renode simulation, peripherals IWDG/WWDG/CRC/TIM/USART/GPIO/RCC, no vendor text) and `hi-project.example.json` (generic, HI-2, reference role bindings)
 - [ ] T041 [US1] Run the P1 demo with the reference config (Claude Code author, Codex/GPT inspector) on a clean consumer project per quickstart V2. Store the run directory, the events, the gate results and the trace matrix in `FEAT/evidence/us1-p1-demo/`. Report READY or BLOCKED honestly
 - [ ] T042 [US1] Run the quickstart V3 negative cases (a deleted link, a forced NOT_RUN, an out-of-scope write) and store them in `FEAT/evidence/us1-negative/`
@@ -181,7 +181,7 @@ BLOCKED or NOT_RUN.
 
 **Independent Test**: quickstart V2 `hi seal` after the passing run and after a failing run. The manifest hashes verify.
 
-- [ ] T043 [P] [US5] Write the packager tests `PKG/tests/test_seal.py`. They check:
+- [x] T043 [P] [US5] Write the packager tests `PKG/tests/test_seal.py`. They check:
   - all required gates PASS plus no blocking findings plus no suspect links: READY;
   - each gap type (FAIL, NOT_RUN, a blocking open point, suspect, independence) gives BLOCKED with a listed gap;
   - the manifest validates against the review-manifest schema;
@@ -189,9 +189,9 @@ BLOCKED or NOT_RUN.
   - the disclaimer is present;
   - `.hi/docs/*.index.json` is excluded;
   - a package is still produced when stages failed
-- [ ] T044 [US5] Implement `ENG/seal.py` and `hi seal`. Adapt the manifest and hash logic from `factory/release-manager/scripts/build_review_package.py`, with attribution. Render `findings.md` and `gates.md`, and produce `review.tar.gz` deterministically (sorted entries, fixed mtime). Make T043 pass
-- [ ] T045 [P] [US5] Write `hi-release/SKILL.md`. The release role summarises the gaps, never upgrades a status, refuses certification or release claims (and records the request as a finding), then calls `hi seal`
-- [ ] T046 [US5] Seal the US1 evidence run and verify it with an independent hash re-check script, `PKG/tools/verify_package.py`. Store the result in `FEAT/evidence/us5-seal/`
+- [x] T044 [US5] Implement `ENG/seal.py` and `hi seal`. Adapt the manifest and hash logic from `factory/release-manager/scripts/build_review_package.py`, with attribution. Render `findings.md` and `gates.md`, and produce `review.tar.gz` deterministically (sorted entries, fixed mtime). Make T043 pass
+- [x] T045 [P] [US5] Write `hi-release/SKILL.md`. The release role summarises the gaps, never upgrades a status, refuses certification or release claims (and records the request as a finding), then calls `hi seal`
+- [ ] T046 [US5] Seal the US1 evidence run and verify it with an independent hash re-check script, `PKG/.apm/skills/hi-release/scripts/verify_package.py` (shipped with the release skill so consumers have it). Store the result in `FEAT/evidence/us5-seal/`
 
 **Checkpoint M1**: the US1 and US5 evidence exists, `pytest` is green, and the regression `python3 tests/spec/validate_design.py` passes.
 

@@ -93,7 +93,7 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
     if c == "status":
         return api.status(root)
     if c == "seal":
-        return api.not_available("seal", "US5, T043-T044")
+        return api.seal(root)
     if c == "role":
         return api.role_set(root, args.role, args.stage, args.run_id) if args.action == "set" else api.role_clear(root)
     raise ValueError(f"unknown command {c}")

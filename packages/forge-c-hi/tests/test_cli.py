@@ -169,7 +169,7 @@ def test_no_project_is_config_error(tmp_project):
     assert code == 2 and "hi init" in out["error"]
 
 
-@pytest.mark.parametrize("args", [["seal"], ["doc-index", "x.pdf", "--doc-id", "RM1"]])
+@pytest.mark.parametrize("args", [["doc-index", "x.pdf", "--doc-id", "RM1"]])
 def test_later_commands_report_not_run(tmp_project, args):
     make_project(tmp_project)
     code, out = hi(tmp_project, *args)

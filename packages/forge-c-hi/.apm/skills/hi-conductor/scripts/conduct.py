@@ -35,7 +35,7 @@ sys.path.insert(0, str(SKILLS / "hi-gates" / "scripts"))
 from forge_hi import __version__, api, gate_result, gates, scope, trace  # noqa: E402
 from forge_hi.api import compact  # noqa: E402
 from forge_hi.config import REFS, ConfigError, effective_rigor, find_root, load_profile, load_project, schema, stage_order, stages  # noqa: E402,E501
-from forge_hi.io import canonical, read_json, write_json, write_text  # noqa: E402
+from forge_hi.io import canonical, read_json, sha256_file, write_json, write_text  # noqa: E402
 from forge_hi.jsonschema_lite import validate  # noqa: E402
 from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
@@ -120,11 +120,15 @@ class Conductor:
         chosen = [c for c, ph in lists.items() if role == "author" or ph == phase_kind] or list(lists)
         checklists = [rel(self.root, REFS / "checklists" / f"{c}.json") for c in chosen]
         skill = st["author_skill"] if role == "author" else st["inspector_skill"]
+        binding = self.project["roles"][role]
+        lock = self.root / ".hi" / "inputs.lock.json"
+        hashes = read_json(lock).get("inputs", {}) if lock.is_file() else {}
         return {
+            "run_id": self.run_id, "harness": binding.get("harness"), "model": binding.get("model"),
+            "model_family": binding.get("model_family"), "input_hashes": hashes, "created_utc": utc_now(),
             "role": role, "stage": stage, "stage_name": self.profile["vocabulary"].get(stage, stage), "phase": phase,
             "skill": skill, "skill_path": self.skill_path(skill),
-            "rules_path": rel(self.root, SKILLS.parent / "instructions" / "hi-core.instructions.md")
-            if (SKILLS.parent / "instructions").is_dir() else "hi-core rules (installed instructions)",
+            "rules_path": rel(self.root, REFS / "hi-core-rules.md"),
             "workproduct": st["outputs"][0], "inputs": [i["path"] for i in self.project["inputs"]],
             "upstream": upstream, "checklists": checklists,
             "write_scope": scope.write_scope(role, stage),
@@ -422,7 +426,8 @@ class Conductor:
             outcome, state, reason = "ACCEPTED", "accepted", ""
         if state == "accepted":
             trace.rebaseline(self.root, stage)
-        self.set_state(stage, state, outcome=outcome, reason=reason.strip()[:300], gates=summ["gates"])
+        self.set_state(stage, state, outcome=outcome, reason=reason.strip()[:300], gates=summ["gates"],
+                       wp_sha256=sha256_file(self.workproduct(stage)))
         self.event(stage=stage, step="stage-end", outcome=outcome, gates=summ["gates"],
                    findings_open=sum(1 for f in all_findings if f["status"] in ("open", "carried")))
         return {"stage": stage, "outcome": outcome, "gates": summ["gates"],

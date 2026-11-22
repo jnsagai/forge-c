@@ -210,6 +210,14 @@ def role_clear(root: Path) -> tuple[int, dict]:
     return 0, {"cmd": "role clear", "status": "DONE", "cleared": existed}
 
 
+def seal(root: Path) -> tuple[int, dict]:
+    from . import seal as _seal
+    res = _seal.seal(root)
+    return (0 if res["status"] == _seal.READY else 1), {
+        "cmd": "seal", "status": res["status"], "package": res["package"], "files": res["files"],
+        "gaps": len(res["gaps"]), "top": [{"code": g["code"], "source": g["source"]} for g in res["gaps"][:8]]}
+
+
 def not_available(cmd: str, task: str) -> tuple[int, dict]:
     return 1, {"cmd": cmd, "verdict": "NOT_RUN", "not_run_reason": f"'{cmd}' is not available in forge-c-hi "
                f"{__version__} yet ({task})"}
