@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from conftest import SKILLS
-from hi_helpers import SWR_ITEMS, SYS_ITEMS, make_project, write
+from hi_helpers import SWR_ITEMS, SYS_ITEMS, make_project, req, write
 
 CONDUCT = SKILLS / "hi-conductor" / "scripts" / "conduct.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
@@ -148,7 +148,9 @@ def test_unresolved_findings_are_carried_to_set_phase(tmp_path):
     }, level="HI-0")  # generic HI-0: rework limit 2
     code, out, calls = conduct(root, sc, "--stage", "sys-req")
     item_rounds = [c for c in calls if c["phase"] == "item"]
-    assert len(item_rounds) == 3                            # judge + 2 re-judges (limit 2)
+    # the fake author leaves the item exactly as it was: it is not judged again, its finding is carried
+    assert len(item_rounds) == 1 and [c["items"] for c in calls if c["phase"] == "rework"] == [["SYS-SUP-001"]]
+    assert any(e.get("step") == "rework-check" and e.get("unchanged") for e in events(root, out))
     set_call = next(c for c in calls if c["phase"] == "set")
     assert set_call["findings"] == 1
     assert out["stages"][0]["outcome"] == "ACCEPTED"        # the set inspector did not re-raise it
@@ -157,10 +159,13 @@ def test_unresolved_findings_are_carried_to_set_phase(tmp_path):
 def test_rework_limit_exhaustion_blocks(tmp_path):
     root = tmp_path / "p"
     root.mkdir()
+    # the author changes the item every time; the inspector keeps finding one defect, on a different criterion each
+    # round (not the same findings, so not stuck; not fewer, so no progress extension): the base limit applies
+    rot = ["IQ-02", "IQ-04", "IQ-06", "IQ-09", "IQ-02", "IQ-04", "IQ-06", "IQ-09"]
     sc = setup(root, {
-        "author": {"items": SYS_ITEMS},
-        "inspector": {"item_rounds": [{"SYS-SUP-001": [F("IQ-02", "blocking")]}] * 5,
-                      "set_rounds": [[dict(F("IQ-02", "blocking"), target_id="SYS-SUP-001")]] * 5},
+        "author": {"items": SYS_ITEMS, "rework_touch": True},
+        "inspector": {"item_rounds": [{"SYS-SUP-001": [F(c, "blocking")]} for c in rot],
+                      "set_rounds": [[dict(F(c, "blocking"), target_id="SYS-SUP-001")] for c in rot]},
     })
     code, out, calls = conduct(root, sc, "--stage", "sys-req")
     assert code == 1 and out["status"] == "BLOCKED"
@@ -414,3 +419,48 @@ def test_json_the_author_cannot_repair_blocks_cleanly(tmp_path):
     assert "not valid JSON" in out["stages"][0]["reason"]
     assert out["stages"][0]["gates"]["validate"] == "FAIL"
     assert not (root / ".hi/active-role.json").exists()
+
+
+def test_rework_continues_past_the_limit_while_findings_fall(tmp_path):
+    # owner plan 2026-11-14: keep reworking while the open findings fall, up to the safety cap
+    root = tmp_path / "p"
+    root.mkdir()
+    items = SYS_ITEMS + [req(f"SYS-SUP-{n:03d}", f"The supervisor shall report event {n} within 10 ms.", ["STK-SUP-001"])
+                         for n in range(3, 9)]
+    ids = [i["id"] for i in items]
+    rounds = [{i: [F("IQ-04")] for i in ids[:k]} for k in (8, 7, 6, 5, 4, 3, 2, 1, 0)]
+    sc = setup(root, {"author": {"items": items, "rework_touch": True},
+                      "inspector": {"item_rounds": rounds, "set_rounds": [[]]}}, level="HI-0")  # base limit 2
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    item_rounds = [c for c in calls if c["phase"] == "item"]
+    assert len(item_rounds) == 9                             # 8 rework rounds, far past the base limit of 2
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+
+
+def test_rework_stops_when_two_rounds_return_the_same_findings(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [F("IQ-04", "blocking")]}] * 6,
+                                    "set_rounds": [[dict(F("IQ-04", "blocking"), target_id="SYS-SUP-001")]] * 6}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert len([c for c in calls if c["phase"] == "rework"]) == 1   # round 2 repeats round 1: stuck, stop
+    stuck = [e for e in events(root, out) if e.get("step") == "rework-stuck"]
+    assert stuck and stuck[0]["phase"] == "item"
+    assert code == 1 and "open blocking findings" in out["stages"][0]["reason"]
+
+
+def test_open_major_findings_give_accepted_with_gaps_and_a_seal_gap(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [F("IQ-04", "major")]}],
+                                    "set_rounds": [[dict(F("IQ-04", "major"), target_id="SYS-SUP-001")]] * 5}})
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    st = out["stages"][0]
+    assert st["outcome"] == "ACCEPTED_WITH_GAPS" and "open major findings" in st["reason"], out
+    from forge_hi import seal
+    from forge_hi.config import load_project
+    gaps, _ = seal.collect_gaps(root, load_project(root))
+    assert any(g["code"] == "FINDING-MAJOR" for g in gaps)
+

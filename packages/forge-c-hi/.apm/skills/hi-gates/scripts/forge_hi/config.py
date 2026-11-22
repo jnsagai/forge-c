@@ -75,8 +75,9 @@ def effective_rigor(project: dict, profiles_dir: Path | None = None) -> dict:
             f"(defined: {sorted(profile['level_map'])})"
         )
     rigor: dict[str, Any] = dict(profile["rigor"][level])
-    if "rework_limit" in project:
-        rigor["rework_limit"] = project["rework_limit"]
+    for key in ("rework_limit", "rework_max"):
+        if key in project:
+            rigor[key] = project[key]
     rigor["profile"] = profile["id"]
     rigor["level"] = level
     rigor["level_name"] = profile["level_map"][level]

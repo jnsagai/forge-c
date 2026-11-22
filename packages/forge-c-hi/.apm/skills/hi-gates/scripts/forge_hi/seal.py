@@ -89,8 +89,10 @@ def collect_gaps(root: Path, project: dict) -> tuple[list[dict], dict]:
                 elif codes:
                     gaps.append(_gap("GATE-FAIL", f"{s}/{g}", f"{len(res['issues'])} issue(s): {', '.join(codes[:8])}"))
         for f in gates.findings(root, s):
-            if f.get("status") in ("open", "carried") and f.get("severity") == "blocking":
-                gaps.append(_gap("FINDING-BLOCKING", f"{s}/{f['id']}", f"{f['target_id']} {f['checklist_item']}: "
+            if f.get("status") in ("open", "carried") and f.get("severity") in ("blocking", "major"):
+                # guideline DoD: no open blocking or correctable (major) finding without a recorded disposition
+                code = "FINDING-BLOCKING" if f["severity"] == "blocking" else "FINDING-MAJOR"
+                gaps.append(_gap(code, f"{s}/{f['id']}", f"{f['target_id']} {f['checklist_item']}: "
                                  f"{f.get('description', '')}"))
         for o in read_json(root / stages()[s]["outputs"][0]).get("open_points", []):
             if isinstance(o, dict) and o.get("blocks"):

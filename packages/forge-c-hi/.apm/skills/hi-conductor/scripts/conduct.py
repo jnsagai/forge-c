@@ -85,6 +85,9 @@ class Conductor:
         self.run_id = new_run_id()
         self.run_dir = self.root / ".hi" / "runs" / self.run_id
         self.limit = int(self.rigor.get("rework_limit", 3))
+        # owner plan 2026-11-14: keep reworking while the open findings fall, up to a safety cap; stop as soon as two
+        # rounds return the same findings
+        self.max_rounds = max(self.limit, int(self.rigor.get("rework_max", 10)))
         roles = self.project["roles"]
         for r in ("author", "inspector"):
             if roles[r].get("harness") == "manual" or not roles[r].get("command"):
@@ -374,8 +377,21 @@ class Conductor:
                    dropped=dropped)
         return out
 
+    def keep_going(self, stage: str, phase: str, rounds: int, keys: set, prev: set | None) -> bool:
+        """After `rounds` completed rework rounds, with `keys` still open: rework once more? Records why it stops."""
+        if prev is not None and keys == prev:
+            self.event(stage=stage, step="rework-stuck", phase=phase, rounds=rounds, open=len(keys))
+            return False
+        progressing = prev is not None and len(keys) < len(prev)
+        if rounds < self.limit or (progressing and rounds < self.max_rounds):
+            return True
+        self.event(stage=stage, step="rework-limit", phase=phase, rounds=rounds, open=len(keys),
+                   flagged=sorted({k[0] for k in keys})[:50])
+        return False
+
     def rework_item(self, stage: str, item_id: str, findings: list[dict], rnd: int) -> list[str]:
-        """Author reworks one item alone. Changes to other existing items are discarded. Returns new item ids."""
+        """Author reworks one item alone. Changes to other existing items are discarded. Returns new item ids;
+        an item the author left exactly as it was is recorded in self.unchanged (not judged again)."""
         before = read_json(self.workproduct(stage))
         old = {i["id"]: i for i in before.get("items", [])}
         self.run_role("author", stage, "rework", round=rnd, items=[item_id],
@@ -403,7 +419,12 @@ class Conductor:
         if restored:
             after["items"] = new_items
             write_json(self.workproduct(stage), after)
-        self.event(stage=stage, step="rework-check", item=item_id, restored=restored[:20], added=added[:20])
+        now = next((i for i in new_items if i.get("id") == item_id), None)
+        same = now is not None and item_id in old and canonical(now) == canonical(old[item_id]) and not added
+        if same:
+            self.unchanged.add(item_id)
+        self.event(stage=stage, step="rework-check", item=item_id, restored=restored[:20], added=added[:20],
+                   unchanged=same)
         return added
 
     # ---------------------------------------------------------------- the stage loop
@@ -450,6 +471,8 @@ class Conductor:
             pending |= set(self.suspect_items(stage))
             to_judge = [i for i in hashes if judged.get(i) != hashes[i] or i in pending]
             judged_now: set[str] = set()
+            self.unchanged: set[str] = set()
+            prev_keys: set | None = None
             rnd = base_item + 1
             while to_judge:
                 new = self.inspect(stage, "item", rnd, to_judge, [])
@@ -464,14 +487,16 @@ class Conductor:
                 all_findings += new
                 self.save_findings(stage, all_findings)
                 # a finding that waits on an open point cannot be reworked away: it is carried to the decision
-                flagged = sorted({f["target_id"] for f in all_findings
-                                  if f["status"] == "open" and f["phase"] == "item" and f["severity"] in REWORK_SEVERITIES
-                                  and not f.get("blocked_by")})
+                live = [f for f in all_findings if f["status"] == "open" and f["phase"] == "item"
+                        and f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
+                keys = {(f["target_id"], f["checklist_item"]) for f in live}
+                # an item the author left unchanged is not reworked again: its findings are carried as they are
+                flagged = sorted({f["target_id"] for f in live} - self.unchanged)
                 if not flagged:
                     break
-                if rnd - base_item > self.limit:
-                    self.event(stage=stage, step="rework-limit", phase="item", flagged=flagged)
+                if not self.keep_going(stage, "item", rnd - base_item - 1, keys, prev_keys):
                     break
+                prev_keys = keys
                 added: list[str] = []
                 for iid in flagged:
                     mine = [f for f in all_findings if f["status"] == "open" and f["target_id"] == iid
@@ -480,7 +505,7 @@ class Conductor:
                 _, issues = self.det_issues(stage)
                 if issues:
                     self.author_with_gates_fix_only(stage, issues)
-                to_judge, rnd = flagged + added, rnd + 1
+                to_judge, rnd = [i for i in flagged if i not in self.unchanged] + added, rnd + 1
             if judged_now:  # the inspector judged these items against their current upstream
                 trace.rebaseline(self.root, stage, only=judged_now)
             for f in all_findings:
@@ -489,6 +514,7 @@ class Conductor:
             self.save_findings(stage, all_findings)
             # set phase
             srnd = base_set + 1
+            prev_set: set | None = None
             while True:
                 carried = [f for f in all_findings if f["status"] == "carried"]
                 prior_set = [f for f in all_findings if f["status"] == "open" and f["phase"] == "set"]
@@ -514,9 +540,10 @@ class Conductor:
                 open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
                 if not open_set:
                     break
-                if srnd - base_set > self.limit:
-                    self.event(stage=stage, step="rework-limit", phase="set", open=len(open_set))
+                set_keys = {(f.get("target_id"), f["checklist_item"]) for f in open_set}
+                if not self.keep_going(stage, "set", srnd - base_set - 1, set_keys, prev_set):
                     break
+                prev_set = set_keys
                 self.run_role("author", stage, "rework-set", round=srnd,
                               findings=[{k: f[k] for k in ("id", "checklist_item", "target_id", "severity",
                                                            "description", "requested_change") if k in f}
@@ -535,15 +562,19 @@ class Conductor:
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
         wp = read_json(self.workproduct(stage))
         open_blocking = [f["id"] for f in all_findings if f["status"] in ("open", "carried") and f["severity"] == "blocking"]
+        open_major = [f["id"] for f in all_findings if f["status"] in ("open", "carried") and f["severity"] == "major"]
         blocking_ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict) and o.get("blocks")]
         if summ["verdict"] == "FAIL" or open_blocking or blocking_ops:
             reason = (f"gates {summ['gates']}" if summ["verdict"] == "FAIL" else "") + \
                      (f" open blocking findings {open_blocking[:5]}" if open_blocking else "") + \
                      (f" blocking open points {blocking_ops[:5]}" if blocking_ops else "")
             outcome, state = "BLOCKED", "blocked"
-        elif summ["verdict"] == "NOT_RUN":
-            outcome, state, reason = "ACCEPTED_WITH_GAPS", "accepted", "required gates NOT_RUN: " + ", ".join(
-                g for g, v in summ["gates"].items() if v == "NOT_RUN")
+        elif summ["verdict"] == "NOT_RUN" or open_major:
+            outcome, state = "ACCEPTED_WITH_GAPS", "accepted"
+            reason = "; ".join(x for x in (
+                "required gates NOT_RUN: " + ", ".join(g for g, v in summ["gates"].items() if v == "NOT_RUN")
+                if summ["verdict"] == "NOT_RUN" else "",
+                f"open major findings {open_major[:5]}" if open_major else "") if x)
         else:
             outcome, state, reason = "ACCEPTED", "accepted", ""
         if state == "accepted":

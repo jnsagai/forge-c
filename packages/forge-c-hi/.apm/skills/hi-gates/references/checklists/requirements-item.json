@@ -7,6 +7,11 @@
   ],
   "phase": "item",
   "_source": "Forge-C docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md (owner guideline), neutralised for feature 023",
+  "_guideline": {
+    "path": "docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md",
+    "version": "1.0",
+    "sha256": "b78fc1e536f394b7c4fee31d185d14ffb1caaed8be36d47a987a9ff02ca64367"
+  },
   "items": [
     {
       "id": "IQ-01",

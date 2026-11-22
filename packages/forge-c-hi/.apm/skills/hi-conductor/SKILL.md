@@ -40,12 +40,14 @@ still-flagged items are judged again (earlier judgements are kept). `--fresh` re
 3. **Item inspection** of every item by the read-only inspector.
 4. **Rework** of each item with a blocking or major finding, **one item at a time**. Changes to other existing items
    are discarded; new items from a split are kept and judged.
-5. **Re-judge** only the reworked items. Steps 4 and 5 repeat up to the profile's rework limit; what is still open is
-   **carried** into the set phase.
-6. **Set inspection** with the carried findings, then set rework within the rework limit.
+5. **Re-judge** only the reworked items; an item the author left exactly as it was is not judged again and keeps its
+   findings. Steps 4 and 5 repeat for the profile's `rework_limit` rounds, and beyond it only while the open findings
+   keep falling, up to `rework_max` (default 10). Two rounds with the same open findings stop the loop at once
+   (`rework-stuck`). What is still open is **carried** into the set phase.
+6. **Set inspection** with the carried findings, then set rework under the same rule.
 7. **Final gates** for the profile and level. The stage ends `ACCEPTED`, `ACCEPTED_WITH_GAPS` (a required gate is
-   NOT_RUN, which still blocks the review package) or `BLOCKED` (a gate failed, a blocking finding or blocking open
-   point remains, a role wrote outside its scope, or a harness failed).
+   NOT_RUN, or a major finding is still open; both still block the review package) or `BLOCKED` (a gate failed, a
+   blocking finding or blocking open point remains, a role wrote outside its scope, or a harness failed).
 
 Accepting a stage records the trace baseline, so a later change to an upstream item makes its links **suspect**.
 

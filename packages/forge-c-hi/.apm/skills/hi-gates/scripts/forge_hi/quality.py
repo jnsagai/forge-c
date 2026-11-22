@@ -106,6 +106,8 @@ def multiple_obligations(text: str) -> bool:
 
 
 def _waived(item: dict) -> set[str]:
+    if (item.get("attributes") or {}).get("safety_relevant") is True:
+        return set()  # guideline: no automatic waivers for safety-relevant requirements
     out = set()
     for w in (item.get("attributes") or {}).get("quality_waivers") or []:
         if isinstance(w, dict) and w.get("rule") in WAIVABLE and len(str(w.get("rationale", "")).strip()) >= 15:

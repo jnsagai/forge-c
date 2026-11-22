@@ -124,6 +124,11 @@
           "rework_limit": {
             "type": "integer",
             "minimum": 0
+          },
+          "rework_max": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Safety cap on rework rounds: beyond rework_limit the conductor keeps reworking only while the open findings fall (default 10); two rounds with the same findings stop it."
           }
         }
       }

@@ -28,7 +28,8 @@ needs. Skills and gates never change when you switch profiles: only `.hi/project
    - `independence`: `same-session-ok`, `separate-session` or `separate-model-family`;
    - `coverage`: statement, branch and MC/DC targets in percent, or `null`;
    - `verification_methods`: the methods accepted for requirements at that level;
-   - `rework_limit`: inspection rework rounds before a stage is BLOCKED.
+   - `rework_limit`: inspection rework rounds always granted; `rework_max` (optional, default 10): the cap on further
+     rounds, granted only while the open findings keep falling.
 6. Keep the `disclaimer` and add `notes` that say where the rigor values come from.
 7. Validate: `python3 -m pytest tests/test_profiles.py` in the package, or `hi init --profile <id> --level HI-n`.
 

@@ -1,6 +1,8 @@
 """T023: deterministic requirement-quality rules (research R4). Each rule has a passing and a failing case."""
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from forge_hi import quality
@@ -163,3 +165,47 @@ def test_open_point_owner_runs_in_the_quality_gate(tmp_project):
     wp.write_text(__import__("json").dumps(doc))
     res = quality.run(tmp_project, "sys-req")
     assert res["verdict"] == "FAIL" and res["issues"][0]["code"] == "IQ-12.open-point-owner"
+
+
+def test_no_waivers_on_safety_relevant_items():
+    # guideline: no automatic waivers for safety-relevant requirements
+    text = "The supervisor shall enter the safe state within 50 ms and report the fault code."
+    waiver = {"rule": "IQ-05.multiple-obligations", "rationale": "Entering and reporting are one atomic reaction here."}
+    plain = dict(GOOD, text=text, attributes={"quality_waivers": [waiver]})
+    assert "IQ-05.multiple-obligations" not in codes([plain])
+    safety = dict(GOOD, text=text, attributes={"quality_waivers": [waiver], "safety_relevant": True})
+    assert "IQ-05.multiple-obligations" in codes([safety])
+
+
+def test_checklists_are_pinned_to_the_forge_c_guideline():
+    """The checklists name the guideline version they were derived from; where the Forge-C repository is at hand,
+    the pinned file must still have that hash and the same criteria ids."""
+    import hashlib
+    import json
+    import subprocess
+    from conftest import PKG
+    refs = PKG / ".apm/skills/hi-gates/references/checklists"
+    pins = {json.loads((refs / f"{n}.json").read_text())["_guideline"]["sha256"]
+            for n in ("requirements-item", "requirements-set")}
+    assert len(pins) == 1
+    repo, path = PKG.parents[1], "docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md"
+    try:  # the newest published factory campaign branch that carries the guideline
+        refs_out = subprocess.run(["git", "-C", str(repo), "for-each-ref", "--sort=-committerdate",
+                                   "--format=%(refname)", "refs/remotes/origin/publish/"],
+                                  capture_output=True, text=True, check=True).stdout.split()
+    except (OSError, subprocess.CalledProcessError):
+        refs_out = []
+    text = None
+    for ref in refs_out:
+        r = subprocess.run(["git", "-C", str(repo), "show", f"{ref}:{path}"], capture_output=True)
+        if r.returncode == 0:
+            text = r.stdout
+            break
+    if text is None:
+        pytest.skip("Forge-C guideline not available (installed package)")
+    assert hashlib.sha256(text).hexdigest() == pins.pop()
+    ids = set(re.findall(r"^\| ((?:IQ|SQ)-\d\d) \|", text.decode(), re.M))
+    ours = {i["id"] for n in ("requirements-item", "requirements-set")
+            for i in json.loads((refs / f"{n}.json").read_text())["items"]}
+    assert ids == ours
+

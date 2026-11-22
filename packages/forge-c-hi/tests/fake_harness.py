@@ -8,6 +8,7 @@ Scenario keys:
   author.rework           {item_id: {field: value}} applied on phase "rework" of that item
   author.rework_also      {item_id: {field: value}} applied to OTHER items during a rework (must be discarded)
   author.split            {item_id: [new items]} appended on rework of item_id
+  author.rework_touch     true: every rework also writes "rework round N" into the item's rationale (a real change)
   author.fix_gates        [{id, field: value}] applied on phase "fix-gates"
   author.set_fix          {item_id: {field: value}} applied on phase "rework-set"
   author.update           {"patch": {item_id: {field: value}}, "open_points": [...]} applied on phase "update"
@@ -76,6 +77,8 @@ def main() -> int:
             if task["phase"] == "rework":
                 iid = task["items"][0]
                 by_id[iid].update(a.get("rework", {}).get(iid, {}))
+                if a.get("rework_touch"):
+                    by_id[iid]["rationale"] = f"rework round {task.get('round', 0)}"
                 for other, patch in a.get("rework_also", {}).items():
                     if other in by_id and other != iid:
                         by_id[other].update(patch)
@@ -92,6 +95,9 @@ def main() -> int:
             elif task["phase"] == "rework-set":
                 for iid, patch in a.get("set_fix", {}).items():
                     by_id[iid].update(patch)
+                if a.get("rework_touch"):
+                    doc.setdefault("open_points", [])
+                    doc["baseline_id"] = f"BL-set-{task.get('round', 0)}"
         wp.parent.mkdir(parents=True, exist_ok=True)
         text = json.dumps(doc, indent=1)
         broken = root.parent / f"{root.name}-broken.txt"
