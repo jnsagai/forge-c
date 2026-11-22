@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from . import doc_index, gate_result, quality, scope, trace
+from . import code_gates, doc_index, gate_result, quality, scope, trace
 from .config import REFS, effective_rigor, load_project, schema, stages
 from .io import read_json, sha256_file
 from .jsonschema_lite import validate as schema_validate
@@ -177,6 +177,14 @@ def gate_stage(root: Path, stage: str, *, scope_doc: dict | None = None) -> dict
             results[g] = doc_sources(root, stage)
         elif g == "independence":
             results[g] = independence(root, stage)
+        elif g == "build":
+            results[g] = code_gates.build(root)
+        elif g == "static-analysis":
+            results[g] = code_gates.static_analysis(root)
+        elif g == "unit-test":
+            results[g] = code_gates.unit_test(root)[0]
+        elif g == "coverage":
+            results[g] = code_gates.coverage(root)
         else:
             results[g] = tool_gate_not_run(root, stage, g)
     verdicts = {g: r["verdict"] for g, r in results.items()}

@@ -242,9 +242,9 @@ BLOCKED or NOT_RUN.
 
 **Independent Test**: each later stage produces a valid workproduct, traces to its counterpart, and records gate verdicts.
 
-- [ ] T058 [P] [US4] Write the workproduct-schema tests for architecture, design, test-spec and verification-result in `PKG/tests/test_vmodel_workproducts.py` (one minimal valid and one invalid fixture each)
-- [ ] T059 [US4] Add the schemas `hi-gates/references/schemas/{architecture,design,test-spec,verification-result}.schema.json`. Copy them back to `FEAT/contracts/` and extend the trace rules for `allocates`, `realises`, `implements` and `verifies`. Make T058 pass
-- [ ] T060 [P] [US4] Write the code-stage gates `ENG/code_gates.py` and their tests `PKG/tests/test_code_gates.py`. The gates are build (gcc or clang), static analysis (cppcheck) and coverage (gcov/gcovr). A missing tool gives NOT_RUN. Coverage is compared with the profile targets
+- [x] T058 [P] [US4] Write the workproduct-schema tests for architecture, design, test-spec and verification-result in `PKG/tests/test_vmodel_workproducts.py` (one minimal valid and one invalid fixture each)
+- [x] T059 [US4] Add the schemas `hi-gates/references/schemas/{architecture,design,test-spec,verification-result}.schema.json`. Copy them back to `FEAT/contracts/` and extend the trace rules for `allocates`, `realises`, `implements` and `verifies`. Make T058 pass
+- [x] T060 [P] [US4] Write the code-stage gates `ENG/code_gates.py` and their tests `PKG/tests/test_code_gates.py`. The gates are build (gcc or clang), static analysis (cppcheck) and coverage (gcov/gcovr). A missing tool gives NOT_RUN. Coverage is compared with the profile targets
 - [ ] T061 [P] [US4] Write the skill pairs `hi-sys-arch-{author,inspector}/SKILL.md`
 - [ ] T062 [P] [US4] Write the skill pairs `hi-sw-arch-{author,inspector}/SKILL.md`
 - [ ] T063 [P] [US4] Write the skill pairs `hi-sw-design-{author,inspector}/SKILL.md` (detailed design and unit construction in C; the write scope includes `src/`)

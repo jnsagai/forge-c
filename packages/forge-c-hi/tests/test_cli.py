@@ -132,7 +132,7 @@ def test_gate_level_changes_required_set_and_not_run_is_a_gap(tmp_project):
     subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-qm", "x"],
                    cwd=tmp_project, check=True)
     code, out = hi(tmp_project, "gate", "sw-design")
-    assert out["gates"]["build"] == "NOT_RUN" and code == 1
+    assert out["gates"]["build"] == "FAIL" and code == 1  # no src/ yet: a gap, never a pass
 
 
 def test_independence_same_family_fails_at_hi3(tmp_project):

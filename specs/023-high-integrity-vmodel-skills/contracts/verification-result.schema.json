@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/verification-result",
+  "title": "Verification results written by a deterministic gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "stage",
+    "tool",
+    "results",
+    "created_utc"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c-hi/verification-result@1"
+    },
+    "stage": {
+      "enum": [
+        "unit-verif",
+        "sw-integ",
+        "sw-qual",
+        "sys-integ",
+        "sys-qual"
+      ]
+    },
+    "tool": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "test_id",
+          "verdict"
+        ],
+        "properties": {
+          "test_id": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "created_utc": {
+      "type": "string"
+    }
+  }
+}

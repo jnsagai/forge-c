@@ -30,6 +30,30 @@ LINK_TYPE = {
     "sw-design": "implements", "unit-verif": "verifies", "sw-integ": "verifies", "sw-qual": "verifies",
     "sys-integ": "verifies", "sys-qual": "verifies",
 }
+# (upstream stage, downstream stage, wording): every upstream item needs at least one downstream item citing it,
+# once both stages exist. The left side is refined downwards; each right-side stage verifies its counterpart.
+COVERAGE = [
+    ("sys-req", "sys-arch", "allocated to"),
+    ("sys-req", "sw-req", "refined by"),
+    ("sw-req", "sw-arch", "realised by"),
+    ("sw-arch", "sw-design", "implemented by"),
+    ("sw-design", "unit-verif", "verified by"),
+    ("sw-arch", "sw-integ", "verified by"),
+    ("sw-req", "sw-qual", "verified by"),
+    ("sys-arch", "sys-integ", "verified by"),
+    ("sys-req", "sys-qual", "verified by"),
+]
+
+
+def _needs_cover(parent: str, child: str, item: dict) -> bool:
+    alloc = (item.get("attributes") or {}).get("allocation")
+    if parent == "sys-req" and child == "sw-req":
+        return alloc is None or "software" in alloc
+    if parent == "sw-arch" and child == "sw-design":
+        return item.get("kind") in ("component", "software")
+    return True
+
+
 BASELINE = Path(".hi") / "trace-baseline.json"
 TRACE = Path("hi") / "trace.json"
 MATRIX = Path("hi") / "trace-matrix.md"
@@ -175,7 +199,8 @@ def check(root: Path, project: dict, until: str | None = None) -> tuple[list[dic
                 if why:
                     issues.append(gate_result.issue("TR-DOC-UNRESOLVED", f"{it['id']} cites {d['doc_id']}: {why}", it["id"]))
             doc_ok = bool(docs) and (ref_doc_project or it.get("level") == "driver_interface")
-            if not ups and not it.get("derived") and not doc_ok and it.get("level") in ("system", "software"):
+            needs_parent = it.get("level") in ("system", "software") or s not in ("sys-req", "sw-req")
+            if not ups and not it.get("derived") and not doc_ok and needs_parent:
                 issues.append(gate_result.issue("TR-ORPHAN", f"{it['id']} has no upstream source and is not derived", it["id"]))
 
     children: dict[str, set[str]] = {}
@@ -189,14 +214,15 @@ def check(root: Path, project: dict, until: str | None = None) -> tuple[list[dic
         for nid, n in sorted(nodes.items()):
             if n["stage"] == "input" and n["kind"] == "needs" and not covered_in(nid, "sys-req"):
                 issues.append(gate_result.issue("TR-UNCOVERED", f"need {nid} is not covered by any system requirement", nid))
-    if "sw-req" in present and "sys-req" in present:
-        for it in present["sys-req"]:
-            alloc = (it.get("attributes") or {}).get("allocation")
-            if alloc is not None and "software" not in alloc:
+    for parent, child, what in COVERAGE:
+        if parent not in present or child not in present:
+            continue
+        for it in present[parent]:
+            if not _needs_cover(parent, child, it):
                 continue
-            if not covered_in(it["id"], "sw-req"):
+            if not covered_in(it["id"], child):
                 issues.append(gate_result.issue(
-                    "TR-UNCOVERED", f"{it['id']} is allocated to software but no software requirement covers it", it["id"]))
+                    "TR-UNCOVERED", f"{it['id']} ({parent}) is not {what} any {child} item", it["id"]))
     return issues, links_out, graph
 
 
