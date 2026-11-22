@@ -246,7 +246,7 @@ from its link and reproduces the P1 demo. The impact report's numbers are reprod
 **Packaging and distribution**
 
 - **FR-001**: The deliverable MUST be one APM package, installable from a versioned link. The hackathon mandates APM.
-  Its skills MUST load in at least three agent harnesses, for example Claude Code, GitHub Copilot and Kiro.
+  Its skills MUST load in any harness that APM targets, among them Claude Code, the Codex CLI, GitHub Copilot and Kiro.
 - **FR-002**: Every AI role MUST be a versioned skill. Each skill MUST declare:
   - its V-model stage;
   - author or inspector role;
@@ -363,14 +363,20 @@ from its link and reproduces the P1 demo. The impact report's numbers are reprod
   Every number MUST link to stored run evidence.
 - **FR-027**: The submission MUST include the install link, the README, the impact evidence, a recorded demo or
   screenshots, and the legal/IP acknowledgement. The acknowledgement is completed by the submitter.
-- **FR-028**: The hackathon demonstrations MUST use cloud models as the first target, with [NEEDS CLARIFICATION: which
-  agent harness(es) and cloud model(s) are acceptable to Capgemini for the evidence and demo — e.g. Claude Code with
-  Claude, GitHub Copilot with its selectable models, Kiro?]. At least one local-model run follows as secondary evidence.
+- **FR-028**: The agent harness and the model MUST be configurable **per role**: author, inspector and release, for
+  each stage. Nothing in the package may hard-wire a provider, model or harness. A profile MAY require the author and the
+  inspector to use different model families for independence. The run records the configuration that was actually used.
+- **FR-029**: The reference test configuration for the hackathon evidence and demo is:
+  - **author:** Claude, run through the owner's Claude account in Claude Code;
+  - **inspector:** GPT, run through the owner's ChatGPT login in the Codex CLI.
+
+  These are the cloud models. No paid API key is needed. At least one local-model run follows as secondary evidence.
+  Supporting further harnesses (for example GitHub Copilot or Kiro) is a matter of configuration only.
 
 ### Key Entities
 
 - **Project configuration**: the selected standard profile, the integrity level, the input class, the enabled stages,
-  the rework limits and the declared harness/model.
+  the rework limits and the harness and model assigned to each role.
 - **Standard profile**: maps neutral integrity levels, workproduct names and rigor settings to one standard's terms and
   clause identifiers.
 - **Integrity level**: a neutral rigor tier that each profile maps to its own scale (ASIL, SIL, DAL, software safety
@@ -398,8 +404,10 @@ from its link and reproduces the P1 demo. The impact report's numbers are reprod
 
 - **SC-001**: A user new to Forge-C can install the package from its link and complete the P1 demo (needs → system
   requirements → software requirements, with gates) in under 30 minutes of hands-on time, following only the README.
-- **SC-002**: The package's skills load and run the P1 demo in at least 3 agent harnesses.
-- **SC-003**: The P1 demo completes, with recorded gate verdicts, on at least 1 cloud model and at least 1 local model.
+- **SC-002**: The package's skills load and run the P1 demo in at least 2 agent harnesses (the reference author and
+  inspector harnesses). Loading in a third harness is shown through installation evidence.
+- **SC-003**: The P1 demo completes, with recorded gate verdicts, on the reference cloud configuration (Claude author,
+  GPT inspector) and on at least 1 local-model configuration.
 - **SC-004**: In every package marked READY_FOR_OFFLINE_REVIEW, 100% of requirement items are traced in both directions.
   Any orphan or uncovered item results in BLOCKED in 100% of test cases.
 - **SC-005**: On a seeded-defect corpus of at least 20 requirement defects, the inspector plus the gates detect at least

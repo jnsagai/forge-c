@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain. FR-028 is open: which harnesses and cloud models are acceptable to Capgemini.
+- [x] No [NEEDS CLARIFICATION] markers remain. FR-028 was resolved 2026-11-22: models are configurable per role; the reference tests use a Claude author and a GPT inspector.
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Iteration 1: FR-028 needs an owner answer before `/speckit-plan`.
+- Iteration 2: all items pass.
 - Constitution Principle II amendment (ASPICE/ISO 26262 → standard profiles) must go through `/speckit-constitution` before the plan.
