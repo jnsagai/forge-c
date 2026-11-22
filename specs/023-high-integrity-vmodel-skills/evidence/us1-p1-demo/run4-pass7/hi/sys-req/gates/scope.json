@@ -1,0 +1,13 @@
+{
+  "evidence": [],
+  "exit_code": 0,
+  "gate": "scope",
+  "integrity_level": "HI-2",
+  "issues": [],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi scope (snapshot)",
+    "version": "0.1.0"
+  },
+  "verdict": "PASS"
+}

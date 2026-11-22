@@ -1,0 +1,101 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-001",
+      "checklist_item": "IQ-02",
+      "description": "SYS-SUP-022 requires the physical outputs and status signal to reach their specified levels within 50 ms of the detectable instant. SWR-OUT-003 allocates the full 50 ms to the software output write, while OP-SWR-001 assumes an unspecified output-drive delay is negligible. The allocation does not establish that the system deadline can be met.",
+      "id": "F-sw-req-set-r2-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:28:19Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SWR-001 as blocking and establish a software timing allocation that accounts for the output-drive delay.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-OUT-003"
+    },
+    {
+      "blocked_by": "OP-SWR-004",
+      "checklist_item": "IQ-06",
+      "description": "The requirement calls for the last eight fault reports even when fewer than eight exist. OP-SWR-004 leaves the response for that condition undecided, so the expected result cannot be determined after power-on or before eight reports have been recorded.",
+      "id": "F-sw-req-set-r2-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:28:19Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SWR-004 as blocking and define the response when fewer than eight reports exist.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-DIA-003"
+    },
+    {
+      "blocked_by": "OP-SWR-006",
+      "checklist_item": "IQ-06",
+      "description": "The requirement does not identify the event whose time is reported. CON-SUP-126 defines the reset reference and number format, but detection and transmission can occur at different times, so the expected timestamp cannot be determined uniquely.",
+      "id": "F-sw-req-set-r2-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:28:19Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SWR-006 and specify the event whose elapsed time is reported.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-RPT-005"
+    },
+    {
+      "checklist_item": "SQ-02",
+      "description": "SWR-SAF-007 retains elapsed fault-free operation time, but SWR-SAF-009 requires updating the retained values only at fault detection. The set does not require elapsed time to advance during fault-free operation. Its rationale also resets the time at each detection, although SWR-SAF-002 refers to time since the first detection. These gaps prevent reliable application of the repeated-fault rule across resets.",
+      "id": "F-sw-req-set-r2-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:28:19Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify how fault-free operation time is updated and how the 60-second condition is evaluated across detections and resets, consistently with SYS-SUP-028.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 2,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

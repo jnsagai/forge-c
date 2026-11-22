@@ -1,0 +1,172 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-03",
+      "description": "The requirement demands a fault at the instant the limit expires if the task has not started, but also accepts a start at that instant. It does not define how simultaneous expiry and start are resolved. CON-SUP-127 accepts equality.",
+      "id": "F-sys-req-item-r11-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the ordering or boundary rule so that a start at the limit is accepted and the fault decision is unambiguous.",
+      "round": 11,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement demands detection at the expiry instant, while CON-SUP-127 permits detection up to 100 µs after expiry because of measurement resolution. The allowance appears only in the rationale, not the obligation.",
+      "id": "F-sys-req-item-r11-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the permitted detection window in the requirement, consistent with CON-SUP-127.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "The requirement demands a fault at the instant the limit expires if execution has not completed, but also accepts completion at that instant. It does not define how simultaneous expiry and completion are resolved. CON-SUP-127 accepts equality.",
+      "id": "F-sys-req-item-r11-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the ordering or boundary rule so that completion at the limit is accepted and the fault decision is unambiguous.",
+      "round": 11,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-004"
+    },
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement demands detection at the expiry instant, while CON-SUP-127 permits detection up to 100 µs after expiry because of measurement resolution. The allowance appears only in the rationale, not the obligation.",
+      "id": "F-sys-req-item-r11-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the permitted detection window in the requirement, consistent with CON-SUP-127.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-004"
+    },
+    {
+      "checklist_item": "IQ-06",
+      "description": "CON-SUP-124 specifies CRC-32 by reference to the polynomial in CON-SUP-107, but neither source nor the requirement defines the remaining CRC parameters, such as initialization, reflection and final XOR, or the reference-byte ordering. Different computations can produce different results for the same image.",
+      "id": "F-sys-req-item-r11-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain and record the missing CRC and reference encoding parameters as a blocking decision, then specify or reference them so a verifier can determine the expected result.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-014"
+    },
+    {
+      "checklist_item": "IQ-06",
+      "description": "The run-time comparison specifies a CRC-32 polynomial and a four-byte reference, but CON-SUP-124 and the requirement do not define initialization, reflection, final XOR or reference-byte ordering. A verifier cannot determine a unique expected comparison result.",
+      "id": "F-sys-req-item-r11-006",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain and record the missing CRC and reference encoding parameters as a blocking decision, then specify or reference them for the run-time check.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-019"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "CON-SUP-125 supplies the four allowed state labels, but the requirement does not define the conditions under which STARTUP, OPERATIONAL, SAFE or LATCHED is returned. Different implementations can return different allowed labels for the same controller condition.",
+      "id": "F-sys-req-item-r11-007",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:12:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define or reference the controller conditions represented by each status value, obtaining a product decision where the inputs do not determine them.",
+      "round": 11,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-033"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-003",
+    "SYS-SUP-004",
+    "SYS-SUP-008",
+    "SYS-SUP-014",
+    "SYS-SUP-019",
+    "SYS-SUP-033",
+    "SYS-SUP-050"
+  ],
+  "phase": "item",
+  "round": 11,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

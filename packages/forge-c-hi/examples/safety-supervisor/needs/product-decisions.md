@@ -72,3 +72,9 @@ decides them.
 | CON-SUP-133 | Of the 50 ms reaction time (CON-SUP-105), the output stage on the board takes at most 1 ms from the pin change to the output level; software must have changed the pins within 49 ms of the detectable instant. |
 | CON-SUP-134 | `GET FAULTS` returns the fault reports held, oldest first, at most 8, one per line, followed by a line `END`; with none held it returns only `END`. |
 | CON-SUP-135 | The 60 s of fault-free operation in CON-SUP-110 and CON-SUP-117 count only time in the `OPERATIONAL` state; time in reset, start-up or the safe state does not count. |
+
+**Eighth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-136 | The fault-free operating time of CON-SUP-135 may **under-count** by at most 10 ms per reset (time since its last update may be lost at an unannounced reset) and by at most 100 µs per update from measurement resolution; it must never over-count. An under-count only makes the latch of CON-SUP-117 more conservative and is accepted. |

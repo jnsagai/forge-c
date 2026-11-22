@@ -53,3 +53,5 @@
 - **Seventh round:** `CON-SUP-131..135` answer the software-level questions of run 4 pass 6 (timestamp event, outputs
   before software start-up, split of the 50 ms, GET FAULTS framing, what counts as fault-free time). Same status:
   fictional, by Claude.
+- **Eighth round:** `CON-SUP-136` (allowed error of the fault-free time used for the latch). Same status: fictional,
+  by Claude.

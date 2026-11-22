@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-req": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-req-set-r5-001', 'F-sw-req-set-r5-002'] blocking open points ['OP-SWR-009']",
+      "run_id": "r20261122T234015Z-cfcb41",
+      "state": "blocked",
+      "utc": "2026-11-22T23:45:47Z",
+      "wp_sha256": "d0dc380dd18efd7ec4f21b51129ca837b5d8153c5a7fd05a2bf6d0ee3e40afe0"
+    },
+    "sys-req": {
+      "gates": {
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261122T234015Z-cfcb41",
+      "state": "accepted",
+      "utc": "2026-11-22T23:41:23Z",
+      "wp_sha256": "7d17931d9ccb141f5d718044ea9c029f025a0d6c60cbcf87b25d648d518071da"
+    }
+  }
+}

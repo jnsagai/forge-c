@@ -1,0 +1,57 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-008",
+      "checklist_item": "IQ-02",
+      "description": "OP-SWR-008 acknowledges that a watchdog reset can discard operational time since the last update. This can cause a latch after 60 s of fault-free operation, contrary to SYS-SUP-028. Acceptability of that deviation requires a decision at this stage, so deferring it to software architecture hides a decision needed for a correct requirement.",
+      "id": "F-sw-req-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:44:32Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234015Z-cfcb41",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-008 as blocking",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    },
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement specifies 100 µs resolution and its rationale accepts unresolved fractions for the 60 s decision. CON-SUP-103 specifies that resolution for task start and execution measurements; it does not authorize rounding or loss of elapsed operational time for the threshold in SYS-SUP-028. Quantization can change the latch decision near 60 s.",
+      "id": "F-sw-req-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:44:32Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234015Z-cfcb41",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Remove the unsupported acceptance of quantization error or record a blocking open point for an authorized timing tolerance and apply the resulting decision to the requirement.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    }
+  ],
+  "judged": [
+    "SWR-SAF-011"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

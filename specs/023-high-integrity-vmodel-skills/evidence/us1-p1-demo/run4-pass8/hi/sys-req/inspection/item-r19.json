@@ -1,0 +1,14 @@
+{
+  "dropped": 0,
+  "findings": [],
+  "judged": [
+    "SYS-SUP-054",
+    "SYS-SUP-055",
+    "SYS-SUP-056",
+    "SYS-SUP-057"
+  ],
+  "phase": "item",
+  "round": 19,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

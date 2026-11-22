@@ -1,0 +1,32 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-113 requires GET FAULTS to return the last 8 fault reports, and CON-SUP-134 specifies their order and terminator. SYS-SUP-029 requires fault history to survive software and watchdog resets, but SYS-SUP-034 returns only the reports held, at most 8. The set does not require the most recent 8 reports to be retained.",
+      "id": "F-sys-req-set-r14-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:40:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234015Z-cfcb41",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Require retention of the most recent 8 fault reports, or all reports when fewer than 8 exist, so GET FAULTS can return them.",
+      "round": 14,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 14,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}
