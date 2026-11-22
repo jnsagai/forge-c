@@ -1,0 +1,147 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-002",
+      "checklist_item": "IQ-02",
+      "description": "SYS-SUP-020 requires both control outputs and the status signal to remain low from any reset. SWR-OUT-001 covers only the period from the start of software start-up; OP-SWR-002 leaves the preceding hardware-controlled interval unspecified.",
+      "id": "F-sw-req-set-r4-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-002 as blocking",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-OUT-001"
+    },
+    {
+      "blocked_by": "OP-SWR-001",
+      "checklist_item": "IQ-02",
+      "description": "SYS-SUP-022 requires the physical outputs and status signal to reach the specified levels within 50 ms of the detectable instant. SWR-OUT-003 allocates the full 50 ms to the software output write, while OP-SWR-001 assumes an unspecified output-drive delay is negligible.",
+      "id": "F-sw-req-set-r4-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-001 as blocking",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-OUT-003"
+    },
+    {
+      "blocked_by": "OP-SWR-004",
+      "checklist_item": "IQ-06",
+      "description": "SWR-DIA-003 calls for the last eight fault reports even when fewer than eight exist. OP-SWR-004 leaves the response for that condition undecided, so the expected result cannot be determined after power-on or before eight reports have been recorded.",
+      "id": "F-sw-req-set-r4-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-004 as blocking",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-DIA-003"
+    },
+    {
+      "blocked_by": "OP-SWR-006",
+      "checklist_item": "IQ-06",
+      "description": "SWR-RPT-005 does not identify the event whose time is reported. CON-SUP-126 defines the reset reference and number format, but detection and transmission can occur at different times, so the expected timestamp cannot be determined uniquely.",
+      "id": "F-sw-req-set-r4-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the event to timestamp through OP-SWR-006 and specify it in the requirement.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-RPT-005"
+    },
+    {
+      "checklist_item": "SQ-02",
+      "description": "SWR-SAF-011 adds a full 10 ms at the end of a control cycle whenever start-up checks have passed in that cycle, even if they passed partway through it. Across resets this can count time before fault-free operation began and expire the sequence before the 60 seconds required by SYS-SUP-028.",
+      "id": "F-sw-req-set-r4-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define how elapsed fault-free operation is measured across partial start-up cycles so that the sequence cannot expire before 60 seconds of fault-free operation.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "blocked_by": "OP-SWR-007",
+      "checklist_item": "SQ-02",
+      "description": "OP-SWR-007 says the inputs do not decide whether reset time counts toward the 60 seconds in SYS-SUP-028, but SWR-SAF-007 and SWR-SAF-011 exclude that time. If reset time counts, the retained elapsed time and resulting latch decision can disagree with the system requirement.",
+      "id": "F-sw-req-set-r4-006",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:32:08Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-007 as blocking",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-007"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

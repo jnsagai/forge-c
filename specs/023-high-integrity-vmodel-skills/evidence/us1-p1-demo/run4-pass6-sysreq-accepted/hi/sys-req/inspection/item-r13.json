@@ -1,0 +1,58 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-015",
+      "checklist_item": "IQ-02",
+      "description": "CON-SUP-125 lists the state labels but does not define their transition rules. SYS-SUP-051 nevertheless selects STARTUP or OPERATIONAL between fault detection and safe-state entry, including during a start-up fault and after a code 8 report. Its rationale and blocking OP-SYS-015 identify these cases as undecided.",
+      "id": "F-sys-req-item-r13-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:15:49Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-015 with a product decision and align the state-selection conditions with that decision; until then, avoid prescribing the undecided outcomes.",
+      "round": 13,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-051"
+    },
+    {
+      "blocked_by": "OP-SYS-015",
+      "checklist_item": "IQ-03",
+      "description": "SAFE applies from completion of safe-state entry until reset, while LATCHED applies while the safe state is latched. After a latch-triggering fault under SYS-SUP-028 or SYS-SUP-043 and completion of safe-state entry, both conditions apply until reset, so the required state value is not uniquely determined.",
+      "id": "F-sys-req-item-r13-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:15:49Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define mutually exclusive state conditions or an explicit precedence for SAFE and LATCHED, supported by the product decision on state transitions.",
+      "round": 13,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-051"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-051"
+  ],
+  "phase": "item",
+  "round": 13,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

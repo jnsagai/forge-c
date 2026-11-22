@@ -62,3 +62,13 @@ decides them.
 |---|---|
 | CON-SUP-129 | The CRC-32 of CON-SUP-107 and CON-SUP-124 is CRC-32/MPEG-2: polynomial 0x04C11DB7, initial value 0xFFFFFFFF, no input or output reflection, no final XOR, computed over the bytes in increasing address order. Each stored reference is a 32-bit little-endian word. |
 | CON-SUP-130 | Status states: `STARTUP` from any reset until the start-up checks pass; `OPERATIONAL` while supervising with no fault; `SAFE` from the instant a fault is detected (during start-up or operation) until the next reset; `LATCHED` while the latch of CON-SUP-117 is set (it overrides the others). A code 8 report at start-up is a report only: it counts as a detection of code 8 for CON-SUP-117 but does not by itself enter the safe state, and start-up continues. |
+
+**Seventh round.** Software-level questions raised while deriving the software requirements.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-131 | `<ms since start>` in a fault report is the time of **detection** of the fault (the instant its rule fires, CON-SUP-105), not of transmission. |
+| CON-SUP-132 | From any reset until software configures them, the two control outputs and the status signal are held low by external pull-down resistors on the board; the microcontroller pins are inputs in that interval. Software configures them as outputs driven low before any other start-up step. |
+| CON-SUP-133 | Of the 50 ms reaction time (CON-SUP-105), the output stage on the board takes at most 1 ms from the pin change to the output level; software must have changed the pins within 49 ms of the detectable instant. |
+| CON-SUP-134 | `GET FAULTS` returns the fault reports held, oldest first, at most 8, one per line, followed by a line `END`; with none held it returns only `END`. |
+| CON-SUP-135 | The 60 s of fault-free operation in CON-SUP-110 and CON-SUP-117 count only time in the `OPERATIONAL` state; time in reset, start-up or the safe state does not count. |

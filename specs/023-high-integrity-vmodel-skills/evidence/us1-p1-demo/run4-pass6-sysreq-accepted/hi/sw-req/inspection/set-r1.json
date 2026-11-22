@@ -1,0 +1,123 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-001",
+      "checklist_item": "IQ-02",
+      "description": "SYS-SUP-022 requires the physical outputs and status signal to reach their specified levels within 50 ms of the detectable instant. SWR-OUT-003 allocates the full 50 ms to the software output write, while OP-SWR-001 assumes an unspecified output-drive delay is negligible. The allocation therefore does not establish that the system deadline can be met.",
+      "id": "F-sw-req-set-r1-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:26:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SWR-001 as blocking and establish a supported software and hardware timing allocation.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-OUT-003"
+    },
+    {
+      "blocked_by": "OP-SWR-004",
+      "checklist_item": "IQ-06",
+      "description": "The requirement calls for the last eight fault reports even when fewer than eight exist. OP-SWR-004 leaves the response for that condition undecided, so the required result cannot be determined after power-on or before eight reports have been recorded.",
+      "id": "F-sw-req-set-r1-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:26:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SWR-004 as blocking.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-DIA-003"
+    },
+    {
+      "blocked_by": "OP-SWR-006",
+      "checklist_item": "IQ-06",
+      "description": "The requirement does not identify the event whose time is reported. CON-SUP-126 defines the reset reference and number format, but detection and transmission can occur at different times, so the expected timestamp cannot be determined uniquely.",
+      "id": "F-sw-req-set-r1-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:26:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the decision recorded in OP-SWR-006 and specify the event whose elapsed time is reported.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-RPT-005"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "SWR-DIA-003 requires retrieval of the last eight fault reports and SWR-SAF-004 requires retained fault history, but the set does not require reports to be added to that history. Retaining an unchanged history would satisfy SWR-SAF-004 without providing the reports required by SYS-SUP-034.",
+      "id": "F-sw-req-set-r1-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:26:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify how fault reports enter the retained history so the last available reports can be retrieved.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-02",
+      "description": "SWR-SAF-002 requires recognition of three consecutive detections of the same code without 60 seconds of fault-free operation, including detections across resets. SWR-SAF-004 retains the latch, history and fault count but the set does not specify preservation of the consecutive-detection and elapsed fault-free information needed to apply that rule across resets.",
+      "id": "F-sw-req-set-r1-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:26:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the retained information and reset handling needed to evaluate the repeated-fault rule across software and watchdog resets.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 1,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

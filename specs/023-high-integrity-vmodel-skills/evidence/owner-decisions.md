@@ -50,3 +50,6 @@
   product owner decides them. Same status: fictional, by Claude.
 - **Sixth round:** `CON-SUP-129..130` complete the fifth round (CRC-32 parameters; status-state rules). Same status:
   fictional, by Claude.
+- **Seventh round:** `CON-SUP-131..135` answer the software-level questions of run 4 pass 6 (timestamp event, outputs
+  before software start-up, split of the 50 ms, GET FAULTS framing, what counts as fault-free time). Same status:
+  fictional, by Claude.
