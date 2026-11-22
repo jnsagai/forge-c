@@ -358,7 +358,7 @@ def floor(projects: list[tuple[str, Path]], now: float | None = None) -> dict:
         "supervisor": {"available": False, "reason": "NO_SUPERVISOR_ON_THIS_LINE"},
         "monitor": {"available": False, "reason": "SOURCE_MONITOR_NOT_REPORTED"},
         "owner_lane": {"available": False, "reason": "NO_LINE_QUEUE"},
-        "cre": {"available": False}, "deployer": {"available": False, "reason": "NO_DEPLOYER_ON_THIS_FLOOR"},
+        "cre": {"available": True, "capas": [], "decisions": [], "history": []},  # no CRE on this line; keeps the relay from adding the factory's "deployer": {"available": False, "reason": "NO_DEPLOYER_ON_THIS_FLOOR"},
         "shift_start": day,
         "kpis": {
             "on_floor": len(live), "completed": sum(1 for r in runs if r.state == "DONE"), "orders": len(runs),

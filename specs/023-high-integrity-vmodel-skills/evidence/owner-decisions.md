@@ -21,3 +21,13 @@
   and prior driver work. It exercises both input classes (natural-language needs for the middleware, the reference
   manual RM0486 by section/page for the drivers) and gives measurable fault-injection evidence.
 - **Effect:** the `watchdog-manager` demo is renamed `safety-supervisor` (T040, T052, T068). No task added or removed.
+
+## 2026-11-22: reference test models and floor view
+
+- **Decision:** the reference test configuration uses **Claude Sonnet** (`claude -p --model sonnet`, owner account,
+  reported as `claude-sonnet-5-5`) as author and **GPT-6.1 Terra** (`codex exec -m gpt-6.1-terra`, ChatGPT login) as
+  inspector. Owner chat: "for claude use sonnet and for gpt use Terra".
+- **Effect:** runs 1 and 2 used the account defaults (Claude Opus 5.5, GPT-6.2-Sol); from run 3 on, the example
+  configuration pins Sonnet and Terra. Evidence and the impact report name the models per run.
+- **Floor:** owner asked to see the runs on the factory floor (:8788). `tools/hi_floor_line.py` serves the conductor
+  records read-only as the "Hackathon" line.

@@ -97,7 +97,7 @@ deliberately loose, as real ones are.
 HI=".claude/skills/hi-gates/scripts/hi.py"
 EX="apm_modules/jnsagai/forge-c/packages/forge-c-hi/examples/safety-supervisor"
 cp -r "$EX/needs" .
-python3 $HI init --from "$EX/hi-project.example.json"          # generic profile, HI-2, Claude author, Codex inspector
+python3 $HI init --from "$EX/hi-project.example.json"          # generic profile, HI-2, Claude Sonnet author, GPT-6.1 Terra inspector
 python3 .claude/skills/hi-conductor/scripts/conduct.py --stage sys-req --until sw-req
 python3 $HI status
 python3 $HI seal                                                # READY_FOR_OFFLINE_REVIEW or BLOCKED with gaps
@@ -123,8 +123,8 @@ Any harness and model, chosen per role in `.hi/project.json`; the presets are:
 
 | Preset | Runs | Tested |
 |---|---|---|
-| `claude-code` | Claude through Claude Code (`claude -p`) with your account | yes, as author (reference) |
-| `codex` | GPT through Codex CLI (`codex exec`, read-only sandbox for the inspector) with your ChatGPT login | yes, as inspector (reference) |
+| `claude-code` | Claude through Claude Code (`claude -p`) with your account | yes, as author (reference: `--model sonnet`) |
+| `codex` | GPT through Codex CLI (`codex exec`, read-only sandbox for the inspector) with your ChatGPT login | yes, as inspector (reference: `-m gpt-6.1-terra`) |
 | `codex-oss-ollama` | a local model through Codex with Ollama (`--oss --local-provider ollama`) | see the evidence index |
 | `manual` | you, in assisted mode | |
 

@@ -17,6 +17,10 @@
     {
       "path": "needs/constraints.md",
       "kind": "constraints"
+    },
+    {
+      "path": "needs/product-decisions.md",
+      "kind": "constraints"
     }
   ],
   "roles": {
@@ -28,9 +32,11 @@
         "--permission-mode",
         "acceptEdits",
         "--allowedTools",
-        "Read,Grep,Glob,Write,Edit"
+        "Read,Grep,Glob,Write,Edit",
+        "--model",
+        "sonnet"
       ],
-      "model": null,
+      "model": "sonnet",
       "model_family": "claude",
       "read_only": false
     },
@@ -41,9 +47,11 @@
         "exec",
         "-s",
         "read-only",
-        "--skip-git-repo-check"
+        "--skip-git-repo-check",
+        "-m",
+        "gpt-6.1-terra"
       ],
-      "model": null,
+      "model": "gpt-6.1-terra",
       "model_family": "gpt",
       "read_only": true
     }

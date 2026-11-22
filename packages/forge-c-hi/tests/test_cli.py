@@ -45,7 +45,10 @@ def test_init_from_example_and_profiles(tmp_project):
     shutil.copytree(ex / "needs", tmp_project / "needs")
     code, out = hi(tmp_project, "init", "--from", str(ex / "hi-project.example.json"))
     assert code == 0, out
-    assert out["project"] == "safety-supervisor" and out["inputs"] == 2
+    assert out["project"] == "safety-supervisor" and out["inputs"] == 3
+    roles = json.loads((tmp_project / ".hi/project.json").read_text())["roles"]
+    assert roles["author"]["command"][-2:] == ["--model", "sonnet"]  # reference test models (owner 2026-11-22)
+    assert roles["inspector"]["command"][-2:] == ["-m", "gpt-6.1-terra"] and roles["inspector"]["read_only"]
     code, out = hi(tmp_project, "init", "--from", str(ex / "hi-project.example.json"), "--profile", "iso26262", "--force")
     assert code == 0 and out["level_name"] == "ASIL B"
     code, out = hi(tmp_project, "init", "--level", "HI-0", "--profile", "iec61508", "--input",
