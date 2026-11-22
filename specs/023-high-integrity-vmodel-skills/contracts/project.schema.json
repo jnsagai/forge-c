@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/project",
+  "title": "ProjectConfig (.hi/project.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "project_id",
+    "profile",
+    "integrity_level",
+    "input_class",
+    "entry_stage",
+    "inputs",
+    "roles"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c-hi/project@1"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{3,64}$"
+    },
+    "profile": {
+      "type": "string",
+      "default": "generic"
+    },
+    "integrity_level": {
+      "type": "string",
+      "pattern": "^HI-[0-4]$"
+    },
+    "input_class": {
+      "enum": [
+        "natural_language",
+        "reference_document"
+      ]
+    },
+    "entry_stage": {
+      "type": "string",
+      "enum": [
+        "sys-req",
+        "sys-arch",
+        "sw-req",
+        "sw-arch",
+        "sw-design",
+        "unit-verif",
+        "sw-integ",
+        "sw-qual",
+        "sys-integ",
+        "sys-qual"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "sys-req",
+          "sys-arch",
+          "sw-req",
+          "sw-arch",
+          "sw-design",
+          "unit-verif",
+          "sw-integ",
+          "sw-qual",
+          "sys-integ",
+          "sys-qual"
+        ]
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "kind"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "needs",
+              "reference_document",
+              "reference_model",
+              "constraints"
+            ]
+          },
+          "doc_id": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "project_path",
+          "level"
+        ],
+        "properties": {
+          "project_path": {
+            "type": "string"
+          },
+          "level": {
+            "enum": [
+              "driver_interface",
+              "software",
+              "system"
+            ]
+          }
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "required": [
+        "author",
+        "inspector"
+      ],
+      "properties": {
+        "author": {
+          "type": "object",
+          "required": [
+            "harness",
+            "command"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "harness": {
+              "enum": [
+                "claude-code",
+                "codex",
+                "copilot",
+                "kiro",
+                "manual",
+                "custom"
+              ]
+            },
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "model_family": {
+              "type": "string"
+            },
+            "read_only": {
+              "type": "boolean"
+            }
+          }
+        },
+        "inspector": {
+          "type": "object",
+          "required": [
+            "harness",
+            "command"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "harness": {
+              "enum": [
+                "claude-code",
+                "codex",
+                "copilot",
+                "kiro",
+                "manual",
+                "custom"
+              ]
+            },
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "model_family": {
+              "type": "string"
+            },
+            "read_only": {
+              "type": "boolean"
+            }
+          }
+        },
+        "release": {
+          "type": "object",
+          "required": [
+            "harness",
+            "command"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "harness": {
+              "enum": [
+                "claude-code",
+                "codex",
+                "copilot",
+                "kiro",
+                "manual",
+                "custom"
+              ]
+            },
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "model_family": {
+              "type": "string"
+            },
+            "read_only": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "rework_limit": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trace_capture": {
+      "type": "object",
+      "properties": {
+        "raw_prompts": {
+          "type": "boolean",
+          "default": false
+        },
+        "events": {
+          "enum": [
+            "minimal",
+            "standard",
+            "verbose"
+          ]
+        }
+      }
+    }
+  }
+}

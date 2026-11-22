@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/finding",
+  "title": "Inspection finding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "phase",
+    "checklist_item",
+    "target_id",
+    "severity",
+    "description",
+    "round",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "item",
+        "set"
+      ]
+    },
+    "checklist_item": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{2}$"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "blocking",
+        "major",
+        "minor"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 600
+    },
+    "requested_change": {
+      "type": "string",
+      "maxLength": 600
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "open",
+        "resolved",
+        "carried",
+        "rejected-with-rationale"
+      ]
+    },
+    "raised_by": {
+      "type": "object",
+      "required": [
+        "role",
+        "skill",
+        "skill_version",
+        "harness",
+        "input_hashes",
+        "created_utc",
+        "run_id"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "author",
+            "inspector",
+            "release",
+            "intake",
+            "gate"
+          ]
+        },
+        "skill": {
+          "type": "string"
+        },
+        "skill_version": {
+          "type": "string"
+        },
+        "harness": {
+          "type": "string"
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_hashes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "created_utc": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
