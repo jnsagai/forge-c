@@ -218,6 +218,22 @@ def seal(root: Path) -> tuple[int, dict]:
         "gaps": len(res["gaps"]), "top": [{"code": g["code"], "source": g["source"]} for g in res["gaps"][:8]]}
 
 
+def doc_index(root: Path, pdf: str, doc_id: str) -> tuple[int, dict]:
+    from . import doc_index as _di
+    project = load_project(root)
+    rigor = effective_rigor(project)
+    path = Path(pdf) if Path(pdf).is_absolute() else Path(root) / pdf
+    res = _di.build(root, path, doc_id, profile=rigor["profile"], integrity_level=rigor["level"])
+    payload = {"cmd": "doc-index", "doc_id": doc_id, "verdict": res["verdict"],
+               "top": [{"code": i["code"]} for i in res["issues"][:5]]}
+    if res.get("not_run_reason"):
+        payload["not_run_reason"] = res["not_run_reason"]
+    if res["evidence"]:
+        idx = _di.load(root, doc_id)
+        payload.update(written=res["evidence"][0]["path"], pages=idx["pages"], sections=len(idx["sections"]))
+    return (0 if res["verdict"] == "PASS" else 1), payload
+
+
 def not_available(cmd: str, task: str) -> tuple[int, dict]:
     return 1, {"cmd": cmd, "verdict": "NOT_RUN", "not_run_reason": f"'{cmd}' is not available in forge-c-hi "
                f"{__version__} yet ({task})"}

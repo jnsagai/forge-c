@@ -79,7 +79,7 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
                         from_file=args.from_file, force=args.force,
                         stages_list=args.stages.split(",") if args.stages else None)
     if c == "doc-index":
-        return api.not_available("doc-index", "US2, T047-T049")
+        return api.doc_index(root, args.pdf, args.doc_id)
     if c == "validate":
         return api.validate(root, args.file)
     if c == "quality":

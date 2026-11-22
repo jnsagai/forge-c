@@ -41,7 +41,7 @@ TOOLS = {
     "hi_doc_index": (
         "Section/page outline of a reference document you supply (never redistributed).",
         _obj({"pdf": {"type": "string"}, "doc_id": {"type": "string"}}, ["pdf", "doc_id"]),
-        lambda r, a: api.not_available("doc-index", "US2, T047-T049"),
+        lambda r, a: api.doc_index(r, a["pdf"], a["doc_id"]),
     ),
     "hi_validate": (
         "Schema and envelope check of one workproduct file.",

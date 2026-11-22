@@ -130,3 +130,50 @@ def test_gate_result_validates_against_contract(tmp_project):
     for f in ("hi/sw-req/gates/trace.json",):
         assert validate(json.loads((tmp_project / f).read_text()), schema("gate-result")) == []
     assert validate(json.loads((tmp_project / "hi/trace.json").read_text()), schema("trace")) == []
+
+
+def drv_project(root):
+    drv = req("DRV-IWDG-001", "The driver shall start the watchdog counter when started with a valid configuration.",
+              [{"kind": "document", "doc_id": "RM0486", "section": "59.3", "page": 2981}])
+    make_project(root, swr_items=[drv], stages=("sw-req",), input_class="reference_document")
+    return root
+
+
+def test_linked_driver_requirements_resolve_as_interfaces(tmp_path):
+    drv_project(tmp_path / "iwdg-driver")
+    app = tmp_path / "app"
+    uses = req("SWR-SUP-003", "The supervisor shall start the independent watchdog during start-up.",
+               ["SYS-SUP-001", "DRV-IWDG-001"])
+    make_project(app, sys_items=SYS_ITEMS, swr_items=SWR_ITEMS + [uses],
+                 links=[{"project_path": "../iwdg-driver", "level": "driver_interface"}])
+    doc = trace.run(app, "sw-req")
+    assert doc["verdict"] == "PASS", doc["issues"]
+    links = {(l["from"], l["to"]): l["type"] for l in json.loads((app / "hi/trace.json").read_text())["links"]}
+    assert links[("DRV-IWDG-001", "SWR-SUP-003")] == "interfaces"
+    assert "DRV-IWDG-001" in (app / "hi/trace-matrix.md").read_text()
+
+
+def test_linked_project_missing_or_item_unknown_fails(tmp_path):
+    app = tmp_path / "app"
+    uses = req("SWR-SUP-003", "The supervisor shall start the independent watchdog during start-up.",
+               ["SYS-SUP-001", "DRV-IWDG-009"])
+    make_project(app, sys_items=SYS_ITEMS, swr_items=SWR_ITEMS + [uses],
+                 links=[{"project_path": "../iwdg-driver", "level": "driver_interface"}])
+    assert {"TR-LINK-MISSING", "TR-DANGLING"} <= set(codes(trace.run(app, "sw-req")))
+    drv_project(tmp_path / "iwdg-driver")
+    assert codes(trace.run(app, "sw-req")) == ["TR-DANGLING"]
+
+
+def test_linked_driver_change_makes_link_suspect(tmp_path):
+    drv_root = drv_project(tmp_path / "iwdg-driver")
+    app = tmp_path / "app"
+    uses = req("SWR-SUP-003", "The supervisor shall start the independent watchdog during start-up.",
+               ["SYS-SUP-001", "DRV-IWDG-001"])
+    make_project(app, sys_items=SYS_ITEMS, swr_items=SWR_ITEMS + [uses],
+                 links=[{"project_path": "../iwdg-driver", "level": "driver_interface"}])
+    trace.rebaseline(app, "sw-req")
+    doc = json.loads((drv_root / "hi/sw-req/requirements.json").read_text())
+    doc["items"][0]["text"] = "The driver shall start the watchdog counter within 1 ms of the start call."
+    write(drv_root / "hi/sw-req/requirements.json", doc)
+    res = trace.run(app, "sw-req")
+    assert [i["target_id"] for i in res["issues"] if i["code"] == "TR-SUSPECT"] == ["SWR-SUP-003"]

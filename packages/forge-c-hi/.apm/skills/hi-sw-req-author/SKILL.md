@@ -51,6 +51,25 @@ citing its system requirements as `{"kind": "upstream", "id": "SYS-..."}`. Copy 
    units on numbers, no ambiguous terms (`hi-gates/references/ambiguous-terms.json`), a verification method, stable
    unique ids.
 
+## Driver mode (reference documents)
+
+When the project's `input_class` is `reference_document` (entry stage `sw-req`), you write **driver interface
+requirements** for a HAL or low-level driver directly from a reference manual, datasheet or reference model, without
+system requirements above them (out of context).
+
+- Ids `DRV-<PERIPHERAL>-<NNN>` (e.g. `DRV-IWDG-001`), `"level": "driver_interface"`.
+- Every statement about the hardware (registers, bits, keys, reset values, clocking, timing, ordering constraints,
+  status flags) cites the document: `{"kind": "document", "doc_id": "<id from the project inputs>", "section": "<number>",
+  "page": <page>}`. Take section numbers and pages from the local outline `.hi/docs/<doc_id>.index.json` (built by
+  `hi doc-index`); the `doc-sources` gate checks that the page lies inside the cited section.
+- No hardware fact without a source. If the document does not say it, or you cannot find where, write an open point;
+  never fill it in from memory of similar devices.
+- Describe the driver's obligations in your own words. **Never quote** the document: no sentences, tables or register
+  descriptions copied from it. Cite where the fact is.
+- Constraints of the driver task (scope file with `CON-*` ids) may be cited as upstream sources.
+- Middleware projects can link to these requirements (`links` in their project); their software requirements then cite
+  `DRV-*` ids and the link type becomes `interfaces`.
+
 ## Open points
 
 `OP-SWR-<NNN>` for anything the system requirements leave undecided at software level (a missing time split, an

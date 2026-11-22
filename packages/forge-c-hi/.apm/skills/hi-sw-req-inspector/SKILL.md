@@ -32,3 +32,16 @@ with these software-level questions in mind:
 
 Read `hi/sys-req/requirements.json`, the constraints, the workproduct, the checklists and the `hi-task` block. Judge
 only the listed items in an item round. Reply with exactly one JSON object `{"status": "DONE", "findings": [...]}`.
+
+## Driver mode (reference documents)
+
+For `DRV-*` items written from a reference document:
+
+- **IQ-02 source-faithful (blocking when wrong):** open the cited document at the cited section and page and check
+  that it supports the requirement: register and bit names, key values, reset values, clocking and timing,
+  sequencing. A citation that points somewhere that does not support the claim is a finding even if the claim is true.
+- **Uncited hardware facts** are findings (IQ-12 attributable). A fact the document does not state must be an open
+  point, not a requirement.
+- **No quoted text:** report any sentence or table copied from the document (hi-core rule 6).
+- Your findings describe the mismatch in your own words and cite section and page; do not quote the document either.
+

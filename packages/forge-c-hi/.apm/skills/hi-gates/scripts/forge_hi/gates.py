@@ -8,9 +8,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from . import gate_result, quality, scope, trace
+from . import doc_index, gate_result, quality, scope, trace
 from .config import REFS, effective_rigor, load_project, schema, stages
-from .io import read_json
+from .io import read_json, sha256_file
 from .jsonschema_lite import validate as schema_validate
 
 SCHEMA_ID = re.compile(r"^forge-c-hi/([a-z0-9-]+)@1$")
@@ -91,19 +91,18 @@ def doc_sources(root: Path, stage: str, *, write: bool = True) -> dict:
             if did not in declared:
                 issues.append(gate_result.issue("DOC-UNKNOWN", f"{it['id']} cites undeclared document {did}", it["id"]))
                 continue
-            idx_path = root / ".hi" / "docs" / f"{did}.index.json"
-            if not idx_path.is_file():
+            idx = doc_index.load(root, did)
+            if idx is None:
                 unindexed.add(did)
                 continue
-            idx = read_json(idx_path)
-            pages = int(idx.get("pages", 0))
-            if not 1 <= int(src.get("page", 0)) <= pages:
-                issues.append(gate_result.issue(
-                    "DOC-PAGE", f"{it['id']} cites {did} page {src.get('page')}, outside 1..{pages}", it["id"]))
-            sections = {s.get("section"): s for s in idx.get("sections", [])}
-            if src.get("section") not in sections:
-                issues.append(gate_result.issue(
-                    "DOC-SECTION", f"{it['id']} cites {did} section {src.get('section')}, not in the index", it["id"]))
+            src_path = root / declared[did]["path"]
+            if src_path.is_file() and idx.get("source_sha256") != sha256_file(src_path):
+                issues.append(gate_result.issue("DOC-STALE-INDEX", f"the index of {did} was built from another file; "
+                                                "rerun 'hi doc-index'", it["id"]))
+                continue
+            why = doc_index.resolve(idx, str(src.get("section")), int(src.get("page", 0)))
+            if why:
+                issues.append(gate_result.issue("DOC-UNRESOLVED", f"{it['id']} cites {did}: {why}", it["id"]))
     if unindexed and not issues:
         res = gate_result.result("doc-sources", [], not_run_reason=(
             f"no local index for {', '.join(sorted(unindexed))}; run 'hi doc-index'"), **common)

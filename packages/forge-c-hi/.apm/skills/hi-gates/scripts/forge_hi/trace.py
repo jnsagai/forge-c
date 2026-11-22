@@ -20,7 +20,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from . import gate_result
+from . import doc_index, gate_result
 from .config import effective_rigor, load_project, stage_order, stages
 from .io import canonical, read_json, sha256_bytes, write_json, write_text
 
@@ -80,10 +80,32 @@ def checked_stages(project: dict, until: str | None) -> list[str]:
     return wanted
 
 
+LEVEL_STAGE = {"driver_interface": "sw-req", "software": "sw-req", "system": "sys-req"}
+
+
+def linked_nodes(root: Path, project: dict) -> tuple[dict[str, dict], list[dict]]:
+    """Items of the requested level from linked projects (e.g. driver interface requirements of a driver project)."""
+    nodes, issues = {}, []
+    for ln in project.get("links", []):
+        other = (Path(root) / ln["project_path"]).resolve()
+        wp = other / stages()[LEVEL_STAGE[ln["level"]]]["outputs"][0]
+        if not wp.is_file():
+            issues.append(gate_result.issue("TR-LINK-MISSING", f"linked project {ln['project_path']} has no {wp.name} "
+                                            f"for level {ln['level']}"))
+            continue
+        for it in read_json(wp).get("items", []):
+            if isinstance(it, dict) and it.get("level") == ln["level"] and it.get("id"):
+                nodes[it["id"]] = {"id": it["id"], "stage": "linked", "level": it["level"], "hash": item_hash(it),
+                                   "project": ln["project_path"]}
+    return nodes, issues
+
+
 def build(root: Path, project: dict, until: str | None = None) -> dict:
     """Collect nodes and derived links for the checked stages."""
     root = Path(root)
     nodes = input_nodes(root, project)
+    linked, link_issues = linked_nodes(root, project)
+    nodes.update(linked)
     present: dict[str, list[dict]] = {}
     for s in checked_stages(project, until):
         items = stage_items(root, s)
@@ -101,7 +123,7 @@ def build(root: Path, project: dict, until: str | None = None) -> dict:
                     drv_use = parent.startswith("DRV-") and not it["id"].startswith("DRV-")
                     ltype = "interfaces" if drv_use else LINK_TYPE[s]
                     links.append({"from": parent, "to": it["id"], "type": ltype, "stage": s})
-    return {"nodes": nodes, "present": present, "links": links}
+    return {"nodes": nodes, "present": present, "links": links, "link_issues": link_issues}
 
 
 def _key(link: dict) -> str:
@@ -117,7 +139,7 @@ def check(root: Path, project: dict, until: str | None = None) -> tuple[list[dic
     graph = build(root, project, until)
     nodes, present = graph["nodes"], graph["present"]
     baseline = _load_baseline(root)["links"]
-    issues: list[dict] = []
+    issues: list[dict] = list(graph["link_issues"])
     links_out: list[dict] = []
     for ln in graph["links"]:
         rec = {"from": ln["from"], "to": ln["to"], "type": ln["type"], "status": "valid"}
@@ -147,6 +169,11 @@ def check(root: Path, project: dict, until: str | None = None) -> tuple[list[dic
                     issues.append(gate_result.issue(
                         "TR-DOC-UNKNOWN", f"{it['id']} cites document {d.get('doc_id')}, not declared in the project inputs",
                         it["id"]))
+                    continue
+                idx = doc_index.load(root, d["doc_id"])
+                why = doc_index.resolve(idx, str(d.get("section")), int(d.get("page", 0))) if idx else None
+                if why:
+                    issues.append(gate_result.issue("TR-DOC-UNRESOLVED", f"{it['id']} cites {d['doc_id']}: {why}", it["id"]))
             doc_ok = bool(docs) and (ref_doc_project or it.get("level") == "driver_interface")
             if not ups and not it.get("derived") and not doc_ok and it.get("level") in ("system", "software"):
                 issues.append(gate_result.issue("TR-ORPHAN", f"{it['id']} has no upstream source and is not derived", it["id"]))
@@ -188,7 +215,11 @@ def render_matrix(project: dict, graph: dict, links: list[dict], issues: list[di
         "| Upstream | Downstream | Link | Status |",
         "|---|---|---|---|",
     ]
-    ordered = sorted(nodes, key=lambda i: (0 if nodes[i]["stage"] == "input" else 1 + stage_order().index(nodes[i]["stage"]), i))
+    def rank(i: str) -> int:
+        st = nodes[i]["stage"]
+        return 0 if st == "input" else 1 if st == "linked" else 2 + stage_order().index(st)
+
+    ordered = sorted(nodes, key=lambda i: (rank(i), i))
     for nid in ordered:
         outs = by_from.get(nid, [])
         if not outs:

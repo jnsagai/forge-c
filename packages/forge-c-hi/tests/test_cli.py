@@ -169,11 +169,10 @@ def test_no_project_is_config_error(tmp_project):
     assert code == 2 and "hi init" in out["error"]
 
 
-@pytest.mark.parametrize("args", [["doc-index", "x.pdf", "--doc-id", "RM1"]])
-def test_later_commands_report_not_run(tmp_project, args):
+def test_doc_index_missing_document_fails(tmp_project):
     make_project(tmp_project)
-    code, out = hi(tmp_project, *args)
-    assert code == 1 and out["verdict"] == "NOT_RUN"
+    code, out = hi(tmp_project, "doc-index", "x.pdf", "--doc-id", "RM1")
+    assert code == 1 and out["verdict"] == "FAIL" and out["top"][0]["code"] == "DOC-MISSING"
 
 
 def test_stdout_capped_at_2kb(tmp_project):
