@@ -1,0 +1,452 @@
+{
+  "evidence": [
+    {
+      "path": "hi/trace.json",
+      "sha256": "444a90b235b695a52b4c6ca79a562a1c97de3deb0fbc2751194291dbb5bfe5b3"
+    },
+    {
+      "path": "hi/trace-matrix.md",
+      "sha256": "fd159e6d182e7033bb07c431c7f37b8656417716ab7a0088369d231d6b95d21f"
+    },
+    {
+      "path": "hi/sys-req/requirements.json",
+      "sha256": "3a8c025e183063024999946dabec9eac4fecb9dadca43351d58b1b75a2b3fbef"
+    }
+  ],
+  "exit_code": 1,
+  "gate": "trace",
+  "integrity_level": "HI-2",
+  "issues": [
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-001 -> SYS-SUP-001: SYS-SUP-001 changed since acceptance",
+      "target_id": "SYS-SUP-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-102 -> SYS-SUP-001: SYS-SUP-001 changed since acceptance",
+      "target_id": "SYS-SUP-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-101 -> SYS-SUP-001: SYS-SUP-001 changed since acceptance",
+      "target_id": "SYS-SUP-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-105 -> SYS-SUP-001: SYS-SUP-001 changed since acceptance",
+      "target_id": "SYS-SUP-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-107 -> SYS-SUP-001: SYS-SUP-001 changed since acceptance",
+      "target_id": "SYS-SUP-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-002 -> SYS-SUP-007: SYS-SUP-007 changed since acceptance",
+      "target_id": "SYS-SUP-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-103 -> SYS-SUP-007: SYS-SUP-007 changed since acceptance",
+      "target_id": "SYS-SUP-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-003 -> SYS-SUP-005: SYS-SUP-005 changed since acceptance",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-104 -> SYS-SUP-005: SYS-SUP-005 changed since acceptance",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-101 -> SYS-SUP-005: SYS-SUP-005 changed since acceptance",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-105 -> SYS-SUP-005: SYS-SUP-005 changed since acceptance",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-009 -> SYS-SAFE-003: SYS-SAFE-003 changed since acceptance",
+      "target_id": "SYS-SAFE-003"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-010 -> SYS-SAFE-003: SYS-SAFE-003 changed since acceptance",
+      "target_id": "SYS-SAFE-003"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-SAFE-003: SYS-SAFE-003 changed since acceptance",
+      "target_id": "SYS-SAFE-003"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-105 -> SYS-SAFE-003: SYS-SAFE-003 changed since acceptance",
+      "target_id": "SYS-SAFE-003"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-110 -> SYS-SAFE-003: SYS-SAFE-003 changed since acceptance",
+      "target_id": "SYS-SAFE-003"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-009 -> SYS-SAFE-009: SYS-SAFE-009 changed since acceptance",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-010 -> SYS-SAFE-009: SYS-SAFE-009 changed since acceptance",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-SAFE-009: SYS-SAFE-009 changed since acceptance",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-105 -> SYS-SAFE-009: SYS-SAFE-009 changed since acceptance",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-110 -> SYS-SAFE-009: SYS-SAFE-009 changed since acceptance",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-005 -> SYS-WDG-004: SYS-WDG-004 changed since acceptance",
+      "target_id": "SYS-WDG-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-106 -> SYS-WDG-004: SYS-WDG-004 changed since acceptance",
+      "target_id": "SYS-WDG-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-005 -> SYS-WDG-005: SYS-WDG-005 changed since acceptance",
+      "target_id": "SYS-WDG-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-106 -> SYS-WDG-005: SYS-WDG-005 changed since acceptance",
+      "target_id": "SYS-WDG-005"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-005 -> SYS-WDG-006: SYS-WDG-006 changed since acceptance",
+      "target_id": "SYS-WDG-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-006 -> SYS-WDG-006: SYS-WDG-006 changed since acceptance",
+      "target_id": "SYS-WDG-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-106 -> SYS-WDG-006: SYS-WDG-006 changed since acceptance",
+      "target_id": "SYS-WDG-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-003 -> SYS-WDG-006: SYS-WDG-006 changed since acceptance",
+      "target_id": "SYS-WDG-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-010 -> SYS-RST-001: SYS-RST-001 changed since acceptance",
+      "target_id": "SYS-RST-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-110 -> SYS-RST-001: SYS-RST-001 changed since acceptance",
+      "target_id": "SYS-RST-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-RST-001: SYS-RST-001 changed since acceptance",
+      "target_id": "SYS-RST-001"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-010 -> SYS-RST-004: SYS-RST-004 changed since acceptance",
+      "target_id": "SYS-RST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-110 -> SYS-RST-004: SYS-RST-004 changed since acceptance",
+      "target_id": "SYS-RST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-004: SYS-TEST-004 changed since acceptance",
+      "target_id": "SYS-TEST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-004: SYS-TEST-004 changed since acceptance",
+      "target_id": "SYS-TEST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-004: SYS-TEST-004 changed since acceptance",
+      "target_id": "SYS-TEST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-TEST-004: SYS-TEST-004 changed since acceptance",
+      "target_id": "SYS-TEST-004"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-107 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-112 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-007: SYS-TEST-007 changed since acceptance",
+      "target_id": "SYS-TEST-007"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-107 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-112 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-008: SYS-TEST-008 changed since acceptance",
+      "target_id": "SYS-TEST-008"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-115 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-112 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-009: SYS-TEST-009 changed since acceptance",
+      "target_id": "SYS-TEST-009"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-011: SYS-TEST-011 changed since acceptance",
+      "target_id": "SYS-TEST-011"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-011: SYS-TEST-011 changed since acceptance",
+      "target_id": "SYS-TEST-011"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-011: SYS-TEST-011 changed since acceptance",
+      "target_id": "SYS-TEST-011"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-101 -> SYS-TEST-011: SYS-TEST-011 changed since acceptance",
+      "target_id": "SYS-TEST-011"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-103 -> SYS-TEST-011: SYS-TEST-011 changed since acceptance",
+      "target_id": "SYS-TEST-011"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-012: SYS-TEST-012 changed since acceptance",
+      "target_id": "SYS-TEST-012"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-012: SYS-TEST-012 changed since acceptance",
+      "target_id": "SYS-TEST-012"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-012: SYS-TEST-012 changed since acceptance",
+      "target_id": "SYS-TEST-012"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-106 -> SYS-TEST-012: SYS-TEST-012 changed since acceptance",
+      "target_id": "SYS-TEST-012"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-013: SYS-TEST-013 changed since acceptance",
+      "target_id": "SYS-TEST-013"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-013: SYS-TEST-013 changed since acceptance",
+      "target_id": "SYS-TEST-013"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-013: SYS-TEST-013 changed since acceptance",
+      "target_id": "SYS-TEST-013"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-106 -> SYS-TEST-013: SYS-TEST-013 changed since acceptance",
+      "target_id": "SYS-TEST-013"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-112 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-109 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-110 -> SYS-TEST-006: SYS-TEST-006 changed since acceptance",
+      "target_id": "SYS-TEST-006"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-014: SYS-TEST-014 changed since acceptance",
+      "target_id": "SYS-TEST-014"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-014: SYS-TEST-014 changed since acceptance",
+      "target_id": "SYS-TEST-014"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-014: SYS-TEST-014 changed since acceptance",
+      "target_id": "SYS-TEST-014"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-113 -> SYS-TEST-014: SYS-TEST-014 changed since acceptance",
+      "target_id": "SYS-TEST-014"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "STK-SUP-015 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-005 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-116 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-101 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-102 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    },
+    {
+      "code": "TR-SUSPECT",
+      "message": "CON-SUP-112 -> SYS-TEST-015: SYS-TEST-015 changed since acceptance",
+      "target_id": "SYS-TEST-015"
+    }
+  ],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "FAIL"
+}
