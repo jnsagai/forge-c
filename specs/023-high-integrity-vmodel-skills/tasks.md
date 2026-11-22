@@ -285,9 +285,9 @@ BLOCKED or NOT_RUN.
   - the Forge-C factory as the reference implementation
 - [ ] T075 [US7] Record the demo (terminal capture of the P1 demo and the seal) and screenshots into `FEAT/evidence/demo/`. Link them from the README
 - [ ] T076 [US7] Clean-machine validation: a fresh user account or container with no Forge-C checkout follows the README only, installing from the git link. Time the hands-on minutes (SC-001) and store them in `FEAT/evidence/us7-clean-install.md`
-- [ ] T077 [US7] Tag the package release `forge-c-hi-v0.1.0`, push the branch and tag to GitHub, and verify `apm install jnsagai/forge-c/packages/forge-c-hi#forge-c-hi-v0.1.0` from a clean consumer. **[OWNER-GATED: push and tag publish the package publicly; needs the owner's go after reviewing the legal/IP terms]**
-- [ ] T078 [US7] Publish to Capgemini's Agentic AI Artifacts repository. **[OWNER-GATED: the publication route is internal and unknown; the owner supplies the route or access]**
-- [ ] T079 [US7] Assemble the submission pack `FEAT/submission/`: the install link, README, impact report, demo, and a draft of the legal/IP acknowledgement for the owner. **[OWNER-GATED: the owner reviews the hackathon legal/IP terms and signs or submits the acknowledgement personally; deadline 2026-12-07 23:59 CET]**
+- [ ] T077 [US7] Tag the package release `forge-c-hi-v0.1.0`, push the branch and tag to GitHub, and verify `apm install jnsagai/forge-c/packages/forge-c-hi#forge-c-hi-v0.1.0` from a clean consumer. **[OWNER-DECIDED 2026-11-22: public GitHub push and tag authorized now; only after T083 regression is green]**
+- [ ] T078 [US7] Publish to Capgemini's Agentic AI Artifacts repository. **[OWNER-DECIDED 2026-11-22: done at submission time; the owner supplies the Capgemini route or access then]**
+- [ ] T079 [US7] Assemble the submission pack `FEAT/submission/`: the install link, README, impact report, demo, and the legal/IP acknowledgement declaring the package Apache-2.0. **[OWNER-DECIDED 2026-11-22: licence Apache-2.0; the owner submits personally; deadline 2026-12-07 23:59 CET]**
 
 ---
 
@@ -297,7 +297,7 @@ BLOCKED or NOT_RUN.
 
 **Independent Test**: quickstart V2 with the `codex-oss-ollama` preset (or another local endpoint). Provenance shows the local model.
 
-- [ ] T080 [US6] Run the P1 demo with a local-model role binding (`codex exec --oss --local-provider ollama -m <model>` for author and/or inspector) and store the evidence in `FEAT/evidence/us6-local/`. Report the metrics side by side with T041, with no claim of equivalence. **[OWNER-GATED R10: where to run local models; loop10 local runs have been frozen since 2026-10-22 and Omniverse2 is excluded for this feature]**
+- [ ] T080 [US6] Run the P1 demo with a local-model role binding (`codex exec --oss --local-provider ollama -m <model>` for author and/or inspector) and store the evidence in `FEAT/evidence/us6-local/`. Report the metrics side by side with T041, with no claim of equivalence. **[OWNER-DECIDED 2026-11-22: run locally on loop10, as the last task of the feature]**
 
 ---
 
@@ -321,7 +321,7 @@ BLOCKED or NOT_RUN.
 - **US3 (T054–T057)** needs the US1 engine and can run in parallel with US2.
 - **US4 (T058–T068)** needs US1. The skill pairs T061–T067 are all [P].
 - **US7 (T069–T079)**: T073 needs T071, T072 and US1. T074 needs T073. T077 is followed by T078 and then T079 (owner-gated).
-- **US6 (T080)** is owner-gated, needs US1, and is independent of US7 except for its README mention.
+- **US6 (T080)** runs last, locally on loop10 (owner 2026-11-22). It needs US1.
 - **Polish (T081–T085)** comes after the stories. T083 must run before T077.
 
 ## Parallel examples
@@ -339,6 +339,6 @@ US7 prep:             T069, T071, T072
 
 1. **MVP = US1 plus US5 (end of M1, Nov 27).** One natural-language demo through SYS-REQ and SW-REQ, sealed. This alone is a valid hackathon submission.
 2. **M2:** US2 (driver), then US3 (profiles) and US4 (whole V) in parallel.
-3. **M3:** the evaluation and README (US7 T069–T076), and US6 if R10 has been decided.
-4. **M4:** the owner-gated publish and submission (T077–T079) by Dec 5, with Dec 6–7 as buffer.
+3. **M3:** the evaluation and README (US7 T069–T076).
+4. **M4:** the GitHub tag (T077), then the local-model run (T080, last), then the Capgemini publish and submission (T078, T079) by Dec 5, with Dec 6–7 as buffer.
 5. **Cut order if late:** first reduce US4 depth (keep the skills but record stage runs as NOT_RUN), then US6. US7 and US1 are never cut.

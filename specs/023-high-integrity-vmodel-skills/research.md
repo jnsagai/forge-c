@@ -153,8 +153,8 @@
 ## R10. Local-model run location (risk, needs owner)
 
 - loop10 local model runs were frozen by the owner on 2026-10-22, and Omniverse2 is excluded for this feature.
-- **SC-003's local run therefore needs an owner decision on where to run it** (loop10 unfrozen for this, a small model,
-  or another machine). It is not on the critical path for the submission. It is scheduled late (M3).
+- **Resolved (owner 2026-11-22):** run it locally on loop10, as the last task (T080). This lifts the 2026-10-22 freeze
+  for this run only.
 
 ## Installed tool versions (loop10, 2026-11-22)
 
