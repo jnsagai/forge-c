@@ -262,7 +262,7 @@ BLOCKED or NOT_RUN.
 
 **Independent Test**: someone new follows the README from a clean machine. Every number in the impact report links to stored evidence.
 
-- [ ] T069 [P] [US7] Write the publish-check tests `PKG/tests/test_publish_check.py`. Each violation class is detected:
+- [x] T069 [P] [US7] Write the publish-check tests `PKG/tests/test_publish_check.py`. Each violation class is detected:
   - PDF or binary documents;
   - denylisted private identifiers (private benchmark name, private host IPs, local home paths, the private data root);
   - email addresses;
