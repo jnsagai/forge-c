@@ -8,7 +8,7 @@
   "_source": "Forge-C factory/checklists/v0.4/SWE.6.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.6.yaml, neutralised for feature 023",
   "items": [
     {
-      "id": "SQT-01",
+      "id": "SWQ-01",
       "title": "Verified against approved requirements",
       "pass_criterion": "The integrated software is verified against the approved baseline of software requirements.",
       "typical_defect": "Tests written against a draft or superseded requirements version.",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "id": "SQT-02",
+      "id": "SWQ-02",
       "title": "Measure selection covers normal, boundary and failure",
       "pass_criterion": "Verification measures and their selection cover normal, boundary and failure behaviour of the requirements.",
       "typical_defect": "Only nominal scenarios; boundary and failure behaviour unverified.",
@@ -37,7 +37,7 @@
       ]
     },
     {
-      "id": "SQT-03",
+      "id": "SWQ-03",
       "title": "Safety functions and target constraints addressed",
       "pass_criterion": "Safety functions, fault responses and target-specific constraints are addressed by the verification, where applicable.",
       "typical_defect": "Fault reaction requirement verified only by review, with no executed scenario.",
@@ -51,7 +51,7 @@
       ]
     },
     {
-      "id": "SQT-04",
+      "id": "SWQ-04",
       "title": "Requirement coverage by passing tests",
       "pass_criterion": "Every verification test traces to software requirements, and every software requirement is verified by at least one executed, passing verification test.",
       "typical_defect": "Requirement with no executed test, or a test tracing to no requirement.",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "id": "SQT-05",
+      "id": "SWQ-05",
       "title": "Trace consistency",
       "pass_criterion": "Requirements to measures to results traceability is complete and consistent in meaning.",
       "typical_defect": "Test linked to a requirement but checks a different value or condition.",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "id": "SQT-06",
+      "id": "SWQ-06",
       "title": "Auditable criteria and results",
       "pass_criterion": "Pass/fail criteria, actual results, regressions and defect status are auditable.",
       "typical_defect": "Verdicts recorded without expected values or logs; regression status unknown.",
@@ -94,7 +94,7 @@
       ]
     },
     {
-      "id": "SQT-07",
+      "id": "SWQ-07",
       "title": "Accurate verification summary",
       "pass_criterion": "The final verification summary states unverified requirements, hardware and integrity-level gaps accurately and makes no certification or release claim.",
       "typical_defect": "Summary claims full verification while target or integrity-level gaps remain.",

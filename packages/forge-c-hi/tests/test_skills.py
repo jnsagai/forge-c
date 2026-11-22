@@ -13,10 +13,7 @@ ROLES = {"author", "inspector", "gate", "conductor", "intake", "release"}
 STAGES = json.loads((REFS / "stages.json").read_text())
 STAGE_IDS = {s["id"] for s in STAGES["stages"]}
 # Stage skills that later milestones add (US4). Shrinks to empty as they land.
-PENDING = {"hi-sys-arch-author", "hi-sys-arch-inspector", "hi-sw-arch-author", "hi-sw-arch-inspector",
-           "hi-sw-design-author", "hi-sw-design-inspector", "hi-unit-verif-author", "hi-unit-verif-inspector",
-           "hi-sw-integ-verif-author", "hi-sw-integ-verif-inspector", "hi-sw-qual-author", "hi-sw-qual-inspector",
-           "hi-sys-verif-author", "hi-sys-verif-inspector"}
+PENDING = set()
 
 
 def frontmatter(path):
@@ -89,3 +86,13 @@ def test_core_rules_copy_matches_instructions():
     src = (PKG / ".apm/instructions/hi-core.instructions.md").read_text()
     body = re.sub(r"^---\n.*?\n---\n\n?", "", src, flags=re.S)
     assert (REFS / "hi-core-rules.md").read_text() == body
+
+
+def test_compact_reply_contract_stated():
+    """T082: authors reply with AgentStatus (<=2 KB contract), inspectors with the findings object."""
+    for d in SKILL_DIRS:
+        fm, body = frontmatter(d / "SKILL.md")
+        if fm["metadata"]["role"] == "author":
+            assert "AgentStatus" in body and ("agent-status.schema.json" in body or '"role": "author"' in body), d.name
+        if fm["metadata"]["role"] == "inspector":
+            assert '"status": "DONE", "findings"' in body.replace("\n", " "), d.name

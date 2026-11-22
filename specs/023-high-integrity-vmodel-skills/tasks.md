@@ -245,13 +245,13 @@ BLOCKED or NOT_RUN.
 - [x] T058 [P] [US4] Write the workproduct-schema tests for architecture, design, test-spec and verification-result in `PKG/tests/test_vmodel_workproducts.py` (one minimal valid and one invalid fixture each)
 - [x] T059 [US4] Add the schemas `hi-gates/references/schemas/{architecture,design,test-spec,verification-result}.schema.json`. Copy them back to `FEAT/contracts/` and extend the trace rules for `allocates`, `realises`, `implements` and `verifies`. Make T058 pass
 - [x] T060 [P] [US4] Write the code-stage gates `ENG/code_gates.py` and their tests `PKG/tests/test_code_gates.py`. The gates are build (gcc or clang), static analysis (cppcheck) and coverage (gcov/gcovr). A missing tool gives NOT_RUN. Coverage is compared with the profile targets
-- [ ] T061 [P] [US4] Write the skill pairs `hi-sys-arch-{author,inspector}/SKILL.md`
-- [ ] T062 [P] [US4] Write the skill pairs `hi-sw-arch-{author,inspector}/SKILL.md`
-- [ ] T063 [P] [US4] Write the skill pairs `hi-sw-design-{author,inspector}/SKILL.md` (detailed design and unit construction in C; the write scope includes `src/`)
-- [ ] T064 [P] [US4] Write the skill pairs `hi-unit-verif-{author,inspector}/SKILL.md`
-- [ ] T065 [P] [US4] Write the skill pairs `hi-sw-integ-verif-{author,inspector}/SKILL.md`
-- [ ] T066 [P] [US4] Write the skill pairs `hi-sw-qual-{author,inspector}/SKILL.md`
-- [ ] T067 [P] [US4] Write the skill pairs `hi-sys-verif-{author,inspector}/SKILL.md` (system integration and system qualification)
+- [x] T061 [P] [US4] Write the skill pairs `hi-sys-arch-{author,inspector}/SKILL.md`
+- [x] T062 [P] [US4] Write the skill pairs `hi-sw-arch-{author,inspector}/SKILL.md`
+- [x] T063 [P] [US4] Write the skill pairs `hi-sw-design-{author,inspector}/SKILL.md` (detailed design and unit construction in C; the write scope includes `src/`)
+- [x] T064 [P] [US4] Write the skill pairs `hi-unit-verif-{author,inspector}/SKILL.md`
+- [x] T065 [P] [US4] Write the skill pairs `hi-sw-integ-verif-{author,inspector}/SKILL.md`
+- [x] T066 [P] [US4] Write the skill pairs `hi-sw-qual-{author,inspector}/SKILL.md`
+- [x] T067 [P] [US4] Write the skill pairs `hi-sys-verif-{author,inspector}/SKILL.md` (system integration and system qualification)
 - [ ] T068 [US4] Run each later stage once on the safety-supervisor demo with the reference config and store the evidence in `FEAT/evidence/us4-full-v/`. Record honestly any stage that ends BLOCKED or NOT_RUN
 
 ---
@@ -303,8 +303,8 @@ BLOCKED or NOT_RUN.
 
 ## Phase 10: Polish and cross-cutting
 
-- [ ] T081 [P] Version and metadata audit: every `SKILL.md` has `name` equal to its folder, a description with "use when" triggers, `metadata.version`, `metadata.stage`, `metadata.role` and `metadata.write_scope`. Add the test `PKG/tests/test_skill_metadata.py`
-- [ ] T082 [P] Make the instructions and skill texts state compact output (AgentStatus ≤2 KB) consistently. Add a test that each author or inspector skill references `agent-status.schema.json`
+- [x] T081 [P] Version and metadata audit: every `SKILL.md` has `name` equal to its folder, a description with "use when" triggers, `metadata.version`, `metadata.stage`, `metadata.role` and `metadata.write_scope`. Covered by `PKG/tests/test_skills.py` (frontmatter, stage mapping, cited paths, read-only inspectors)
+- [x] T082 [P] Make the instructions and skill texts state compact output (AgentStatus ≤2 KB) consistently. Add a test that each author or inspector skill references `agent-status.schema.json`
 - [ ] T083 Regression: run the full existing repo suites (`python3 tests/spec/validate_design.py` and the existing pytest targets that ran on main before this branch) and confirm no change in results. Store the result in `FEAT/evidence/regression.txt`
 - [x] T084 Update the root `README.md` and `website/` with a short "Portable skills package (feature 023)" section, and update the constitution follow-up (the ⚠ item in the Sync Impact Report). Evidence: website unit tests pass; the local `astro build` cannot run on this host (Node 20 < 22 required by Astro), so the page build is left to the site CI
 - [ ] T085 Run `/speckit-analyze` for cross-artifact consistency. Fix the findings, then mark the feature tasks complete only where evidence exists

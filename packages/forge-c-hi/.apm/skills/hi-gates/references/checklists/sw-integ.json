@@ -8,7 +8,7 @@
   "_source": "Forge-C factory/checklists/v0.4/SWE.5.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.5.yaml, neutralised for feature 023",
   "items": [
     {
-      "id": "SIT-01",
+      "id": "SWI-01",
       "title": "Component and integration verification planned",
       "pass_criterion": "Both software component behaviour verification and software integration verification are planned, with measures and environment stated.",
       "typical_defect": "Only integrated end-to-end tests; component behaviour not verified separately.",
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "id": "SIT-02",
+      "id": "SWI-02",
       "title": "Integration sequence matches architecture",
       "pass_criterion": "The integration sequence and the interfaces exercised match the software architecture.",
       "typical_defect": "Integration exercises an interface path not defined in the architecture.",
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "id": "SIT-03",
+      "id": "SWI-03",
       "title": "Inter-element interactions tested",
       "pass_criterion": "Inter-element shared-resource, clock, reset and interrupt interactions are tested.",
       "typical_defect": "No test of reset or interrupt interaction between two elements sharing a resource.",
@@ -53,7 +53,7 @@
       ]
     },
     {
-      "id": "SIT-04",
+      "id": "SWI-04",
       "title": "Robustness and budgets checked",
       "pass_criterion": "Robustness, fault propagation across interfaces and timing/resource budgets are checked during integration.",
       "typical_defect": "Budget compliance assumed, never measured on the integrated build.",
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "id": "SIT-05",
+      "id": "SWI-05",
       "title": "Interface coverage by passing tests",
       "pass_criterion": "Every integration test declares the architecture elements and interfaces it verifies, and every architecture interface is verified by at least one executed, passing integration test.",
       "typical_defect": "Architecture interface verified by no executed integration test.",
@@ -81,7 +81,7 @@
       ]
     },
     {
-      "id": "SIT-06",
+      "id": "SWI-06",
       "title": "Measures map to architecture, results and regression",
       "pass_criterion": "Component and integration measures map consistently to architecture elements, actual results and regression selection.",
       "typical_defect": "Results listed with no link to the measure or architecture element they verify.",
@@ -96,7 +96,7 @@
       ]
     },
     {
-      "id": "SIT-07",
+      "id": "SWI-07",
       "title": "Environment limitations explicit",
       "pass_criterion": "Limitations of simulation versus target evidence are explicit, and unresolved defects are tracked.",
       "typical_defect": "Simulator-only results presented as target evidence; open defects not tracked.",
