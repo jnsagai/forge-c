@@ -464,3 +464,28 @@ def test_open_major_findings_give_accepted_with_gaps_and_a_seal_gap(tmp_path):
     gaps, _ = seal.collect_gaps(root, load_project(root))
     assert any(g["code"] == "FINDING-MAJOR" for g in gaps)
 
+
+def test_different_set_findings_on_the_same_criterion_are_not_stuck(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+
+    def sq(ids):
+        return dict(F("SQ-01", "blocking", desc=f"The set does not cover {ids}."), target_id="SET")
+
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                      "inspector": {"item_rounds": [{}],
+                                    "set_rounds": [[sq("CON-SUP-001 and CON-SUP-004"), sq("CON-SUP-002")],
+                                                   [sq("CON-SUP-003")], []]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert not [e for e in events(root, out) if e.get("step") == "rework-stuck"]
+    assert len([c for c in calls if c["phase"] == "rework-set"]) == 2
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+    # the same defect again (same criterion, same cited ids) is stuck
+    root2 = tmp_path / "q"
+    root2.mkdir()
+    sc = setup(root2, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                       "inspector": {"item_rounds": [{}], "set_rounds": [[sq("CON-SUP-003")]] * 4}})
+    code, out, calls = conduct(root2, sc, "--stage", "sys-req")
+    assert [e for e in events(root2, out) if e.get("step") == "rework-stuck"]
+    assert len([c for c in calls if c["phase"] == "rework-set"]) == 1
+

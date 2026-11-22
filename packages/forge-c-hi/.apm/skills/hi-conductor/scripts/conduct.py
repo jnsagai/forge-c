@@ -23,6 +23,7 @@ import argparse
 import copy
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -377,6 +378,16 @@ class Conductor:
                    dropped=dropped)
         return out
 
+    @staticmethod
+    def finding_key(f: dict) -> tuple:
+        """Identity of a finding across rounds. Item findings: item and criterion. Set-level findings (target SET)
+        share both, so the ids they cite tell different defects apart (run 4 pass 7: three different SQ-01 set
+        findings looked like one repeated finding)."""
+        if f.get("target_id") == "SET":
+            ids = frozenset(re.findall(r"\b[A-Z]{2,5}-[A-Z0-9_]+-\d{3}\b", str(f.get("description", ""))))
+            return ("SET", f.get("checklist_item"), ids)
+        return (f.get("target_id"), f.get("checklist_item"))
+
     def keep_going(self, stage: str, phase: str, rounds: int, keys: set, prev: set | None) -> bool:
         """After `rounds` completed rework rounds, with `keys` still open: rework once more? Records why it stops."""
         if prev is not None and keys == prev:
@@ -386,7 +397,7 @@ class Conductor:
         if rounds < self.limit or (progressing and rounds < self.max_rounds):
             return True
         self.event(stage=stage, step="rework-limit", phase=phase, rounds=rounds, open=len(keys),
-                   flagged=sorted({k[0] for k in keys})[:50])
+                   flagged=sorted({str(k[0]) for k in keys})[:50])
         return False
 
     def rework_item(self, stage: str, item_id: str, findings: list[dict], rnd: int) -> list[str]:
@@ -489,7 +500,7 @@ class Conductor:
                 # a finding that waits on an open point cannot be reworked away: it is carried to the decision
                 live = [f for f in all_findings if f["status"] == "open" and f["phase"] == "item"
                         and f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
-                keys = {(f["target_id"], f["checklist_item"]) for f in live}
+                keys = {self.finding_key(f) for f in live}
                 # an item the author left unchanged is not reworked again: its findings are carried as they are
                 flagged = sorted({f["target_id"] for f in live} - self.unchanged)
                 if not flagged:
@@ -540,7 +551,7 @@ class Conductor:
                 open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
                 if not open_set:
                     break
-                set_keys = {(f.get("target_id"), f["checklist_item"]) for f in open_set}
+                set_keys = {self.finding_key(f) for f in open_set}
                 if not self.keep_going(stage, "set", srnd - base_set - 1, set_keys, prev_set):
                     break
                 prev_set = set_keys
