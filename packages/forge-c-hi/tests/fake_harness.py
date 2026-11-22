@@ -12,6 +12,8 @@ Scenario keys:
   author.set_fix          {item_id: {field: value}} applied on phase "rework-set"
   author.update           {"patch": {item_id: {field: value}}, "open_points": [...]} applied on phase "update"
   author.write_outside    a relative path the author writes on "create" (scope violation)
+  author.break_json       phases after which the work product is left as invalid JSON (once per phase); "fix-gates"
+                          repairs it ("always" in the list: fix-gates never repairs)
   inspector.item_rounds   list per round of {item_id: [finding]}
   inspector.set_rounds    list per round of [finding]
   inspector.write_file    a relative path the inspector tries to write
@@ -59,7 +61,17 @@ def main() -> int:
                 (root / a["write_outside"]).parent.mkdir(parents=True, exist_ok=True)
                 (root / a["write_outside"]).write_text("x\n")
         else:
-            doc = json.loads(wp.read_text())
+            good = root.parent / f"{root.name}-good.json"
+            try:
+                doc = json.loads(wp.read_text())
+            except ValueError:
+                if task["phase"] != "fix-gates":
+                    raise
+                if "always" in a.get("break_json", []):  # an author that cannot repair it: leaves the file as it is
+                    print(json.dumps({"role": "author", "stage": task["stage"], "status": "DONE", "outputs": [],
+                                      "issues": [], "open_points": 0}))
+                    return 0
+                doc = json.loads(good.read_text())
             by_id = {i["id"]: i for i in doc["items"]}
             if task["phase"] == "rework":
                 iid = task["items"][0]
@@ -81,7 +93,14 @@ def main() -> int:
                 for iid, patch in a.get("set_fix", {}).items():
                     by_id[iid].update(patch)
         wp.parent.mkdir(parents=True, exist_ok=True)
-        wp.write_text(json.dumps(doc, indent=1))
+        text = json.dumps(doc, indent=1)
+        broken = root.parent / f"{root.name}-broken.txt"
+        done = broken.read_text().split() if broken.exists() else []
+        if task["phase"] in a.get("break_json", []) and task["phase"] not in done:
+            (root.parent / f"{root.name}-good.json").write_text(text)
+            broken.write_text(" ".join(done + [task["phase"]]))
+            text = text.replace("},", "}", 1)
+        wp.write_text(text)
         print("Done.\n" + json.dumps({"role": "author", "stage": task["stage"], "status": "DONE",
                                       "outputs": [task["workproduct"]], "issues": [], "open_points": 0}))
         return 0

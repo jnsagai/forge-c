@@ -224,7 +224,35 @@ class Conductor:
             raise Blocked(f"{role} wrote outside its write scope: {bad[:5]}")
         if code != 0:
             raise Blocked(f"{role} harness failed (exit {code}) in {stage} {phase}")
+        if role == "author" and phase != "fix-gates":
+            self.repair_json(stage)
         return reply
+
+    def repair_json(self, stage: str) -> None:
+        """A work product that is not valid JSON goes straight back to the author as a validate issue: nothing else
+        can read it (run 3, 2026-11-22: a set rework dropped a comma)."""
+        wp = self.workproduct(stage)
+
+        def error() -> str | None:
+            if not wp.is_file():
+                return None
+            try:
+                read_json(wp)
+            except ValueError as exc:
+                return str(exc)
+            return None
+
+        for n in range(1, self.limit + 1):
+            err = error()
+            if err is None:
+                return
+            self.event(stage=stage, step="invalid-json", round=n, error=err[:200])
+            self.run_role("author", stage, "fix-gates", round=n, findings=[
+                {"gate": "validate", "code": "VAL-UNREADABLE", "target_id": rel(self.root, wp),
+                 "message": f"{rel(self.root, wp)} is not valid JSON: {err}. Repair the JSON syntax only."}])
+        err = error()
+        if err is not None:
+            raise Blocked(f"{rel(self.root, wp)} is not valid JSON after {self.limit} fix rounds: {err}"[:300])
 
     # ---------------------------------------------------------------- stage helpers
     def workproduct(self, stage: str) -> Path:

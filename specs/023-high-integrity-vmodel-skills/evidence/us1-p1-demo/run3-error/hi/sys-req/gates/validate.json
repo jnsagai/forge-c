@@ -1,0 +1,23 @@
+{
+  "evidence": [
+    {
+      "path": "hi/sys-req/requirements.json",
+      "sha256": "01ca87563f7a2b92feacab551f6bdc2d64d99665f66fdd5ea36001c01cf9e902"
+    }
+  ],
+  "exit_code": 1,
+  "gate": "validate",
+  "integrity_level": "HI-2",
+  "issues": [
+    {
+      "code": "VAL-UNREADABLE",
+      "message": "hi/sys-req/requirements.json: requirements.json: Expecting ',' delimiter: line 62 column 3 (char 28378)"
+    }
+  ],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "FAIL"
+}

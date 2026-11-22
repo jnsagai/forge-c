@@ -153,6 +153,33 @@ def required_gates(project: dict, stage: str) -> list[str]:
     return out
 
 
+def _one_gate(root: Path, stage: str, g: str, scope_doc: dict | None) -> dict:
+    if g == "validate":
+        return validate_stage(root, stage)
+    if g == "quality":
+        return quality.run(root, stage)
+    if g == "trace":
+        return trace.run(root, stage)
+    if g == "scope":
+        if scope_doc is not None:
+            gate_result.write(root, stage, scope_doc)
+            return scope_doc
+        return scope.run(root, "author", stage)
+    if g == "doc-sources":
+        return doc_sources(root, stage)
+    if g == "independence":
+        return independence(root, stage)
+    if g == "build":
+        return code_gates.build(root)
+    if g == "static-analysis":
+        return code_gates.static_analysis(root)
+    if g == "unit-test":
+        return code_gates.unit_test(root)[0]
+    if g == "coverage":
+        return code_gates.coverage(root)
+    return tool_gate_not_run(root, stage, g)
+
+
 def gate_stage(root: Path, stage: str, *, scope_doc: dict | None = None) -> dict:
     """Run every gate the profile requires for this stage and level. Returns a summary."""
     root = Path(root)
@@ -161,32 +188,11 @@ def gate_stage(root: Path, stage: str, *, scope_doc: dict | None = None) -> dict
     project, common = _common(root)
     results: dict[str, dict] = {}
     for g in required_gates(project, stage):
-        if g == "validate":
-            results[g] = validate_stage(root, stage)
-        elif g == "quality":
-            results[g] = quality.run(root, stage)
-        elif g == "trace":
-            results[g] = trace.run(root, stage)
-        elif g == "scope":
-            if scope_doc is not None:
-                gate_result.write(root, stage, scope_doc)
-                results[g] = scope_doc
-            else:
-                results[g] = scope.run(root, "author", stage)
-        elif g == "doc-sources":
-            results[g] = doc_sources(root, stage)
-        elif g == "independence":
-            results[g] = independence(root, stage)
-        elif g == "build":
-            results[g] = code_gates.build(root)
-        elif g == "static-analysis":
-            results[g] = code_gates.static_analysis(root)
-        elif g == "unit-test":
-            results[g] = code_gates.unit_test(root)[0]
-        elif g == "coverage":
-            results[g] = code_gates.coverage(root)
-        else:
-            results[g] = tool_gate_not_run(root, stage, g)
+        try:
+            results[g] = _one_gate(root, stage, g, scope_doc)
+        except (OSError, ValueError) as exc:  # unreadable or invalid JSON input: the validate gate reports it as FAIL
+            results[g] = gate_result.result(g, [], not_run_reason=f"an input is not readable: {exc}"[:300], **common)
+            gate_result.write(root, stage, results[g])
     verdicts = {g: r["verdict"] for g, r in results.items()}
     if "FAIL" in verdicts.values():
         overall = "FAIL"

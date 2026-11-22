@@ -1,0 +1,35 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-04",
+      "description": "The phrase \"refresh ... only while\" restricts when refreshes may occur but does not require a refresh or specify its frequency. A controller that never refreshes the independent watchdog could satisfy this wording, despite the 100 ms timeout in CON-SUP-106 and the servicing intent in STK-SUP-005.",
+      "id": "F-sys-req-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:24:25Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T221517Z-645c50",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify when or how often the independent watchdog must be refreshed during fault-free operation, using the supported timeout and identifying any missing input needed to define the rule.",
+      "round": 3,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-010"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-010",
+    "SYS-SUP-011"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -1,0 +1,35 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-04",
+      "description": "SYS-SUP-010 bounds only the time between consecutive refreshes; it does not bound the first refresh after control cycles begin. CON-SUP-106 specifies a 100 ms timeout, so the watchdog could reset before that first refresh. OP-SYS-004 records that watchdog servicing during start-up and meeting the timeout in that phase are undecided.",
+      "id": "F-sys-req-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:25:20Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T221517Z-645c50",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the first refresh deadline relative to watchdog activation or the preceding start-up refresh, consistent with the decided start-up servicing behavior.",
+      "round": 4,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-010"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-010"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -387,3 +387,30 @@ def test_set_inspector_re_raising_a_waiting_finding_does_not_duplicate_it(tmp_pa
     assert [(f["target_id"], f["checklist_item"], f.get("blocked_by")) for f in live] == \
         [("SYS-SUP-001", "IQ-06", "OP-SYS-001")]                # the re-raised one replaces the carried one
     assert code == 1 and "blocking open points" in out["stages"][0]["reason"]
+
+
+@pytest.mark.parametrize("phase", ["create", "rework", "rework-set"])
+def test_invalid_json_from_the_author_goes_back_as_a_gate_issue(tmp_path, phase):
+    # run 3 (2026-11-22): a set rework left requirements.json without a comma and the conductor stopped with ERROR
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "break_json": [phase]},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [F("IQ-03")]}, {}],
+                                    "set_rounds": [[dict(F("SQ-05"), target_id="SYS-SUP-002")], []]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert out.get("status") != "ERROR", out
+    i = next(n for n, c in enumerate(calls) if c["role"] == "author" and c["phase"] == phase)
+    assert calls[i + 1]["role"] == "author" and calls[i + 1]["phase"] == "fix-gates"
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+
+
+def test_json_the_author_cannot_repair_blocks_cleanly(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "break_json": ["rework-set", "always"]},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[dict(F("SQ-05"), target_id="SYS-SUP-002")]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 1 and out["status"] == "BLOCKED", out
+    assert "not valid JSON" in out["stages"][0]["reason"]
+    assert out["stages"][0]["gates"]["validate"] == "FAIL"
+    assert not (root / ".hi/active-role.json").exists()

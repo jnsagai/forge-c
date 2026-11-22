@@ -1,0 +1,2 @@
+{"cmd": "conduct", "status": "ERROR", "error": "Expecting ',' delimiter: line 62 column 3 (char 28378)"}
+exit=2
