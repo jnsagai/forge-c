@@ -1,0 +1,2 @@
+{"cmd":"conduct","events":".hi/runs/r20261122T235435Z-20cd86/events.jsonl","run_id":"r20261122T235435Z-20cd86","stages":[{"gates":{},"outcome":"BLOCKED","reason":"the author did not write hi/sys-req/requirements.json","stage":"sys-req"}],"status":"BLOCKED"}
+exit=1

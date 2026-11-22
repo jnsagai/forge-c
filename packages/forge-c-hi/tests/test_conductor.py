@@ -489,3 +489,15 @@ def test_different_set_findings_on_the_same_criterion_are_not_stuck(tmp_path):
     assert [e for e in events(root2, out) if e.get("step") == "rework-stuck"]
     assert len([c for c in calls if c["phase"] == "rework-set"]) == 1
 
+
+
+def test_author_that_writes_no_workproduct_gets_one_corrective_retry(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "skip_create_once": True},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    creates = [c for c in calls if c["role"] == "author" and c["phase"] == "create"]
+    assert len(creates) == 2 and creates[1]["notice"] and "directly" in creates[1]["notice"]
+    assert any(e.get("step") == "author-retry" for e in events(root, out))
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out

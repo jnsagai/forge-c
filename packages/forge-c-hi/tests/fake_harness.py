@@ -12,6 +12,7 @@ Scenario keys:
   author.fix_gates        [{id, field: value}] applied on phase "fix-gates"
   author.set_fix          {item_id: {field: value}} applied on phase "rework-set"
   author.update           {"patch": {item_id: {field: value}}, "open_points": [...]} applied on phase "update"
+  author.skip_create_once the first "create" call writes nothing (an author that forgets the work product)
   author.write_outside    a relative path the author writes on "create" (scope violation)
   author.break_json       phases after which the work product is left as invalid JSON (once per phase); "fix-gates"
                           repairs it ("always" in the list: fix-gates never repairs)
@@ -41,7 +42,7 @@ def main() -> int:
         fh.write(json.dumps({
             "role": role, "phase": task["phase"], "round": task.get("round", 0), "items": task.get("items", []),
             "findings": len(task.get("findings", [])), "changed_inputs": task.get("changed_inputs"),
-            "suspect": task.get("suspect"),
+            "suspect": task.get("suspect"), "notice": task.get("notice"),
             "active_role": json.loads(active.read_text()) if active.exists() else None,
             "env_role": os.environ.get("HI_ROLE"),
         }) + "\n")
@@ -51,6 +52,12 @@ def main() -> int:
         time.sleep(sc[role]["sleep"])
     if role == "author":
         a = sc.get("author", {})
+        marker = root.parent / f"{root.name}-skipped-create"
+        if task["phase"] == "create" and a.get("skip_create_once") and not marker.exists():
+            marker.write_text("x")
+            print(json.dumps({"role": "author", "stage": task["stage"], "status": "DONE", "outputs": [], "issues": [],
+                              "open_points": 0}))
+            return 0
         if task["phase"] == "create":
             doc = {"schema": "forge-c-hi/requirement-set@1", "stage": task["stage"], "baseline_id": "BL-1",
                    "status": "draft", "provenance": {
