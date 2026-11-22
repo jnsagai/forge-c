@@ -14,7 +14,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from . import gate_result
-from .config import REFS, load_project, effective_rigor, stages
+from .config import REFS, load_project, effective_rigor, stage_order, stages
 from .io import read_json
 
 ID_PREFIX = {"sys-req": ("SYS",), "sw-req": ("SWR", "DRV")}
@@ -171,6 +171,27 @@ def check_items(
     return issues
 
 
+def check_open_points(ops: list, *, stage: str) -> list[dict]:
+    """A non-blocking open point names the later stage that must close it (`deferred_to`); a blocking one does not
+    defer. Owner 2026-11-22 (run 2: 42 of 47 open points blocked the stage, many of them later-stage detail)."""
+    order = stage_order()
+    later = order[order.index(stage) + 1:] if stage in order else order
+    issues = []
+    for op in ops or []:
+        if not isinstance(op, dict):
+            continue
+        oid, to = str(op.get("id", "<no id>")), op.get("deferred_to")
+        if op.get("blocks") is False and to not in later:
+            issues.append(gate_result.issue(
+                "IQ-12.open-point-owner",
+                f"{oid}: a non-blocking open point needs deferred_to naming a later stage ({', '.join(later[:3])} ...)"
+                if not to else f"{oid}: deferred_to {to} is not a stage after {stage}", oid))
+        elif op.get("blocks") is True and to:
+            issues.append(gate_result.issue(
+                "IQ-12.open-point-owner", f"{oid}: a blocking open point waits for a person, not for {to}", oid))
+    return issues
+
+
 def requirement_file(root: Path, stage: str) -> Path:
     return Path(root) / stages()[stage]["outputs"][0]
 
@@ -196,7 +217,7 @@ def run(root: Path, stage: str, *, write: bool = True) -> dict:
             issues = check_items(
                 wp.get("items", []), stage=stage, allowed_methods=rigor.get("verification_methods") or METHODS,
                 other_ids=other,
-            )
+            ) + check_open_points(wp.get("open_points"), stage=stage)
             doc = gate_result.result("quality", issues, evidence=[path], **common)
     if write:
         gate_result.write(root, stage, doc)

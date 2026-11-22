@@ -83,9 +83,19 @@ and resource limits, and the interfaces (diagnostic line, status signal). Do not
 
 ## Open points
 
-Write an open point (`OP-SYS-<NNN>`) whenever the inputs leave a value or behaviour undecided. `blocks: true` when the
-missing decision prevents a correct requirement; the stage cannot be accepted until a human resolves it. Never fill
-the gap with a plausible number.
+Write an open point (`OP-SYS-<NNN>`) whenever the inputs leave a value or behaviour undecided. Never fill the gap with
+a plausible number. Classify each one (core rule 1):
+
+- **Blocking** (`blocks: true`): the system requirement itself cannot be stated correctly or verified without a
+  product decision: a value at the system boundary, a reaction to a fault, an acceptance limit, a priority between
+  two needs. The stage cannot be accepted until a person answers it.
+- **Deferred** (`blocks: false`, `deferred_to: "sw-req"` or another later stage): the system requirement is correct
+  and verifiable as written, and the missing detail belongs to a later stage: an encoding or framing, the unit or
+  range of a configuration value, rounding of measured times, register settings, how a test observes something.
+  Name the stage that owns it; that stage must close it.
+
+Ask: "Could a tester verify this system requirement today, with only the inputs?" If yes, the gap is deferred. If no,
+it blocks. Do not split one decision into several open points; one open point may affect several requirements.
 
 ## Rework
 

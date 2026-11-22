@@ -88,3 +88,17 @@ If a defect exists only because an **open point** in the workproduct still waits
 behaviour the inputs do not give), add `"blocked_by": "<open point id>"` to the finding. The author cannot fix it by
 rework, so the conductor carries it until the decision is made, and the open point already blocks the stage. Use
 `blocked_by` only when the open point really is the cause; a defect the author can fix now gets no `blocked_by`.
+
+## Judging open points
+
+Check how the author classified each open point (core rule 1):
+
+- A **deferred** open point (`blocks: false`, `deferred_to` a later stage) is correct when the system requirement it
+  affects is verifiable as written. Then do **not** raise a finding on that requirement for the deferred detail.
+- If the affected requirement cannot be verified, or is not correct, without the answer, the deferral hides a
+  decision this stage needs: raise a `blocking` finding on the open point's first affected requirement with
+  `blocked_by` the open point id and `requested_change` "classify OP-... as blocking". The stage then waits for a
+  person, as it should.
+- A **blocking** open point that a later stage could settle without changing any system requirement: raise a `minor`
+  finding asking to defer it, naming the stage.
+

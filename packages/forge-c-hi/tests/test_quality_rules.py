@@ -141,3 +141,25 @@ def test_ids_unique_across_stages(tmp_project):
     make_project(tmp_project, sys_items=SYS_ITEMS,
                  swr_items=[req("SWR-SUP-001", "The monitor shall flag the task within 2 cycles.", ["SYS-SUP-001"])])
     assert quality.run(tmp_project, "sw-req")["verdict"] == "PASS"
+
+
+def test_open_point_owner():
+    ok = [{"id": "OP-SYS-001", "text": "x", "blocks": True},
+          {"id": "OP-SYS-002", "text": "x", "blocks": False, "deferred_to": "sw-req"}]
+    assert quality.check_open_points(ok, stage="sys-req") == []
+    bad = [{"id": "OP-SYS-003", "text": "x", "blocks": False},
+           {"id": "OP-SYS-004", "text": "x", "blocks": False, "deferred_to": "sys-req"},
+           {"id": "OP-SYS-005", "text": "x", "blocks": True, "deferred_to": "sw-req"}]
+    found = quality.check_open_points(bad, stage="sys-req")
+    assert [i["target_id"] for i in found] == ["OP-SYS-003", "OP-SYS-004", "OP-SYS-005"]
+    assert {i["code"] for i in found} == {"IQ-12.open-point-owner"}
+
+
+def test_open_point_owner_runs_in_the_quality_gate(tmp_project):
+    make_project(tmp_project, sys_items=SYS_ITEMS)
+    wp = tmp_project / "hi/sys-req/requirements.json"
+    doc = __import__("json").loads(wp.read_text())
+    doc["open_points"] = [{"id": "OP-SYS-001", "text": "Frame format.", "blocks": False}]
+    wp.write_text(__import__("json").dumps(doc))
+    res = quality.run(tmp_project, "sys-req")
+    assert res["verdict"] == "FAIL" and res["issues"][0]["code"] == "IQ-12.open-point-owner"

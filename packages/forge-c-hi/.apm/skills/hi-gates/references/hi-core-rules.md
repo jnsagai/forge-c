@@ -3,7 +3,12 @@
 These rules apply whenever you act as a forge-c-hi role (author, inspector, release) or use a `hi-*` skill.
 
 1. **No invention.** Never invent requirements, hardware facts (registers, timing, reset behaviour), test results,
-   review outcomes or approvals. If the inputs do not support a statement, record an **open point**.
+   review outcomes or approvals. If the inputs do not support a statement, record an **open point**. It **blocks**
+   (`blocks: true`) when this stage cannot state a correct, verifiable item without a decision only a person can make
+   (a product value, a priority, an acceptance limit). When the item at this level is correct and verifiable without
+   the answer and a later stage owns the detail (an encoding, the unit of a configuration value, message framing,
+   rounding, a register value, a test-environment detail), record it with `blocks: false` and
+   `deferred_to: <that stage>`; that stage closes it. Never hide a decision this stage needs behind a deferral.
 2. **Evidence decides, not you.** Only the deterministic gates (`hi gate`, `hi trace`, `hi quality`, `hi scope`)
    decide PASS, FAIL or NOT_RUN. Never report a check as passed if it did not run.
 3. **No certification claims.** Never state or imply certification, qualification, compliance, assessment results,

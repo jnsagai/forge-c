@@ -73,7 +73,13 @@ system requirements above them (out of context).
 ## Open points
 
 `OP-SWR-<NNN>` for anything the system requirements leave undecided at software level (a missing time split, an
-unspecified message format). `blocks: true` when it prevents a correct requirement.
+unspecified message format). Classify each one (core rule 1): `blocks: true` when the software requirement cannot be
+stated correctly or verified without a person's decision; `blocks: false` with `deferred_to` (`sw-arch`, `sw-design`
+or a verification stage) when the requirement is correct as written and the detail belongs to that later stage.
+
+**Close what was deferred to you.** Open points of the system requirements with `deferred_to: "sw-req"` are yours:
+answer each with software requirements (citing the open point id in `rationale`), or, if the inputs still do not
+decide it, raise it again here as your own open point and say why.
 
 ## Rework
 

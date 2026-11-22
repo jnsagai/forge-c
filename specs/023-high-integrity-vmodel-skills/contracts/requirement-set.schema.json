@@ -243,6 +243,22 @@
           },
           "blocks": {
             "type": "boolean"
+          },
+          "deferred_to": {
+            "type": "string",
+            "enum": [
+              "sys-req",
+              "sys-arch",
+              "sw-req",
+              "sw-arch",
+              "sw-design",
+              "unit-verif",
+              "sw-integ",
+              "sw-qual",
+              "sys-integ",
+              "sys-qual"
+            ],
+            "description": "Non-blocking open point: the later stage that owns the detail and must close it."
           }
         }
       }
