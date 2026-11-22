@@ -54,8 +54,10 @@ def setup(work: Path) -> Path:
         raise SystemExit(f"{work} exists; use a new directory per run")
     work.mkdir(parents=True)
     shutil.copytree(EXAMPLE / "needs", work / "needs")
+    extra = [a for p in sorted((work / "needs").glob("*.md")) if p.name not in ("stakeholder-needs.md", "constraints.md")
+             for a in ("--input", f"needs/{p.name}:constraints")]
     subprocess.run([sys.executable, str(SKILLS / "hi-gates/scripts/hi.py"), "init", "--from",
-                    str(EXAMPLE / "hi-project.example.json")], cwd=work, check=True, capture_output=True)
+                    str(EXAMPLE / "hi-project.example.json"), *extra], cwd=work, check=True, capture_output=True)
     return work
 
 
@@ -103,17 +105,14 @@ BASELINE_PROMPT = """Write the system requirements for the product described by 
 
 Output only a JSON array. Each element: {{"id": "SYS-<AREA>-<NNN>", "text": "<requirement>", "sources": ["<need or constraint ids>"], "verification_method": "test|analysis|inspection|demonstration"}}.
 
---- needs/stakeholder-needs.md ---
-{needs}
---- needs/constraints.md ---
-{constraints}
+{docs}
 """
 
 
 def baseline(work: Path, out: Path) -> None:
     work = setup(work)
-    prompt = BASELINE_PROMPT.format(needs=(work / "needs/stakeholder-needs.md").read_text(),
-                                    constraints=(work / "needs/constraints.md").read_text())
+    prompt = BASELINE_PROMPT.format(docs="\n".join(f"--- needs/{p.name} ---\n{p.read_text()}"
+                                                   for p in sorted((work / "needs").glob("*.md"))))
     t0 = time.monotonic()
     r = subprocess.run(AUTHOR_CMD, input=prompt, cwd=work, capture_output=True, text=True, timeout=3600)
     wall = round(time.monotonic() - t0, 1)
