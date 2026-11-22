@@ -1,0 +1,984 @@
+{
+  "baseline_id": "baseline",
+  "items": [
+    {
+      "derived": false,
+      "id": "SYS-CFG-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall read the following from the configuration data block: the set of supervised tasks, each task's period, each task's start-time limit, each task's execution-time limit and the expected checkpoint order for each control cycle. Changing any of these values shall not require a change to the supervisor program code.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-101",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The default configuration shall define three supervised 10 ms tasks, T_IN, T_CTRL and T_OUT, released in that order every 10 ms. It shall also define one supervised 100 ms task, T_DIAG, released after T_OUT in every tenth 10 ms period. The 10 ms period shall be the control cycle.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The default configuration shall set the start-time limit of every supervised task to 2 ms after its release. It shall set the execution-time limit to 3 ms for each 10 ms task and to 20 ms for T_DIAG.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-CFG-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-115",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any supervised task is released, the supervisor shall check every configuration value against its allowed range. A timing limit longer than the task period, a zero period or an unknown task shall be detected as a configuration fault (fault code 9). The supervisor shall then enter the safe state and latch it until a power-on reset.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-ALV-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-102",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall start alive supervision of all supervised tasks when the start-up integrity checks have passed, and not before.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-ALV-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-102",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall detect an alive fault (fault code 1, entity = task name) when a supervised task has not completed an execution during 2 consecutive periods of its own. Detection shall occur at the end of the second period.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TIM-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall measure, for each supervised task, the delay from release to start and the execution time, with a resolution of 100 µs or finer, using a TIM time base.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TIM-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall detect a late-start fault (fault code 2, entity = task name) when a supervised task starts later after its release than the task's configured start-time limit.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TIM-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall detect an overrun fault (fault code 3, entity = task name) when a supervised task's configured execution-time limit expires and the task has not completed. Detection shall occur at the expiry of the limit, not at the later completion of the task.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-FLW-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-101",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-104",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Once per control cycle, at its end, the supervisor shall check that the checkpoints of all tasks released in that cycle have arrived in the configured order. A missing or out-of-order checkpoint shall be detected as a flow fault (fault code 4, entity = name of the first task whose checkpoint is missing or out of order).",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall enable the independent watchdog (IWDG) with a timeout of 100 ms. The register values shall be derived from ST RM0486.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall enable the window watchdog (WWDG) so that a refresh less than 6 ms or more than 12 ms after the previous refresh causes a reset. The register values shall be derived from ST RM0486.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-WDG-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall refresh both the IWDG and the WWDG exactly once per control cycle, at its end. The refresh shall happen only if no alive, timing, flow or integrity fault has been detected and every supervised task is healthy.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-INT-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any supervised task is released, the supervisor shall compute a CRC over the application image in flash between the linker symbols __app_start and __app_end (image size up to 1 MiB) and compare it with the image's reference CRC value. A mismatch shall be detected as a start-up code integrity fault (fault code 5, entity CODE).",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-INT-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, before any supervised task is released, the supervisor shall compute the CRC-32 (polynomial 0x04C11DB7) of the configuration data block and compare it with the block's stored CRC-32. A mismatch shall be detected as a configuration integrity fault (fault code 6, entity CONFIG).",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-INT-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "During operation, the supervisor shall check the application image in the background, processing one 1 KiB segment per control cycle. A full pass over a 1 MiB image shall complete within 11 s. A mismatch with the reference CRC value at the end of a pass shall be detected as a run-time code integrity fault (fault code 7, entity CODE).",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-INT-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The run-time code check shall use no more than 0.5 ms of processor time in any control cycle.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From any reset until the start-up checks have passed, the supervisor shall drive both control outputs and the status signal low.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall drive the status signal high (operational) only after the start-up checks have passed and while no fault is detected.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-105",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When any fault with code 1 to 7 or 9 is detected, the supervisor shall enter the safe state by driving both control outputs low and the status signal low. This shall be completed within 50 ms of the instant the fault becomes detectable by its rule: end of the alive window, expiry of a timing limit, end of the control cycle for flow, or completion of the failing integrity computation.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SAF-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Once in the safe state, the supervisor shall keep both control outputs and the status signal low until the next reset. If the safe state is latched, they shall stay low until a power-on reset.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After entering the safe state, and unless the safe state is latched, the supervisor shall transmit the fault report and then request a software reset within 20 ms of entering the safe state.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall latch the safe state until a power-on reset after three consecutive supervisor resets with the same fault code, with no 60 s period of fault-free operation between them. Two faults are the same when their fault codes are equal.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall reset its count of consecutive same-code supervisor resets after 60 s of continuous fault-free operation.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall keep the safe-state latch, the consecutive-reset count and the fault history in memory that is kept across software resets and watchdog resets. This memory shall be treated as cleared after a power-on reset.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, the supervisor shall classify the reset cause from the RCC reset flags as exactly one of: power-on, independent watchdog, window watchdog, supervisor (software) reset, or other.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-006",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up, the supervisor shall transmit a start-up message containing the classified reset cause on the diagnostic serial line.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-007",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall make the classified cause of the most recent reset readable by the service tool over the diagnostic serial line.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-RST-008",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the reset cause is classified as independent watchdog or window watchdog, the supervisor shall report a watchdog reset fault (fault code 8) on the diagnostic serial line and record it in the fault history.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIAG-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-007",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall run the diagnostic serial line on a USART at 115200 baud, 8 data bits, no parity, 1 stop bit.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIAG-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "For every detected fault, the supervisor shall transmit one line 'FLT,<code>,<entity>,<ms since start>' ending in a line feed. The line shall be sent within 10 ms of detection.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIAG-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall use these fault codes: 1 alive, 2 late start, 3 overrun, 4 flow, 5 code integrity at start-up, 6 configuration integrity, 7 code integrity at run time, 8 watchdog reset, 9 configuration out of range.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIAG-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The entity field of a fault report shall be the affected task name for fault codes 1 to 4, 'CODE' for fault codes 5 and 7, and 'CONFIG' for fault codes 6 and 9.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-DIAG-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The time stamp field of a fault report shall be the number of milliseconds elapsed since the supervisor started after the most recent reset.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SRV-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "On receipt of the request 'GET STATUS' on the diagnostic serial line, the supervisor shall answer 'STS,<state>,<fault count>' within 50 ms.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SRV-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "On receipt of the request 'GET FAULTS' on the diagnostic serial line, the supervisor shall answer with the last 8 fault reports from the fault history within 50 ms.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-SRV-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "On receipt of any request other than 'GET STATUS' or 'GET FAULTS' on the diagnostic serial line, the supervisor shall answer 'ERR' within 50 ms.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PERF-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-014",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-114",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "In normal operation (no fault, no service request), the supervisor's execution time shall not exceed 10 % of processor time over any 1 s window. This shall be measured on the Renode simulator at the configured core clock.",
+      "verification_method": "test"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TST-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Test builds of the supervisor shall provide test hooks that can inject each fault class with fault codes 1 to 9.",
+      "verification_method": "demonstration"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TST-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Fault-injection test hooks shall not be present in non-test builds of the supervisor.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TST-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall be executable in the Renode simulator using the STM32N6 platform descriptions, so that integration and system tests, including fault injection, run without real hardware.",
+      "verification_method": "demonstration"
+    },
+    {
+      "derived": false,
+      "id": "SYS-TST-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor's software units shall be buildable and testable as host unit tests with gcc, with coverage measured by gcovr.",
+      "verification_method": "demonstration"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall run on the STMicroelectronics STM32N657X0 (Arm Cortex-M55) microcontroller.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-004",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall be written in C11 and shall use neither dynamic memory allocation nor recursion.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall use only these peripherals: IWDG, WWDG, CRC, TIM, USART, GPIO and RCC.",
+      "verification_method": "inspection"
+    },
+    {
+      "derived": false,
+      "id": "SYS-PLT-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall drive the two control outputs and the status signal as GPIO digital outputs. For the control outputs, 'off' shall mean driven low. For the status signal, high shall mean operational and low shall mean not operational.",
+      "verification_method": "test"
+    }
+  ],
+  "open_points": [],
+  "provenance": {
+    "created_utc": "2026-11-22T19:41:16Z",
+    "harness": "claude-code",
+    "input_hashes": {
+      "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+      "needs/product-decisions.md": "6c59d12cccfeb816b295b134d41674bec25bdc633a67f4bd2bb6fa8c6c7fd077",
+      "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+    },
+    "model": null,
+    "model_family": "claude",
+    "role": "author",
+    "run_id": "baseline",
+    "skill": "none (plain prompt)",
+    "skill_version": "-"
+  },
+  "schema": "forge-c-hi/requirement-set@1",
+  "stage": "sys-req",
+  "status": "draft"
+}

@@ -55,11 +55,35 @@ def ambiguous_terms(text: str) -> list[str]:
     return found
 
 
+# Words after which a number is an identifier, not a quantity ("fault code 1", "codes 1 to 7 or 9", "step 3").
+ID_CONTEXT = {
+    "code", "codes", "id", "ids", "number", "numbers", "no", "item", "items", "step", "steps", "case", "cases",
+    "channel", "channels", "pin", "pins", "bit", "version", "rev", "revision", "section", "sections", "table",
+    "figure", "class", "classes", "level", "levels", "index", "entry", "slot", "phase", "mode", "modes", "type",
+    "option", "priority", "rank", "group", "port", "line", "event", "events", "state", "states",
+}
+LIST_GLUE = {"to", "and", "or", ","}
+
+
+def _identifier_number(text: str, start: int) -> bool:
+    """True when the number at `start` follows an identifier word, possibly through a list ("codes 1, 4 to 7 or 9")."""
+    words = re.findall(r"[A-Za-z]+|\d+(?:\.\d+)?|,", text[:start])[-8:]
+    for w in reversed(words):
+        lw = w.lower()
+        if lw in ID_CONTEXT:
+            return True
+        if not (lw in LIST_GLUE or w[0].isdigit()):
+            return False
+    return False
+
+
 def bare_numbers(text: str) -> list[str]:
     _, units, units_lower, _ = _lists()
     bare = []
     for m in NUMBER.finditer(text):
         unit = m.group(2)
+        if _identifier_number(text, m.start()):
+            continue
         if unit is None:
             bare.append(m.group(1))
         elif unit in units or unit.lower() in units_lower:

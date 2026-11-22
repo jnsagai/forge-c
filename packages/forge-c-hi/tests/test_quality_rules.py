@@ -86,6 +86,20 @@ def test_number_without_unit(text, bad):
     assert ("IQ-11.value-without-unit" in codes([dict(GOOD, text=text)])) is bad
 
 
+@pytest.mark.parametrize("text", [
+    "The supervisor shall report fault code 1 for an alive fault.",
+    "The supervisor shall latch the safe state for fault codes 1 to 7 or 9.",
+    "The entity shall be CODE for fault codes 5 and 7.",
+    "The status shall be reported in step 3.",
+])
+def test_identifier_numbers_need_no_unit(text):
+    assert quality.bare_numbers(text) == []
+
+
+def test_quantities_after_identifier_lists_still_need_units():
+    assert quality.bare_numbers("For fault code 1 the reaction shall take at most 50.") == ["50"]
+
+
 def test_ids_and_hex_are_not_numbers():
     assert quality.bare_numbers("Refresh per RM0486 using key 0xAAAA as in SYS-SUP-001.") == []
 

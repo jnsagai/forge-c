@@ -32,5 +32,11 @@
     "trace_issues": {},
     "wall_time_s": 79.7
   },
-  "metrics_note": "inline_open_markers added after the run (exploratory, not a pre-registered metric)"
+  "metrics_note": "inline_open_markers added after the run (exploratory, not a pre-registered metric)",
+  "rescored": [
+    {
+      "note": "IQ-11 unit rule fixed: numbers that are identifiers (fault code 1, codes 1 to 7) need no unit",
+      "utc": "2026-11-22T19:42:07Z"
+    }
+  ]
 }

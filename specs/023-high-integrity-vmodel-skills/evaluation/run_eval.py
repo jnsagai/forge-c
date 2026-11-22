@@ -218,6 +218,19 @@ def seeded(work: Path, corpus: Path, key_file: Path, out: Path, plain: bool) -> 
                      "harness_versions": harness_versions(), "artefacts": [f"repos/{Path(work).name}"], "created_utc": utc_now()})
 
 
+def rescore(files: list[Path], repos: Path, note: str) -> None:
+    """Recompute the workproduct metrics of stored run records with the current gate code (all arms alike)."""
+    for f in files:
+        rec = read_json(f)
+        if rec["arm"] not in ("baseline", "with_package"):
+            continue
+        work = repos / Path(rec["artefacts"][0]).name
+        rec["metrics"].update(metrics_for(work))
+        rec.setdefault("rescored", []).append({"utc": utc_now(), "note": note})
+        write_json(f, rec)
+        print(f.name, rec["metrics"]["rule_violations_per_100"])
+
+
 def report(d: Path) -> None:
     rows = [read_json(p) for p in sorted(d.glob("*.json"))]
     for r in rows:
@@ -242,6 +255,10 @@ def main() -> int:
     s.add_argument("--key", required=True)
     s.add_argument("--out", required=True)
     s.add_argument("--plain", action="store_true")
+    rs = sub.add_parser("rescore")
+    rs.add_argument("files", nargs="+")
+    rs.add_argument("--repos", required=True)
+    rs.add_argument("--note", required=True)
     r = sub.add_parser("report")
     r.add_argument("--dir", required=True)
     a = ap.parse_args()
@@ -251,6 +268,8 @@ def main() -> int:
         with_package(Path(a.project), Path(a.out))
     elif a.cmd == "seeded":
         seeded(Path(a.work), Path(a.corpus), Path(a.key), Path(a.out), a.plain)
+    elif a.cmd == "rescore":
+        rescore([Path(x) for x in a.files], Path(a.repos), a.note)
     else:
         report(Path(a.dir))
     return 0
