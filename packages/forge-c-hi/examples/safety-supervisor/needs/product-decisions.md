@@ -44,3 +44,14 @@ demo inputs, not recommendations for a real product. Requirements may cite them 
 | ID | Decision |
 |---|---|
 | CON-SUP-123 | To find the entity of a flow fault (CON-SUP-122), the checkpoints received in the control cycle are compared with the configured release order position by position. The entity is the task expected at the first position where the received checkpoint differs or is missing. Example: expected T_IN, T_CTRL; received T_CTRL, T_IN: the entity is T_IN. |
+
+**Fifth round.** The inspector judged five deferred open points to be needed at system level; the product owner
+decides them.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-124 | Program code integrity uses the same CRC-32 as the configuration block (CON-SUP-107). The reference value is stored in the 4 bytes at linker symbol `__app_crc`, outside the checked range `__app_start`..`__app_end`. |
+| CON-SUP-125 | `<state>` in `STS,<state>,<fault count>` is one of `STARTUP`, `OPERATIONAL`, `SAFE`, `LATCHED`. `<fault count>` is the number of fault reports since the last power-on reset; like the fault history it survives software and watchdog resets (CON-SUP-110). |
+| CON-SUP-126 | `<ms since start>` counts milliseconds since the latest reset of any kind, as an unsigned 32-bit decimal number that wraps to 0 after 4294967295 ms. |
+| CON-SUP-127 | A measured start delay or execution time equal to its limit is within the limit. Because times are measured with 100 µs resolution, a violation may be detected up to 100 µs after the limit expires; verification uses margins of at least 200 µs on either side of a limit. |
+| CON-SUP-128 | A supervised task that has not started when its start limit expires has a late start (code 2), detected when the start limit expires. |

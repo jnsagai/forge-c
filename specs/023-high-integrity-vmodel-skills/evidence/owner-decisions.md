@@ -45,3 +45,6 @@
   Claude.
 - **Fourth round:** `CON-SUP-123` clarifies `CON-SUP-122` (which task is named when checkpoints arrive swapped). Same
   status: fictional, by Claude.
+- **Fifth round:** `CON-SUP-124..128`. After pass 4 no open point blocked, but the inspector raised blocking findings
+  against five deferred open points (deferral hides a system-level decision, as the skills now ask it to check). The
+  product owner decides them. Same status: fictional, by Claude.

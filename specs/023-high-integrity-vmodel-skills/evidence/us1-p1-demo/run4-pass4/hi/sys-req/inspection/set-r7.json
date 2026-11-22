@@ -1,0 +1,171 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-010",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-003 requires detection when a task starts late but sets no detection deadline. CON-SUP-105 measures the safe-state reaction from expiry of a timing limit; OP-SYS-010 leaves detection of a task that never starts unresolved.",
+      "id": "F-sys-req-set-r7-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-010 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "blocked_by": "OP-SYS-009",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-003 accepts a start at the limit and rejects a later start, while CON-SUP-103 specifies 100 µs measurement resolution. OP-SYS-009 leaves classification of starts in the measurement step containing the limit unresolved.",
+      "id": "F-sys-req-set-r7-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-009 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-014 detects a mismatch against a stored reference, but OP-SYS-004 leaves the reference and comparison method undefined. The expected detection of changes to the application image required by STK-SUP-007 cannot be established.",
+      "id": "F-sys-req-set-r7-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-004 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-014"
+    },
+    {
+      "blocked_by": "OP-SYS-006",
+      "checklist_item": "IQ-06",
+      "description": "CON-SUP-112 requires milliseconds since start, but OP-SYS-006 leaves the timestamp origin and wrap behavior undefined. Expected report values across resets and counter wrap cannot be determined.",
+      "id": "F-sys-req-set-r7-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-006 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-024"
+    },
+    {
+      "blocked_by": "OP-SYS-005",
+      "checklist_item": "IQ-06",
+      "description": "OP-SYS-005 leaves the status state values and the meaning of fault count undefined, so the expected GET STATUS response under CON-SUP-113 cannot be determined for a given operating and reset history.",
+      "id": "F-sys-req-set-r7-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-005 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-033"
+    },
+    {
+      "blocked_by": "OP-SYS-009",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-004 requires detection at expiry while accepting completion at that instant. OP-SYS-009 leaves treatment of a completion in the same 100 µs measurement step as expiry unspecified, preventing a boundary verdict under CON-SUP-103.",
+      "id": "F-sys-req-set-r7-006",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-009 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-004"
+    },
+    {
+      "blocked_by": "OP-SYS-010",
+      "checklist_item": "SQ-02",
+      "description": "SYS-SUP-003 detects a late-start fault only when the task starts, while CON-SUP-105 measures the reaction from expiry of a timing limit. OP-SYS-010 defers the detection instant for a task that never starts, leaving its timely response unresolved. This is blocking because the required fault response is incomplete.",
+      "id": "F-sys-req-set-r7-007",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:09:01Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230754Z-ad9891",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-010 as blocking.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 7,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -1,0 +1,61 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-06",
+      "description": "The requirement calls for detection at the moment elapsed time exceeds the limit, while its rationale calls for detection at the first 100 µs measurement step after the limit. CON-SUP-103 specifies 100 µs resolution but does not define how elapsed time or the detection instant is quantized. A verifier cannot determine the required detection time for a limit crossing between measurement steps.",
+      "id": "F-sys-req-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:54:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T224651Z-fa4240",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define a source-supported, measurable detection instant and the treatment of limit crossings between measurement steps; record a blocking open point if a product decision is needed.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "blocked_by": "OP-SYS-009",
+      "checklist_item": "IQ-06",
+      "description": "The requirement demands detection at the expiry instant while accepting a completion at that same instant. OP-SYS-009 acknowledges that the treatment of a completion in the same 100 µs measurement step as expiry is unspecified. A verifier cannot decide whether such a completion must cause fault code 3.",
+      "id": "F-sys-req-item-r3-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:54:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T224651Z-fa4240",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-009 as blocking and obtain the decision needed to define the expiry-boundary behavior.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-004"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-003",
+    "SYS-SUP-004",
+    "SYS-SUP-009",
+    "SYS-SUP-011",
+    "SYS-SUP-043"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}
