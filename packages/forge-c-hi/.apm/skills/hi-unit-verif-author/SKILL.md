@@ -144,3 +144,8 @@ can be stated. `blocks: true` when it prevents verifying a unit. Never take the 
   A test that fails because the code contradicts the design is reported as an issue, for example
   `{"code": "CODE-DEFECT", "target_id": "UTC-SUP-004"}`.
 - In assisted mode, run `hi gate unit-verif` before replying and report its verdicts unchanged.
+
+## Open points during rework
+
+Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
+instead of adding a duplicate. Rework cannot answer an open point; only a change in the inputs (a human decision) can.

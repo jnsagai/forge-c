@@ -23,6 +23,7 @@ import argparse
 import copy
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -136,7 +137,7 @@ class Conductor:
             "profile": self.rigor["profile"], "integrity_level": self.rigor["level"],
             "level_name": self.rigor["level_name"],
             "reply_contract": rel(self.root, REFS / "schemas" / "agent-status.schema.json") if role == "author"
-            else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change"}]}',
+            else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change", "blocked_by"?}]}',
             **kw,
         }
 
@@ -315,6 +316,8 @@ class Conductor:
                                harness=binding["harness"], run_id=self.run_id, model=binding.get("model"),
                                model_family=binding.get("model_family"))
         out, dropped = [], 0
+        open_points = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
+                       if isinstance(o, dict)}
         for n, f in enumerate(reply["findings"], 1):
             if not isinstance(f, dict):
                 dropped += 1
@@ -327,6 +330,8 @@ class Conductor:
             }
             if f.get("requested_change"):
                 rec["requested_change"] = str(f["requested_change"])[:600]
+            if f.get("blocked_by") in open_points:
+                rec["blocked_by"] = f["blocked_by"]
             if phase == "item" and rec["target_id"] not in items:
                 dropped += 1
                 continue
@@ -389,9 +394,6 @@ class Conductor:
         try:
             if resume:
                 all_findings = gates.findings(self.root, stage)
-                for f in all_findings:
-                    if f["status"] == "carried":
-                        f["status"] = "open"  # judged again in this run
                 base_item, base_set = self.last_rounds(stage)
                 jp = self.root / "hi" / stage / "inspection" / "judged.json"
                 judged = read_json(jp).get("items", {}) if jp.is_file() else {}
@@ -403,6 +405,11 @@ class Conductor:
                     _, issues = self.det_issues(stage)
                     if issues:
                         self.author_with_gates_fix_only(stage, issues)
+                ops_now = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
+                           if isinstance(o, dict)}
+                for f in all_findings:  # judged again in this run, unless still waiting on an open point
+                    if f["status"] == "carried" and f.get("blocked_by") not in ops_now:
+                        f["status"] = "open"
             else:
                 self.author_with_gates(stage, "create")
             if self.dry_run:
@@ -428,8 +435,10 @@ class Conductor:
                         f["status"] = "resolved"
                 all_findings += new
                 self.save_findings(stage, all_findings)
+                # a finding that waits on an open point cannot be reworked away: it is carried to the decision
                 flagged = sorted({f["target_id"] for f in all_findings
-                                  if f["status"] == "open" and f["phase"] == "item" and f["severity"] in REWORK_SEVERITIES})
+                                  if f["status"] == "open" and f["phase"] == "item" and f["severity"] in REWORK_SEVERITIES
+                                  and not f.get("blocked_by")})
                 if not flagged:
                     break
                 if rnd - base_item > self.limit:
@@ -437,7 +446,8 @@ class Conductor:
                     break
                 added: list[str] = []
                 for iid in flagged:
-                    mine = [f for f in all_findings if f["status"] == "open" and f["target_id"] == iid]
+                    mine = [f for f in all_findings if f["status"] == "open" and f["target_id"] == iid
+                            and not f.get("blocked_by")]
                     added += self.rework_item(stage, iid, mine, rnd)
                 _, issues = self.det_issues(stage)
                 if issues:
@@ -457,12 +467,17 @@ class Conductor:
                 new = self.inspect(stage, "set", srnd, [], carried + prior_set)
                 # the set inspector re-judges the carried findings and the earlier set findings: whatever it does
                 # not raise again is resolved; what it still sees wrong comes back as a new open set finding
+                # a finding that waits on an open point stays carried while that open point exists
+                ops_now = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
+                           if isinstance(o, dict)}
                 for f in all_findings:
+                    if f.get("blocked_by") in ops_now and f["status"] in ("carried", "open"):
+                        continue
                     if f["status"] == "carried" or (f["status"] == "open" and f["phase"] == "set"):
                         f["status"] = "resolved"
                 all_findings += new
                 self.save_findings(stage, all_findings)
-                open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES]
+                open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
                 if not open_set:
                     break
                 if srnd - base_set > self.limit:
@@ -540,7 +555,13 @@ class Conductor:
         return summary
 
 
+def _terminate(signum, _frame):
+    raise SystemExit(128 + signum)  # unwinds through run_role's finally, which clears .hi/active-role.json
+
+
 def main(argv: list[str] | None = None) -> int:
+    signal.signal(signal.SIGTERM, _terminate)
+    signal.signal(signal.SIGHUP, _terminate)
     ap = argparse.ArgumentParser(prog="conduct")
     ap.add_argument("--stage", required=True)
     ap.add_argument("--until")

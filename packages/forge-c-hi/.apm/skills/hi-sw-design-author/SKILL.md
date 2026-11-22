@@ -157,3 +157,8 @@ If you disagree with a finding, keep the unit and add a short `attributes.ration
   (list at most 20 outputs; name the design file first).
 - In assisted mode, run `hi gate sw-design` before replying and report its verdicts unchanged, including NOT_RUN
   when a compiler or cppcheck is missing.
+
+## Open points during rework
+
+Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
+instead of adding a duplicate. Rework cannot answer an open point; only a change in the inputs (a human decision) can.

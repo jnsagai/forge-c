@@ -87,3 +87,8 @@ Same phases as the system-requirements author: `fix-gates`, `rework` (only the n
 - Reply with one AgentStatus JSON object, for example
   `{"role": "author", "stage": "sw-req", "status": "DONE", "outputs": ["hi/sw-req/requirements.json"], "issues": [], "open_points": 0}`.
 - In assisted mode, run `hi gate sw-req` before replying and report its verdicts unchanged.
+
+## Open points during rework
+
+Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
+instead of adding a duplicate. Rework cannot answer an open point; only a change in the inputs (a human decision) can.

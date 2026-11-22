@@ -43,6 +43,9 @@ def main() -> int:
             "env_role": os.environ.get("HI_ROLE"),
         }) + "\n")
     wp = root / task["workproduct"]
+    if sc.get(role, {}).get("sleep"):
+        import time
+        time.sleep(sc[role]["sleep"])
     if role == "author":
         a = sc.get("author", {})
         if task["phase"] == "create":

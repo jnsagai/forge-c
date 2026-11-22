@@ -308,3 +308,51 @@ def test_fresh_reauthors(tmp_path):
     (root.parent / "p-calls.jsonl").unlink()
     _, _, calls = conduct(root, sc, "--stage", "sys-req", "--fresh")
     assert calls[0]["phase"] == "create"
+
+
+def test_findings_blocked_by_an_open_point_are_carried_not_reworked(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = [{"id": "OP-SYS-001", "text": "The repeat count is not given.", "raised_by": "author", "blocks": True}]
+    waits = dict(F("IQ-06", "blocking"), blocked_by="OP-SYS-001")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "open_points": op},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [waits], "SYS-SUP-002": [F("IQ-04")]}, {}],
+                                    "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    reworked = [c["items"] for c in calls if c["phase"] == "rework"]
+    assert reworked == [["SYS-SUP-002"]]                      # the blocked finding is not sent to rework
+    fs = json.loads((root / "hi/sys-req/inspection/findings.json").read_text())["findings"]
+    blocked = [f for f in fs if f.get("blocked_by") == "OP-SYS-001"]
+    assert blocked and blocked[0]["status"] == "carried"
+    assert code == 1 and "blocking open points" in out["stages"][0]["reason"]
+
+
+def test_blocked_by_an_unknown_open_point_is_ignored(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS},
+                      "inspector": {"item_rounds": [{"SYS-SUP-001": [dict(F("IQ-06"), blocked_by="OP-SYS-404")]}, {}],
+                                    "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert [c["items"] for c in calls if c["phase"] == "rework"] == [["SYS-SUP-001"]]
+    assert code == 0, out
+
+
+def test_sigterm_clears_the_active_role(tmp_path):
+    import signal
+    import time
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "sleep": 30}})
+    env = {"FAKE_SCENARIO": str(sc), "FAKE_LOG": str(tmp_path / "log.jsonl"), "PATH": "/usr/bin:/bin"}
+    proc = subprocess.Popen([sys.executable, str(CONDUCT), "--stage", "sys-req"], cwd=root, env=env,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    for _ in range(100):
+        if (root / ".hi/active-role.json").exists():
+            break
+        time.sleep(0.1)
+    assert (root / ".hi/active-role.json").exists()
+    proc.send_signal(signal.SIGTERM)
+    proc.wait(timeout=20)
+    assert proc.returncode != 0
+    assert not (root / ".hi/active-role.json").exists()

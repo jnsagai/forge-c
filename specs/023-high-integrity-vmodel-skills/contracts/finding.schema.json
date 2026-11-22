@@ -113,6 +113,11 @@
           "type": "string"
         }
       }
+    },
+    "blocked_by": {
+      "type": "string",
+      "pattern": "^OP-[A-Z0-9_]+-[0-9]{3}$",
+      "description": "The open point whose human decision this finding waits on. The author cannot resolve it by rework; the conductor carries it until the decision is made."
     }
   }
 }

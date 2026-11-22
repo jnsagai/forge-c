@@ -80,3 +80,10 @@ Exactly one JSON object and nothing after it:
 ```
 
 Use `"status": "BLOCKED"` with an empty list only if you cannot read the workproduct, its files or its inputs.
+
+## Findings that wait on a decision
+
+If a defect exists only because an **open point** in the workproduct still waits for a human decision (a value or
+behaviour the inputs do not give), add `"blocked_by": "<open point id>"` to the finding. The author cannot fix it by
+rework, so the conductor carries it until the decision is made, and the open point already blocks the stage. Use
+`blocked_by` only when the open point really is the cause; a defect the author can fix now gets no `blocked_by`.

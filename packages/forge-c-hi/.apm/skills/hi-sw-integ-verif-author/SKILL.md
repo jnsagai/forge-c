@@ -125,3 +125,8 @@ platform cannot exercise something. `blocks: true` when it prevents verifying an
 - Reply with one AgentStatus JSON object (`hi-gates/references/schemas/agent-status.schema.json`), for example
   `{"role": "author", "stage": "sw-integ", "status": "DONE", "outputs": ["hi/sw-integ/test-spec.json"], "issues": [], "open_points": 0}`.
 - In assisted mode, run `hi gate sw-integ` before replying and report its verdicts unchanged.
+
+## Open points during rework
+
+Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
+instead of adding a duplicate. Rework cannot answer an open point; only a change in the inputs (a human decision) can.

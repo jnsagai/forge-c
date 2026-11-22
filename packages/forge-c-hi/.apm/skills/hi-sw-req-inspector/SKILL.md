@@ -45,3 +45,9 @@ For `DRV-*` items written from a reference document:
 - **No quoted text:** report any sentence or table copied from the document (hi-core rule 6).
 - Your findings describe the mismatch in your own words and cite section and page; do not quote the document either.
 
+## Findings that wait on a decision
+
+If a defect exists only because an **open point** in the workproduct still waits for a human decision (a value or
+behaviour the inputs do not give), add `"blocked_by": "<open point id>"` to the finding. The author cannot fix it by
+rework, so the conductor carries it until the decision is made, and the open point already blocks the stage. Use
+`blocked_by` only when the open point really is the cause; a defect the author can fix now gets no `blocked_by`.
