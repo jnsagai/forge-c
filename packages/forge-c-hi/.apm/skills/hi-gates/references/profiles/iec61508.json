@@ -1,0 +1,167 @@
+{
+  "id": "iec61508",
+  "title": "IEC 61508:2010 (functional safety of E/E/PE systems)",
+  "version": "0.1.0",
+  "level_map": {
+    "HI-1": "SIL 1",
+    "HI-2": "SIL 2",
+    "HI-3": "SIL 3",
+    "HI-4": "SIL 4"
+  },
+  "vocabulary": {
+    "sys-req": "E/E/PE system design requirements specification",
+    "sys-arch": "E/E/PE system architecture",
+    "sw-req": "Software safety requirements specification",
+    "sw-arch": "Software architecture design",
+    "sw-design": "Detailed design and code implementation",
+    "unit-verif": "Software module testing",
+    "sw-integ": "Software integration testing",
+    "sw-qual": "Software aspects of system safety validation",
+    "sys-integ": "E/E/PE system integration",
+    "sys-qual": "E/E/PE system safety validation"
+  },
+  "clause_refs": {
+    "sys-req": [
+      "IEC 61508-2:2010 7.2"
+    ],
+    "sys-arch": [
+      "IEC 61508-2:2010 7.4"
+    ],
+    "sw-req": [
+      "IEC 61508-3:2010 7.2"
+    ],
+    "sw-arch": [
+      "IEC 61508-3:2010 7.4.3"
+    ],
+    "sw-design": [
+      "IEC 61508-3:2010 7.4.5",
+      "IEC 61508-3:2010 7.4.6"
+    ],
+    "unit-verif": [
+      "IEC 61508-3:2010 7.4.7"
+    ],
+    "sw-integ": [
+      "IEC 61508-3:2010 7.4.8"
+    ],
+    "sw-qual": [
+      "IEC 61508-3:2010 7.7"
+    ],
+    "sys-integ": [
+      "IEC 61508-2:2010 7.5"
+    ],
+    "sys-qual": [
+      "IEC 61508-2:2010 7.7"
+    ],
+    "support": [
+      "IEC 61508-3:2010 7.9",
+      "IEC 61508-1:2010 6"
+    ]
+  },
+  "rigor": {
+    "HI-1": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-2": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-3": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-4": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": 100
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    }
+  },
+  "disclaimer": "Forge-C output is engineering input for human review. It is not a certification, qualification, compliance statement, assessment result, safety approval or production release for any standard.",
+  "notes": "Rigor values are Forge-C engineering defaults mapped to the standard's level names. They are not quoted from the standard. A profile owner tunes them against a licensed copy of the standard. Clause identifiers are references only; verify them against your edition."
+}

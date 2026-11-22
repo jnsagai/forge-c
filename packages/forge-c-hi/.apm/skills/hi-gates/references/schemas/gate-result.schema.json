@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/gate-result",
+  "title": "Deterministic gate result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gate",
+    "verdict",
+    "tool",
+    "exit_code",
+    "evidence",
+    "issues",
+    "profile",
+    "integrity_level"
+  ],
+  "properties": {
+    "gate": {
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_RUN"
+      ]
+    },
+    "tool": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "target_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "not_run_reason": {
+      "type": "string"
+    },
+    "profile": {
+      "type": "string"
+    },
+    "integrity_level": {
+      "type": "string",
+      "pattern": "^HI-[0-4]$"
+    }
+  }
+}

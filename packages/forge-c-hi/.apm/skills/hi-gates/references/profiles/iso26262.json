@@ -1,0 +1,189 @@
+{
+  "id": "iso26262",
+  "title": "ISO 26262:2018 (road vehicles)",
+  "version": "0.1.0",
+  "level_map": {
+    "HI-0": "QM",
+    "HI-1": "ASIL A",
+    "HI-2": "ASIL B",
+    "HI-3": "ASIL C",
+    "HI-4": "ASIL D"
+  },
+  "vocabulary": {
+    "sys-req": "Technical safety requirements",
+    "sys-arch": "System architectural design",
+    "sw-req": "Software safety requirements",
+    "sw-arch": "Software architectural design",
+    "sw-design": "Software unit design and implementation",
+    "unit-verif": "Software unit verification",
+    "sw-integ": "Software integration and verification",
+    "sw-qual": "Testing of the embedded software",
+    "sys-integ": "System and item integration and testing",
+    "sys-qual": "Safety validation"
+  },
+  "clause_refs": {
+    "sys-req": [
+      "ISO 26262-4:2018 6"
+    ],
+    "sys-arch": [
+      "ISO 26262-4:2018 6"
+    ],
+    "sw-req": [
+      "ISO 26262-6:2018 6"
+    ],
+    "sw-arch": [
+      "ISO 26262-6:2018 7"
+    ],
+    "sw-design": [
+      "ISO 26262-6:2018 8"
+    ],
+    "unit-verif": [
+      "ISO 26262-6:2018 9"
+    ],
+    "sw-integ": [
+      "ISO 26262-6:2018 10"
+    ],
+    "sw-qual": [
+      "ISO 26262-6:2018 11"
+    ],
+    "sys-integ": [
+      "ISO 26262-4:2018 7"
+    ],
+    "sys-qual": [
+      "ISO 26262-4:2018 8"
+    ],
+    "support": [
+      "ISO 26262-8:2018 6",
+      "ISO 26262-8:2018 7",
+      "ISO 26262-8:2018 8",
+      "ISO 26262-8:2018 9",
+      "ISO 26262-8:2018 11"
+    ]
+  },
+  "rigor": {
+    "HI-0": {
+      "required_gates": [
+        "validate",
+        "trace"
+      ],
+      "independence": "same-session-ok",
+      "coverage": {
+        "statement": null,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 2
+    },
+    "HI-1": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-2": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-3": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-4": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": 100
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    }
+  },
+  "disclaimer": "Forge-C output is engineering input for human review. It is not a certification, qualification, compliance statement, assessment result, safety approval or production release for any standard.",
+  "notes": "Rigor values are Forge-C engineering defaults mapped to the standard's level names. They are not quoted from the standard. A profile owner tunes them against a licensed copy of the standard. Clause identifiers are references only; verify them against your edition."
+}

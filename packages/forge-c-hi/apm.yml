@@ -1,0 +1,14 @@
+name: forge-c-hi
+version: 0.1.0
+description: >-
+  Forge-C high-integrity V-model skills. Author and independent-inspector skills for every V-model stage, from system
+  requirements to system qualification, under standard profiles (generic, ISO 26262, IEC 61508, ASPICE). Deterministic
+  traceability, quality and scope gates. Sealed READY_FOR_OFFLINE_REVIEW or BLOCKED review packages. Works with cloud
+  and local models. Not a certification tool.
+author: Forge-C contributors
+license: Apache-2.0
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}

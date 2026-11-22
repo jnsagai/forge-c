@@ -1,0 +1,111 @@
+{
+  "id": "sw-qual",
+  "version": "1.0.0",
+  "stages": [
+    "sw-qual"
+  ],
+  "phase": "set",
+  "_source": "Forge-C factory/checklists/v0.4/SWE.6.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.6.yaml, neutralised for feature 023",
+  "items": [
+    {
+      "id": "SQT-01",
+      "title": "Verified against approved requirements",
+      "pass_criterion": "The integrated software is verified against the approved baseline of software requirements.",
+      "typical_defect": "Tests written against a draft or superseded requirements version.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.6.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-02",
+      "title": "Measure selection covers normal, boundary and failure",
+      "pass_criterion": "Verification measures and their selection cover normal, boundary and failure behaviour of the requirements.",
+      "typical_defect": "Only nominal scenarios; boundary and failure behaviour unverified.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.6.BP1",
+        "SWE.6.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-03",
+      "title": "Safety functions and target constraints addressed",
+      "pass_criterion": "Safety functions, fault responses and target-specific constraints are addressed by the verification, where applicable.",
+      "typical_defect": "Fault reaction requirement verified only by review, with no executed scenario.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.6.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-04",
+      "title": "Requirement coverage by passing tests",
+      "pass_criterion": "Every verification test traces to software requirements, and every software requirement is verified by at least one executed, passing verification test.",
+      "typical_defect": "Requirement with no executed test, or a test tracing to no requirement.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.6.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-05",
+      "title": "Trace consistency",
+      "pass_criterion": "Requirements to measures to results traceability is complete and consistent in meaning.",
+      "typical_defect": "Test linked to a requirement but checks a different value or condition.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.6.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-06",
+      "title": "Auditable criteria and results",
+      "pass_criterion": "Pass/fail criteria, actual results, regressions and defect status are auditable.",
+      "typical_defect": "Verdicts recorded without expected values or logs; regression status unknown.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.6.BP3",
+        "SWE.6.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    },
+    {
+      "id": "SQT-07",
+      "title": "Accurate verification summary",
+      "pass_criterion": "The final verification summary states unverified requirements, hardware and integrity-level gaps accurately and makes no certification or release claim.",
+      "typical_defect": "Summary claims full verification while target or integrity-level gaps remain.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.6.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 11"
+      ]
+    }
+  ]
+}

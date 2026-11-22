@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/trace",
+  "title": "Trace links (hi/trace.json)",
+  "type": "object",
+  "required": [
+    "schema",
+    "links"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c-hi/trace@1"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "type",
+          "status"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "derives",
+              "allocates",
+              "realises",
+              "implements",
+              "verifies",
+              "interfaces"
+            ]
+          },
+          "status": {
+            "enum": [
+              "valid",
+              "suspect"
+            ]
+          },
+          "suspect_reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

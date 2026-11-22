@@ -1,0 +1,154 @@
+{
+  "id": "sw-design",
+  "version": "1.0.0",
+  "stages": [
+    "sw-design"
+  ],
+  "phase": "set",
+  "_source": "Forge-C factory/checklists/v0.4/SWE.3.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.3.yaml, neutralised for feature 023",
+  "items": [
+    {
+      "id": "SDD-01",
+      "title": "Consistent with architecture",
+      "pass_criterion": "Detailed design, unit-level APIs and interfaces match the software architecture (names, signatures, allocated behaviour).",
+      "typical_defect": "Unit API signature differs from the interface defined in the architecture.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.3.BP1",
+        "SWE.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-02",
+      "title": "Unit specification and trace",
+      "pass_criterion": "Every unit has a detailed design (static and dynamic) in a notation that parses and a unit specification; every unit-spec item traces to a requirement allocated to the unit's element, and every allocated requirement is refined.",
+      "typical_defect": "Allocated requirement not refined by any unit-spec item; design view fails to parse.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.3.BP1",
+        "SWE.3.BP2",
+        "SWE.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-03",
+      "title": "Code-to-design trace",
+      "pass_criterion": "Every function carries trace annotations naming its unit and unit-spec items, the documentation generator runs without warnings, and every unit-spec item is referenced by code.",
+      "typical_defect": "Function with no trace annotation; unit-spec item referenced by no code.",
+      "deterministic": true,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-04",
+      "title": "Implementation complete",
+      "pass_criterion": "Every function allocated in the architecture is declared in the public interface and defined in the source; functions called across layers are defined; no code is commented out.",
+      "typical_defect": "Allocated API declared but never defined, or implementation left inside a comment.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-05",
+      "title": "Hardware definitions conform to reference",
+      "pass_criterion": "Every hardware definition (register offset, bit position, mask) matches the controlled hardware reference supplied as input; no definition exists for a register or field absent from that reference.",
+      "typical_defect": "Invented register offset or mask not present in the hardware reference.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": []
+    },
+    {
+      "id": "SDD-06",
+      "title": "Safe hardware and data access",
+      "pass_criterion": "Code handles hardware access, volatile qualification, bounds, initialisation and read-modify-write safely.",
+      "typical_defect": "Unbounded array index, or non-atomic read-modify-write on a shared register.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-07",
+      "title": "Bounded concurrency, timing and error propagation",
+      "pass_criterion": "Interrupt/concurrency behaviour, waits and loops are bounded (e.g. by timeout), and error propagation to callers is defined and consistent.",
+      "typical_defect": "Polling loop on a hardware flag with no timeout; error code silently dropped.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP2",
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-08",
+      "title": "Coding guideline conformance",
+      "pass_criterion": "Code conforms to the project's coding guideline and language subset; static-analysis findings and guideline deviations are recorded with rationale.",
+      "typical_defect": "Guideline violations with no recorded deviation; static-analysis report missing.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 5",
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-09",
+      "title": "Resource usage bounded",
+      "pass_criterion": "No dynamic memory where prohibited; stack, code and data memory impacts are measured or budgeted against the architecture budgets.",
+      "typical_defect": "Heap allocation in a context where it is prohibited; no stack estimate.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    },
+    {
+      "id": "SDD-10",
+      "title": "Source matches design with provenance",
+      "pass_criterion": "Units and source match the detailed design, with change and trace provenance (version identity of design and code).",
+      "typical_defect": "Code changed after design baseline with no corresponding design update or change record.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 8"
+      ]
+    }
+  ]
+}

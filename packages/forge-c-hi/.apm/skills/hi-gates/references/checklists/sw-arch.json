@@ -1,0 +1,151 @@
+{
+  "id": "sw-arch",
+  "version": "1.0.0",
+  "stages": [
+    "sw-arch"
+  ],
+  "phase": "set",
+  "_source": "Forge-C factory/checklists/v0.4/SWE.2.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.2.yaml, neutralised for feature 023",
+  "items": [
+    {
+      "id": "SWA-01",
+      "title": "Requirement allocation complete",
+      "pass_criterion": "Every requirement of the level above is allocated to at least one software element, and the architecture references no unknown requirement ID.",
+      "typical_defect": "A requirement allocated to no element, or an allocation to a non-existent requirement ID.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.2.BP1",
+        "SWE.2.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-02",
+      "title": "Elements and interfaces identified",
+      "pass_criterion": "Every software element has a unique ID and defined responsibility; every connection between elements carries a unique interface ID.",
+      "typical_defect": "Unnamed connection between elements, or two elements sharing one ID.",
+      "deterministic": true,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-03",
+      "title": "Well-formed workproduct and views",
+      "pass_criterion": "The workproduct is the architecture itself (not a status summary), contains element, interface, hardware-resource and requirement-allocation sections, and its static and dynamic views use a machine-checkable notation that parses and renders.",
+      "typical_defect": "A status reply submitted as the architecture, or a view that fails to parse.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.2.BP1",
+        "SWE.2.BP2"
+      ],
+      "iso26262_refs": []
+    },
+    {
+      "id": "SWA-04",
+      "title": "Dynamic behaviour specified",
+      "pass_criterion": "The dynamic view shows operating modes, main interaction sequences of the allocated interfaces, and error/timeout paths for blocking operations (or the caller-bounded wait where the element itself does not time out).",
+      "typical_defect": "Sequence shows only the success path; no timeout or error path for a blocking call.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-05",
+      "title": "Hardware resource ownership and access semantics",
+      "pass_criterion": "Ownership of shared hardware resources, access semantics (volatile, atomic or read-modify-write), clock and reset dependencies are defined, and every hardware fact matches the controlled hardware reference supplied as input.",
+      "typical_defect": "Two elements write the same register field with no owner; offset not found in the hardware reference.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-06",
+      "title": "Concurrency and scheduling addressed",
+      "pass_criterion": "Concurrency, interrupt/event synchronisation, scheduling and reentrancy of elements and interfaces are addressed.",
+      "typical_defect": "Shared state accessed from interrupt and task context with no synchronisation stated.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP2",
+        "SWE.2.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-07",
+      "title": "Safety mechanisms and degraded states",
+      "pass_criterion": "Where integrity requirements apply, safety mechanisms, degraded states, fault reactions and architectural dependencies (including freedom from interference) are defined and allocated to elements.",
+      "typical_defect": "Allocated diagnostic requirement with no element or mechanism realising it.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-08",
+      "title": "Resource budgets allocated",
+      "pass_criterion": "Memory and timing budgets are allocated across elements and justified against the allocated constraints.",
+      "typical_defect": "No stack/RAM/time budget per element, or budgets that exceed the allocated limit.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-09",
+      "title": "Decisions and trace consistent",
+      "pass_criterion": "Architecture decisions are recorded with rationale, and the bidirectional trace between requirements and elements is consistent in meaning, not only in links.",
+      "typical_defect": "Element linked to a requirement whose behaviour it does not provide.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.2.BP3",
+        "SWE.2.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 7"
+      ]
+    },
+    {
+      "id": "SWA-10",
+      "title": "Abstraction layers separated",
+      "pass_criterion": "Where the design is layered (e.g. low-level hardware access vs. higher-level service API), each layer is a separate element with defined interfaces between layers.",
+      "typical_defect": "Low-level hardware access and service API merged in one element with no interface between them.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.2.BP1"
+      ],
+      "iso26262_refs": []
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "id": "sw-integ",
+  "version": "1.0.0",
+  "stages": [
+    "sw-integ"
+  ],
+  "phase": "set",
+  "_source": "Forge-C factory/checklists/v0.4/SWE.5.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.5.yaml, neutralised for feature 023",
+  "items": [
+    {
+      "id": "SIT-01",
+      "title": "Component and integration verification planned",
+      "pass_criterion": "Both software component behaviour verification and software integration verification are planned, with measures and environment stated.",
+      "typical_defect": "Only integrated end-to-end tests; component behaviour not verified separately.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP1",
+        "SWE.5.BP2",
+        "SWE.5.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-02",
+      "title": "Integration sequence matches architecture",
+      "pass_criterion": "The integration sequence and the interfaces exercised match the software architecture.",
+      "typical_defect": "Integration exercises an interface path not defined in the architecture.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP1",
+        "SWE.5.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-03",
+      "title": "Inter-element interactions tested",
+      "pass_criterion": "Inter-element shared-resource, clock, reset and interrupt interactions are tested.",
+      "typical_defect": "No test of reset or interrupt interaction between two elements sharing a resource.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-04",
+      "title": "Robustness and budgets checked",
+      "pass_criterion": "Robustness, fault propagation across interfaces and timing/resource budgets are checked during integration.",
+      "typical_defect": "Budget compliance assumed, never measured on the integrated build.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-05",
+      "title": "Interface coverage by passing tests",
+      "pass_criterion": "Every integration test declares the architecture elements and interfaces it verifies, and every architecture interface is verified by at least one executed, passing integration test.",
+      "typical_defect": "Architecture interface verified by no executed integration test.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.5.BP6"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-06",
+      "title": "Measures map to architecture, results and regression",
+      "pass_criterion": "Component and integration measures map consistently to architecture elements, actual results and regression selection.",
+      "typical_defect": "Results listed with no link to the measure or architecture element they verify.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP3",
+        "SWE.5.BP6"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    },
+    {
+      "id": "SIT-07",
+      "title": "Environment limitations explicit",
+      "pass_criterion": "Limitations of simulation versus target evidence are explicit, and unresolved defects are tracked.",
+      "typical_defect": "Simulator-only results presented as target evidence; open defects not tracked.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.5.BP7"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 10"
+      ]
+    }
+  ]
+}

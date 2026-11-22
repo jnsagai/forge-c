@@ -1,0 +1,148 @@
+{
+  "id": "sys-arch",
+  "version": "1.0.0",
+  "stages": [
+    "sys-arch"
+  ],
+  "phase": "set",
+  "_source": "new for feature 023",
+  "items": [
+    {
+      "id": "SYA-01",
+      "title": "Elements and interfaces identified",
+      "pass_criterion": "Every system element (hardware, software, other technology, or external system) and every interface has a unique ID and a defined responsibility.",
+      "typical_defect": "Element or interface without ID; two elements with the same ID.",
+      "deterministic": true,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-02",
+      "title": "System requirement allocation complete",
+      "pass_criterion": "Every system requirement is allocated to at least one system element, and the architecture references no unknown requirement ID.",
+      "typical_defect": "System requirement allocated to no element.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.3.BP1",
+        "SYS.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-03",
+      "title": "Interfaces specified",
+      "pass_criterion": "Internal and external interfaces, including the hardware-software interface (HSI), define signals or data, protocols, ranges, timing and error behaviour.",
+      "typical_defect": "Interface named but without data ranges, timing or error behaviour.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-04",
+      "title": "Hardware/software allocation justified",
+      "pass_criterion": "The allocation of functions to hardware and software elements is justified, and the requirements derived for each element are identified.",
+      "typical_defect": "Function placed in software with no rationale; derived element requirements missing.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP1",
+        "SYS.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-05",
+      "title": "Dynamic behaviour specified",
+      "pass_criterion": "Operating modes, state transitions, start-up/shutdown and timing interactions between elements are specified.",
+      "typical_defect": "No mode or state model; start-up ordering between elements undefined.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-06",
+      "title": "Architecture analysed",
+      "pass_criterion": "Design decisions and alternatives are recorded with criteria; feasibility, timing and resource budgets across elements are analysed.",
+      "typical_defect": "Architecture chosen with no recorded criteria or budget analysis.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-07",
+      "title": "Safety mechanisms allocated",
+      "pass_criterion": "Where integrity requirements apply, safety mechanisms, fault detection and reaction, safe states, integrity levels and independence or freedom from interference are allocated to elements.",
+      "typical_defect": "Safe-state requirement with no mechanism or element realising it.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP1",
+        "SYS.3.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-08",
+      "title": "Consistency and bidirectional traceability",
+      "pass_criterion": "Requirements and architecture elements are traced in both directions, and the linked content is consistent in meaning.",
+      "typical_defect": "Element linked to a requirement it does not realise; contradicting interface definitions.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.3.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 6"
+      ]
+    },
+    {
+      "id": "SYA-09",
+      "title": "Verification readiness",
+      "pass_criterion": "Each element and interface can be verified during system integration; integration-relevant properties and observation points are identified.",
+      "typical_defect": "Interface property with no way to observe or stimulate it during integration.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [],
+      "iso26262_refs": []
+    },
+    {
+      "id": "SYA-10",
+      "title": "Agreed and baselined",
+      "pass_criterion": "The agreed architecture is baselined with version identity; open issues and affected parties are recorded.",
+      "typical_defect": "Architecture used downstream with no version or recorded open issues.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.3.BP5"
+      ],
+      "iso26262_refs": []
+    }
+  ]
+}

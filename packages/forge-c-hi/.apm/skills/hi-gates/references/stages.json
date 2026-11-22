@@ -1,0 +1,261 @@
+{
+  "schema": "forge-c-hi/stages@1",
+  "version": "0.1.0",
+  "order": [
+    "sys-req",
+    "sys-arch",
+    "sw-req",
+    "sw-arch",
+    "sw-design",
+    "unit-verif",
+    "sw-integ",
+    "sw-qual",
+    "sys-integ",
+    "sys-qual"
+  ],
+  "_note": "Neutral V-model stage catalogue. Profiles rename stages via 'vocabulary' and choose required gates via 'rigor'.",
+  "stages": [
+    {
+      "id": "sys-req",
+      "side": "left",
+      "level": "system",
+      "counterpart": "sys-qual",
+      "author_skill": "hi-sys-req-author",
+      "inspector_skill": "hi-sys-req-inspector",
+      "outputs": [
+        "hi/sys-req/requirements.json"
+      ],
+      "author_write_scope": [
+        "hi/sys-req/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "requirements-item",
+        "requirements-set"
+      ],
+      "gates": [
+        "validate",
+        "quality",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sys-arch",
+      "side": "left",
+      "level": "system",
+      "counterpart": "sys-integ",
+      "author_skill": "hi-sys-arch-author",
+      "inspector_skill": "hi-sys-arch-inspector",
+      "outputs": [
+        "hi/sys-arch/architecture.json"
+      ],
+      "author_write_scope": [
+        "hi/sys-arch/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sys-arch"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sw-req",
+      "side": "left",
+      "level": "software",
+      "counterpart": "sw-qual",
+      "author_skill": "hi-sw-req-author",
+      "inspector_skill": "hi-sw-req-inspector",
+      "outputs": [
+        "hi/sw-req/requirements.json"
+      ],
+      "author_write_scope": [
+        "hi/sw-req/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "requirements-item",
+        "requirements-set"
+      ],
+      "gates": [
+        "validate",
+        "quality",
+        "trace",
+        "doc-sources",
+        "scope"
+      ]
+    },
+    {
+      "id": "sw-arch",
+      "side": "left",
+      "level": "software",
+      "counterpart": "sw-integ",
+      "author_skill": "hi-sw-arch-author",
+      "inspector_skill": "hi-sw-arch-inspector",
+      "outputs": [
+        "hi/sw-arch/architecture.json"
+      ],
+      "author_write_scope": [
+        "hi/sw-arch/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sw-arch"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sw-design",
+      "side": "left",
+      "level": "unit",
+      "counterpart": "unit-verif",
+      "author_skill": "hi-sw-design-author",
+      "inspector_skill": "hi-sw-design-inspector",
+      "outputs": [
+        "hi/sw-design/design.json"
+      ],
+      "author_write_scope": [
+        "hi/sw-design/**",
+        "src/**",
+        "include/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sw-design"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope",
+        "build",
+        "static-analysis"
+      ]
+    },
+    {
+      "id": "unit-verif",
+      "side": "right",
+      "level": "unit",
+      "counterpart": "sw-design",
+      "author_skill": "hi-unit-verif-author",
+      "inspector_skill": "hi-unit-verif-inspector",
+      "outputs": [
+        "hi/unit-verif/test-spec.json"
+      ],
+      "author_write_scope": [
+        "hi/unit-verif/**",
+        "tests/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "unit-verif"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope",
+        "unit-test",
+        "coverage"
+      ]
+    },
+    {
+      "id": "sw-integ",
+      "side": "right",
+      "level": "software",
+      "counterpart": "sw-arch",
+      "author_skill": "hi-sw-integ-verif-author",
+      "inspector_skill": "hi-sw-integ-verif-inspector",
+      "outputs": [
+        "hi/sw-integ/test-spec.json"
+      ],
+      "author_write_scope": [
+        "hi/sw-integ/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sw-integ"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sw-qual",
+      "side": "right",
+      "level": "software",
+      "counterpart": "sw-req",
+      "author_skill": "hi-sw-qual-author",
+      "inspector_skill": "hi-sw-qual-inspector",
+      "outputs": [
+        "hi/sw-qual/test-spec.json"
+      ],
+      "author_write_scope": [
+        "hi/sw-qual/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sw-qual"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sys-integ",
+      "side": "right",
+      "level": "system",
+      "counterpart": "sys-arch",
+      "author_skill": "hi-sys-verif-author",
+      "inspector_skill": "hi-sys-verif-inspector",
+      "outputs": [
+        "hi/sys-integ/test-spec.json"
+      ],
+      "author_write_scope": [
+        "hi/sys-integ/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sys-verif"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    },
+    {
+      "id": "sys-qual",
+      "side": "right",
+      "level": "system",
+      "counterpart": "sys-req",
+      "author_skill": "hi-sys-verif-author",
+      "inspector_skill": "hi-sys-verif-inspector",
+      "outputs": [
+        "hi/sys-qual/test-spec.json"
+      ],
+      "author_write_scope": [
+        "hi/sys-qual/**"
+      ],
+      "inspector_write_scope": [],
+      "checklists": [
+        "sys-verif"
+      ],
+      "gates": [
+        "validate",
+        "trace",
+        "scope"
+      ]
+    }
+  ]
+}

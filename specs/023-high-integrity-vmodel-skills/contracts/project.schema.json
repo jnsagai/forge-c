@@ -7,7 +7,6 @@
   "required": [
     "schema",
     "project_id",
-    "profile",
     "integrity_level",
     "input_class",
     "entry_stage",
@@ -24,7 +23,8 @@
     },
     "profile": {
       "type": "string",
-      "default": "generic"
+      "default": "generic",
+      "description": "Absent means 'generic' (FR-009)."
     },
     "integrity_level": {
       "type": "string",

@@ -1,0 +1,194 @@
+{
+  "id": "requirements-item",
+  "version": "1.0.0",
+  "stages": [
+    "sys-req",
+    "sw-req"
+  ],
+  "phase": "item",
+  "_source": "Forge-C docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md (owner guideline), neutralised for feature 023",
+  "items": [
+    {
+      "id": "IQ-01",
+      "title": "Necessary",
+      "pass_criterion": "The obligation answers a real allocated need, applicable interface constraint, or justified derived need from the next higher level; its purpose is identifiable.",
+      "typical_defect": "Speculative feature or needless implementation preference.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-02",
+      "title": "Correct / source-faithful",
+      "pass_criterion": "Behaviour, conditions, terminology and constraints agree with approved input evidence (allocated needs, architecture, interface contracts, platform or hardware references); any derivation has an explicit rationale. Values, limits, error codes and safety reactions are never invented; absent or contradictory input is recorded as a gap (NEEDS_INPUT).",
+      "typical_defect": "Changed threshold, or assumed hardware/platform behaviour, without authority in the inputs.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SYS.2.BP3",
+        "SWE.1.BP1",
+        "SWE.1.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-03",
+      "title": "Unambiguous",
+      "pass_criterion": "A competent author, implementer and verifier reach one intended interpretation; actors, states, signals, conditions and units are defined or precisely referenced.",
+      "typical_defect": "\"Quickly\", \"normally\", \"appropriate\", \"etc.\", or an undefined \"safe\".",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-04",
+      "title": "Complete within its scope",
+      "pass_criterion": "The statement contains enough trigger/precondition, required response and observable outcome to be understood without guessing; it may reference a controlled definition (glossary, interface specification, mode or parameter table).",
+      "typical_defect": "Unspecified response on a defined trigger.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-05",
+      "title": "Atomic / singular",
+      "pass_criterion": "It contains one independently judgeable obligation. Requirements are split when one behaviour could pass while another fails.",
+      "typical_defect": "One statement combining initialisation, diagnostics and recovery.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-06",
+      "title": "Objectively verifiable",
+      "pass_criterion": "A verifier can decide pass/fail by test, analysis, inspection or demonstration using stated conditions and observable criteria. Values and tolerances are explicit where needed and source-justified, not manufactured to look measurable.",
+      "typical_defect": "\"Optimised\", \"robust\" or \"user-friendly\" without measurable criteria.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-07",
+      "title": "Technically feasible",
+      "pass_criterion": "No identified platform, resource, timing, safety or interface constraint makes the requirement impossible; any uncertainty is recorded for analysis.",
+      "typical_defect": "A deadline below what the supported hardware can achieve.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP3",
+        "SWE.1.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-08",
+      "title": "Design-independent unless justified",
+      "pass_criterion": "Describes required behaviour, not an arbitrary algorithm, hardware access sequence, data structure, partitioning or coding technique. A design constraint is allowed when explicitly allocated and sourced, with the reason recorded.",
+      "typical_defect": "Mandating a lookup table with no upstream justification.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-09",
+      "title": "Consistent",
+      "pass_criterion": "Does not contradict relevant upstream constraints, peer requirements, interface contracts or defined modes.",
+      "typical_defect": "Two incompatible reset-state requirements.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP5",
+        "SWE.1.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-10",
+      "title": "Appropriate abstraction level",
+      "pass_criterion": "States the externally relevant obligations, constraints and interfaces of its own level (system or software); leaves unnecessary decomposition to the architecture and design stages below.",
+      "typical_defect": "Implementation pseudocode or element-internal detail presented as a requirement.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": []
+    },
+    {
+      "id": "IQ-11",
+      "title": "Clear and conforming",
+      "pass_criterion": "Uses controlled vocabulary, consistent naming and units, exactly one mandatory verb (typically \"shall\") and the project's approved writing pattern (e.g. an EARS-style template). The single-\"shall\" check is syntactic only; it does not prove atomicity, correctness or testability.",
+      "typical_defect": "Vague pronouns, mixed units, no stated subject, or two \"shall\" clauses.",
+      "deterministic": true,
+      "default_severity": "minor",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "IQ-12",
+      "title": "Identifiable and attributable",
+      "pass_criterion": "Has a stable unique ID and source or derivation references; required project metadata (e.g. type, status, verification method) is available without bloating the statement.",
+      "typical_defect": "Unnumbered text with no provenance or change identity.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SYS.2.BP5",
+        "SWE.1.BP1",
+        "SWE.1.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    }
+  ]
+}

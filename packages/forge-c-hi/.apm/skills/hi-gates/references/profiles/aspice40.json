@@ -1,0 +1,188 @@
+{
+  "id": "aspice40",
+  "title": "Automotive SPICE 4.0 (process reference)",
+  "version": "0.1.0",
+  "level_map": {
+    "HI-0": "process HI-0",
+    "HI-1": "process HI-1",
+    "HI-2": "process HI-2",
+    "HI-3": "process HI-3",
+    "HI-4": "process HI-4"
+  },
+  "vocabulary": {
+    "sys-req": "SYS.2 System Requirements Analysis",
+    "sys-arch": "SYS.3 System Architectural Design",
+    "sw-req": "SWE.1 Software Requirements Analysis",
+    "sw-arch": "SWE.2 Software Architectural Design",
+    "sw-design": "SWE.3 Software Detailed Design and Unit Construction",
+    "unit-verif": "SWE.4 Software Unit Verification",
+    "sw-integ": "SWE.5 Software Component Verification and Integration Verification",
+    "sw-qual": "SWE.6 Software Verification",
+    "sys-integ": "SYS.4 System Integration and Integration Verification",
+    "sys-qual": "SYS.5 System Verification"
+  },
+  "clause_refs": {
+    "sys-req": [
+      "SYS.2"
+    ],
+    "sys-arch": [
+      "SYS.3"
+    ],
+    "sw-req": [
+      "SWE.1"
+    ],
+    "sw-arch": [
+      "SWE.2"
+    ],
+    "sw-design": [
+      "SWE.3"
+    ],
+    "unit-verif": [
+      "SWE.4"
+    ],
+    "sw-integ": [
+      "SWE.5"
+    ],
+    "sw-qual": [
+      "SWE.6"
+    ],
+    "sys-integ": [
+      "SYS.4"
+    ],
+    "sys-qual": [
+      "SYS.5"
+    ],
+    "support": [
+      "SUP.1",
+      "SUP.8",
+      "SUP.9",
+      "SUP.10"
+    ]
+  },
+  "rigor": {
+    "HI-0": {
+      "required_gates": [
+        "validate",
+        "trace"
+      ],
+      "independence": "same-session-ok",
+      "coverage": {
+        "statement": null,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 2
+    },
+    "HI-1": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-2": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-3": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-4": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": 100
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    }
+  },
+  "disclaimer": "Forge-C output is engineering input for human review. It is not a certification, qualification, compliance statement, assessment result, safety approval or production release for any standard.",
+  "notes": "ASPICE is a process reference with no integrity scale: the HI level only selects Forge-C rigor defaults. Combine with a safety profile when an integrity claim is needed. Rigor values are Forge-C engineering defaults mapped to the standard's level names. They are not quoted from the standard. A profile owner tunes them against a licensed copy of the standard. Clause identifiers are references only; verify them against your edition."
+}

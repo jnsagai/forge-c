@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/review-manifest",
+  "title": "Sealed review package manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "status",
+    "gaps",
+    "files",
+    "profile",
+    "integrity_level",
+    "provenance_summary",
+    "tool_versions",
+    "disclaimer",
+    "created_utc"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c-hi/review-manifest@1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "READY_FOR_OFFLINE_REVIEW",
+        "BLOCKED"
+      ]
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "source",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "profile": {
+      "type": "string"
+    },
+    "integrity_level": {
+      "type": "string",
+      "pattern": "^HI-[0-4]$"
+    },
+    "provenance_summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "harness": {
+            "type": "string"
+          },
+          "model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "model_family": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 20
+    },
+    "created_utc": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "READY_FOR_OFFLINE_REVIEW"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "gaps": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

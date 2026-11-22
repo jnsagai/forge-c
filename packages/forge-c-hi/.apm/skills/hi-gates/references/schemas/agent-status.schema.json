@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/agent-status",
+  "title": "Compact agent reply (<=2 KB)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "role",
+    "stage",
+    "status",
+    "outputs",
+    "issues",
+    "open_points"
+  ],
+  "properties": {
+    "role": {
+      "enum": [
+        "author",
+        "inspector",
+        "release",
+        "intake"
+      ]
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "sys-req",
+        "sys-arch",
+        "sw-req",
+        "sw-arch",
+        "sw-design",
+        "unit-verif",
+        "sw-integ",
+        "sw-qual",
+        "sys-integ",
+        "sys-qual"
+      ]
+    },
+    "status": {
+      "enum": [
+        "DONE",
+        "NEEDS_REWORK",
+        "BLOCKED",
+        "ERROR"
+      ]
+    },
+    "outputs": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "target_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "open_points": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

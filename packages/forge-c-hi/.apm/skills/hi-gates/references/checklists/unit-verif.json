@@ -1,0 +1,112 @@
+{
+  "id": "unit-verif",
+  "version": "1.0.0",
+  "stages": [
+    "unit-verif"
+  ],
+  "phase": "set",
+  "_source": "Forge-C factory/checklists/v0.4/SWE.4.yaml and the inherited v0.3 factory/release-manager/checklists/SWE.4.yaml, neutralised for feature 023",
+  "items": [
+    {
+      "id": "UVR-01",
+      "title": "Verification strategy defined",
+      "pass_criterion": "Unit verification measures, environment, entry/exit criteria and regression approach are defined.",
+      "typical_defect": "Tests exist but no stated environment, exit criterion or regression approach.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP1",
+        "SWE.4.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-02",
+      "title": "Test cases adequate",
+      "pass_criterion": "Every unit has appropriate positive, negative, boundary and error test cases derived from its unit specification.",
+      "typical_defect": "Only nominal-path tests; invalid-argument and boundary values untested.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-03",
+      "title": "Test double fidelity",
+      "pass_criterion": "Mocks, stubs and simulated hardware are assessed for fidelity to the real register semantics and hardware side effects; known limitations are recorded.",
+      "typical_defect": "Mock register ignores write-1-to-clear semantics, so a defect passes the test.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-04",
+      "title": "Static-analysis and coding-rule gaps reviewed",
+      "pass_criterion": "Static-analysis and coding-rule findings not resolved in the code receive a review or a recorded deviation.",
+      "typical_defect": "Open analysis findings with neither fix nor deviation record.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-05",
+      "title": "Structural coverage linked to results",
+      "pass_criterion": "Coverage goals are defined for the applicable rigor level, and structural coverage reports come from the actual executed results; uncovered code is justified.",
+      "typical_defect": "Coverage figure quoted without a report from the executed run.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-06",
+      "title": "Unit-spec coverage by passing tests",
+      "pass_criterion": "Every unit test case declares the unit-spec items it verifies, and every unit-spec item is verified by at least one executed, passing unit test.",
+      "typical_defect": "Unit-spec item with no test, or a test that declares no verified item.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SWE.4.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    },
+    {
+      "id": "UVR-07",
+      "title": "Reproducible results and findings",
+      "pass_criterion": "Unit/design/test/result traceability is complete, logs reproduce the results (content-identified), and findings are recorded and summarised.",
+      "typical_defect": "Pass verdict with no log, or results that cannot be tied to the tested code version.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SWE.4.BP3",
+        "SWE.4.BP4",
+        "SWE.4.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-6:2018 9"
+      ]
+    }
+  ]
+}

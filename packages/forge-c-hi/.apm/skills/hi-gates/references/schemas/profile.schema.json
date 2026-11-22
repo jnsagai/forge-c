@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/profile",
+  "title": "StandardProfile",
+  "description": "Clause identifiers only; no normative text (Principle II/X).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "version",
+    "level_map",
+    "vocabulary",
+    "clause_refs",
+    "rigor",
+    "disclaimer"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "version": {
+      "type": "string"
+    },
+    "level_map": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^HI-[0-4]$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 24
+      }
+    },
+    "vocabulary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "clause_refs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^(?!.*[.!?]\\s)[^!?\\n]*[^.!?\\s]$"
+        }
+      }
+    },
+    "rigor": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^HI-[0-4]$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "required_gates",
+          "independence",
+          "rework_limit"
+        ],
+        "properties": {
+          "required_gates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "independence": {
+            "enum": [
+              "same-session-ok",
+              "separate-session",
+              "separate-model-family"
+            ]
+          },
+          "coverage": {
+            "type": "object",
+            "properties": {
+              "statement": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 100
+              },
+              "branch": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 100
+              },
+              "mcdc": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          },
+          "verification_methods": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "test",
+                "analysis",
+                "inspection",
+                "demonstration"
+              ]
+            }
+          },
+          "rework_limit": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 20
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 800,
+      "description": "Basis of the rigor defaults; never normative text."
+    }
+  }
+}

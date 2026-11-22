@@ -1,0 +1,157 @@
+{
+  "id": "requirements-set",
+  "version": "1.0.0",
+  "stages": [
+    "sys-req",
+    "sw-req"
+  ],
+  "phase": "set",
+  "_source": "Forge-C docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md (owner guideline), neutralised for feature 023",
+  "items": [
+    {
+      "id": "SQ-01",
+      "title": "Source coverage and justified derivation",
+      "pass_criterion": "Applicable upstream obligations (higher-level requirements, architecture allocations, hardware-software interface (HSI) obligations, approved constraints, or approved stakeholder/context inputs) are addressed; uncovered sources and derived requirements are identified and dispositioned. Coverage is semantic, not link-count based.",
+      "typical_defect": "An allocated upstream need has no requirement, or a derived requirement has no rationale.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP5",
+        "SWE.1.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-02",
+      "title": "Behavioural completeness",
+      "pass_criterion": "For applicable functions and modes the set captures start-up/initialisation, configured operation, boundary cases, invalid requests, fault detection and response, recovery/reset, shutdown and relevant state transitions. N/A scenarios are justified; no boilerplate for irrelevant modes.",
+      "typical_defect": "Normal operation specified but invalid-request or recovery behaviour missing.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-03",
+      "title": "Non-functional and interface completeness",
+      "pass_criterion": "Justified timing, resource, concurrency, data-integrity, safety, diagnostic, robustness and external-interface obligations are included where allocated. Budgets are not invented just to fill a category.",
+      "typical_defect": "Allocated timing or interface constraint absent, or an unsourced budget added to fill a category.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP1",
+        "SWE.1.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-04",
+      "title": "Coherent structure and priorities",
+      "pass_criterion": "The set is organised by function, interface, mode or variant, with stable identifiers and applicable priorities or release scopes, so it can be understood and maintained.",
+      "typical_defect": "Flat unordered list with no grouping, variant or priority information.",
+      "deterministic": false,
+      "default_severity": "minor",
+      "aspice_refs": [
+        "SYS.2.BP2",
+        "SWE.1.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-05",
+      "title": "Internal consistency and controlled redundancy",
+      "pass_criterion": "No incompatible obligations or contradictory terms; duplicate and overlapping statements are removed or explicitly justified.",
+      "typical_defect": "Two requirements prescribe different responses to the same condition.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP5",
+        "SWE.1.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-06",
+      "title": "Bidirectional traceability with consistency",
+      "pass_criterion": "Relevant links to higher-level requirements and architecture (or approved stakeholder/context inputs where there is no higher level) exist in both directions, with evidence that linked meanings agree. No gratuitous duplicate trace paths.",
+      "typical_defect": "Link exists but the linked requirement states a different condition or value.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.2.BP5",
+        "SWE.1.BP5"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-07",
+      "title": "Interdependency and feasibility analysis",
+      "pass_criterion": "Dependencies, assumptions, parameter relationships and constraints are identified; feasibility is assessed and unresolved conflicts and decisions are recorded.",
+      "typical_defect": "Coupled parameters specified independently with no recorded relationship or conflict.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP3",
+        "SWE.1.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-08",
+      "title": "Operating-environment impact analysed",
+      "pass_criterion": "Effects on hardware, other software or systems, interfaces, start-up/reset behaviour, timing/resource use and interactions with the surrounding environment are evaluated as applicable.",
+      "typical_defect": "No assessment of impact on shared resources or neighbouring elements.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP4",
+        "SWE.1.BP4"
+      ],
+      "iso26262_refs": []
+    },
+    {
+      "id": "SQ-09",
+      "title": "Agreement, configuration and communication",
+      "pass_criterion": "The approved baseline, revisions, open issues, affected parties and communication/approval status are identifiable. A generated draft is not an approved baseline by itself.",
+      "typical_defect": "A generated file treated as the agreed baseline with no version or approval record.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.2.BP6",
+        "SWE.1.BP6"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    },
+    {
+      "id": "SQ-10",
+      "title": "Verification readiness",
+      "pass_criterion": "Required outcomes can be linked to prospective verification measures; verification intent and unresolved verification ambiguities are recorded. Actual verification results belong to the downstream verification stages.",
+      "typical_defect": "Requirements with no identifiable verification approach, or results claimed before verification.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [],
+      "iso26262_refs": [
+        "ISO 26262-8:2018 6"
+      ]
+    }
+  ]
+}

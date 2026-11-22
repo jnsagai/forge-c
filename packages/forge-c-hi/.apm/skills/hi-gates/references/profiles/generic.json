@@ -1,0 +1,158 @@
+{
+  "id": "generic",
+  "title": "Generic high-integrity baseline",
+  "version": "0.1.0",
+  "level_map": {
+    "HI-0": "HI-0",
+    "HI-1": "HI-1",
+    "HI-2": "HI-2",
+    "HI-3": "HI-3",
+    "HI-4": "HI-4"
+  },
+  "vocabulary": {
+    "sys-req": "System requirements",
+    "sys-arch": "System architecture",
+    "sw-req": "Software requirements",
+    "sw-arch": "Software architecture",
+    "sw-design": "Detailed design and unit construction",
+    "unit-verif": "Unit verification",
+    "sw-integ": "Software integration verification",
+    "sw-qual": "Software qualification verification",
+    "sys-integ": "System integration verification",
+    "sys-qual": "System qualification verification"
+  },
+  "clause_refs": {
+    "sys-req": [
+      "ISO/IEC/IEEE 29148:2018"
+    ],
+    "sw-req": [
+      "ISO/IEC/IEEE 29148:2018"
+    ]
+  },
+  "rigor": {
+    "HI-0": {
+      "required_gates": [
+        "validate",
+        "trace"
+      ],
+      "independence": "same-session-ok",
+      "coverage": {
+        "statement": null,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 2
+    },
+    "HI-1": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": null,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-2": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-session",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-3": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": null
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    },
+    "HI-4": {
+      "required_gates": [
+        "validate",
+        "trace",
+        "quality",
+        "scope",
+        "doc-sources",
+        "independence",
+        "build",
+        "static-analysis",
+        "unit-test",
+        "coverage"
+      ],
+      "independence": "separate-model-family",
+      "coverage": {
+        "statement": 100,
+        "branch": 100,
+        "mcdc": 100
+      },
+      "verification_methods": [
+        "test",
+        "analysis",
+        "inspection",
+        "demonstration"
+      ],
+      "rework_limit": 3
+    }
+  },
+  "disclaimer": "Forge-C output is engineering input for human review. It is not a certification, qualification, compliance statement, assessment result, safety approval or production release for any standard.",
+  "notes": "Standard-neutral baseline: HI-0 (no integrity claim) to HI-4 (highest rigor). Rigor values are Forge-C engineering defaults mapped to the standard's level names. They are not quoted from the standard. A profile owner tunes them against a licensed copy of the standard. Clause identifiers are references only; verify them against your edition."
+}

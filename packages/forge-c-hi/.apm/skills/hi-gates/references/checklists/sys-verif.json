@@ -1,0 +1,157 @@
+{
+  "id": "sys-verif",
+  "version": "1.0.0",
+  "stages": [
+    "sys-integ",
+    "sys-qual"
+  ],
+  "phase": "set",
+  "_source": "new for feature 023",
+  "items": [
+    {
+      "id": "SYT-01",
+      "title": "Integration strategy defined",
+      "pass_criterion": "The integration order, increments and dependencies are defined and consistent with the system architecture.",
+      "typical_defect": "Big-bang integration with no order or dependency rationale.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP1",
+        "SYS.4.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-02",
+      "title": "Interface coverage by passing tests",
+      "pass_criterion": "Every system-architecture interface has at least one integration verification measure, and each is executed and passing.",
+      "typical_defect": "Architecture interface with no executed integration test.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.4.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-03",
+      "title": "Requirement coverage by passing tests",
+      "pass_criterion": "Every system requirement has at least one verification measure with a stated method, and each is executed and passing.",
+      "typical_defect": "System requirement with no executed verification measure.",
+      "deterministic": true,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.5.BP1",
+        "SYS.5.BP4"
+      ],
+      "iso26262_refs": []
+    },
+    {
+      "id": "SYT-04",
+      "title": "Objective pass criteria",
+      "pass_criterion": "Each verification measure states preconditions, stimuli, expected results and objective pass/fail criteria.",
+      "typical_defect": "Test step \"check system behaves correctly\" with no expected value.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP1",
+        "SYS.5.BP1"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-05",
+      "title": "Measure selection adequate",
+      "pass_criterion": "Selected measures cover normal, boundary and failure behaviour, including fault injection for safety mechanisms where applicable; the selection rationale is recorded.",
+      "typical_defect": "Safety mechanism never exercised by fault injection.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP2",
+        "SYS.5.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-06",
+      "title": "Environment identified",
+      "pass_criterion": "The verification environment (target, test bench, hardware-in-the-loop or simulation) and its configuration and versions are identified; limitations versus the real operating environment are explicit.",
+      "typical_defect": "Simulation results reported without stating the gap to the real environment.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP3",
+        "SYS.5.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-07",
+      "title": "Results recorded and reproducible",
+      "pass_criterion": "Actual results, verdicts and logs are recorded, tied to the configuration of the system under test, and defects are tracked.",
+      "typical_defect": "Pass verdict that cannot be tied to the tested build or configuration.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP3",
+        "SYS.5.BP3"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-08",
+      "title": "Regression defined and applied",
+      "pass_criterion": "A regression strategy defines which measures are re-run after a change, and the re-run results are recorded.",
+      "typical_defect": "Element changed after verification with no regression run recorded.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP2",
+        "SYS.5.BP2"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-09",
+      "title": "Trace consistency",
+      "pass_criterion": "Requirements and interfaces to measures to results traceability is complete and consistent in meaning.",
+      "typical_defect": "Test linked to a requirement but verifying a different condition.",
+      "deterministic": false,
+      "default_severity": "major",
+      "aspice_refs": [
+        "SYS.4.BP4",
+        "SYS.5.BP4"
+      ],
+      "iso26262_refs": [
+        "ISO 26262-4:2018 7"
+      ]
+    },
+    {
+      "id": "SYT-10",
+      "title": "Accurate verification summary",
+      "pass_criterion": "The summary states unverified requirements and interfaces, environment gaps and open defects accurately and makes no certification or release claim.",
+      "typical_defect": "Summary claims full verification while requirements remain unverified.",
+      "deterministic": false,
+      "default_severity": "blocking",
+      "aspice_refs": [
+        "SYS.4.BP5",
+        "SYS.5.BP5"
+      ],
+      "iso26262_refs": []
+    }
+  ]
+}

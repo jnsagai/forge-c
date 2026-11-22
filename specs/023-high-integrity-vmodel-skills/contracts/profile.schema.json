@@ -51,7 +51,7 @@
         "items": {
           "type": "string",
           "maxLength": 40,
-          "pattern": "^[^.!?]*$"
+          "pattern": "^(?!.*[.!?]\\s)[^!?\\n]*[^.!?\\s]$"
         }
       }
     },
@@ -131,6 +131,11 @@
     "disclaimer": {
       "type": "string",
       "minLength": 20
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 800,
+      "description": "Basis of the rigor defaults; never normative text."
     }
   }
 }

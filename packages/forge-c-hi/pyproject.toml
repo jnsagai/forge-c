@@ -1,0 +1,4 @@
+# Test configuration only. The package has no runtime dependencies beyond the Python >=3.10 standard library.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

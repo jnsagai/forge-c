@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.2.0, pluggy-1.7.0
+rootdir: ~/forge-c/packages/forge-c-hi
+configfile: pyproject.toml
+testpaths: tests
+collected 106 items
+
+tests/test_apm_install.py ....x.                                         [  5%]
+tests/test_guard.py ................                                     [ 20%]
+tests/test_jsonschema_lite.py ...............................            [ 50%]
+tests/test_locator.py ..........                                         [ 59%]
+tests/test_profiles.py .....................                             [ 79%]
+tests/test_schemas.py ......................                             [100%]
+
+=========================== short test summary info ============================
+XFAIL tests/test_apm_install.py::test_mcp_server_declared - MCP server lands with T033 (US1)
+======================== 105 passed, 1 xfailed in 4.69s ========================

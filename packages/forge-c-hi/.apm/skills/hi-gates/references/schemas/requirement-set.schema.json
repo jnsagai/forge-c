@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/requirement-set",
+  "title": "Requirement-set workproduct (sys-req / sw-req)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "stage",
+    "baseline_id",
+    "status",
+    "provenance",
+    "items",
+    "open_points"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c-hi/requirement-set@1"
+    },
+    "stage": {
+      "enum": [
+        "sys-req",
+        "sw-req"
+      ]
+    },
+    "baseline_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "inspected",
+        "blocked"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "role",
+        "skill",
+        "skill_version",
+        "harness",
+        "input_hashes",
+        "created_utc",
+        "run_id"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "author",
+            "inspector",
+            "release",
+            "intake",
+            "gate"
+          ]
+        },
+        "skill": {
+          "type": "string"
+        },
+        "skill_version": {
+          "type": "string"
+        },
+        "harness": {
+          "type": "string"
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_hashes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "created_utc": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "level",
+          "text",
+          "sources",
+          "derived",
+          "verification_method",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^(STK|SYS|SWR|DRV)-[A-Z0-9_]+-[0-9]{3}$"
+          },
+          "level": {
+            "enum": [
+              "stakeholder",
+              "system",
+              "software",
+              "driver_interface"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 10
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "id"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "upstream"
+                    },
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "doc_id",
+                    "section",
+                    "page"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "document"
+                    },
+                    "doc_id": {
+                      "type": "string"
+                    },
+                    "section": {
+                      "type": "string",
+                      "maxLength": 32
+                    },
+                    "page": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "derived": {
+            "type": "boolean"
+          },
+          "verification_method": {
+            "enum": [
+              "test",
+              "analysis",
+              "inspection",
+              "demonstration"
+            ]
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "safety_relevant": {
+                "type": "boolean"
+              },
+              "integrity_level": {
+                "type": "string",
+                "pattern": "^HI-[0-4]$"
+              },
+              "priority": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "accepted-by-inspection",
+              "open",
+              "rejected"
+            ]
+          }
+        },
+        "if": {
+          "properties": {
+            "derived": {
+              "const": true
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "rationale"
+          ]
+        }
+      }
+    },
+    "open_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "blocks"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "raised_by": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
