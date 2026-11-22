@@ -30,7 +30,7 @@ REQ = {
 VALID = {
     "project": {
         "schema": "forge-c-hi/project@1",
-        "project_id": "watchdog-manager",
+        "project_id": "safety-supervisor",
         "integrity_level": "HI-2",
         "input_class": "natural_language",
         "entry_stage": "sys-req",

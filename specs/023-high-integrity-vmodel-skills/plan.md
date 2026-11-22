@@ -124,7 +124,7 @@ packages/forge-c-hi/                       # the APM package (install root)
 │       ├── hi-sw-qual-{author,inspector}/
 │       └── hi-sys-verif-{author,inspector}/      # system integration + system qualification
 ├── examples/
-│   ├── watchdog-manager/                  # class (a): natural-language needs → SYS → SW (middleware)
+│   ├── safety-supervisor/                 # class (a): Safety Supervisor on STM32N6, needs → SYS → SW → … (whole V)
 │   └── iwdg-driver/                       # class (b): reference-manual citations (no vendor text)
 ├── tests/                                 # pytest: gates, profiles, guard, packager, MCP, conductor (fake harness)
 └── tools/publish_check.py                 # content check before publish (FR-003, SC-008)
@@ -139,7 +139,7 @@ code is not modified. Tests run inside the package, and existing suites run as r
 | Milestone | Dates | Content | Exit evidence |
 |---|---|---|---|
 | M0 Foundations | Nov 22–23 | scaffold, APM spike as a test, neutral checklists, profile schema plus 4 profiles, contracts | `apm install` smoke test passes, schemas validate |
-| M1 Requirements V (P1) | Nov 24–27 | gates (validate, trace, quality rules), guard, MCP, conductor, the SYS-REQ and SW-REQ skill pairs, watchdog-manager demo, packager | P1 demo READY with the Claude author and Codex inspector; tests green |
+| M1 Requirements V (P1) | Nov 24–27 | gates (validate, trace, quality rules), guard, MCP, conductor, the SYS-REQ and SW-REQ skill pairs, safety-supervisor demo, packager | P1 demo READY with the Claude author and Codex inspector; tests green |
 | M2 Driver + whole V + profiles | Nov 28–30 | doc index plus source resolution, IWDG demo linked to the middleware, the other 7 stage pairs (lower depth), profile switching | US2/US3/US4 acceptance runs recorded |
 | M3 Impact + README | Dec 1–3 | seeded corpus, A/B runs, impact report, README, demo recording, local-model run (if R10 decided) | evidence/ with run IDs; README checklist |
 | M4 Publish | Dec 4–5 | publish check, tag, clean-machine install, Capgemini submission pack | install link works from a clean consumer |

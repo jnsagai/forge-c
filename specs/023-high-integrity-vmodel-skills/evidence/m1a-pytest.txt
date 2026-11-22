@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.2.0, pluggy-1.7.0
+rootdir: ~/forge-c/packages/forge-c-hi
+configfile: pyproject.toml
+collected 209 items
+
+tests/test_apm_install.py .......                                        [  3%]
+tests/test_checklists.py ...........                                     [  8%]
+tests/test_cli.py ....................                                   [ 18%]
+tests/test_conductor.py ...............                                  [ 25%]
+tests/test_guard.py ....................                                 [ 34%]
+tests/test_jsonschema_lite.py ...............................            [ 49%]
+tests/test_locator.py ..........                                         [ 54%]
+tests/test_mcp.py ....                                                   [ 56%]
+tests/test_profiles.py .....................                             [ 66%]
+tests/test_quality_rules.py .............................                [ 80%]
+tests/test_schemas.py ......................                             [ 90%]
+tests/test_scope_gate.py ........                                        [ 94%]
+tests/test_trace.py ...........                                          [100%]
+
+============================= 209 passed in 9.55s ==============================

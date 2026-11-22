@@ -1,0 +1,55 @@
+{
+  "schema": "forge-c-hi/project@1",
+  "project_id": "safety-supervisor",
+  "profile": "generic",
+  "integrity_level": "HI-2",
+  "input_class": "natural_language",
+  "entry_stage": "sys-req",
+  "stages": [
+    "sys-req",
+    "sw-req"
+  ],
+  "inputs": [
+    {
+      "path": "needs/stakeholder-needs.md",
+      "kind": "needs"
+    },
+    {
+      "path": "needs/constraints.md",
+      "kind": "constraints"
+    }
+  ],
+  "roles": {
+    "author": {
+      "harness": "claude-code",
+      "command": [
+        "claude",
+        "-p",
+        "--permission-mode",
+        "acceptEdits",
+        "--allowedTools",
+        "Read,Grep,Glob,Write,Edit"
+      ],
+      "model": null,
+      "model_family": "claude",
+      "read_only": false
+    },
+    "inspector": {
+      "harness": "codex",
+      "command": [
+        "codex",
+        "exec",
+        "-s",
+        "read-only",
+        "--skip-git-repo-check"
+      ],
+      "model": null,
+      "model_family": "gpt",
+      "read_only": true
+    }
+  },
+  "trace_capture": {
+    "raw_prompts": false,
+    "events": "standard"
+  }
+}

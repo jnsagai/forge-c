@@ -9,6 +9,13 @@ author: Forge-C contributors
 license: Apache-2.0
 dependencies:
   apm: []
-  mcp: []
+  mcp:
+    - name: forge-c-hi
+      registry: false
+      transport: stdio
+      command: sh
+      args:
+        - "-c"
+        - 'for r in .claude .agents .github .cursor .kiro .gemini .opencode .windsurf; do f="$r/skills/hi-gates/scripts/hi_mcp.py"; [ -f "$f" ] && exec "${HI_PYTHON:-python3}" "$f"; done; echo "forge-c-hi: hi-gates skill not found under the project skill folders" >&2; exit 127'
 includes: auto
 scripts: {}

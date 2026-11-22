@@ -17,33 +17,11 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from forge_hi.guard_glob import in_scope, protected  # noqa: E402
+
 PATH_KEYS = ("file_path", "notebook_path", "path", "filename")
 PATCH_HEADER = re.compile(r"^\*\*\* (?:Add|Update|Delete) File: (.+?)\s*$|^\*\*\* Move to: (.+?)\s*$", re.M)
-
-
-def glob_to_regex(pattern: str) -> re.Pattern:
-    out, i = [], 0
-    while i < len(pattern):
-        if pattern.startswith("**/", i):
-            out.append("(?:.*/)?")
-            i += 3
-        elif pattern.startswith("**", i):
-            out.append(".*")
-            i += 2
-        elif pattern[i] == "*":
-            out.append("[^/]*")
-            i += 1
-        elif pattern[i] == "?":
-            out.append("[^/]")
-            i += 1
-        else:
-            out.append(re.escape(pattern[i]))
-            i += 1
-    return re.compile("^" + "".join(out) + "$")
-
-
-def in_scope(rel: str, scope: list[str]) -> bool:
-    return any(glob_to_regex(p).match(rel) for p in scope)
 
 
 def find_role(start: Path) -> tuple[Path, dict] | None:
@@ -103,6 +81,8 @@ def main() -> int:
             return deny(f"{p} is outside the project; role {name} may only write {scope}")
         if rel == ".hi" or rel.startswith(".hi/"):
             return deny(f"{rel}: the .hi/ state directory is managed by the conductor, not by roles")
+        if protected(rel):
+            return deny(f"{rel} is written only by the forge-c-hi gates and conductor, never by a role")
         if not in_scope(rel, scope):
             return deny(f"{rel} is outside the write scope of role {name} ({role.get('stage', '?')}): {scope}")
     return 0

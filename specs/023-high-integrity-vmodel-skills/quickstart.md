@@ -35,7 +35,7 @@ apm install jnsagai/forge-c/packages/forge-c-hi#<tag>    # during development: a
 ## V2: P1 demo, natural-language needs → SYS-REQ → SW-REQ (US1, SC-001, SC-004)
 
 ```sh
-# copy examples/watchdog-manager/needs/ from the installed package (its apm_modules path is in the README) to ./needs
+# copy examples/safety-supervisor/needs/ from the installed package (its apm_modules path is in the README) to ./needs
 python3 .claude/skills/hi-gates/scripts/hi.py init --profile generic --level HI-2 --class natural_language
 python3 .claude/skills/hi-conductor/scripts/conduct.py --stage sys-req --until sw-req
 python3 .claude/skills/hi-gates/scripts/hi.py seal

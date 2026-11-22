@@ -11,3 +11,13 @@
 | 2026-11-22 | T077: public GitHub push and tag authorized now. T078: Capgemini repository publication at submission time | owner chat |
 | 2026-11-22 | T079: the package licence is **Apache-2.0** | owner chat |
 | 2026-11-22 | T080: the local-model run goes last, locally on loop10 | owner chat |
+
+## 2026-11-22: demo project
+
+- **Decision:** the end-to-end demo is the **Safety Supervisor** on STM32N6 (STM32N657X0, Cortex-M55): alive,
+  deadline and program-flow supervision; IWDG/WWDG serviced only while healthy; CRC self-test of code and
+  configuration; safe state and reset; fault reporting over USART; status pin.
+- **Why:** every peripheral it needs already has a Renode platform under `factory/sim/stm32n6/` (WWDG to be checked)
+  and prior driver work. It exercises both input classes (natural-language needs for the middleware, the reference
+  manual RM0486 by section/page for the drivers) and gives measurable fault-injection evidence.
+- **Effect:** the `watchdog-manager` demo is renamed `safety-supervisor` (T040, T052, T068). No task added or removed.

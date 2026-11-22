@@ -57,7 +57,6 @@ def test_agents_installed(consumer):
     assert (consumer / ".codex" / "agents" / "hi-inspector.toml").is_file()
 
 
-@pytest.mark.xfail(reason="MCP server lands with T033 (US1)", strict=True)
 def test_mcp_server_declared(consumer):
     mcp = json.loads((consumer / ".mcp.json").read_text())
     assert "forge-c-hi" in mcp["mcpServers"]
@@ -66,3 +65,11 @@ def test_mcp_server_declared(consumer):
 def test_apm_audit_clean(consumer):
     r = run([APM, "audit"], consumer)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_installed_mcp_server_starts_from_project_root(consumer):
+    spec = json.loads((consumer / ".mcp.json").read_text())["mcpServers"]["forge-c-hi"]
+    msg = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}})
+    r = subprocess.run([spec["command"], *spec["args"]], cwd=consumer, input=msg + "\n", capture_output=True,
+                       text=True, timeout=30)
+    assert json.loads(r.stdout.splitlines()[0])["result"]["serverInfo"]["name"] == "forge-c-hi", r.stderr

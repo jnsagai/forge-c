@@ -1,0 +1,23 @@
+{
+  "schema": "forge-c-hi/ambiguous-terms@1",
+  "_source": "Forge-C neutral list for IQ-03 (unambiguous), compiled from common requirements-writing guidance; not text from any standard.",
+  "terms": [
+    "adequate", "and/or", "appropriate", "approximately", "as appropriate", "as far as possible", "as needed",
+    "as required", "as soon as possible", "best effort", "could", "easily", "easy", "efficient", "efficiently",
+    "etc", "fast", "few", "flexible", "generally", "if possible", "if necessary", "immediately", "many", "maximise",
+    "maximize", "might", "minimal", "minimise", "minimize", "normally", "often", "optimal", "periodically",
+    "promptly", "quick", "quickly", "reasonable", "regularly", "robust", "several", "should", "slow", "some",
+    "sufficient", "suitable", "TBC", "TBD", "timely", "typically", "user-friendly", "usually", "where possible"
+  ],
+  "units": [
+    "ns", "us", "µs", "ms", "s", "sec", "second", "seconds", "min", "minute", "minutes", "h", "hour", "hours",
+    "Hz", "kHz", "MHz", "GHz", "%", "percent", "V", "mV", "A", "mA", "uA", "µA", "W", "mW", "bit", "bits", "byte",
+    "bytes", "B", "kB", "KiB", "MB", "MiB", "baud", "bit/s", "kbit/s", "Mbit/s", "°C", "degC", "K", "cycle",
+    "cycles", "tick", "ticks", "ppm"
+  ],
+  "obligation_verbs": [
+    "send", "report", "store", "set", "clear", "enter", "start", "stop", "reset", "disable", "enable", "switch",
+    "log", "transmit", "record", "refresh", "service", "signal", "notify", "write", "read", "raise", "request",
+    "detect", "trigger", "initialise", "initialize", "check", "verify", "compute", "update", "provide", "return"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "forge-c-hi/harness-presets@1",
+  "_note": "Argv templates per harness and role. The conductor sends the prompt on stdin unless an argument contains {prompt_file}. Model flags are appended only when a model is configured. Model families are used by the independence gate.",
+  "reference": {"author": "claude-code", "inspector": "codex"},
+  "presets": {
+    "claude-code": {
+      "harness": "claude-code",
+      "model_family": "claude",
+      "model_flag": ["--model"],
+      "author": {
+        "command": ["claude", "-p", "--permission-mode", "acceptEdits", "--allowedTools", "Read,Grep,Glob,Write,Edit"],
+        "read_only": false
+      },
+      "inspector": {
+        "command": ["claude", "-p", "--allowedTools", "Read,Grep,Glob", "--disallowedTools", "Write,Edit,MultiEdit,NotebookEdit,Bash"],
+        "read_only": true
+      }
+    },
+    "codex": {
+      "harness": "codex",
+      "model_family": "gpt",
+      "model_flag": ["-m"],
+      "author": {"command": ["codex", "exec", "-s", "workspace-write", "--skip-git-repo-check"], "read_only": false},
+      "inspector": {"command": ["codex", "exec", "-s", "read-only", "--skip-git-repo-check"], "read_only": true}
+    },
+    "codex-oss-ollama": {
+      "harness": "codex",
+      "model_family": null,
+      "model_flag": ["-m"],
+      "author": {"command": ["codex", "exec", "--oss", "--local-provider", "ollama", "-s", "workspace-write", "--skip-git-repo-check"], "read_only": false},
+      "inspector": {"command": ["codex", "exec", "--oss", "--local-provider", "ollama", "-s", "read-only", "--skip-git-repo-check"], "read_only": true}
+    },
+    "manual": {
+      "harness": "manual",
+      "model_family": "human",
+      "model_flag": [],
+      "author": {"command": [], "read_only": false},
+      "inspector": {"command": [], "read_only": true}
+    }
+  }
+}

@@ -106,3 +106,12 @@ def test_role_file_found_from_subdirectory(tmp_project):
     sub.mkdir(parents=True)
     r = run_guard(sub, claude("Write", sub / "requirements.json", sub))
     assert r.returncode == 0, r.stderr
+
+
+@pytest.mark.parametrize("rel", ["hi/sys-req/gates/quality.json", "hi/sys-req/inspection/findings.json",
+                                 "hi/trace.json", "hi/trace-matrix.md"])
+def test_gate_and_inspection_outputs_are_protected_even_inside_scope(tmp_project, rel):
+    set_role(tmp_project, ["hi/sys-req/**", "hi/**"])
+    r = run_guard(tmp_project, claude("Write", tmp_project / rel, tmp_project))
+    assert r.returncode == 2
+    assert "only by the forge-c-hi gates" in r.stderr

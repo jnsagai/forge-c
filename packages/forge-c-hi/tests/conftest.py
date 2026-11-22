@@ -13,6 +13,7 @@ GATES = SKILLS / "hi-gates"
 REFS = GATES / "references"
 SCRIPTS = GATES / "scripts"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+SPECS = PKG.parents[1] / "specs" / "023-high-integrity-vmodel-skills"
 
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))

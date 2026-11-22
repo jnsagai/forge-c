@@ -99,13 +99,13 @@ BLOCKED or NOT_RUN.
 
 ## Phase 3: User Story 1 — natural-language needs → system requirements → software requirements (P1, M1, Nov 24–27) 🎯 MVP
 
-**Goal**: the reference config (Claude author, Codex/GPT inspector) produces gated, two-phase-inspected SYS-REQ and SW-REQ for the watchdog-manager demo.
+**Goal**: the reference config (Claude author, Codex/GPT inspector) produces gated, two-phase-inspected SYS-REQ and SW-REQ for the safety-supervisor demo.
 
 **Independent Test**: quickstart V2 and V3 on a clean consumer project.
 
 ### Tests first
 
-- [ ] T023 [P] [US1] Write the quality-rule tests `PKG/tests/test_quality_rules.py` for the R4 deterministic subset. Each rule gets a passing and a failing fixture:
+- [x] T023 [P] [US1] Write the quality-rule tests `PKG/tests/test_quality_rules.py` for the R4 deterministic subset. Each rule gets a passing and a failing fixture:
   - duplicate ID;
   - missing or multiple "shall";
   - each banned ambiguous term;
@@ -114,7 +114,7 @@ BLOCKED or NOT_RUN.
   - missing source;
   - a numeric value without a unit;
   - derived with no rationale
-- [ ] T024 [P] [US1] Write the trace tests `PKG/tests/test_trace.py`:
+- [x] T024 [P] [US1] Write the trace tests `PKG/tests/test_trace.py`:
   - STK→SYS→SWR complete: PASS;
   - an orphan SWR: FAIL;
   - an uncovered SYS allocated to software: FAIL;
@@ -122,10 +122,10 @@ BLOCKED or NOT_RUN.
   - a suspect link: FAIL;
   - an upstream text change marks its links suspect (FR-022);
   - the matrix markdown is rendered
-- [ ] T025 [P] [US1] Write the scope-backstop tests `PKG/tests/test_scope_gate.py`: a git diff inside scope gives PASS, a file outside scope gives FAIL, and without git the hash-snapshot mode is used
-- [ ] T026 [P] [US1] Write the CLI contract tests `PKG/tests/test_cli.py`. For every command in `contracts/cli-and-mcp.md` they check the exit codes 0/1/2, that the stdout JSON is at most 2 KB, and that output files are written to the documented paths
-- [ ] T027 [P] [US1] Write the MCP tests `PKG/tests/test_mcp.py`. They spawn `hi_mcp.py` over stdio and check `initialize`, `tools/list` (all tools from the contract) and `tools/call hi_trace_check`, which must give the same result as the CLI. A bad tool name gives a JSON-RPC error
-- [ ] T028 [P] [US1] Write the conductor tests `PKG/tests/test_conductor.py` with a **fake harness** (`PKG/tests/fake_harness.py`, which emits scripted author JSON and inspector findings). They cover:
+- [x] T025 [P] [US1] Write the scope-backstop tests `PKG/tests/test_scope_gate.py`: a git diff inside scope gives PASS, a file outside scope gives FAIL, and without git the hash-snapshot mode is used
+- [x] T026 [P] [US1] Write the CLI contract tests `PKG/tests/test_cli.py`. For every command in `contracts/cli-and-mcp.md` they check the exit codes 0/1/2, that the stdout JSON is at most 2 KB, and that output files are written to the documented paths
+- [x] T027 [P] [US1] Write the MCP tests `PKG/tests/test_mcp.py`. They spawn `hi_mcp.py` over stdio and check `initialize`, `tools/list` (all tools from the contract) and `tools/call hi_trace_check`, which must give the same result as the CLI. A bad tool name gives a JSON-RPC error
+- [x] T028 [P] [US1] Write the conductor tests `PKG/tests/test_conductor.py` with a **fake harness** (`PKG/tests/fake_harness.py`, which emits scripted author JSON and inspector findings). They cover:
   - the author → gate → item inspect → rework only flagged items, each alone → re-judge only reworked → set inspect → gate sequence;
   - unresolved findings are carried to the set phase;
   - rework-limit exhaustion gives BLOCKED;
@@ -135,12 +135,12 @@ BLOCKED or NOT_RUN.
 
 ### Implementation
 
-- [ ] T029 [US1] Implement `ENG/quality.py` (the R4 rules; banned-term list in `hi-gates/references/ambiguous-terms.json`). Make T023 pass
-- [ ] T030 [US1] Implement `ENG/trace.py`, ported from `tools/trace_gate.py` with attribution and moved to neutral link types and levels. Include the suspect-link propagation and render `hi/trace-matrix.md`. Make T024 pass
-- [ ] T031 [US1] Implement `ENG/scope.py` (the diff and snapshot backstop). Make T025 pass
-- [ ] T032 [US1] Implement the CLI `hi-gates/scripts/hi.py` and `ENG/cli.py` (`init`, `validate`, `quality`, `trace`, `scope`, `gate`, `status`, `role set`). `gate` runs the profile's required gates for the stage and level. Make T026 pass
-- [ ] T033 [US1] Implement the MCP server `hi-gates/scripts/hi_mcp.py` (stdlib JSON-RPC 2.0, stdio, shared `ENG/` functions). Declare it in `PKG/apm.yml` under `dependencies.mcp` (`registry: false`, `transport: stdio`, `command: sh`, `args` = the locator). Make T027 pass
-- [ ] T034 [US1] Implement the conductor `PKG/.apm/skills/hi-conductor/scripts/conduct.py`:
+- [x] T029 [US1] Implement `ENG/quality.py` (the R4 rules; banned-term list in `hi-gates/references/ambiguous-terms.json`). Make T023 pass
+- [x] T030 [US1] Implement `ENG/trace.py`, ported from `tools/trace_gate.py` with attribution and moved to neutral link types and levels. Include the suspect-link propagation and render `hi/trace-matrix.md`. Make T024 pass
+- [x] T031 [US1] Implement `ENG/scope.py` (the diff and snapshot backstop). Make T025 pass
+- [x] T032 [US1] Implement the CLI `hi-gates/scripts/hi.py` and `ENG/cli.py` (`init`, `validate`, `quality`, `trace`, `scope`, `gate`, `status`, `role set`). `gate` runs the profile's required gates for the stage and level. Make T026 pass
+- [x] T033 [US1] Implement the MCP server `hi-gates/scripts/hi_mcp.py` (stdlib JSON-RPC 2.0, stdio, shared `ENG/` functions). Declare it in `PKG/apm.yml` under `dependencies.mcp` (`registry: false`, `transport: stdio`, `command: sh`, `args` = the locator). Make T027 pass
+- [x] T034 [US1] Implement the conductor `PKG/.apm/skills/hi-conductor/scripts/conduct.py`:
   - per-role argv templates from `.hi/project.json`;
   - prompt files assembled from the skill, the inputs and the findings;
   - the AgentStatus JSON parsed from the inspector's stdout;
@@ -167,7 +167,7 @@ BLOCKED or NOT_RUN.
   - read-only;
   - severity rules
 - [ ] T039 [P] [US1] Write `hi-sw-req-author/SKILL.md` (software level; allocation from SYS; middleware and application focus; the driver mode section is added in US2) and `hi-sw-req-inspector/SKILL.md`
-- [ ] T040 [P] [US1] Write the demo inputs `PKG/examples/watchdog-manager/needs/stakeholder-needs.md`: original natural-language needs for a watchdog/health-monitor manager (task alive supervision, deadline monitoring, safe-state request within N ms, reset reason reporting). Add `PKG/examples/watchdog-manager/hi-project.example.json` (generic, HI-2, reference role bindings)
+- [x] T040 [P] [US1] Write the demo inputs for the **Safety Supervisor** (owner decision 2026-11-22: one real STM32N6 project carried down the whole V): `PKG/examples/safety-supervisor/needs/stakeholder-needs.md` with original natural-language needs (alive, deadline and program-flow supervision of cyclic tasks; IWDG/WWDG servicing only while healthy; CRC self-test of code and configuration at start-up and periodically; safe state and reset within stated times; fault reporting over USART; status pin), `needs/constraints.md` (target STM32N657X0, Cortex-M55, Renode simulation, peripherals IWDG/WWDG/CRC/TIM/USART/GPIO/RCC, no vendor text) and `hi-project.example.json` (generic, HI-2, reference role bindings)
 - [ ] T041 [US1] Run the P1 demo with the reference config (Claude Code author, Codex/GPT inspector) on a clean consumer project per quickstart V2. Store the run directory, the events, the gate results and the trace matrix in `FEAT/evidence/us1-p1-demo/`. Report READY or BLOCKED honestly
 - [ ] T042 [US1] Run the quickstart V3 negative cases (a deleted link, a forced NOT_RUN, an out-of-scope write) and store them in `FEAT/evidence/us1-negative/`
 
@@ -215,7 +215,7 @@ BLOCKED or NOT_RUN.
   Add the matching inspector checks (source-faithful, IQ-02) to `hi-sw-req-inspector/SKILL.md`
 - [ ] T050 [P] [US2] Write the demo `PKG/examples/iwdg-driver/`: `scope.md` (the IWDG peripheral, citing a public STM32 reference manual by document id and revision only, with a download note and no text from it) and `hi-project.example.json` (reference_document, entry sw-req)
 - [ ] T051 [US2] Implement cross-project links (`links[]` in project.json; the trace gate loads the linked project's driver_interface items). Add tests to `PKG/tests/test_trace.py`
-- [ ] T052 [US2] Run the driver demo with the reference config against the owner's local copy of the reference manual. Link the watchdog-manager SW-REQ to the IWDG DRV items. Store the evidence in `FEAT/evidence/us2-driver/`, including the index hash but not the index content
+- [ ] T052 [US2] Run the driver demo with the reference config against the owner's local copy of the reference manual. Link the safety-supervisor SW-REQ to the IWDG DRV items. Store the evidence in `FEAT/evidence/us2-driver/`, including the index hash but not the index content
 - [ ] T053 [US2] Run the US2-AS3 negative case (missing or unreadable document gives BLOCKED at intake) and store it in `FEAT/evidence/us2-negative/`
 
 ---
@@ -252,7 +252,7 @@ BLOCKED or NOT_RUN.
 - [ ] T065 [P] [US4] Write the skill pairs `hi-sw-integ-verif-{author,inspector}/SKILL.md`
 - [ ] T066 [P] [US4] Write the skill pairs `hi-sw-qual-{author,inspector}/SKILL.md`
 - [ ] T067 [P] [US4] Write the skill pairs `hi-sys-verif-{author,inspector}/SKILL.md` (system integration and system qualification)
-- [ ] T068 [US4] Run each later stage once on the watchdog-manager demo with the reference config and store the evidence in `FEAT/evidence/us4-full-v/`. Record honestly any stage that ends BLOCKED or NOT_RUN
+- [ ] T068 [US4] Run each later stage once on the safety-supervisor demo with the reference config and store the evidence in `FEAT/evidence/us4-full-v/`. Record honestly any stage that ends BLOCKED or NOT_RUN
 
 ---
 
