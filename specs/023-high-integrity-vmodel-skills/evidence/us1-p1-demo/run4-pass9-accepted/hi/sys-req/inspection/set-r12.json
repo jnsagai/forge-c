@@ -1,0 +1,54 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-132 specifies that the three pins are inputs held low by external board pull-down resistors from reset until software configures them. SYS-SUP-020 requires the outputs low and SYS-SUP-053 requires their subsequent configuration, but neither captures the specified board mechanism or pin state. CON-SUP-133 also specifies a board output-stage delay of at most 1 ms; SYS-SUP-052 sets the 49 ms pin deadline without capturing that board obligation.",
+      "id": "F-sys-req-set-r12-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:38:04Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T233551Z-4c8935",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Address the reset-time pin and pull-down behavior and the output-stage delay as system obligations or explicitly disposition them as platform assumptions, with traceability to CON-SUP-132 and CON-SUP-133.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-001 identifies the target microcontroller and CON-SUP-004 specifies C11. SYS-SUP-040 requires operation on a simulator, and SYS-SUP-041 covers allocation and recursion, but the set does not address or disposition the target microcontroller or language constraints.",
+      "id": "F-sys-req-set-r12-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:38:04Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T233551Z-4c8935",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Address or explicitly disposition the target microcontroller and C11 constraints, with traceability to CON-SUP-001 and CON-SUP-004.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 12,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

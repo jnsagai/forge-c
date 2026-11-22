@@ -1,0 +1,9 @@
+{
+  "dropped": 0,
+  "findings": [],
+  "judged": [],
+  "phase": "set",
+  "round": 6,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

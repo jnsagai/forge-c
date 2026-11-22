@@ -1,0 +1,62 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-03",
+      "description": "SWR-SAF-009 evaluates the retained elapsed time at fault detection, while SWR-SAF-011 also updates that time at the same detection. Neither requirement specifies which happens first. If the retained value is below 60 s but the update brings it to 60 s or more, the order changes whether this detection continues the sequence or starts a new one under SWR-SAF-012.",
+      "id": "F-sw-req-item-r6-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:49:35Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234615Z-236f07",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that the elapsed-time update for the detection is applied before evaluating the sequence condition, and make the ordering consistent across SWR-SAF-009 and SWR-SAF-012.",
+      "round": 6,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWR-SAF-009"
+    },
+    {
+      "checklist_item": "IQ-08",
+      "description": "The requirement prescribes additions at each control-cycle end, at fault detection and before reset, as well as how each increment is calculated. SYS-SUP-028 and CON-SUP-136 specify the allowable accumulated-time error, but do not require this particular accounting algorithm or update schedule.",
+      "id": "F-sw-req-item-r6-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:49:35Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234615Z-236f07",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the required elapsed-time behavior and error bounds without prescribing the update algorithm and schedule, or record an explicit source and justification for making those choices software requirements.",
+      "round": 6,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    }
+  ],
+  "judged": [
+    "SWR-SAF-002",
+    "SWR-SAF-006",
+    "SWR-SAF-007",
+    "SWR-SAF-011",
+    "SWR-SAF-009",
+    "SWR-SAF-012",
+    "SWR-SAF-010"
+  ],
+  "phase": "item",
+  "round": 6,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

@@ -169,3 +169,23 @@ def test_cli_seal_exit_codes(tmp_project):
     (root / "hi/sys-req/gates/scope.json").unlink()
     r = subprocess.run([sys.executable, str(hi), "seal"], cwd=root, capture_output=True, text=True)
     assert r.returncode == 1 and json.loads(r.stdout)["status"] == "BLOCKED"
+
+
+def test_the_archive_alone_can_be_verified(tmp_project):
+    """A reviewer may receive only review.tar.gz and its .sha256."""
+    import gzip
+    import shutil
+    root = ready_project(tmp_project)
+    pkg = root / seal.seal(root)["package"]
+    alone = tmp_project.parent / "received"
+    alone.mkdir()
+    for n in ("review.tar.gz", "review.tar.gz.sha256"):
+        shutil.copy(pkg / n, alone / n)
+    r = subprocess.run([sys.executable, str(VERIFY), str(alone / "review.tar.gz")], capture_output=True, text=True)
+    out = json.loads(r.stdout)
+    assert r.returncode == 0 and out["verified"] is True and out["package_status"] == "READY_FOR_OFFLINE_REVIEW", out
+    # a rebuilt archive with one member changed no longer matches its .sha256
+    raw = gzip.decompress((alone / "review.tar.gz").read_bytes())
+    (alone / "review.tar.gz").write_bytes(gzip.compress(raw.replace(b"SYS-SUP-001", b"SYS-SUP-999", 1)))
+    r = subprocess.run([sys.executable, str(VERIFY), str(alone / "review.tar.gz")], capture_output=True, text=True)
+    assert r.returncode == 1 and "does not match" in " ".join(json.loads(r.stdout)["errors"])

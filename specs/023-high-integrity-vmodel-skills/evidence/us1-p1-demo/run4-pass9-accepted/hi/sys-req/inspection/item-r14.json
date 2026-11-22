@@ -1,0 +1,38 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement excludes latching if a different fault code is detected between the first and third detections. CON-SUP-117 specifies latching on the third detection of the same code without 60 seconds of fault-free operation since the first; it does not impose that exclusion. CON-SUP-130 also makes a code 8 report count as a detection without requiring a supervisor reset.",
+      "id": "F-sys-req-item-r14-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:20:37Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T231817Z-07dc06",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve whether an intervening different fault-code detection breaks the sequence, then align the latch condition with the approved decision.",
+      "round": 14,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-028"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-014",
+    "SYS-SUP-015",
+    "SYS-SUP-019",
+    "SYS-SUP-028",
+    "SYS-SUP-051"
+  ],
+  "phase": "item",
+  "round": 14,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

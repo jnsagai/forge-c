@@ -1,0 +1,57 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-03",
+      "description": "SWR-SAF-009 requires an elapsed-time addition at detection only where SWR-SAF-011 makes one, but SWR-SAF-011 specifies no condition requiring an update at detection. Consequently, the elapsed time used to evaluate the 60 s threshold is ambiguous.",
+      "id": "F-sw-req-item-r7-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:50:41Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234615Z-236f07",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the elapsed-time value to be used at detection in terms of operational time and the permitted error bounds, without relying on an unspecified update.",
+      "round": 7,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWR-SAF-009"
+    },
+    {
+      "checklist_item": "IQ-09",
+      "description": "SWR-SAF-011 requires the elapsed time to be equal to the operational time while also allowing it to under-count that time. Exact equality conflicts with the permitted under-count in CON-SUP-136 and leaves the acceptance criterion unclear.",
+      "id": "F-sw-req-item-r7-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:50:41Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234615Z-236f07",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the permitted relationship between elapsed and actual operational time consistently with the under-count bounds of CON-SUP-136.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    }
+  ],
+  "judged": [
+    "SWR-SAF-009",
+    "SWR-SAF-011"
+  ],
+  "phase": "item",
+  "round": 7,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

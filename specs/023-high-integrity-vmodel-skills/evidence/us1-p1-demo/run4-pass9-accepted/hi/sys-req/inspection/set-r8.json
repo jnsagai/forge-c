@@ -1,0 +1,124 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-014",
+      "checklist_item": "IQ-06",
+      "description": "CON-SUP-107 and CON-SUP-124 specify the CRC polynomial but not its initial value, input and output reflection, final XOR or stored-reference byte order. The expected comparison result for a given image and reference is therefore not unique.",
+      "id": "F-sys-req-set-r8-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:16:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the CRC parameters and reference byte order once the product decision is made.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-014"
+    },
+    {
+      "blocked_by": "OP-SYS-014",
+      "checklist_item": "IQ-06",
+      "description": "The run-time CRC comparison lacks the initial value, input and output reflection, final XOR and reference byte order. CON-SUP-124 specifies the polynomial by reference and the reference location, but does not determine a unique comparison result.",
+      "id": "F-sys-req-set-r8-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:16:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the CRC parameters and reference byte order once the product decision is made.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-019"
+    },
+    {
+      "blocked_by": "OP-SYS-015",
+      "checklist_item": "IQ-02",
+      "description": "CON-SUP-125 lists state labels without transition rules. SYS-SUP-051 selects STARTUP or OPERATIONAL between fault detection and safe-state entry, including during a start-up fault and after a code 8 report, although OP-SYS-015 identifies these cases as undecided.",
+      "id": "F-sys-req-set-r8-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:16:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the state selection with the product decision for these cases.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-051"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "SAFE applies from completion of safe-state entry until reset, while LATCHED applies while the safe state is latched. After a latch-triggering fault under SYS-SUP-028 or SYS-SUP-043 and completion of safe-state entry, both conditions apply, so the required state value is not unique.",
+      "id": "F-sys-req-set-r8-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:16:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve and specify which state applies when the safe-state and latch conditions overlap.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-051"
+    },
+    {
+      "blocked_by": "OP-SYS-014",
+      "checklist_item": "SQ-10",
+      "description": "The configuration integrity comparison specifies only the CRC polynomial. OP-SYS-014 records missing CRC parameters and stored CRC byte order, so the expected result for a given configuration block and reference cannot yet be determined.",
+      "id": "F-sys-req-set-r8-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:16:15Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230945Z-ac2c0e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the CRC parameters and stored CRC byte order once the product decision is made.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-015"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 8,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

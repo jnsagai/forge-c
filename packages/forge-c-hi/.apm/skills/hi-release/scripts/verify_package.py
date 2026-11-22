@@ -2,6 +2,7 @@
 """Independent re-check of a sealed forge-c-hi review package (T046). Standard library only, no forge-c-hi import.
 
     python3 verify_package.py <package-dir>
+    python3 verify_package.py <review.tar.gz>     (only the archive and its .sha256 next to it, as a reviewer gets them)
 
 Checks that every file listed in manifest.json exists with the listed sha256, that review.tar.gz matches its .sha256
 file and contains exactly the listed files plus manifest.json with the same bytes, that READY has no gaps, and that the
@@ -20,13 +21,8 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def verify(pkg: Path) -> list[str]:
+def check_manifest(m: dict) -> list[str]:
     errors: list[str] = []
-    try:
-        manifest_bytes = (pkg / "manifest.json").read_bytes()
-        m = json.loads(manifest_bytes)
-    except (OSError, ValueError) as exc:
-        return [f"manifest.json unreadable: {exc}"]
     if m.get("schema") != "forge-c-hi/review-manifest@1":
         errors.append("unexpected manifest schema")
     if m.get("status") not in ("READY_FOR_OFFLINE_REVIEW", "BLOCKED"):
@@ -35,6 +31,49 @@ def verify(pkg: Path) -> list[str]:
         errors.append("READY package lists gaps")
     if len(str(m.get("disclaimer", ""))) < 20:
         errors.append("disclaimer missing")
+    return errors
+
+
+def verify_archive(tar_path: Path) -> tuple[list[str], str | None]:
+    """The archive alone: its sha256 file, then every member against the manifest inside it (read in memory, never
+    extracted to disk)."""
+    errors: list[str] = []
+    try:
+        want = Path(str(tar_path) + ".sha256").read_text().split()[0]
+        if sha(tar_path.read_bytes()) != want:
+            errors.append("review.tar.gz does not match review.tar.gz.sha256")
+        with tarfile.open(tar_path, "r:gz") as tar:
+            data = {mi.name: tar.extractfile(mi).read() for mi in tar.getmembers() if mi.isfile()}
+            if len(data) != len(tar.getmembers()):
+                errors.append("archive holds members that are not regular files")
+    except (OSError, IndexError, tarfile.TarError) as exc:
+        return [f"archive check failed: {exc}"], None
+    try:
+        m = json.loads(data["manifest.json"])
+    except (KeyError, ValueError) as exc:
+        return errors + [f"archived manifest.json unreadable: {exc}"], None
+    errors += check_manifest(m)
+    listed = {}
+    for f in m.get("files", []):
+        if ".." in Path(f["path"]).parts or Path(f["path"]).is_absolute():
+            errors.append(f"unsafe path {f['path']}")
+            continue
+        listed[f["path"]] = f["sha256"]
+        if f["path"] not in data:
+            errors.append(f"missing {f['path']}")
+        elif sha(data[f["path"]]) != f["sha256"]:
+            errors.append(f"hash mismatch {f['path']}")
+    errors += [f"unlisted member {n}" for n in sorted(set(data) - set(listed) - {"manifest.json"})]
+    return errors, m.get("status")
+
+
+def verify(pkg: Path) -> list[str]:
+    try:
+        manifest_bytes = (pkg / "manifest.json").read_bytes()
+        m = json.loads(manifest_bytes)
+    except (OSError, ValueError) as exc:
+        return [f"manifest.json unreadable: {exc}"]
+    errors = check_manifest(m)
     listed = {}
     for f in m.get("files", []):
         p = pkg / f["path"]
@@ -72,9 +111,13 @@ def verify(pkg: Path) -> list[str]:
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print(json.dumps({"status": "ERROR", "error": "usage: verify_package.py <package-dir>"}))
+        print(json.dumps({"status": "ERROR", "error": "usage: verify_package.py <package-dir | review.tar.gz>"}))
         return 2
     pkg = Path(argv[1])
+    if pkg.is_file() and pkg.name.endswith(".tar.gz"):
+        errors, status = verify_archive(pkg)
+        print(json.dumps({"verified": not errors, "package_status": status, "errors": errors[:20]}, sort_keys=True))
+        return 0 if not errors else 1
     errors = verify(pkg)
     status = json.loads((pkg / "manifest.json").read_text()).get("status") if not errors or (pkg / "manifest.json").is_file() else None
     print(json.dumps({"verified": not errors, "package_status": status, "errors": errors[:20]}, sort_keys=True))

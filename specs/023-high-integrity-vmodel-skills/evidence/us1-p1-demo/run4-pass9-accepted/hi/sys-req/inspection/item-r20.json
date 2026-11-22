@@ -1,0 +1,35 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-03",
+      "description": "The phrase 'all fault reports when fewer than 8 have occurred' does not define the counting period. CON-SUP-110 and SYS-SUP-045 state that fault history is lost on power loss, so reports from before that loss must not be included in the retained history.",
+      "id": "F-sys-req-item-r20-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:46:55Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234615Z-236f07",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the period over which reports are counted and retained, consistent with the clearing of fault history after power loss.",
+      "round": 20,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-058"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-028",
+    "SYS-SUP-058"
+  ],
+  "phase": "item",
+  "round": 20,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

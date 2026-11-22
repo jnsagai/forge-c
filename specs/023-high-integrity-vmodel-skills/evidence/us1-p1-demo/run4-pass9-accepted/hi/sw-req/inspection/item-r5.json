@@ -1,0 +1,58 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-008",
+      "checklist_item": "IQ-02",
+      "description": "SWR-SAF-011 requires exactly the time spent in OPERATIONAL, but its rationale and OP-SWR-008 acknowledge that a watchdog reset can lose operational time since the last addition. This can change the 60 s decision required by SYS-SUP-028; the inputs do not authorize that loss.",
+      "id": "F-sw-req-item-r5-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:45:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234015Z-cfcb41",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "classify OP-SWR-008 as blocking",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    },
+    {
+      "blocked_by": "OP-SWR-009",
+      "checklist_item": "IQ-06",
+      "description": "SWR-SAF-011 requires exact elapsed time measured at 100 µs resolution, without an allowable measurement or accumulation error. CON-SUP-103 specifies that resolution for task timing, not exact operational-time measurement. OP-SWR-009 identifies the missing tolerance needed to verify the 60 s decision.",
+      "id": "F-sw-req-item-r5-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:45:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T234015Z-cfcb41",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the permitted elapsed-time tolerance and update the requirement and its verification criteria accordingly.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-SAF-011"
+    }
+  ],
+  "judged": [
+    "SWR-SAF-011"
+  ],
+  "phase": "item",
+  "round": 5,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}
