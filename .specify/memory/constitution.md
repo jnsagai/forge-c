@@ -19,8 +19,8 @@ Sync Impact Report
   - ✅ .specify/templates/spec-template.md: no new mandatory section.
   - ✅ .specify/templates/tasks-template.md: no new principle-driven task type.
   - ✅ .claude/skills/speckit-*: they reference the constitution generically; no agent-specific wording to fix.
-  - ⚠ README.md and the website still describe the factory as "ASPICE SWE.1–SWE.6" only. Update them with feature 023
-    (deliberately not edited by this governance change).
+  - ✅ README.md and the website: feature 023 (T084) added the portable skills package with its standard profiles; the
+    factory's own ASPICE SWE.1–SWE.6 description stays accurate for the factory.
 - Deferred TODOs: none.
 -->
 

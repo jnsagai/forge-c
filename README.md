@@ -13,6 +13,13 @@ compilers, static analysis, MISRA checks, unit tests, coverage and footprint mea
 > input to human engineering and safety review. It is **never** an ISO 26262 / ASIL B approval, an ASPICE assessment
 > or a production release.
 
+**New: portable skills package.** [`packages/forge-c-hi/`](packages/forge-c-hi/) brings the same discipline into your
+own coding agent (Claude Code, Codex, Copilot, Cursor, Kiro) as an [APM](https://github.com/microsoft/apm) package:
+author and independent-inspector skills for every V-model stage from system requirements, deterministic gates, and
+standard profiles (a generic high-integrity baseline, ISO 26262, IEC 61508, ASPICE 4.0), with cloud or local models.
+See its [README](packages/forge-c-hi/README.md) and Spec Kit feature
+[`specs/023-high-integrity-vmodel-skills/`](specs/023-high-integrity-vmodel-skills/).
+
 **Is Forge-C for you?** It is for embedded and functional-safety engineers who want to see how far an AI-driven,
 evidence-first process can take a low-level driver (for example an STM32 RCC or IWDG driver), entirely on their own
 machine and with open-source tools. It is not a code generator you can drop into a product as is.
@@ -169,6 +176,7 @@ The failure runbook, backup, recovery and trace retention are in [`docs/OPERATIO
 |---|---|
 | [`factory/python/forge_factory/`](factory/python/forge_factory/) | The factory: workflow generator, LLM gateway, MCP servers, supervisor, repair, lessons, events, dashboard, KPIs, release packager |
 | [`.fabro/skills/`](.fabro/skills/) | The versioned `SKILL.md` for each of the 20 agent roles |
+| [`packages/forge-c-hi/`](packages/forge-c-hi/) | The portable APM skills package (feature 023): V-model author/inspector skills, gates, profiles |
 | [`config/factory/`](config/factory/) | Agent permissions, MCP registry, supervisor, trace, token and KPI policies |
 | [`examples/`](examples/) | Work orders: generic RCC, STM32N6 RCC low-level (LL) and HAL drivers, RCC drivers built on delivered code, IWDG LL and HAL |
 | [`specs/`](specs/) | Spec Kit features: 001 OSS driver bootstrap, 002 self-healing factory, 003 manufacturing KPIs |

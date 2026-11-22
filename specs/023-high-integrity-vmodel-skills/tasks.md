@@ -306,7 +306,7 @@ BLOCKED or NOT_RUN.
 - [ ] T081 [P] Version and metadata audit: every `SKILL.md` has `name` equal to its folder, a description with "use when" triggers, `metadata.version`, `metadata.stage`, `metadata.role` and `metadata.write_scope`. Add the test `PKG/tests/test_skill_metadata.py`
 - [ ] T082 [P] Make the instructions and skill texts state compact output (AgentStatus ≤2 KB) consistently. Add a test that each author or inspector skill references `agent-status.schema.json`
 - [ ] T083 Regression: run the full existing repo suites (`python3 tests/spec/validate_design.py` and the existing pytest targets that ran on main before this branch) and confirm no change in results. Store the result in `FEAT/evidence/regression.txt`
-- [ ] T084 Update the root `README.md` and `website/` with a short "Portable skills package (feature 023)" section, and update the constitution follow-up (the ⚠ item in the Sync Impact Report)
+- [x] T084 Update the root `README.md` and `website/` with a short "Portable skills package (feature 023)" section, and update the constitution follow-up (the ⚠ item in the Sync Impact Report). Evidence: website unit tests pass; the local `astro build` cannot run on this host (Node 20 < 22 required by Astro), so the page build is left to the site CI
 - [ ] T085 Run `/speckit-analyze` for cross-artifact consistency. Fix the findings, then mark the feature tasks complete only where evidence exists
 
 ---
