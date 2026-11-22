@@ -255,8 +255,11 @@ def run(root: Path, stage: str | None = None, *, write: bool = True) -> dict:
     return doc
 
 
-def rebaseline(root: Path, stage: str) -> int:
-    """Record both end hashes of every link entering `stage`; called when the stage is accepted. Returns the count."""
+def rebaseline(root: Path, stage: str, only: set[str] | None = None) -> int:
+    """Record both end hashes of every link entering `stage` (or only those entering the items in `only`).
+
+    Called for items the inspector judged against their current upstream, and when the stage is accepted.
+    Returns the number of links recorded."""
     root = Path(root)
     project = load_project(root)
     _, links, graph = check(root, project, None)
@@ -264,7 +267,7 @@ def rebaseline(root: Path, stage: str) -> int:
     base = _load_baseline(root)
     n = 0
     for ln in links:
-        if nodes.get(ln["to"], {}).get("stage") == stage:
+        if nodes.get(ln["to"], {}).get("stage") == stage and (only is None or ln["to"] in only):
             base["links"][_key(ln)] = {"from": nodes[ln["from"]]["hash"], "to": nodes[ln["to"]]["hash"]}
             n += 1
     write_json(root / BASELINE, base)

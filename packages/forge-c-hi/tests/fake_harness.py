@@ -10,6 +10,7 @@ Scenario keys:
   author.split            {item_id: [new items]} appended on rework of item_id
   author.fix_gates        [{id, field: value}] applied on phase "fix-gates"
   author.set_fix          {item_id: {field: value}} applied on phase "rework-set"
+  author.update           {"patch": {item_id: {field: value}}, "open_points": [...]} applied on phase "update"
   author.write_outside    a relative path the author writes on "create" (scope violation)
   inspector.item_rounds   list per round of {item_id: [finding]}
   inspector.set_rounds    list per round of [finding]
@@ -36,7 +37,8 @@ def main() -> int:
     with open(os.environ["FAKE_LOG"], "a") as fh:
         fh.write(json.dumps({
             "role": role, "phase": task["phase"], "round": task.get("round", 0), "items": task.get("items", []),
-            "findings": len(task.get("findings", [])),
+            "findings": len(task.get("findings", [])), "changed_inputs": task.get("changed_inputs"),
+            "suspect": task.get("suspect"),
             "active_role": json.loads(active.read_text()) if active.exists() else None,
             "env_role": os.environ.get("HI_ROLE"),
         }) + "\n")
@@ -66,6 +68,12 @@ def main() -> int:
             elif task["phase"] == "fix-gates":
                 for fix in a.get("fix_gates", []):
                     by_id[fix["id"]].update({k: v for k, v in fix.items() if k != "id"})
+            elif task["phase"] == "update":
+                up = a.get("update", {})
+                for iid, patch in up.get("patch", {}).items():
+                    by_id[iid].update(patch)
+                if "open_points" in up:
+                    doc["open_points"] = up["open_points"]
             elif task["phase"] == "rework-set":
                 for iid, patch in a.get("set_fix", {}).items():
                     by_id[iid].update(patch)

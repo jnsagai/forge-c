@@ -72,13 +72,14 @@ def rel(root: Path, p: Path) -> str:
 
 
 class Conductor:
-    def __init__(self, root: Path, *, timeout: int = 3600, dry_run: bool = False):
+    def __init__(self, root: Path, *, timeout: int = 3600, dry_run: bool = False, fresh: bool = False):
         self.root = Path(root).resolve()
         self.project = load_project(self.root)
         self.rigor = effective_rigor(self.project)
         self.profile = load_profile(self.rigor["profile"])
         self.timeout = timeout
         self.dry_run = dry_run
+        self.fresh = fresh
         self.raw = bool((self.project.get("trace_capture") or {}).get("raw_prompts"))
         self.run_id = new_run_id()
         self.run_dir = self.root / ".hi" / "runs" / self.run_id
@@ -142,6 +143,10 @@ class Conductor:
     def prompt(self, t: dict) -> str:
         what = {
             "create": "Create the workproduct for this stage from the inputs and upstream workproducts.",
+            "update": "The workproduct already exists and has been inspected. Update it only for what changed: the "
+                      "inputs listed in `changed_inputs`, the items listed in `suspect` (their upstream changed), and "
+                      "open points the inputs now answer (remove those). Keep every item the changes do not affect "
+                      "exactly as it is, with its id.",
             "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct.",
             "rework": f"Rework ONLY item {', '.join(t.get('items', []))} to resolve the findings listed. Do not change "
                       "any other existing item. You may add new items only to split this one.",
@@ -231,7 +236,8 @@ class Conductor:
 
     def det_issues(self, stage: str) -> tuple[dict, list[dict]]:
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
-        issues = [i for i in summ["issues"] if i.get("gate") in DET_GATES]
+        # suspect links are cleared by re-inspection, not by the author
+        issues = [i for i in summ["issues"] if i.get("gate") in DET_GATES and i.get("code") != "TR-SUSPECT"]
         self.event(stage=stage, step="gate", verdict=summ["verdict"], gates=summ["gates"], issues=len(summ["issues"]))
         return summ, issues
 
@@ -252,6 +258,41 @@ class Conductor:
             self.run_role("author", stage, "fix-gates", round=fixes,
                           findings=[{k: i[k] for k in ("gate", "code", "target_id", "message") if k in i}
                                     for i in issues[:40]])
+
+    def item_hashes(self, stage: str) -> dict[str, str]:
+        from forge_hi.io import sha256_bytes
+        return {i["id"]: sha256_bytes(canonical(i)) for i in read_json(self.workproduct(stage)).get("items", [])
+                if isinstance(i, dict) and "id" in i}
+
+    def last_rounds(self, stage: str) -> tuple[int, int]:
+        d = self.root / "hi" / stage / "inspection"
+        def last(phase: str) -> int:
+            return max([int(p.stem.split("-r")[-1]) for p in d.glob(f"{phase}-r*.json")] or [0]) if d.is_dir() else 0
+        return last("item"), last("set")
+
+    def suspect_items(self, stage: str) -> list[str]:
+        issues, _, _ = trace.check(self.root, self.project, stage)
+        mine = set(self.item_ids(stage)) if self.workproduct(stage).is_file() else set()
+        return sorted({i["target_id"] for i in issues if i["code"] == "TR-SUSPECT" and i["target_id"] in mine})
+
+    def input_hashes(self) -> dict[str, str]:
+        return {i["path"]: sha256_file(self.root / i["path"]) for i in self.project["inputs"]
+                if i.get("kind") != "reference_document" and (self.root / i["path"]).is_file()}
+
+    def changes(self, stage: str) -> dict[str, list]:
+        """What changed since the workproduct was written: inputs, suspect upstream links, open points to revisit."""
+        wp = read_json(self.workproduct(stage))
+        jp = self.root / "hi" / stage / "inspection" / "judged.json"
+        recorded = (read_json(jp).get("inputs") if jp.is_file() else None) \
+            or (wp.get("provenance") or {}).get("input_hashes") or {}
+        changed = []
+        for inp in self.project["inputs"]:
+            p = self.root / inp["path"]
+            if inp.get("kind") != "reference_document" and p.is_file() and recorded.get(inp["path"]) != sha256_file(p):
+                changed.append(inp["path"])
+        suspect = self.suspect_items(stage)
+        ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict)] if changed else []
+        return {"changed_inputs": changed, "suspect": suspect, "open_points": ops}
 
     def item_ids(self, stage: str) -> list[str]:
         return [i["id"] for i in read_json(self.workproduct(stage)).get("items", []) if isinstance(i, dict) and "id" in i]
@@ -342,16 +383,46 @@ class Conductor:
         self.event(stage=stage, step="stage-start", profile=self.rigor["profile"], level=self.rigor["level"],
                    rework_limit=self.limit)
         all_findings: list[dict] = []
+        judged: dict[str, str] = {}
+        base_item = base_set = 0
+        resume = self.workproduct(stage).is_file() and not self.fresh and not self.dry_run
         try:
-            self.author_with_gates(stage, "create")
+            if resume:
+                all_findings = gates.findings(self.root, stage)
+                for f in all_findings:
+                    if f["status"] == "carried":
+                        f["status"] = "open"  # judged again in this run
+                base_item, base_set = self.last_rounds(stage)
+                jp = self.root / "hi" / stage / "inspection" / "judged.json"
+                judged = read_json(jp).get("items", {}) if jp.is_file() else {}
+                changes = self.changes(stage)
+                self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items()})
+                if any(changes.values()):
+                    self.author_with_gates(stage, "update", **changes)
+                else:
+                    _, issues = self.det_issues(stage)
+                    if issues:
+                        self.author_with_gates_fix_only(stage, issues)
+            else:
+                self.author_with_gates(stage, "create")
             if self.dry_run:
                 self.inspect(stage, "item", 1, [], [])
                 self.inspect(stage, "set", 1, [], [])
                 return {"stage": stage, "outcome": "DRY_RUN"}
-            # item phase
-            to_judge, rnd = self.item_ids(stage), 1
-            while True:
+            # item phase: judge new or changed items and items with open findings; keep the others' judgements
+            hashes = self.item_hashes(stage)
+            pending = {f["target_id"] for f in all_findings if f["status"] == "open" and f["phase"] == "item"}
+            pending |= set(self.suspect_items(stage))
+            to_judge = [i for i in hashes if judged.get(i) != hashes[i] or i in pending]
+            judged_now: set[str] = set()
+            rnd = base_item + 1
+            while to_judge:
                 new = self.inspect(stage, "item", rnd, to_judge, [])
+                hashes = self.item_hashes(stage)
+                judged.update({i: hashes[i] for i in to_judge if i in hashes})
+                judged_now |= set(to_judge)
+                write_json(self.root / "hi" / stage / "inspection" / "judged.json",
+                           {"schema": "forge-c-hi/judged@1", "items": judged, "inputs": self.input_hashes()})
                 for f in all_findings:
                     if f["status"] == "open" and f["phase"] == "item" and f["target_id"] in to_judge:
                         f["status"] = "resolved"
@@ -361,7 +432,7 @@ class Conductor:
                                   if f["status"] == "open" and f["phase"] == "item" and f["severity"] in REWORK_SEVERITIES})
                 if not flagged:
                     break
-                if rnd > self.limit:
+                if rnd - base_item > self.limit:
                     self.event(stage=stage, step="rework-limit", phase="item", flagged=flagged)
                     break
                 added: list[str] = []
@@ -372,12 +443,14 @@ class Conductor:
                 if issues:
                     self.author_with_gates_fix_only(stage, issues)
                 to_judge, rnd = flagged + added, rnd + 1
+            if judged_now:  # the inspector judged these items against their current upstream
+                trace.rebaseline(self.root, stage, only=judged_now)
             for f in all_findings:
                 if f["status"] == "open" and f["phase"] == "item":
                     f["status"] = "carried"
             self.save_findings(stage, all_findings)
             # set phase
-            srnd = 1
+            srnd = base_set + 1
             while True:
                 carried = [f for f in all_findings if f["status"] == "carried"]
                 prior_set = [f for f in all_findings if f["status"] == "open" and f["phase"] == "set"]
@@ -392,7 +465,7 @@ class Conductor:
                 open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES]
                 if not open_set:
                     break
-                if srnd > self.limit:
+                if srnd - base_set > self.limit:
                     self.event(stage=stage, step="rework-limit", phase="set", open=len(open_set))
                     break
                 self.run_role("author", stage, "rework-set", round=srnd,
@@ -474,10 +547,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--root")
     ap.add_argument("--timeout", type=int, default=3600)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--fresh", action="store_true", help="re-author from scratch instead of updating an existing workproduct")
     a = ap.parse_args(argv)
     root = Path(a.root).resolve() if a.root else find_root()
     try:
-        summary = Conductor(root, timeout=a.timeout, dry_run=a.dry_run).run(a.stage, a.until)
+        summary = Conductor(root, timeout=a.timeout, dry_run=a.dry_run, fresh=a.fresh).run(a.stage, a.until)
     except (ConfigError, ValueError) as exc:
         print(json.dumps({"cmd": "conduct", "status": "ERROR", "error": str(exc)[:500]}))
         return 2

@@ -250,3 +250,61 @@ def test_manual_harness_is_assisted_mode(tmp_path):
     make_project(root)
     code, out, _ = conduct(root, root / "none.json", "--stage", "sys-req")
     assert code == 2 and "assisted mode" in out["error"]
+
+
+def clean_scenario(**author):
+    return {"author": {"items": SYS_ITEMS, **author}, "inspector": {"item_rounds": [{}] * 9, "set_rounds": [[]] * 9}}
+
+
+def test_rerun_without_changes_keeps_inspected_items(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, clean_scenario())
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    (root.parent / "p-calls.jsonl").unlink()
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0, out
+    assert seq(calls) == [("inspector", "set", 2, ())]       # no author call, no item re-judge
+
+
+def test_input_change_updates_and_rejudges_only_changed_items(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    new_text = "The supervisor shall detect a missing alive indication of a supervised task within 30 ms."
+    sc = setup(root, clean_scenario(update={"patch": {"SYS-SUP-001": {"text": new_text}}}))
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    (root.parent / "p-calls.jsonl").unlink()
+    needs = root / "needs/stakeholder-needs.md"
+    needs.write_text(needs.read_text().replace("stops.", "stops for 30 ms."))
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0, out
+    assert calls[0]["phase"] == "update" and calls[0]["changed_inputs"] == ["needs/stakeholder-needs.md"]
+    assert calls[0]["suspect"] == ["SYS-SUP-001"]
+    assert ("inspector", "item", 2, ("SYS-SUP-001",)) in seq(calls)
+    assert out["stages"][0]["outcome"] == "ACCEPTED"          # re-accepted: the suspect link is re-baselined
+
+
+def test_blocking_open_point_then_answer_unblocks(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = [{"id": "OP-SYS-001", "text": "The repeat count is not given.", "raised_by": "author", "blocks": True}]
+    sc = setup(root, clean_scenario(open_points=op, update={"open_points": []}))
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    assert code == 1 and "blocking open points" in out["stages"][0]["reason"]
+    (root / "needs/constraints.md").write_text(CONSTRAINT_ANSWER)
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+    assert calls[-3]["phase"] == "update" or any(c["phase"] == "update" for c in calls)
+
+
+CONSTRAINT_ANSWER = "| CON-SUP-001 | Target: a Cortex-M55 microcontroller. |\n| CON-SUP-002 | Latch after 3 faults. |\n"
+
+
+def test_fresh_reauthors(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, clean_scenario())
+    conduct(root, sc, "--stage", "sys-req")
+    (root.parent / "p-calls.jsonl").unlink()
+    _, _, calls = conduct(root, sc, "--stage", "sys-req", "--fresh")
+    assert calls[0]["phase"] == "create"
