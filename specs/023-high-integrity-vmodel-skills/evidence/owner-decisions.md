@@ -43,3 +43,5 @@
 - **Third round:** `CON-SUP-121..122` answer the two blocking open points that the second round's answers exposed
   (watchdog servicing between detection and safe state; entity of a program-flow fault). Same status: fictional, by
   Claude.
+- **Fourth round:** `CON-SUP-123` clarifies `CON-SUP-122` (which task is named when checkpoints arrive swapped). Same
+  status: fictional, by Claude.

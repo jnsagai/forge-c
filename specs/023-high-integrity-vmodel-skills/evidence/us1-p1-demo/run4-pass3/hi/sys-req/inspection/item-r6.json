@@ -1,0 +1,36 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-011",
+      "checklist_item": "IQ-04",
+      "description": "SYS-SUP-013 starts withholding watchdog service only after both fault-report transmission and safe-state entry complete. For a detected task fault, it leaves service between detection and that point unspecified, although STK-SUP-005 permits servicing only while every supervised task is healthy. OP-SYS-011 records the unresolved conflict with completing the fault reactions before a watchdog reset.",
+      "id": "F-sys-req-item-r6-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:03:00Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T225947Z-894a21",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the watchdog-service rule for the interval between fault detection and completion of both reactions, then specify the resulting obligation consistently with the approved decision.",
+      "round": 6,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-013"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-013",
+    "SYS-SUP-026"
+  ],
+  "phase": "item",
+  "round": 6,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -1,0 +1,57 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement mandates detection at the exact expiry instant. CON-SUP-105 identifies expiry as the instant from which the 50 ms safe-state reaction is measured; it does not require late-start detection at that instant. CON-SUP-103 explicitly specifies expiry detection for an overrun, but does not state that deadline for a late start.",
+      "id": "F-sys-req-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:54:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T224651Z-fa4240",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Establish a source-supported late-start detection deadline, or record the missing decision as a blocking open point.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "blocked_by": "OP-SYS-009",
+      "checklist_item": "IQ-06",
+      "description": "The requirement accepts a start exactly at expiry but requires detection at expiry if the task has not started. CON-SUP-103 specifies 100 µs measurement resolution, and OP-SYS-009 leaves unresolved how a start in the same measurement step as expiry is distinguished. Tests away from the boundary do not establish pass or fail at that boundary.",
+      "id": "F-sys-req-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T22:54:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T224651Z-fa4240",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-009 as blocking so the boundary behaviour can be decided before the requirement is verified.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-003"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-003"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

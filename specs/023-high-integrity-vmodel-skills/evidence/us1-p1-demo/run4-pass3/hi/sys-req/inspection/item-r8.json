@@ -1,0 +1,34 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-02",
+      "description": "CON-SUP-122 selects the first task in configured release order whose checkpoint is missing or out of order. SYS-SUP-049 selects the first missing checkpoint whenever any checkpoint is missing, even if an earlier task's checkpoint is out of order. The two rules can therefore select different entities in a cycle containing both defects.",
+      "id": "F-sys-req-item-r8-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-22T23:06:21Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T230413Z-e57215",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the missing-checkpoint rule with CON-SUP-122 for cycles containing both missing and out-of-order checkpoints, and account for the unresolved out-of-order selection in OP-SYS-013.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-049"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-049"
+  ],
+  "phase": "item",
+  "round": 8,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}
