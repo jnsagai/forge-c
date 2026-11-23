@@ -1,0 +1,32 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SQ-05",
+      "description": "SYS-DIAG-014 requires an ERR answer for a line longer than 32 characters without excluding lines received while an earlier answer is transmitting. SYS-DIAG-015 requires a service request received during that interval to be discarded without an answer, as does CON-SUP-139. The set does not consistently specify the response to an overlong request received during an answer.",
+      "id": "F-sys-req-set-r7-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:16:06Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Clarify that an overlong request received while an earlier answer is transmitting is discarded without an answer, consistent with CON-SUP-139.",
+      "round": 7,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-014"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 7,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

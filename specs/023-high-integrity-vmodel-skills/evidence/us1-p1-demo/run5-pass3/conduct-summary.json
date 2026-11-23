@@ -1,0 +1,2 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T001206Z-ef303a/events.jsonl","run_id":"r20261123T001206Z-ef303a","stages":[{"carried":0,"gates":{"independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"outcome":"ACCEPTED","stage":"sys-req"},{"carried":0,"gates":{"doc-sources":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"outcome":"BLOCKED","reason":"open blocking findings ['F-sw-req-set-r1-001'] blocking open points ['OP-SWR-003']","stage":"sw-req"}],"status":"BLOCKED"}
+exit=1

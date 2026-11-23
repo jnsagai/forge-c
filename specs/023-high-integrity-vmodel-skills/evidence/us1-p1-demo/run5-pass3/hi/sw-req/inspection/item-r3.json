@@ -1,0 +1,12 @@
+{
+  "dropped": 0,
+  "findings": [],
+  "judged": [
+    "SWR-SAFE-005",
+    "SWR-WDG-006"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

@@ -92,3 +92,9 @@ decides them.
 |---|---|
 | CON-SUP-139 | The service tool sends a request only after it has received the complete answer to its previous one. A request received while an answer is still being transmitted is ignored (no answer). Fault reports have priority over answers: the 50 ms answer time of CON-SUP-138 is extended by the transmission time of the fault reports sent between the request and its answer. |
 | CON-SUP-140 | Each fault code keeps its own count for the latch of CON-SUP-117: a detection of a different code neither resets nor advances it (codes 1, 2, 1, 1 latch at the third detection of code 1). A count returns to zero only after 60 s of fault-free operation (CON-SUP-135). This replaces "consecutive" in CON-SUP-110. |
+
+**Eleventh round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-141 | The `<ms since start>` of a code 8 report is the time, since the latest reset, at which start-up classified the reset cause (CON-SUP-111). |

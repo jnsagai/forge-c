@@ -1,0 +1,54 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SQ-02",
+      "description": "CON-SUP-117 and CON-SUP-140 require detections of each code to accumulate across the supervisor resets following the first and second detections. SYS-SAFE-017 requires separate counts, but SYS-SAFE-009 preserves only the latch, fault history and diagnostic fault count; it does not preserve the per-code counts.",
+      "id": "F-sys-req-set-r6-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:15:24Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Require the per-code detection counts to survive software and watchdog resets and specify their clearing at power loss.",
+      "round": 6,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-017"
+    },
+    {
+      "checklist_item": "SQ-02",
+      "description": "CON-SUP-117 and CON-SUP-140 clear counts after 60 s of fault-free operation. SYS-SAFE-008 counts only OPERATIONAL time, but the set does not require the accumulated fault-free interval to restart when a fault interrupts it. Separate fault-free intervals could therefore be added to clear counts prematurely.",
+      "id": "F-sys-req-set-r6-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:15:24Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify how a fault interrupts and restarts the 60 s fault-free interval while preserving the permitted under-count of CON-SUP-136.",
+      "round": 6,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-018"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 6,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

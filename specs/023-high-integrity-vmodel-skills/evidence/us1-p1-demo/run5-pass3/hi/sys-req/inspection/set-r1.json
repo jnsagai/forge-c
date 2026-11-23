@@ -1,0 +1,122 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-06",
+      "description": "The 50 ms response deadline starts when GET STATUS is received, but OP-SYS-002 records that request framing and the point at which a request counts as received are undefined. The deadline cannot be measured consistently without that decision.",
+      "id": "F-sys-req-set-r1-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:58Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-002 as blocking and obtain a decision defining when a request is received.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-006"
+    },
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-02",
+      "description": "The requirement exempts a start-up code 8 report from stopping watchdog service. CON-SUP-121 says servicing stops at fault detection without exception, while CON-SUP-130 counts that report as a detection for the latch rule and says start-up continues. OP-SYS-003 records that the inputs do not resolve whether servicing continues in this case.",
+      "id": "F-sys-req-set-r1-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:58Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the product decision on watchdog servicing for a start-up code 8 report and align the requirement with it.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-WDG-005"
+    },
+    {
+      "checklist_item": "SQ-05",
+      "description": "SYS-WDG-003 requires window-watchdog refresh while every supervised task is healthy, while SYS-WDG-005 requires servicing to stop after a fault. A code-integrity fault can occur while all supervised tasks are healthy, making both obligations apply at once.",
+      "id": "F-sys-req-set-r1-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:58Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the window-watchdog refresh condition with the fault-detection stop rule.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-WDG-003"
+    },
+    {
+      "checklist_item": "SQ-05",
+      "description": "SYS-SAFE-011 requires start-up to continue without entering the safe state when code 8 is reported, without an exception for the third detection. SYS-SAFE-007 requires that third detection to latch the safe state, and CON-SUP-130 says LATCHED overrides the other states.",
+      "id": "F-sys-req-set-r1-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:58Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Make the start-up continuation rule consistent with the third-detection latch and its state priority.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-011"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-113 requires GET FAULTS to return the last eight fault reports. SYS-DIAG-009 specifies the order and maximum number of reports held, but the set does not require the history to retain the most recent eight reports.",
+      "id": "F-sys-req-set-r1-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:58Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify retention and replacement of fault history so GET FAULTS returns the most recent eight reports, or all reports when fewer than eight exist.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-009"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 1,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

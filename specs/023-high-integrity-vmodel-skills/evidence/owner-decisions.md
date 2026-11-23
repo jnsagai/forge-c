@@ -60,3 +60,4 @@
   fictional, by Claude.
 - **Tenth round:** `CON-SUP-139..140` (overlapping service requests; per-code latch counts). Same status: fictional,
   by Claude.
+- **Eleventh round:** `CON-SUP-141` (timestamp of a code 8 report). Same status: fictional, by Claude.
