@@ -53,6 +53,12 @@ TOOLS = {
         _obj({"stage": STAGE}, ["stage"]),
         lambda r, a: api.quality(r, a["stage"]),
     ),
+    "hi_governance_check": (
+        "Governance package coverage of the entry stage: every need (and in-scope document section) in a use case, "
+        "out of scope or an open point; every use case realised by a requirement.",
+        _obj({"stage": STAGE, "before_requirements": {"type": "boolean"}}, ["stage"]),
+        lambda r, a: api.governance(r, a["stage"], realization=not a.get("before_requirements")),
+    ),
     "hi_trace_check": (
         "Bidirectional traceability: dangling, orphan, uncovered and suspect links; renders hi/trace-matrix.md.",
         _obj({"stage": STAGE}),

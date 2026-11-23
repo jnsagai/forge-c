@@ -372,6 +372,16 @@ from its link and reproduces the P1 demo. The impact report's numbers are reprod
 
   These are the cloud models. No paid API key is needed. At least one local-model run follows as secondary evidence.
   Supporting further harnesses (for example GitHub Copilot or Kiro) is a matter of configuration only.
+- **FR-030** (owner 2026-11-23, port of Forge-C feature 020): before the first requirement of the entry stage, the
+  author MUST write a governance package. It holds the actors, the use cases, the document scope for reference
+  documents, what is out of scope and why, the assumptions, and the open points. A deterministic `governance` gate
+  (required from HI-1) MUST check the following:
+  - every stakeholder need, and every in-scope document section, is in a use case, declared out of scope, or in an
+    open point, before any requirement is written;
+  - once the requirements exist, every use case is realised by at least one requirement;
+  - every in-scope section is cited by at least one requirement.
+
+  Coverage gaps the author cannot close within the rework limit block the stage.
 
 ### Key Entities
 

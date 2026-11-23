@@ -32,6 +32,7 @@ The same functions are also available as MCP tools from the `forge-c-hi` MCP ser
 | `hi doc-index <pdf> --doc-id ID` | `hi_doc_index` | section/page outline of your own reference document (needs poppler, else NOT_RUN) |
 | `hi validate <file>` | `hi_validate` | schema and envelope check |
 | `hi quality <stage>` | `hi_quality_rules` | deterministic requirement-quality rules |
+| `hi governance <stage> [--before-requirements]` | `hi_governance_check` | entry stage: actors, use cases and scope cover every need (and in-scope document section); every use case is realised |
 | `hi trace [--stage S]` | `hi_trace_check` | bidirectional traceability, dangling or suspect links, document sources |
 | `hi scope --role R --stage S` | `hi_scope_check` | files changed ⊆ role write scope |
 | `hi gate <stage>` | `hi_gate` | every gate the profile requires for this stage and level |

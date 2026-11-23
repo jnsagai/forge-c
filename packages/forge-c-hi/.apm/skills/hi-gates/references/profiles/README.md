@@ -23,7 +23,7 @@ needs. Skills and gates never change when you switch profiles: only `.hi/project
    table/objective number. Never sentences or text from the standard: the schema limits each entry to 40 characters
    and rejects sentence punctuation.
 5. **`rigor`** per level:
-   - `required_gates`: from `validate`, `trace`, `quality`, `scope`, `doc-sources`, `independence`, `build`,
+   - `required_gates`: from `validate`, `trace`, `quality`, `governance`, `scope`, `doc-sources`, `independence`, `build`,
      `static-analysis`, `unit-test`, `coverage`;
    - `independence`: `same-session-ok`, `separate-session` or `separate-model-family`;
    - `coverage`: statement, branch and MC/DC targets in percent, or `null`;

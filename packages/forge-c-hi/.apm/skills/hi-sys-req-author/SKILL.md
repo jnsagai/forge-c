@@ -55,6 +55,28 @@ Copy `harness`, `model`, `model_family`, `input_hashes`, `created_utc` and `run_
 assisted mode use `"harness": "assisted"`, your model name if you know it, and leave `input_hashes` as
 `.hi/inputs.lock.json` lists them.
 
+## Governance package first (`phase: governance`)
+
+Before the first requirement, write `hi/sys-req/governance.json` (contract
+`hi-gates/references/schemas/governance.schema.json`; the `hi-task` block names it as `governance`). It states the
+scope the requirements must fill, so that completeness can be checked by a machine:
+
+- **actors** (`ACT-<AREA>-<NNN>`): who or what uses the system at its boundary (operators, other systems, the
+  application software, the platform);
+- **use cases** (`UC-<AREA>-<NNN>`): one goal of one actor each, naming in `needs` **every** stakeholder need it serves;
+- **out_of_scope**: needs the product deliberately does not serve, each with the reason the inputs give;
+- **assumptions** (`ASM-<AREA>-<NNN>`): what you take as given and the inspector should check;
+- **open points** (`OP-GOV-<NNN>`): where the inputs do not say which use case a need belongs to, or whether it is in
+  scope at all. Each names the needs it `concerns` and is classified (`blocks`, `deferred_to`) like a requirement's
+  open point.
+
+Every stakeholder need must be in a use case, out of scope, or in an open point. The `governance` gate checks this
+before you write any requirement and sends what is missing back to you (`phase: fix-governance`). Do not invent
+actors or goals the inputs do not support.
+
+Then, in each requirement, name the use cases it realises: `"attributes": {"use_cases": ["UC-SUP-001"]}`. Every use
+case needs at least one requirement; the gate reports a use case without one.
+
 ## How to write each requirement
 
 1. **One obligation, one "shall".** Pattern: `[When/While <trigger or state>,] the <system or named part> shall

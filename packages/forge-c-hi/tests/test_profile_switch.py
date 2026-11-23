@@ -46,7 +46,8 @@ def test_same_workproducts_under_each_profile(tmp_project, profile, level, name,
     gates = json.loads(r.stdout)["gates"]
     from forge_hi.config import effective_rigor, load_project, stages
     rigor = effective_rigor(load_project(tmp_project))
-    assert set(gates) == ({g for g in stages()["sw-req"]["gates"] if g in rigor["required_gates"]}
+    # the governance package belongs to the entry stage (sys-req here), not to sw-req
+    assert set(gates) == ({g for g in stages()["sw-req"]["gates"] if g in rigor["required_gates"]} - {"governance"}
                           | ({"independence"} if "independence" in rigor["required_gates"] else set()))
     res = seal.seal(tmp_project)
     pkg = tmp_project / res["package"]

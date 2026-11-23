@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/governance",
+  "title": "Governance package of the entry stage: actors, use cases, scope, assumptions and open points, written before the requirements",
+  "description": "Ported from Forge-C feature 020 (governance package and coverage check), generalised from driver API functions to stakeholder needs and reference-document sections.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "stage", "actors", "use_cases", "out_of_scope", "assumptions", "open_points"],
+  "properties": {
+    "schema": {"const": "forge-c-hi/governance@1"},
+    "stage": {"enum": ["sys-req", "sw-req"]},
+    "document_scope": {
+      "description": "Reference-document class: the sections of each declared document that the product covers ('in') or leaves out ('out', with a reason).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "title", "scope"],
+        "properties": {
+          "ref": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+#[A-Za-z0-9_.-]+$", "description": "<doc_id>#<section>"},
+          "title": {"type": "string", "minLength": 1},
+          "scope": {"enum": ["in", "out"]},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "description"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^ACT-[A-Z0-9_]+-[0-9]{3}$"},
+          "name": {"type": "string", "minLength": 1},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "use_cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "actor", "goal", "needs"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^UC-[A-Z0-9_]+-[0-9]{3}$"},
+          "title": {"type": "string", "minLength": 1},
+          "actor": {"type": "string"},
+          "goal": {"type": "string", "minLength": 10},
+          "needs": {"type": "array", "items": {"type": "string"}, "description": "STK ids this use case serves"},
+          "sections": {"type": "array", "items": {"type": "string"}, "description": "<doc_id>#<section> it relies on"},
+          "origin": {"enum": ["generated", "owner"]}
+        }
+      }
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "reason"],
+        "properties": {
+          "ref": {"type": "string", "description": "a need id the product deliberately does not serve"},
+          "reason": {"type": "string", "minLength": 15}
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^ASM-[A-Z0-9_]+-[0-9]{3}$"},
+          "text": {"type": "string", "minLength": 10}
+        }
+      }
+    },
+    "open_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "concerns", "blocks"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^OP-GOV-[0-9]{3}$"},
+          "text": {"type": "string", "minLength": 10},
+          "concerns": {"type": "array", "minItems": 1, "items": {"type": "string"},
+                       "description": "need ids or <doc_id>#<section> refs the inputs leave unclear"},
+          "blocks": {"type": "boolean"},
+          "deferred_to": {"enum": ["sys-req", "sys-arch", "sw-req", "sw-arch", "sw-design", "unit-verif", "sw-integ",
+                                   "sw-qual", "sys-integ", "sys-qual"]}
+        }
+      }
+    }
+  }
+}

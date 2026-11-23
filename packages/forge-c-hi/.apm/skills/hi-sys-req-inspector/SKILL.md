@@ -22,6 +22,10 @@ findings, and any write you attempt is rejected and blocks the stage.
 - The checklists: `hi-gates/references/checklists/requirements-item.json` (item phase) and
   `requirements-set.json` (set phase). Each entry has a pass criterion and a typical defect.
 - The `hi-task` block: phase, round, the items to judge, and any carried findings.
+- The governance package `hi/sys-req/governance.json` (the `governance` field of the `hi-task` block): actors, use
+  cases, scope, assumptions. The gate has checked that every need is placed somewhere; you judge whether it is placed
+  **right**: in the set phase, raise SQ-01 or SQ-02 when a use case is missing, a need is declared out of scope without
+  support in the inputs, an assumption is not acceptable, or a use case's requirements do not achieve its goal.
 
 ## Item phase (`phase: item`)
 

@@ -15,6 +15,7 @@ All commands:
 | `hi doc-index <pdf> --doc-id ID` | `hi_doc_index` | section/page outline of a user-supplied reference document; NOT_RUN without poppler | `.hi/docs/<ID>.index.json` (never redistributed) |
 | `hi validate <workproduct>` | `hi_validate` | schema and envelope check | gate result |
 | `hi quality <stage>` | `hi_quality_rules` | deterministic IQ/SQ subset (R4) | gate result |
+| `hi governance <stage> [--before-requirements]` | `hi_governance_check` | governance package coverage of the entry stage (feature 020 port) | gate result (not with `--before-requirements`) |
 | `hi trace [--stage S]` | `hi_trace_check` | bidirectional completeness, dangling links, suspect links, document-source resolution | gate result, `hi/trace-matrix.md` |
 | `hi scope --role R --stage S` | `hi_scope_check` | changed files ⊆ role write scope (diff or snapshot backstop) | gate result |
 | `hi gate <stage>` | `hi_gate` | run all of the profile's required gates for the stage at the configured level | `hi/<stage>/gates/*.json` |

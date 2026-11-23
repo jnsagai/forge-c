@@ -35,12 +35,19 @@ def setup(root, scenario, *, level="HI-2", stages=("sys-req",), inspector_family
     return sc
 
 
-def conduct(root, sc, *args):
+GOV_PHASES = ("governance", "fix-governance")
+
+
+def conduct(root, sc, *args, gov=False):
+    """Run the conductor. The governance step (entry stage, before the author writes) is left out of the returned
+    calls unless `gov` is true: most tests are about the item and set loop."""
     log = root.parent / f"{root.name}-calls.jsonl"
     env = {"FAKE_SCENARIO": str(sc), "FAKE_LOG": str(log), "PATH": "/usr/bin:/bin"}
     r = subprocess.run([sys.executable, str(CONDUCT), *args], cwd=root, capture_output=True, text=True, timeout=120,
                        env=env)
     calls = [json.loads(l) for l in log.read_text().splitlines()] if log.exists() else []
+    if not gov:
+        calls = [c for c in calls if c["phase"] not in GOV_PHASES]
     out = json.loads(r.stdout.strip().splitlines()[-1]) if r.stdout.strip() else {"stderr": r.stderr}
     return r.returncode, out, calls
 
@@ -61,9 +68,12 @@ def test_happy_path_sequence(tmp_path):
         "inspector": {"item_rounds": [{"SYS-SUP-001": [F("IQ-04")], "SYS-SUP-002": [F("IQ-11", "minor")]}, {}],
                       "set_rounds": [[]]},
     })
-    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
     assert code == 0, out
     assert out["status"] == "DONE" and out["stages"][0]["outcome"] == "ACCEPTED"
+    first = calls.pop(0)  # the governance package comes before any requirement
+    assert (first["role"], first["phase"]) == ("author", "governance")
+    assert first["active_role"]["write_scope"] == ["hi/sys-req/**"]
     assert seq(calls) == [
         ("author", "create", 0, ()),
         ("inspector", "item", 1, ("SYS-SUP-001", "SYS-SUP-002")),
@@ -501,3 +511,81 @@ def test_author_that_writes_no_workproduct_gets_one_corrective_retry(tmp_path):
     assert len(creates) == 2 and creates[1]["notice"] and "directly" in creates[1]["notice"]
     assert any(e.get("step") == "author-retry" for e in events(root, out))
     assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+
+
+# ---------------------------------------------------------------- governance step (feature 020 port)
+GOV_UC = {"id": "UC-SUP-001", "title": "Supervise", "actor": "ACT-SUP-001", "goal": "Every failure is noticed.",
+          "needs": ["STK-SUP-001", "STK-SUP-002"]}
+
+
+def gov(**kw):
+    from hi_helpers import governance_doc
+    return governance_doc(**{"use_cases": [GOV_UC], **kw})
+
+
+def test_governance_comes_first_and_coverage_gaps_go_back_to_the_author(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov(use_cases=[dict(GOV_UC, needs=["STK-SUP-001"])]),
+                                 "governance_fix": gov()},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+    assert [c["phase"] for c in calls[:3]] == ["governance", "fix-governance", "create"]
+    assert calls[1]["findings"] == 1
+    ev = [e for e in events(root, out) if e["step"] == "governance"]
+    assert [e["codes"] for e in ev] == [["GOV-NEED-UNCOVERED"], []]
+    g = json.loads((root / "hi/sys-req/gates/governance.json").read_text())
+    assert g["verdict"] == "PASS"
+
+
+def test_governance_coverage_that_cannot_be_fixed_blocks_before_any_requirement(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov(use_cases=[dict(GOV_UC, needs=["STK-SUP-001"])])}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
+    assert code == 1 and out["stages"][0]["outcome"] == "BLOCKED"
+    assert "governance coverage" in out["stages"][0]["reason"] and "GOV-NEED-UNCOVERED" in out["stages"][0]["reason"]
+    assert "create" not in [c["phase"] for c in calls]
+
+
+def test_unrealised_use_case_goes_back_as_a_gate_issue(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    fix = [{"id": i["id"], "attributes": {"use_cases": ["UC-SUP-001"]}} for i in SYS_ITEMS]
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov(), "no_use_cases": True, "fix_gates": fix},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+    assert [c["phase"] for c in calls[:2]] == ["create", "fix-gates"]
+
+
+def test_blocking_governance_open_point_blocks_the_stage(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = {"id": "OP-GOV-001", "text": "Who owns the supervision configuration?", "concerns": ["STK-SUP-002"],
+          "blocks": True}
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov(open_points=[op])},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    assert code == 1 and out["stages"][0]["outcome"] == "BLOCKED"
+    assert "OP-GOV-001" in out["stages"][0]["reason"]
+
+
+def test_governance_is_updated_only_when_inputs_change(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov()},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    log = root.parent / f"{root.name}-calls.jsonl"
+    log.unlink()
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
+    assert code == 0 and "governance" not in [c["phase"] for c in calls]
+    log.unlink()
+    with open(root / "needs/stakeholder-needs.md", "a") as fh:
+        fh.write("\nA clarification by the product owner.\n")
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
+    assert code == 0, out
+    assert calls[0]["phase"] == "governance" and calls[0]["changed_inputs"] == ["needs/stakeholder-needs.md"]
+    assert calls[1]["phase"] == "update"

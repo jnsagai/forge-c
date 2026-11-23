@@ -95,6 +95,21 @@ VALID = {
         "disclaimer": "Not a certification, approval or production release.",
         "created_utc": "2026-11-22T12:00:00Z",
     },
+    "governance": {
+        "schema": "forge-c-hi/governance@1",
+        "stage": "sw-req",
+        "document_scope": [{"ref": "RM0486#34.4", "title": "Watchdog functional description", "scope": "in"},
+                           {"ref": "RM0486#34.6", "title": "Debug mode", "scope": "out",
+                            "reason": "Not used by the product."}],
+        "actors": [{"id": "ACT-WDM-001", "name": "Application", "description": "Refreshes the watchdog."}],
+        "use_cases": [{"id": "UC-WDM-001", "title": "Refresh", "actor": "ACT-WDM-001",
+                       "goal": "The watchdog is refreshed while the application is healthy.",
+                       "needs": [], "sections": ["RM0486#34.4"], "origin": "generated"}],
+        "out_of_scope": [],
+        "assumptions": [{"id": "ASM-WDM-001", "text": "The LSI clock is enabled by the platform."}],
+        "open_points": [{"id": "OP-GOV-001", "text": "Which reset cause register is read?", "concerns": ["RM0486#34.4"],
+                         "blocks": False, "deferred_to": "sw-arch"}],
+    },
 }
 
 
@@ -126,4 +141,8 @@ INVALID = [
         "READY must have zero gaps",
     ),
     ("review-manifest", _mut("review-manifest", lambda d: d["files"][0].update(sha256="xyz")), "sha256 pattern"),
+    ("governance", _mut("governance", lambda d: d.update(use_cases=[])), "at least one use case"),
+    ("governance", _mut("governance", lambda d: d["actors"][0].update(id="Application")), "actor id pattern"),
+    ("governance", _mut("governance", lambda d: d["open_points"][0].pop("concerns")), "open point names its concerns"),
+    ("governance", _mut("governance", lambda d: d["document_scope"][0].update(ref="34.4")), "section ref doc#section"),
 ]

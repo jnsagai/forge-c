@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from . import code_gates, doc_index, gate_result, quality, scope, trace
+from . import code_gates, doc_index, gate_result, governance, quality, scope, trace
 from .config import REFS, effective_rigor, load_project, schema, stages
 from .io import read_json, sha256_file
 from .jsonschema_lite import validate as schema_validate
@@ -147,7 +147,7 @@ def tool_gate_not_run(root: Path, stage: str, gate: str, *, write: bool = True) 
 
 def required_gates(project: dict, stage: str) -> list[str]:
     req = effective_rigor(project)["required_gates"]
-    out = [g for g in stages()[stage]["gates"] if g in req]
+    out = [g for g in stages()[stage]["gates"] if g in req and (g != "governance" or governance.applies(project, stage))]
     if "independence" in req:
         out.append("independence")
     return out
@@ -160,6 +160,8 @@ def _one_gate(root: Path, stage: str, g: str, scope_doc: dict | None) -> dict:
         return quality.run(root, stage)
     if g == "trace":
         return trace.run(root, stage)
+    if g == "governance":
+        return governance.run(root, stage)
     if g == "scope":
         if scope_doc is not None:
             gate_result.write(root, stage, scope_doc)
@@ -246,6 +248,7 @@ def status(root: Path) -> dict:
         for p in outputs:
             if p.is_file():
                 ops += [o for o in read_json(p).get("open_points", []) if isinstance(o, dict)]
+        ops += governance.blocking_open_points(root, s)
         state = "not-started"
         if exists:
             all_pass = all(rec.get(g) == "PASS" for g in req)

@@ -5,6 +5,8 @@
 
 Per stage (contracts/cli-and-mcp.md):
 
+0. entry stage only, when the profile requires the governance gate: the author writes the governance package (actors,
+   use cases, scope, assumptions, open points) and its coverage is checked before any requirement is written;
 1. author creates the workproduct;
 2. deterministic gates; gate issues go back to the author (bounded by the rework limit);
 3. item inspection of every item;
@@ -34,7 +36,7 @@ HERE = Path(__file__).resolve()
 SKILLS = HERE.parents[2]
 sys.path.insert(0, str(SKILLS / "hi-gates" / "scripts"))
 
-from forge_hi import __version__, api, gate_result, gates, scope, trace  # noqa: E402
+from forge_hi import __version__, api, gate_result, gates, governance, scope, trace  # noqa: E402
 from forge_hi.api import compact  # noqa: E402
 from forge_hi.config import REFS, ConfigError, effective_rigor, find_root, load_profile, load_project, schema, stage_order, stages  # noqa: E402,E501
 from forge_hi.io import canonical, read_json, sha256_file, write_json, write_text  # noqa: E402
@@ -42,7 +44,8 @@ from forge_hi.jsonschema_lite import validate  # noqa: E402
 from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
-DET_GATES = ("validate", "quality", "trace")
+DET_GATES = ("validate", "quality", "trace", "governance")
+GOV_PHASES = ("governance", "fix-governance")
 
 
 class Blocked(Exception):
@@ -129,6 +132,10 @@ class Conductor:
         binding = self.project["roles"][role]
         lock = self.root / ".hi" / "inputs.lock.json"
         hashes = read_json(lock).get("inputs", {}) if lock.is_file() else {}
+        extra = {}
+        if self.governed(stage):
+            extra["governance"] = rel(self.root, governance.path(self.root, stage))
+            extra["governance_contract"] = rel(self.root, REFS / "schemas" / "governance.schema.json")
         return {
             "run_id": self.run_id, "harness": binding.get("harness"), "model": binding.get("model"),
             "model_family": binding.get("model_family"), "input_hashes": hashes, "created_utc": utc_now(),
@@ -142,7 +149,7 @@ class Conductor:
             "level_name": self.rigor["level_name"],
             "reply_contract": rel(self.root, REFS / "schemas" / "agent-status.schema.json") if role == "author"
             else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change", "blocked_by"?}]}',
-            **kw,
+            **extra, **kw,
         }
 
     def prompt(self, t: dict) -> str:
@@ -152,13 +159,28 @@ class Conductor:
                       "inputs listed in `changed_inputs`, the items listed in `suspect` (their upstream changed), and "
                       "open points the inputs now answer (remove those). Keep every item the changes do not affect "
                       "exactly as it is, with its id.",
-            "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct.",
+            "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct"
+                         + (" (issues of the `governance` gate may instead need a change in `governance`)."
+                            if t.get("governance") else "."),
+            "governance": "Before any requirement is written, write the governance package `governance` (contract "
+                          "`governance_contract`): the actors, the use cases (each naming every stakeholder need it "
+                          "serves and, for a reference document, the sections it relies on), the document scope for "
+                          "reference documents, what is deliberately out of scope and why, your assumptions and the "
+                          "open points (ids OP-GOV-NNN, classified as for requirements). Every stakeholder need must be "
+                          "in a use case, out of scope, or in an open point's `concerns`; never invent behaviour the "
+                          "inputs do not state. If the file exists, change it only for the `changed_inputs`, keeping "
+                          "every id.",
+            "fix-governance": "The governance check reported the issues listed in `findings`. Fix them in the "
+                              "governance package, changing as little as possible.",
             "rework": f"Rework ONLY item {', '.join(t.get('items', []))} to resolve the findings listed. Do not change "
                       "any other existing item. You may add new items only to split this one.",
             "rework-set": "Resolve the set-level findings listed, changing as little as possible.",
             "item": f"Judge ONLY these items, each on its own, against the item checklist: {', '.join(t.get('items', []))}.",
             "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed.",
         }[t["phase"]]
+        if t.get("governance") and t["role"] == "author" and t["phase"] in ("create", "update"):
+            what += (" The governance package `governance` is written: name in `attributes.use_cases` of each "
+                     "requirement the use cases it realises; every use case needs at least one requirement.")
         role_line = (f"You are the AUTHOR, run by the conductor. Write the workproduct `{t['workproduct']}` directly "
                      "with your file tools (write or edit the JSON file itself). Do not write or run scripts or shell "
                      "commands and do not call gate tools: the conductor runs every gate after you. Write only inside "
@@ -232,7 +254,7 @@ class Conductor:
             raise Blocked(f"{role} wrote outside its write scope: {bad[:5]}")
         if code != 0:
             raise Blocked(f"{role} harness failed (exit {code}) in {stage} {phase}")
-        if role == "author" and phase != "fix-gates":
+        if role == "author" and phase not in ("fix-gates",) + GOV_PHASES:
             self.repair_json(stage)
         return reply
 
@@ -270,6 +292,39 @@ class Conductor:
         common = {"profile": self.rigor["profile"], "integrity_level": self.rigor["level"], "root": self.root}
         return gate_result.result("scope", list(self.scope_issues),
                                   tool={"name": "forge-c-hi scope (snapshot)", "version": __version__}, **common)
+
+    def governed(self, stage: str) -> bool:
+        return "governance" in gates.required_gates(self.project, stage)
+
+    def governance_step(self, stage: str, changed_inputs: list[str] | None) -> None:
+        """Feature 020 port: the governance package and its coverage, checked before the requirements are written.
+        Coverage gaps go back to the author within the rework limit; what remains blocks the stage."""
+        gp = governance.path(self.root, stage)
+        if gp.is_file() and not changed_inputs:
+            return
+        wp = rel(self.root, gp)
+        self.run_role("author", stage, "governance", workproduct=wp, changed_inputs=changed_inputs or [])
+        if self.dry_run:
+            return
+        if not gp.is_file():
+            self.event(stage=stage, step="author-retry", phase="governance", reason="no governance package written")
+            self.run_role("author", stage, "governance", workproduct=wp, changed_inputs=changed_inputs or [],
+                          notice=f"the conductor found no `{wp}` after your reply. Write that JSON file directly "
+                                 "with the file tools; scripts and commands cannot run here.")
+        fixes = 0
+        while True:
+            issues = governance.check(self.root, stage, realization=False)
+            self.event(stage=stage, step="governance", issues=len(issues),
+                       codes=sorted({i["code"] for i in issues})[:10])
+            if not issues:
+                return
+            if fixes >= self.limit:
+                raise Blocked(f"governance coverage: {len(issues)} issue(s) remain after {fixes} fix rounds: "
+                              + ", ".join(sorted({i['code'] for i in issues})))
+            fixes += 1
+            self.run_role("author", stage, "fix-governance", round=fixes, workproduct=wp,
+                          findings=[{"gate": "governance", **{k: i[k] for k in ("code", "target_id", "message")
+                                                              if k in i}} for i in issues[:40]])
 
     def det_issues(self, stage: str) -> tuple[dict, list[dict]]:
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
@@ -469,6 +524,8 @@ class Conductor:
                 judged = read_json(jp).get("items", {}) if jp.is_file() else {}
                 changes = self.changes(stage)
                 self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items()})
+                if self.governed(stage):
+                    self.governance_step(stage, changes["changed_inputs"])
                 if any(changes.values()):
                     self.author_with_gates(stage, "update", **changes)
                 else:
@@ -476,11 +533,16 @@ class Conductor:
                     if issues:
                         self.author_with_gates_fix_only(stage, issues)
                 ops_now = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
+                           + governance.open_points(self.root, stage)
                            if isinstance(o, dict)}
                 for f in all_findings:  # judged again in this run, unless still waiting on an open point
                     if f["status"] == "carried" and f.get("blocked_by") not in ops_now:
                         f["status"] = "open"
             else:
+                if self.governed(stage):
+                    if self.fresh:
+                        governance.path(self.root, stage).unlink(missing_ok=True)
+                    self.governance_step(stage, None)
                 self.author_with_gates(stage, "create")
             if self.dry_run:
                 self.inspect(stage, "item", 1, [], [])
@@ -548,6 +610,7 @@ class Conductor:
                 # a finding that waits on an open point stays carried while that open point exists, unless the
                 # set inspector raised it again: the new finding then replaces it (no duplicate per round)
                 ops_now = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
+                           + governance.open_points(self.root, stage)
                            if isinstance(o, dict)}
                 raised = {(f.get("target_id"), f.get("checklist_item")) for f in new}
                 for f in all_findings:
@@ -584,7 +647,8 @@ class Conductor:
         wp = read_json(self.workproduct(stage))
         open_blocking = [f["id"] for f in all_findings if f["status"] in ("open", "carried") and f["severity"] == "blocking"]
         open_major = [f["id"] for f in all_findings if f["status"] in ("open", "carried") and f["severity"] == "major"]
-        blocking_ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict) and o.get("blocks")]
+        blocking_ops = [o.get("id") for o in wp.get("open_points", []) + governance.blocking_open_points(self.root, stage)
+                        if isinstance(o, dict) and o.get("blocks")]
         if summ["verdict"] == "FAIL" or open_blocking or blocking_ops:
             reason = (f"gates {summ['gates']}" if summ["verdict"] == "FAIL" else "") + \
                      (f" open blocking findings {open_blocking[:5]}" if open_blocking else "") + \

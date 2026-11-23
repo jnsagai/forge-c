@@ -3,7 +3,7 @@
 The manifest and hashing approach is adapted from Forge-C factory/release-manager/scripts/build_review_package.py
 (Apache-2.0). Sealing never manufactures evidence and never upgrades a result:
 
-- the deterministic gates (validate, quality, trace, doc-sources, independence) are re-run now, so the package
+- the deterministic gates (validate, quality, trace, governance, doc-sources, independence) are re-run now, so the package
   reflects the files as they are;
 - the scope gate and tool gates are taken as recorded; a required gate that never ran is a gap;
 - every stage in scope must have been accepted by the conductor, and unchanged since;
@@ -64,6 +64,9 @@ def collect_gaps(root: Path, project: dict) -> tuple[list[dict], dict]:
                 res = quality.run(root, s)
             elif g == "trace":
                 res = trace.run(root, s)
+            elif g == "governance":
+                from . import governance
+                res = governance.run(root, s)
             elif g == "doc-sources":
                 res = gates.doc_sources(root, s)
             elif g == "independence":
@@ -94,7 +97,9 @@ def collect_gaps(root: Path, project: dict) -> tuple[list[dict], dict]:
                 code = "FINDING-BLOCKING" if f["severity"] == "blocking" else "FINDING-MAJOR"
                 gaps.append(_gap(code, f"{s}/{f['id']}", f"{f['target_id']} {f['checklist_item']}: "
                                  f"{f.get('description', '')}"))
-        for o in read_json(root / stages()[s]["outputs"][0]).get("open_points", []):
+        from . import governance
+        for o in read_json(root / stages()[s]["outputs"][0]).get("open_points", []) + \
+                governance.blocking_open_points(root, s):
             if isinstance(o, dict) and o.get("blocks"):
                 gaps.append(_gap("OPEN-POINT-BLOCKING", f"{s}/{o.get('id')}", str(o.get("text", ""))))
     return gaps, verdicts

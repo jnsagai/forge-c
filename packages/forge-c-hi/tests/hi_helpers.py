@@ -97,11 +97,35 @@ def write(path: Path, doc) -> Path:
     return path
 
 
-def make_project(root: Path, *, sys_items=None, swr_items=None, **project_kw) -> Path:
+def governance_doc(stage: str = "sys-req", **kw) -> dict:
+    """A governance package with one use case serving both needs of NEEDS."""
+    doc = {
+        "schema": "forge-c-hi/governance@1", "stage": stage,
+        "actors": [{"id": "ACT-SUP-001", "name": "Application", "description": "The supervised application tasks."}],
+        "use_cases": [{"id": "UC-SUP-001", "title": "Supervise the tasks", "actor": "ACT-SUP-001",
+                       "goal": "Every stopped or late supervised task is noticed.",
+                       "needs": ["STK-SUP-001", "STK-SUP-002"]}],
+        "out_of_scope": [], "assumptions": [], "open_points": [],
+    }
+    doc.update(kw)
+    return doc
+
+
+def with_use_case(items: list[dict], uc: str = "UC-SUP-001") -> list[dict]:
+    return [dict(i, attributes={"use_cases": [uc], **(i.get("attributes") or {})}) for i in items]
+
+
+def make_project(root: Path, *, sys_items=None, swr_items=None, governance=True, **project_kw) -> Path:
+    """`governance`: when the entry stage is sys-req and its items are given, also write the governance package and
+    name its use case in every item (what the conductor's governance step leaves behind)."""
     write(root / "needs" / "stakeholder-needs.md", NEEDS)
     write(root / "needs" / "constraints.md", CONSTRAINTS)
-    write(root / ".hi" / "project.json", project_doc(**project_kw))
+    proj = project_doc(**project_kw)
+    write(root / ".hi" / "project.json", proj)
     if sys_items is not None:
+        if governance and proj["entry_stage"] == "sys-req":
+            write(root / "hi" / "sys-req" / "governance.json", governance_doc())
+            sys_items = with_use_case(sys_items)
         write(root / "hi" / "sys-req" / "requirements.json", reqset("sys-req", sys_items))
     if swr_items is not None:
         write(root / "hi" / "sw-req" / "requirements.json", reqset("sw-req", swr_items))

@@ -193,7 +193,7 @@ def cells(run: Run | None, stage: str, bindings: dict, now: float) -> list[dict]
     # Author cell
     a_state, a_job, a_bar = ("done" if end else "waiting" if ev else "idle"), None, None
     if act and act.get("role") == "author":
-        a_state = "working" if phase in ("create", "update") or not authors else "rework"
+        a_state = "working" if phase in ("create", "update", "governance") or not authors else "rework"
         if phase == "item" and rnd:
             flagged = {f.get("target_id") for f in _findings(root, stage, f"item-r{rnd}")
                        if f.get("severity") in REWORK and not f.get("blocked_by")}
@@ -206,7 +206,9 @@ def cells(run: Run | None, stage: str, bindings: dict, now: float) -> list[dict]
             key = {"set": "rework-set", "item": "rework"}.get(phase, phase)
             a_job = {"rework-set": "set rework: one call for the set findings", "rework": "rework",
                      "create": "writing the work product", "update": "updating after changed inputs",
-                     "fix-gates": "fixing gate issues"}.get(key, key)
+                     "fix-gates": "fixing gate issues",
+                     "governance": "governance package: actors, use cases, scope",
+                     "fix-governance": "closing governance coverage gaps"}.get(key, key)
             a_bar = _estimate_bar(act_for, _typical(ev, "author", key), len(_roles(ev, "author", key)), now)
     a_hours = sum(e.get("duration_s") or 0 for e in authors) / 3600
     author = {
@@ -225,7 +227,8 @@ def cells(run: Run | None, stage: str, bindings: dict, now: float) -> list[dict]
         "bar": {"kind": "tools", "round": len(gates),
                 "steps": [{"label": k, "status": "passed" if v == "PASS" else "failed" if v == "FAIL" else "pending"}
                           for k, v in sorted((g or {}).get("gates", {}).items())]} if g else {"kind": "idle"},
-        "what": "Schema, wording rules, trace links, write scope and independence: checked by code after every write.",
+        "what": "Schema, wording rules, trace links, use-case coverage, write scope and independence: checked by code "
+                "after every write.",
         "counters": [["runs", len(gates)], ["failed", sum(1 for x in gates if x.get("verdict") != "PASS")]],
     }
 

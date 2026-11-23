@@ -70,6 +70,16 @@ system requirements above them (out of context).
 - Middleware projects can link to these requirements (`links` in their project); their software requirements then cite
   `DRV-*` ids and the link type becomes `interfaces`.
 
+### Governance package in driver mode
+
+When `sw-req` is the entry stage, write `hi/sw-req/governance.json` first, as the system-requirements author does
+(see `hi-sys-req-author`, "Governance package first"), with one addition: **`document_scope`** lists the sections of
+each declared document the driver covers (`"scope": "in"`) or leaves out (`"scope": "out"` with a reason), as
+`<doc_id>#<section>` refs taken from the local outline. Each use case names in `sections` the in-scope sections it
+relies on. The `governance` gate checks that every in-scope section is in a use case or an open point and, once the
+requirements are written, that at least one requirement cites it (that section or a sub-section). This is how a
+missing chapter of the manual shows up before inspection.
+
 ## Open points
 
 `OP-SWR-<NNN>` for anything the system requirements leave undecided at software level (a missing time split, an

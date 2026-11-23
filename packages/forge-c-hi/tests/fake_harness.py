@@ -16,6 +16,9 @@ Scenario keys:
   author.write_outside    a relative path the author writes on "create" (scope violation)
   author.break_json       phases after which the work product is left as invalid JSON (once per phase); "fix-gates"
                           repairs it ("always" in the list: fix-gates never repairs)
+  author.governance       governance package written on phase "governance" (default: one use case serving every
+                          STK need of the inputs); "fix-governance" applies author.governance_fix (a full package)
+  author.no_use_cases     true: "create" does not tag the items with the use cases (realization gap)
   inspector.item_rounds   list per round of {item_id: [finding]}
   inspector.set_rounds    list per round of [finding]
   inspector.write_file    a relative path the inspector tries to write
@@ -52,6 +55,23 @@ def main() -> int:
         time.sleep(sc[role]["sleep"])
     if role == "author":
         a = sc.get("author", {})
+        if task["phase"] in ("governance", "fix-governance"):
+            if task["phase"] == "governance":
+                needs = sorted({m for f in task["inputs"] if (root / f).is_file()
+                                for m in re.findall(r"\bSTK-[A-Z0-9_]+-\d{3}\b", (root / f).read_text())})
+                gov = a.get("governance") or {
+                    "schema": "forge-c-hi/governance@1", "stage": task["stage"],
+                    "actors": [{"id": "ACT-SUP-001", "name": "Application", "description": "The supervised tasks."}],
+                    "use_cases": [{"id": "UC-SUP-001", "title": "Supervise", "actor": "ACT-SUP-001",
+                                   "goal": "Every failure of a supervised task is noticed.", "needs": needs}],
+                    "out_of_scope": [], "assumptions": [], "open_points": []}
+            else:
+                gov = a.get("governance_fix") or json.loads(wp.read_text())
+            wp.parent.mkdir(parents=True, exist_ok=True)
+            wp.write_text(json.dumps(gov, indent=1))
+            print(json.dumps({"role": "author", "stage": task["stage"], "status": "DONE",
+                              "outputs": [task["workproduct"]], "issues": [], "open_points": 0}))
+            return 0
         marker = root.parent / f"{root.name}-skipped-create"
         if task["phase"] == "create" and a.get("skip_create_once") and not marker.exists():
             marker.write_text("x")
@@ -65,6 +85,10 @@ def main() -> int:
                        "model": None, "model_family": "fake-a", "input_hashes": {}, "created_utc": "2026-11-22T00:00:00Z",
                        "run_id": os.environ.get("HI_RUN_ID", "x")},
                    "items": a["items"], "open_points": a.get("open_points", [])}
+            if task.get("governance") and not a.get("no_use_cases"):
+                ucs = [u["id"] for u in json.loads((root / task["governance"]).read_text())["use_cases"]]
+                doc["items"] = [dict(i, attributes={**i.get("attributes", {}), "use_cases": ucs[:1]})
+                                for i in doc["items"]]
             if a.get("write_outside"):
                 (root / a["write_outside"]).parent.mkdir(parents=True, exist_ok=True)
                 (root / a["write_outside"]).write_text("x\n")

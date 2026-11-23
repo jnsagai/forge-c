@@ -49,6 +49,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("file")
     s = sub.add_parser("quality", help="deterministic requirement-quality rules")
     s.add_argument("stage")
+    s = sub.add_parser("governance", help="governance package coverage (entry stage)")
+    s.add_argument("stage")
+    s.add_argument("--before-requirements", action="store_true",
+                   help="check the package alone, before the requirements are written")
     s = sub.add_parser("trace", help="bidirectional traceability")
     s.add_argument("--stage")
     s = sub.add_parser("scope", help="changed files within the role write scope")
@@ -84,6 +88,8 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
         return api.validate(root, args.file)
     if c == "quality":
         return api.quality(root, args.stage)
+    if c == "governance":
+        return api.governance(root, args.stage, realization=not args.before_requirements)
     if c == "trace":
         return api.trace(root, args.stage)
     if c == "scope":

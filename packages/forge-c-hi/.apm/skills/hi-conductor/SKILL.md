@@ -34,9 +34,14 @@ still-flagged items are judged again (earlier judgements are kept). `--fresh` re
 
 ## What happens per stage
 
+0. **Governance** (entry stage, when the profile requires the `governance` gate, i.e. from HI-1): the author first
+   writes `hi/<stage>/governance.json` (actors, use cases, scope, assumptions, open points). Its coverage is checked
+   without a model: every stakeholder need, and for a reference document every in-scope section, must be in a use case,
+   out of scope or an open point. Gaps go back as `fix-governance` rounds within the rework limit; what remains blocks
+   the stage before any requirement is written. On a re-run the package is updated only when inputs changed.
 1. **Author** writes the workproduct, with `.hi/active-role.json` naming its write scope (the guard hook enforces
    it) and a file snapshot before and after (any out-of-scope write blocks the stage).
-2. **Gates** (`validate`, `quality`, `trace`): issues go back to the author as `fix-gates` rounds.
+2. **Gates** (`validate`, `quality`, `trace`, `governance`): issues go back to the author as `fix-gates` rounds.
 3. **Item inspection** of every item by the read-only inspector.
 4. **Rework** of each item with a blocking or major finding, **one item at a time**. Changes to other existing items
    are discarded; new items from a split are kept and judged.

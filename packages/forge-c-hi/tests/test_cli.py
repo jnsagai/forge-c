@@ -116,7 +116,7 @@ def test_scope_and_role(tmp_project):
 def test_gate_runs_required_gates_for_level(tmp_project):
     make_project(tmp_project, sys_items=SYS_ITEMS)
     code, out = hi(tmp_project, "gate", "sys-req")
-    assert set(out["gates"]) == {"validate", "quality", "trace", "scope", "independence"}
+    assert set(out["gates"]) == {"validate", "quality", "trace", "governance", "scope", "independence"}
     # needs/ and .hi/ are untracked in this fresh repo, so the git-mode scope backstop fails honestly
     assert out["gates"]["scope"] == "FAIL" and code == 1
     subprocess.run(["git", "add", "-A", "needs", ".hi"], cwd=tmp_project, check=True)

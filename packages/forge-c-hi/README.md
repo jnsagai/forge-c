@@ -19,6 +19,9 @@ work as reviewed, and reports checks as passed that never ran. Teams then spend 
 
 forge-c-hi turns the standards' expectations into skills and gates the agent cannot skip:
 
+- **Scope first:** before any requirement is written, the author states actors, use cases and what is out of scope;
+  a gate checks without a model that every need (or every in-scope section of a reference manual) is placed and that
+  every use case ends up realised by a requirement.
 - **No invention:** missing facts become open points that block the stage until a human decides.
 - **Independence:** the inspector is a different, read-only process, and from level HI-3 a different model family.
 - **Evidence decides:** PASS, FAIL or NOT_RUN come from deterministic gates; NOT_RUN is a gap, never a pass.
@@ -112,7 +115,7 @@ and have the inspector skill run in a separate session or by a different model.
 |---|---|
 | **Inputs** | needs (`STK-<AREA>-<NNN>` ids) and constraints (`CON-...`) in Markdown; or a reference document you supply (PDF, never redistributed) with `hi doc-index` |
 | **Configuration** | `.hi/project.json` via `hi init`: `--profile`, `--level HI-0..HI-4`, `--class natural_language\|reference_document`, `--entry`, `--input PATH:KIND[:DOC_ID]`, `--author/--inspector <preset>`, `--author-model`, `--inspector-model`, `--*-family` |
-| **Workproducts** | `hi/<stage>/requirements.json`, `architecture.json`, `design.json` + `src/`, `include/`, `test-spec.json` + `tests/` |
+| **Workproducts** | `hi/<entry stage>/governance.json` (actors, use cases, scope), `hi/<stage>/requirements.json`, `architecture.json`, `design.json` + `src/`, `include/`, `test-spec.json` + `tests/` |
 | **Evidence** | `hi/<stage>/gates/*.json`, `hi/<stage>/inspection/*.json`, `hi/trace.json`, `hi/trace-matrix.md`, `.hi/runs/<id>/events.jsonl` |
 | **Package** | `hi/packages/<id>/`: `manifest.json` (hashes, gaps, profile, provenance), `gates.md`, `findings.md`, `trace-matrix.md`, `review.tar.gz` |
 | **Exit codes** | 0 PASS/DONE, 1 FAIL/BLOCKED/NOT_RUN gap, 2 usage or configuration error; stdout is one JSON object of at most 2 KB |

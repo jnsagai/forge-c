@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-from . import __version__, gates, quality as _quality, scope as _scope, trace as _trace
+from . import __version__, gate_result, gates, quality as _quality, scope as _scope, trace as _trace
 from .config import ConfigError, REFS, effective_rigor, load_project, schema, stages
 from .io import read_json, sha256_file, write_json
 from .jsonschema_lite import validate as schema_validate
@@ -162,6 +162,19 @@ def validate(root: Path, file: str) -> tuple[int, dict]:
 def quality(root: Path, stage: str) -> tuple[int, dict]:
     _stage_ok(stage)
     return _gate_payload("quality", _quality.run(root, stage), f"hi/{stage}/gates/quality.json")
+
+
+def governance(root: Path, stage: str, realization: bool = True) -> tuple[int, dict]:
+    from . import governance as _gov
+    _stage_ok(stage)
+    if realization:
+        doc = _gov.run(root, stage)
+    else:  # assisted mode, before the requirements exist: the package alone, not recorded as the stage's gate
+        project = load_project(root)
+        rigor = effective_rigor(project)
+        doc = gate_result.result("governance", _gov.check(root, stage, realization=False), profile=rigor["profile"],
+                                 integrity_level=rigor["level"], root=Path(root))
+    return _gate_payload("governance", doc, f"hi/{stage}/gates/governance.json" if realization else None)
 
 
 def trace(root: Path, stage: str | None = None) -> tuple[int, dict]:

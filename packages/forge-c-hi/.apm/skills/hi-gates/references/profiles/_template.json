@@ -29,6 +29,7 @@
         "validate",
         "trace",
         "quality",
+        "governance",
         "scope",
         "doc-sources"
       ],
@@ -51,6 +52,7 @@
         "validate",
         "trace",
         "quality",
+        "governance",
         "scope",
         "doc-sources",
         "independence",

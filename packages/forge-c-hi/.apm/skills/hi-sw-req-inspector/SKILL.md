@@ -45,6 +45,10 @@ For `DRV-*` items written from a reference document:
 - **No quoted text:** report any sentence or table copied from the document (hi-core rule 6).
 - Your findings describe the mismatch in your own words and cite section and page; do not quote the document either.
 
+
+When `sw-req` is the entry stage, read `hi/sw-req/governance.json` too. Its `document_scope` says which sections the
+driver covers: raise SQ-01 in the set phase when a section is declared out of scope without a reason the project
+supports, or when a capability of an in-scope section has no requirement although the section is cited.
 ## Findings that wait on a decision
 
 If a defect exists only because an **open point** in the workproduct still waits for a human decision (a value or

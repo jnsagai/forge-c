@@ -307,6 +307,25 @@ BLOCKED or NOT_RUN.
 - [x] T082 [P] Make the instructions and skill texts state compact output (AgentStatus ≤2 KB) consistently. Add a test that each author or inspector skill references `agent-status.schema.json`
 - [x] T083 Regression: run the full existing repo suites (`python3 tests/spec/validate_design.py` and the existing pytest targets that ran on main before this branch) and confirm no change in results. Store the result in `FEAT/evidence/regression.md` (identical results on main and branch; rerun before T077 if factory code changes)
 - [x] T084 Update the root `README.md` and `website/` with a short "Portable skills package (feature 023)" section, and update the constitution follow-up (the ⚠ item in the Sync Impact Report). Evidence: website unit tests pass; the local `astro build` cannot run on this host (Node 20 < 22 required by Astro), so the page build is left to the site CI
+- [x] T086 [US1] FR-030: port the Forge-C feature 020 governance package and coverage check. It adds:
+  - contract `governance.schema.json`;
+  - gate `forge_hi/governance.py`, required from HI-1 in every profile at the entry stage only;
+  - the conductor's governance step with `fix-governance` rounds and blocking;
+  - `hi governance` (`--before-requirements`) and the MCP tool `hi_governance_check`;
+  - the sys-req and sw-req author and inspector texts;
+  - governance open points as seal gaps.
+
+  Tests: `PKG/tests/test_governance.py` and the governance tests in `PKG/tests/test_conductor.py`.
+- [ ] T087 [US1] Run the safety-supervisor demo again with the governance step (reference config, run 6, clean
+  project) and store the governance package, its gate results and the run's events in `FEAT/evidence/us1-p1-demo/`
+- [ ] T088 [US2] Driver functional level (port of feature 020/021 template v3): driver mode distinguishes
+  driver-interface obligations from functional obligations, with a level rule the gate can check
+- [ ] T089 [US1] Inspection dispositions N/A and NEEDS_INPUT (guideline v1.0): an inspector can mark a checklist
+  criterion not applicable with a reason, or as waiting on input, instead of passing or failing it
+- [ ] T090 [US1] Optional requirement fields from the guideline: `type`, `title`, `precondition`, `test_level`, and
+  optional EARS patterns in the author skills, checked when present
+- [ ] T091 [US1] Carry hardening: `judged.json` records the checklist hash, and a changed checklist invalidates
+  earlier judgements
 - [ ] T085 Run `/speckit-analyze` for cross-artifact consistency. Fix the findings, then mark the feature tasks complete only where evidence exists
 
 ---
