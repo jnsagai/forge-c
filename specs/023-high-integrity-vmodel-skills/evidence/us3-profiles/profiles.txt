@@ -1,0 +1,39 @@
+## generic HI-2
+$ hi init --force --from <example> --profile generic --level HI-2
+{"cmd":"init","entry":"sys-req","inputs":3,"level":"HI-2","level_name":"HI-2","profile":"generic","project":"safety-supervisor","status":"DONE","warnings":[],"written":".hi/project.json"}
+$ hi gate sys-req
+{"cmd":"gate","gates":{"governance":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sys-req","top":[],"verdict":"PASS","written":"hi/sys-req/gates/"}
+$ hi gate sw-req
+{"cmd":"gate","gates":{"doc-sources":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sw-req","top":[],"verdict":"PASS","written":"hi/sw-req/gates/"}
+$ hi seal
+{"cmd":"seal","files":81,"gaps":0,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T053110Z","status":"READY_FOR_OFFLINE_REVIEW","top":[]}
+-- manifest: generic HI-2 HI-2 READY_FOR_OFFLINE_REVIEW 0 gaps
+-- gates.md stage names: | sw-req: Software requirements  / | sys-req: System requirements 
+-- git diff --stat of the installed skills: ''
+
+## iso26262 HI-2
+$ hi init --force --from <example> --profile iso26262 --level HI-2
+{"cmd":"init","entry":"sys-req","inputs":3,"level":"HI-2","level_name":"ASIL B","profile":"iso26262","project":"safety-supervisor","status":"DONE","warnings":[],"written":".hi/project.json"}
+$ hi gate sys-req
+{"cmd":"gate","gates":{"governance":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sys-req","top":[],"verdict":"PASS","written":"hi/sys-req/gates/"}
+$ hi gate sw-req
+{"cmd":"gate","gates":{"doc-sources":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sw-req","top":[],"verdict":"PASS","written":"hi/sw-req/gates/"}
+$ hi seal
+{"cmd":"seal","files":81,"gaps":0,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T053115Z","status":"READY_FOR_OFFLINE_REVIEW","top":[]}
+-- manifest: iso26262 HI-2 ASIL B READY_FOR_OFFLINE_REVIEW 0 gaps
+-- gates.md stage names: | sw-req: Software safety requirements  / | sys-req: Technical safety requirements 
+-- git diff --stat of the installed skills: ''
+
+## iec61508 HI-2
+$ hi init --force --from <example> --profile iec61508 --level HI-2
+{"cmd":"init","entry":"sys-req","inputs":3,"level":"HI-2","level_name":"SIL 2","profile":"iec61508","project":"safety-supervisor","status":"DONE","warnings":[],"written":".hi/project.json"}
+$ hi gate sys-req
+{"cmd":"gate","gates":{"governance":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sys-req","top":[],"verdict":"PASS","written":"hi/sys-req/gates/"}
+$ hi gate sw-req
+{"cmd":"gate","gates":{"doc-sources":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"issues":0,"stage":"sw-req","top":[],"verdict":"PASS","written":"hi/sw-req/gates/"}
+$ hi seal
+{"cmd":"seal","files":81,"gaps":0,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T053120Z","status":"READY_FOR_OFFLINE_REVIEW","top":[]}
+-- manifest: iec61508 HI-2 SIL 2 READY_FOR_OFFLINE_REVIEW 0 gaps
+-- gates.md stage names: | sw-req: Software safety requirements specification  / | sys-req: E/E/PE system design requirements specification 
+-- git diff --stat of the installed skills: ''
+
