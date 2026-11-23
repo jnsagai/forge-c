@@ -1,0 +1,542 @@
+{
+  "adjusted": [],
+  "provided": true,
+  "round": 12,
+  "rows": [
+    {
+      "reason": "The set defines the driver interface; outstanding service-specific issues are identified in their respective rows.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012"
+      ],
+      "source": "CON-IWDG-001",
+      "status": "covered"
+    },
+    {
+      "reason": "The early-wakeup interface is unresolved; see OP-DRV-018 and the SQ-01 finding.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012"
+      ],
+      "source": "CON-IWDG-002",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "CON-IWDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-044"
+      ],
+      "source": "CON-IWDG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-013",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028"
+      ],
+      "source": "CON-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver requirements provide interface targets; downstream middleware trace links are outside this workproduct.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Status precedence for an invalid wait limit on a running watchdog is unresolved in OP-DRV-021.",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-007",
+      "status": "partial",
+      "tracked_by": "OP-DRV-021"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022"
+      ],
+      "source": "CON-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-044"
+      ],
+      "source": "CON-IWDG-009",
+      "status": "covered"
+    },
+    {
+      "reason": "The early-wakeup service conflicts with start-only configuration; OP-DRV-018 tracks the decision.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-037"
+      ],
+      "source": "CON-IWDG-010",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "CON-IWDG-011",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-021 tracks conflicting status obligations for an invalid wait limit on an already-running watchdog.",
+      "requirements": [
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "CON-IWDG-012",
+      "status": "partial",
+      "tracked_by": "OP-DRV-021"
+    },
+    {
+      "reason": "OP-DRV-020, OP-DRV-023 and OP-DRV-021 affect start acceptance, window safety and status precedence.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-029",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "UC-IWDG-001",
+      "status": "partial",
+      "tracked_by": "OP-DRV-020"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022",
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "UC-IWDG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-023 tracks the safety of the required window-enabled reload.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-036"
+      ],
+      "source": "UC-IWDG-003",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "OP-DRV-018 tracks the conflict between a separate service and start-only configuration.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-030",
+        "DRV-IWDG-037"
+      ],
+      "source": "UC-IWDG-004",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011"
+      ],
+      "source": "UC-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "The read is specified; reset-flag clearing ownership is deferred in OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "UC-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-021 tracks the unresolved invalid-wait-limit status precedence.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-005",
+        "DRV-IWDG-021",
+        "DRV-IWDG-044",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "UC-IWDG-007",
+      "status": "partial",
+      "tracked_by": "OP-DRV-021"
+    },
+    {
+      "reason": "Driver interface requirements are available for downstream traceability.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "UC-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "The chapter-level coverage inherits the window and early-wakeup gaps tracked by OP-DRV-023 and OP-DRV-018.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-012",
+        "DRV-IWDG-015"
+      ],
+      "source": "RM0486#59",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "The applicable introductory driver functions are represented.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015"
+      ],
+      "source": "RM0486#59.1",
+      "status": "covered"
+    },
+    {
+      "reason": "The window and early-wakeup capabilities have unresolved interface and sequence issues tracked by OP-DRV-023 and OP-DRV-018.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009"
+      ],
+      "source": "RM0486#59.2",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "The selected software watchdog mode is represented; hardware mode is excluded by CON-IWDG-007.",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "RM0486#59.3",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-023 tracks the window-enabled start reload safety issue.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-015",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "RM0486#59.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "The represented window and early-wakeup functions are affected by OP-DRV-023 and OP-DRV-018.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009"
+      ],
+      "source": "RM0486#59.4.1",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "Relevant peripheral behavior is represented at the driver boundary; internal signals are hardware context.",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-009",
+        "DRV-IWDG-015"
+      ],
+      "source": "RM0486#59.4.2",
+      "status": "covered"
+    },
+    {
+      "reason": "Software-mode start, refresh and no-stop behavior are specified; hardware mode is excluded by CON-IWDG-007.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "RM0486#59.4.3",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-023 tracks the window-enabled reload safety issue; OP-DRV-020 tracks request acceptance.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "RM0486#59.4.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "Debug-freeze configuration is outside the driver services specified in CON-IWDG-002.",
+      "requirements": [],
+      "source": "RM0486#59.4.5",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.4.6",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver offers no stop or pause service, including on low-power entry; additional surrounding behavior is deferred in OP-DRV-004.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.5",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-018 tracks the unresolved early-wakeup configuration interface.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-037"
+      ],
+      "source": "RM0486#59.6",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "OP-DRV-023 and OP-DRV-018 affect window and early-wakeup register capabilities.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-011",
+        "DRV-IWDG-029"
+      ],
+      "source": "RM0486#59.7",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.7.1",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-017",
+        "DRV-IWDG-031"
+      ],
+      "source": "RM0486#59.7.2",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-029",
+        "DRV-IWDG-031",
+        "DRV-IWDG-038"
+      ],
+      "source": "RM0486#59.7.3",
+      "status": "covered"
+    },
+    {
+      "reason": "The window-enabled sequence using update status is affected by OP-DRV-023.",
+      "requirements": [
+        "DRV-IWDG-011",
+        "DRV-IWDG-031",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "RM0486#59.7.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "OP-DRV-023 tracks the window-enabled reload safety issue.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-036"
+      ],
+      "source": "RM0486#59.7.5",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    },
+    {
+      "reason": "OP-DRV-018 tracks the early-wakeup configuration interface conflict.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024",
+        "DRV-IWDG-030",
+        "DRV-IWDG-037"
+      ],
+      "source": "RM0486#59.7.6",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-026"
+      ],
+      "source": "RM0486#59.7.7",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-020 and OP-DRV-023 track success acceptance and window-enabled reload safety.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-029",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "start-up",
+      "status": "partial",
+      "tracked_by": "OP-DRV-020"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-011",
+        "DRV-IWDG-022",
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "normal operation",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-021 tracks the invalid wait-limit status conflict for a start call on a running watchdog.",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "invalid input",
+      "status": "partial",
+      "tracked_by": "OP-DRV-021"
+    },
+    {
+      "reason": "The early-wakeup configuration interface and window-start reaction are affected by OP-DRV-018 and OP-DRV-023. Ignored-refresh detection is explicitly excluded by CON-IWDG-008.",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-021",
+        "DRV-IWDG-032",
+        "DRV-IWDG-034",
+        "DRV-IWDG-044",
+        "DRV-IWDG-048"
+      ],
+      "source": "fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "OP-DRV-018"
+    },
+    {
+      "reason": "The driver exposes the reset cause and clears the early-wakeup flag; reset-flag clearing ownership is deferred in OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-012",
+        "DRV-IWDG-026"
+      ],
+      "source": "recovery or reset",
+      "status": "covered"
+    },
+    {
+      "reason": "The applicable obligation is to provide no service that stops or pauses the started watchdog.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "shutdown",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-023 tracks permitted window configuration and OP-DRV-021 tracks invalid wait-limit status precedence.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045"
+      ],
+      "source": "limits",
+      "status": "partial",
+      "tracked_by": "OP-DRV-023"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-req"
+}
