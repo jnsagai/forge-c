@@ -1,0 +1,23 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261123T053019Z-684eee/events.jsonl",
+  "run_id": "r20261123T053019Z-684eee",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-req-set-r8-002', 'F-sw-req-set-r8-004', 'F-sw-req-set-r8-005', 'F-sw-req-set-r8-006', 'F-sw-req-set-r8-010'] blocking open points ['OP-DRV-017', 'OP-DRV-016']",
+      "stage": "sw-req"
+    }
+  ],
+  "status": "BLOCKED"
+}
