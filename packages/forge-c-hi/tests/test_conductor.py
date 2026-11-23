@@ -668,3 +668,23 @@ def test_set_reply_without_coverage_is_recorded_as_not_provided(tmp_path):
     assert code == 0, out
     cov = json.loads((root / "hi/sys-req/inspection/coverage.json").read_text())
     assert cov["provided"] is False and cov["rows"] == []
+
+
+def test_coverage_row_that_points_at_a_finding_or_open_point_is_tracked(tmp_path):
+    # run 6 pass 2: rows whose reason said "see the SQ-10 finding" were raised again as SQ-01 findings
+    root = tmp_path / "p"
+    root.mkdir()
+    op = [{"id": "OP-SYS-001", "text": "The start-up message has no deadline.", "raised_by": "author", "blocks": False,
+           "deferred_to": "sw-req"}]
+    rows = [{"source": "STK-SUP-002", "requirements": ["SYS-SUP-002"], "status": "partial",
+             "reason": "Margins are missing; see the SQ-10 finding."},
+            {"source": "start-up", "requirements": [], "status": "gap", "reason": "Deadline open in OP-SYS-001."},
+            {"source": "shutdown", "requirements": [], "status": "partial", "reason": "Only power loss is covered."}]
+    sq10 = dict(F("SQ-10", "minor"), target_id="SET", description="The verification margins are not recorded.")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "open_points": op},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[sq10], []], "coverage_rounds": [rows]}})
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    r1 = json.loads((root / "hi/sys-req/inspection/set-r1.json").read_text())["findings"]
+    auto = [f["description"] for f in r1 if f["description"].startswith("Coverage")]
+    assert auto == ["Coverage partial: shutdown - Only power loss is covered."]
+    assert code == 0, out                                   # the one real gap was reworked in round 2

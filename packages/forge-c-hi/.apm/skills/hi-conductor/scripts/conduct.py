@@ -493,8 +493,7 @@ class Conductor:
                 status = "gap"
             row = {"source": src, "requirements": reqs, "status": status, "reason": reason}
             if status in ("partial", "gap"):
-                tracker = next((i for i, x in texts.items() if src in x), None) or \
-                    next((i for i, x in ops.items() if src in x), None)
+                tracker = self.row_tracker(src, reason, findings, texts, ops)
                 if tracker is None:
                     n = len(findings) + len(added) + 1
                     f = {"id": f"F-{stage}-set-r{rnd}-{n:03d}", "phase": "set", "checklist_item": "SQ-01",
@@ -514,6 +513,24 @@ class Conductor:
                    **{s: sum(1 for r in out_rows if r["status"] == s) for s in ("covered", "partial", "gap")},
                    na=sum(1 for r in out_rows if r["status"] == "n/a"), raised=len(added))
         return added
+
+    @staticmethod
+    def row_tracker(src: str, reason: str, findings: list[dict], texts: dict, ops: dict) -> str | None:
+        """The finding or open point that tracks a partial or gap row: one the row's reason cites (an open point id,
+        a finding id, or the checklist id of a finding of this round, e.g. "see the SQ-10 finding"), or one whose
+        text names the row's source. Run 6: rows that pointed at the inspector's own finding were raised again."""
+        for oid in re.findall(r"\bOP-[A-Z0-9_]+-\d{3}\b", reason):
+            if oid in ops:
+                return oid
+        for fid in re.findall(r"\bF-[\w.-]+-\d{3}\b", reason):
+            if fid in texts:
+                return fid
+        for cid in re.findall(r"\b(?:IQ|SQ)-\d{2}\b", reason):
+            hit = next((f["id"] for f in findings if f.get("checklist_item") == cid), None)
+            if hit:
+                return hit
+        return next((i for i, x in texts.items() if src in x), None) or \
+            next((i for i, x in ops.items() if src in x), None)
 
     @staticmethod
     def finding_key(f: dict) -> tuple:
