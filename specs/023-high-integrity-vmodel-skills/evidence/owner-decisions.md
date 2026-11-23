@@ -68,3 +68,6 @@
 - **Driver demo, first round:** `CON-IWDG-007..009` in `examples/iwdg-driver/scope.md`: software watchdog mode only and
   the "already running" status, no detection of an ignored refresh, and bounded waits in milliseconds. They were raised by
   driver demo pass 2. Same status as the supervisor decisions: fictional, by Claude.
+- **Driver demo, second round:** `CON-IWDG-010..012`. Window and early-wakeup settings are written only at start, after
+  the update flags clear. There is no driver guard on configuration-induced reloads; the refresh timing is the caller's
+  duty. An out-of-range timeout returns invalid-parameter. Raised by driver demo pass 3. Fictional, by Claude.

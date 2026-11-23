@@ -748,3 +748,17 @@ def test_document_coverage_row_is_tracked_by_a_finding_citing_its_section():
     assert Conductor.row_tracker("RM0486#59.7", "inherits the refresh findings", [f], texts, {}) is None
     assert Conductor.row_tracker("RM0486#59.4", "", [f], texts, {}) is None
     assert Conductor.row_tracker("RM9999#59.2", "", [f], texts, {}) is None
+
+
+def test_task_gives_the_author_the_current_input_hashes(tmp_path):
+    # driver demo pass 3: after an input changed, the task still carried the hashes written by `hi init`
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS}, "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    write(root / ".hi/inputs.lock.json", {"schema": "forge-c-hi/inputs-lock@1", "inputs": {
+        "needs/stakeholder-needs.md": "0" * 64}})
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    from forge_hi.io import sha256_file
+    t = Conductor(root, dry_run=True).task("author", "sys-req", "create")
+    assert t["input_hashes"]["needs/stakeholder-needs.md"] == sha256_file(root / "needs/stakeholder-needs.md")

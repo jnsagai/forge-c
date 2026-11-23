@@ -131,8 +131,10 @@ class Conductor:
         checklists = [rel(self.root, REFS / "checklists" / f"{c}.json") for c in chosen]
         skill = st["author_skill"] if role == "author" else st["inspector_skill"]
         binding = self.project["roles"][role]
+        # the inputs as they are now: the lock file is written by `hi init` and goes stale when an input changes
+        # (driver demo pass 3: the author copied the init-time hash of scope.md into its provenance)
         lock = self.root / ".hi" / "inputs.lock.json"
-        hashes = read_json(lock).get("inputs", {}) if lock.is_file() else {}
+        hashes = dict(read_json(lock).get("inputs", {}) if lock.is_file() else {}, **self.input_hashes())
         extra = {}
         if self.governed(stage):
             extra["governance"] = rel(self.root, governance.path(self.root, stage))
