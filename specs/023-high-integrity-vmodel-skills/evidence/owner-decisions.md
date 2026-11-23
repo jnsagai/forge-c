@@ -55,3 +55,6 @@
   fictional, by Claude.
 - **Eighth round:** `CON-SUP-136` (allowed error of the fault-free time used for the latch). Same status: fictional,
   by Claude.
+- **Ninth round:** `CON-SUP-137..138`, raised by the clean run 5: a contradiction between CON-SUP-121 and CON-SUP-130
+  (watchdog servicing after a start-up code 8 report) and when a service request counts as received. Same status:
+  fictional, by Claude.
