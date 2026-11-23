@@ -95,6 +95,14 @@ VALID = {
         "disclaimer": "Not a certification, approval or production release.",
         "created_utc": "2026-11-22T12:00:00Z",
     },
+    "coverage-matrix": {
+        "schema": "forge-c-hi/coverage-matrix@1", "stage": "sys-req", "round": 1, "provided": True,
+        "rows": [{"source": "STK-WDM-001", "requirements": ["SYS-WDM-001"], "status": "covered", "reason": ""},
+                 {"source": "shutdown", "requirements": [], "status": "n/a", "reason": "The product never shuts down."},
+                 {"source": "STK-WDM-002", "requirements": [], "status": "gap", "reason": "No requirement.",
+                  "tracked_by": "F-sys-req-set-r1-001"}],
+        "adjusted": [],
+    },
     "governance": {
         "schema": "forge-c-hi/governance@1",
         "stage": "sw-req",
@@ -141,6 +149,8 @@ INVALID = [
         "READY must have zero gaps",
     ),
     ("review-manifest", _mut("review-manifest", lambda d: d["files"][0].update(sha256="xyz")), "sha256 pattern"),
+    ("coverage-matrix", _mut("coverage-matrix", lambda d: d["rows"][0].update(status="ok")), "status enum"),
+    ("coverage-matrix", _mut("coverage-matrix", lambda d: d.pop("provided")), "provided is required"),
     ("governance", _mut("governance", lambda d: d.update(use_cases=[])), "at least one use case"),
     ("governance", _mut("governance", lambda d: d["actors"][0].update(id="Application")), "actor id pattern"),
     ("governance", _mut("governance", lambda d: d["open_points"][0].pop("concerns")), "open point names its concerns"),

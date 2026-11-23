@@ -320,8 +320,17 @@ BLOCKED or NOT_RUN.
   project) and store the governance package, its gate results and the run's events in `FEAT/evidence/us1-p1-demo/`
 - [ ] T088 [US2] Driver functional level (port of feature 020/021 template v3): driver mode distinguishes
   driver-interface obligations from functional obligations, with a level rule the gate can check
-- [ ] T089 [US1] Inspection dispositions N/A and NEEDS_INPUT (guideline v1.0): an inspector can mark a checklist
-  criterion not applicable with a reason, or as waiting on input, instead of passing or failing it
+- [x] T089 [US1] Coverage dispositions from guideline v1.0 section 3.1. The set inspector returns a coverage matrix
+  with one row per source and per scenario, each Covered, Partial, Gap or N/A. Contract:
+  `coverage-matrix.schema.json`. The conductor checks the rows without a model:
+  - N/A without a reason becomes a gap;
+  - covered with no requirement becomes a gap;
+  - NEEDS_INPUT is a gap;
+  - a partial or gap row that no finding or open point tracks gets an SQ-01 major finding.
+
+  The matrix is stored in `hi/<stage>/inspection/coverage.json` and rendered in the package's `findings.md`. Tests:
+  `test_coverage_matrix_rules`, `test_set_reply_without_coverage_is_recorded_as_not_provided`, and
+  `test_coverage_matrix_is_rendered_in_the_findings_report`
 - [ ] T090 [US1] Optional requirement fields from the guideline: `type`, `title`, `precondition`, `test_level`, and
   optional EARS patterns in the author skills, checked when present
 - [x] T091 [US1] Carry hardening: `judged.json` records the judging basis (the hashes of the stage's checklists and

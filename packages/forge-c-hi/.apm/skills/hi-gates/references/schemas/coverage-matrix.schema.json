@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c-hi/coverage-matrix",
+  "title": "Set-inspection coverage matrix of a requirement stage",
+  "description": "From the Forge-C requirements quality guideline v1.0, section 3.1: each upstream source and each applicable scenario is Covered, Partial, Gap or N/A. N/A needs a reason, and a missing input is a Gap / NEEDS_INPUT, never N/A. The set inspector proposes the rows. The conductor checks them and raises a finding for every gap that no finding or open point already tracks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "stage", "round", "provided", "rows", "adjusted"],
+  "properties": {
+    "schema": {"const": "forge-c-hi/coverage-matrix@1"},
+    "stage": {"type": "string"},
+    "round": {"type": "integer", "minimum": 1},
+    "provided": {"type": "boolean", "description": "false when the inspector's reply had no coverage rows"},
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "requirements", "status", "reason"],
+        "properties": {
+          "source": {"type": "string", "minLength": 1, "maxLength": 120,
+                     "description": "an upstream id (STK, SYS, use case, <doc_id>#<section>) or a scenario name"},
+          "requirements": {"type": "array", "items": {"type": "string"}},
+          "status": {"enum": ["covered", "partial", "gap", "n/a"]},
+          "reason": {"type": "string", "maxLength": 400},
+          "tracked_by": {"type": "string", "description": "the finding or open point that tracks a partial or gap row"}
+        }
+      }
+    },
+    "adjusted": {"type": "array", "items": {"type": "string"},
+                 "description": "what the conductor changed in the rows and why"}
+  }
+}

@@ -151,13 +151,24 @@ def render_findings(root: Path, project: dict, profile: dict, level: str) -> str
         lines += [f"## {report.stage_label(profile, s)}", ""]
         if not fs:
             lines += ["No findings recorded.", ""]
-            continue
-        lines += ["| Id | Phase | Round | Item | Checklist | Severity | Status | Description |", "|---|---|---|---|---|---|---|---|"]
-        for f in fs:
-            desc = str(f.get("description", "")).replace("|", "/").replace("\n", " ")
-            lines.append(f"| {f['id']} | {f['phase']} | {f['round']} | {f['target_id']} | {f['checklist_item']} | "
-                         f"{f['severity']} | {f['status']} | {desc} |")
-        lines.append("")
+        else:
+            lines += ["| Id | Phase | Round | Item | Checklist | Severity | Status | Description |",
+                      "|---|---|---|---|---|---|---|---|"]
+            for f in fs:
+                desc = str(f.get("description", "")).replace("|", "/").replace("\n", " ")
+                lines.append(f"| {f['id']} | {f['phase']} | {f['round']} | {f['target_id']} | {f['checklist_item']} | "
+                             f"{f['severity']} | {f['status']} | {desc} |")
+            lines.append("")
+        cp = Path(root) / "hi" / s / "inspection" / "coverage.json"
+        cov = read_json(cp) if cp.is_file() else None
+        if cov and cov.get("provided"):
+            lines += [f"### Coverage matrix (set inspection round {cov.get('round')})", "",
+                      "| Source | Requirements | Status | Reason | Tracked by |", "|---|---|---|---|---|"]
+            for r in cov.get("rows", []):
+                cell = (lambda x: str(x).replace("|", "/").replace("\n", " "))
+                lines.append(f"| {cell(r['source'])} | {', '.join(r['requirements']) or '-'} | {r['status']} | "
+                             f"{cell(r.get('reason', ''))} | {r.get('tracked_by', '')} |")
+            lines.append("")
     return "\n".join(lines) + "\n"
 
 

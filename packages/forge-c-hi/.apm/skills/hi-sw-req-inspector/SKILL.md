@@ -32,6 +32,8 @@ with these software-level questions in mind:
 
 Read `hi/sys-req/requirements.json`, the constraints, the workproduct, the checklists and the `hi-task` block. Judge
 only the listed items in an item round. Reply with exactly one JSON object `{"status": "DONE", "findings": [...]}`.
+In the set phase, add the `coverage` matrix as the `hi-sys-req-inspector` skill describes, with one row per system
+requirement allocated to software (or, in driver mode, per in-scope document section) and per applicable scenario.
 
 ## Driver mode (reference documents)
 

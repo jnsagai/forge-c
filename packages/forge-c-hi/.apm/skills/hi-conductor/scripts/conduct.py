@@ -148,7 +148,9 @@ class Conductor:
             "profile": self.rigor["profile"], "integrity_level": self.rigor["level"],
             "level_name": self.rigor["level_name"],
             "reply_contract": rel(self.root, REFS / "schemas" / "agent-status.schema.json") if role == "author"
-            else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change", "blocked_by"?}]}',
+            else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change", "blocked_by"?}]'
+                 + (', "coverage": [{"source", "requirements", "status": "covered|partial|gap|n/a", "reason"}]}'
+                    if phase in ("set",) else "}"),
             **extra, **kw,
         }
 
@@ -176,7 +178,13 @@ class Conductor:
                       "any other existing item. You may add new items only to split this one.",
             "rework-set": "Resolve the set-level findings listed, changing as little as possible.",
             "item": f"Judge ONLY these items, each on its own, against the item checklist: {', '.join(t.get('items', []))}.",
-            "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed.",
+            "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed. Also return "
+                   "the coverage matrix (`coverage`): one row per upstream source (each need, upstream requirement "
+                   "or in-scope document section this stage must cover) and per applicable scenario (start-up, "
+                   "normal operation, invalid input, fault detection and reaction, recovery, shutdown, limits), "
+                   "with the requirements that cover it and a status: covered, partial, gap or n/a. n/a needs a "
+                   "reason; a missing input is a gap, never n/a. Raise a finding (or cite the open point) for "
+                   "every partial or gap row.",
         }[t["phase"]]
         if t.get("governance") and t["role"] == "author" and t["phase"] in ("create", "update"):
             what += (" The governance package `governance` is written: name in `attributes.use_cases` of each "
@@ -443,12 +451,68 @@ class Conductor:
                 dropped += 1
                 continue
             out.append(rec)
+        if phase == "set":
+            out += self.coverage(stage, rnd, reply.get("coverage"), out, open_points, raised_by)
         write_json(self.root / "hi" / stage / "inspection" / f"{phase}-r{rnd}.json",
                    {"schema": "forge-c-hi/findings@1", "stage": stage, "phase": phase, "round": rnd,
                     "judged": items, "findings": out, "dropped": dropped})
         self.event(stage=stage, step="findings", phase=phase, round=rnd, judged=len(items), findings=len(out),
                    dropped=dropped)
         return out
+
+    def coverage(self, stage: str, rnd: int, rows, findings: list[dict], open_points: set, raised_by: dict) -> list[dict]:
+        """Guideline 3.1 coverage matrix from the set inspector, checked without a model. N/A without a reason, or
+        covered without a requirement, becomes a gap. A partial or gap row that no finding and no open point tracks
+        gets a finding, so a gap the inspector saw cannot pass silently. Returns the added findings."""
+        ids = set(self.item_ids(stage))
+        texts = {f["id"]: f"{f['target_id']} {f['description']}" for f in findings}
+        ops = {o.get("id"): json.dumps(o) for o in read_json(self.workproduct(stage)).get("open_points", [])
+               + governance.open_points(self.root, stage) if isinstance(o, dict)}
+        out_rows, adjusted, added = [], [], []
+        provided = isinstance(rows, list)
+        for r in rows if provided else []:
+            if not isinstance(r, dict) or not str(r.get("source", "")).strip():
+                adjusted.append("dropped a row without a source")
+                continue
+            src = str(r["source"]).strip()[:120]
+            status = str(r.get("status", "")).strip().lower()
+            status = {"na": "n/a", "not applicable": "n/a", "needs_input": "gap", "needs input": "gap"}.get(status, status)
+            reason = str(r.get("reason") or "").strip()[:400]
+            reqs = [i for i in r.get("requirements") or [] if i in ids]
+            if len(reqs) < len(r.get("requirements") or []):
+                adjusted.append(f"{src}: removed requirement ids that are not in the set")
+            if status not in ("covered", "partial", "gap", "n/a"):
+                adjusted.append(f"{src}: unknown status {status!r} taken as gap")
+                status = "gap"
+            if status == "n/a" and len(reason) < 10:
+                adjusted.append(f"{src}: n/a without a reason taken as gap")
+                status, reason = "gap", reason or "n/a given without a reason"
+            if status == "covered" and not reqs:
+                adjusted.append(f"{src}: covered by no requirement taken as gap")
+                status = "gap"
+            row = {"source": src, "requirements": reqs, "status": status, "reason": reason}
+            if status in ("partial", "gap"):
+                tracker = next((i for i, x in texts.items() if src in x), None) or \
+                    next((i for i, x in ops.items() if src in x), None)
+                if tracker is None:
+                    n = len(findings) + len(added) + 1
+                    f = {"id": f"F-{stage}-set-r{rnd}-{n:03d}", "phase": "set", "checklist_item": "SQ-01",
+                         "target_id": "SET", "severity": "major", "round": rnd, "status": "open",
+                         "description": f"Coverage {status}: {src} - {reason or 'no reason given'}"[:600],
+                         "requested_change": f"Cover {src} with a requirement, or record an open point if the "
+                                             "inputs do not say enough.", "raised_by": raised_by}
+                    added.append(f)
+                    tracker = f["id"]
+                    adjusted.append(f"{src}: {status} tracked by no finding or open point; raised {f['id']}")
+                row["tracked_by"] = tracker
+            out_rows.append(row)
+        doc = {"schema": "forge-c-hi/coverage-matrix@1", "stage": stage, "round": rnd, "provided": provided,
+               "rows": out_rows, "adjusted": adjusted[:100]}
+        write_json(self.root / "hi" / stage / "inspection" / "coverage.json", doc)
+        self.event(stage=stage, step="coverage", round=rnd, provided=provided, rows=len(out_rows),
+                   **{s: sum(1 for r in out_rows if r["status"] == s) for s in ("covered", "partial", "gap")},
+                   na=sum(1 for r in out_rows if r["status"] == "n/a"), raised=len(added))
+        return added
 
     @staticmethod
     def finding_key(f: dict) -> tuple:

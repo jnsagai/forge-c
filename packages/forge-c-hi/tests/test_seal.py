@@ -189,3 +189,14 @@ def test_the_archive_alone_can_be_verified(tmp_project):
     (alone / "review.tar.gz").write_bytes(gzip.compress(raw.replace(b"SYS-SUP-001", b"SYS-SUP-999", 1)))
     r = subprocess.run([sys.executable, str(VERIFY), str(alone / "review.tar.gz")], capture_output=True, text=True)
     assert r.returncode == 1 and "does not match" in " ".join(json.loads(r.stdout)["errors"])
+
+
+def test_coverage_matrix_is_rendered_in_the_findings_report(tmp_project):
+    root = ready_project(tmp_project)
+    write(root / "hi/sys-req/inspection/coverage.json", {
+        "schema": "forge-c-hi/coverage-matrix@1", "stage": "sys-req", "round": 2, "provided": True, "adjusted": [],
+        "rows": [{"source": "STK-SUP-001", "requirements": ["SYS-SUP-001"], "status": "covered", "reason": ""},
+                 {"source": "shutdown", "requirements": [], "status": "n/a", "reason": "Runs until reset."}]})
+    res = seal.seal(root)
+    text = (root / res["package"] / "findings.md").read_text()
+    assert "Coverage matrix (set inspection round 2)" in text and "| shutdown | - | n/a | Runs until reset. |" in text

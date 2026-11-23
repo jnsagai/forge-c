@@ -625,3 +625,46 @@ def test_findings_may_wait_on_a_governance_open_point(tmp_path):
     fs = json.loads((root / "hi/sys-req/inspection/findings.json").read_text())["findings"]
     assert [f["status"] for f in fs if f.get("blocked_by") == "OP-GOV-001"] == ["carried"]
     assert code == 1 and "OP-GOV-001" in out["stages"][0]["reason"]
+
+
+# ---------------------------------------------------------------- coverage matrix (guideline 3.1, T089)
+def test_coverage_matrix_rules(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    rows1 = [
+        {"source": "STK-SUP-001", "requirements": ["SYS-SUP-001"], "status": "covered", "reason": ""},
+        {"source": "STK-SUP-002", "requirements": ["SYS-SUP-002", "SYS-SUP-404"], "status": "partial",
+         "reason": "Only the deadline, not the start."},                                 # tracked by the finding below
+        {"source": "shutdown", "requirements": [], "status": "n/a", "reason": ""},       # n/a without reason -> gap
+        {"source": "invalid input", "requirements": [], "status": "n/a", "reason": "The supervisor takes no input."},
+        {"source": "recovery", "requirements": [], "status": "covered", "reason": ""},   # covered by nothing -> gap
+    ]
+    set_f = dict(F("SQ-02"), target_id="SET", description="STK-SUP-002 is only partly covered.")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[set_f], []],
+                                    "coverage_rounds": [rows1, [dict(r, status="covered", requirements=["SYS-SUP-001"])
+                                                                for r in rows1]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+    r1 = json.loads((root / "hi/sys-req/inspection/set-r1.json").read_text())["findings"]
+    auto = [f for f in r1 if f["description"].startswith("Coverage")]
+    assert sorted(f["description"].split(":")[1].split(" - ")[0].strip() for f in auto) == ["recovery", "shutdown"]
+    assert {f["checklist_item"] for f in auto} == {"SQ-01"} and {f["severity"] for f in auto} == {"major"}
+    ev = [e for e in events(root, out) if e["step"] == "coverage"]
+    assert ev[0]["raised"] == 2 and ev[0]["gap"] == 2 and ev[0]["partial"] == 1 and ev[0]["na"] == 1
+    cov = json.loads((root / "hi/sys-req/inspection/coverage.json").read_text())
+    assert cov["round"] == 2 and {r["status"] for r in cov["rows"]} == {"covered"}
+    from forge_hi.config import schema
+    from forge_hi.jsonschema_lite import validate
+    assert validate(cov, schema("coverage-matrix")) == []
+    assert [c["phase"] for c in calls if c["role"] == "author"].count("rework-set") == 1
+
+
+def test_set_reply_without_coverage_is_recorded_as_not_provided(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS}, "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0, out
+    cov = json.loads((root / "hi/sys-req/inspection/coverage.json").read_text())
+    assert cov["provided"] is False and cov["rows"] == []

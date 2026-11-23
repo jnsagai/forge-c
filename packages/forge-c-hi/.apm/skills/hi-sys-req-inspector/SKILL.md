@@ -57,6 +57,27 @@ traceability, interdependencies, operating environment, agreement and open point
 You also receive **carried findings** (and earlier set findings). Judge each again: if it still holds, raise it again
 with the same `checklist_item` and `target_id`; if it no longer holds, leave it out and it is closed.
 
+### Coverage matrix
+
+In the set phase, also return `coverage`. Build it from the **actual sources**, not from a generic feature list, and
+do not judge completeness by how many requirements there are:
+
+```json
+"coverage": [
+  {"source": "STK-SUP-007", "requirements": ["SYS-SUP-020", "SYS-SUP-021"], "status": "covered", "reason": ""},
+  {"source": "STK-SUP-010", "requirements": ["SYS-SUP-031"], "status": "partial", "reason": "Latching is covered, the repeat count is not."},
+  {"source": "shutdown", "requirements": [], "status": "n/a", "reason": "The controller has no shutdown; it runs until reset."}
+]
+```
+
+- Add one row per stakeholder need and one row per use case of the governance package.
+- Add one row per applicable scenario: start-up, normal operation, invalid input, fault detection and reaction,
+  recovery or reset, shutdown, and non-functional limits.
+- `n/a` only with a reason. A missing or contradictory input is a `gap` with the open point that asks for it, never
+  `n/a`.
+- Raise a finding for every `partial` or `gap` row that no finding or open point tracks yet. The conductor raises one
+  for you, as SQ-01 major, when you leave it out.
+
 ## Findings
 
 Each finding:

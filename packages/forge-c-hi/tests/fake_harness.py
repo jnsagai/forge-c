@@ -21,6 +21,7 @@ Scenario keys:
   author.no_use_cases     true: "create" does not tag the items with the use cases (realization gap)
   inspector.item_rounds   list per round of {item_id: [finding]}
   inspector.set_rounds    list per round of [finding]
+  inspector.coverage_rounds list per set round of coverage rows returned with the set findings
   inspector.write_file    a relative path the inspector tries to write
   inspector.garbage       reply with prose instead of JSON
 Every call is appended to $FAKE_LOG as one JSON line: role, phase, round, items, active_role.
@@ -156,7 +157,11 @@ def main() -> int:
     else:
         rounds = i.get("set_rounds", [])
         findings = rounds[rnd - 1] if rnd - 1 < len(rounds) else []
-    print("```json\n" + json.dumps({"status": "DONE", "findings": findings}) + "\n```")
+    reply = {"status": "DONE", "findings": findings}
+    cov = i.get("coverage_rounds", [])
+    if task["phase"] == "set" and rnd - 1 < len(cov):
+        reply["coverage"] = cov[rnd - 1]
+    print("```json\n" + json.dumps(reply) + "\n```")
     return 0
 
 
