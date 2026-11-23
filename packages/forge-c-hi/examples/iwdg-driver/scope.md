@@ -20,3 +20,14 @@ facts come from the reference manual, cited by section and page; no text from it
 | CON-IWDG-004 | Every operation that waits for the hardware has a bounded wait and reports a timeout instead of blocking forever. |
 | CON-IWDG-005 | Language C11, no dynamic memory, no recursion; the caller supplies a configuration structure. |
 | CON-IWDG-006 | The Safety Supervisor middleware (`examples/safety-supervisor`) uses this driver; its software requirements link to these driver requirements. |
+
+## Product decisions
+
+**Fictional demo product.** Like the Safety Supervisor decisions, these answer the blocking open points a driver run
+stopped on. They were written by Claude for the demo and are not recommendations for a real product.
+
+| ID | Decision |
+|---|---|
+| CON-IWDG-007 | The product selects the software watchdog mode in its option bytes; the hardware watchdog mode (watchdog running from power-on) is out of scope. If the start service is called while the watchdog is already running, it changes nothing and returns an "already running" status. |
+| CON-IWDG-008 | The driver does not detect a refresh that the hardware ignored. The refresh service issues the request and returns; a refresh that never takes effect is caught by the caller's own supervision (in the Safety Supervisor: the window watchdog and the deadline monitoring). The driver offers no separate status for it. |
+| CON-IWDG-009 | Every bounded wait takes a timeout in milliseconds from the caller (1 to 1000 ms), measured with the platform's 1 ms tick. A wait still unfinished when the timeout has elapsed returns a timeout status. |

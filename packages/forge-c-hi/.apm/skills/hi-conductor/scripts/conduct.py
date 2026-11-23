@@ -577,8 +577,14 @@ class Conductor:
             hit = next((f["id"] for f in findings if f.get("checklist_item") == cid), None)
             if hit:
                 return hit
-        return next((i for i, x in texts.items() if src in x), None) or \
-            next((i for i, x in ops.items() if src in x), None)
+        def names(x: str) -> bool:
+            if src in x:
+                return True
+            # a document row "RM0486#59.7.1" is cited in prose as "section 59.7.1" (driver demo T052)
+            doc, _, sec = src.partition("#")
+            return bool(sec) and doc in x and re.search(rf"(?<![\d.]){re.escape(sec)}(?![\d]|\.\d)", x) is not None
+        return next((i for i, x in texts.items() if names(x)), None) or \
+            next((i for i, x in ops.items() if names(x)), None)
 
     @staticmethod
     def finding_key(f: dict) -> tuple:

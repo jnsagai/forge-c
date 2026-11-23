@@ -65,3 +65,6 @@
 - **Thirteenth round:** `CON-SUP-145` (start-up message form and deadline), raised by run 6 pass 2 when the inspector challenged the deferral of OP-SYS-001. Same status: fictional, by Claude.
 - **Fourteenth round:** `CON-SUP-146` (CRC range end symbols are exclusive), raised by run 6 pass 3. Same status: fictional, by Claude.
 - **Fifteenth round:** `CON-SUP-147` (equality with a timing limit is verified by analysis), raised by run 6 pass 4. Same status: fictional, by Claude.
+- **Driver demo, first round:** `CON-IWDG-007..009` in `examples/iwdg-driver/scope.md`: software watchdog mode only and
+  the "already running" status, no detection of an ignored refresh, and bounded waits in milliseconds. They were raised by
+  driver demo pass 2. Same status as the supervisor decisions: fictional, by Claude.

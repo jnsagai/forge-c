@@ -736,3 +736,15 @@ def test_an_existing_governance_package_with_gaps_is_fixed_before_writing(tmp_pa
     code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
     assert code == 0, out
     assert [c["phase"] for c in calls[:2]] == ["fix-governance", "create"]
+
+
+def test_document_coverage_row_is_tracked_by_a_finding_citing_its_section():
+    # driver demo T052: rows "RM0486#59.7.1" were raised again although a finding cited "sections 59.2 ... and 59.7.1"
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    f = {"id": "F-1", "checklist_item": "SQ-01", "target_id": "SET"}
+    texts = {"F-1": "SET RM0486 sections 59.2, 59.4.4 and 59.7.1 remain partially covered."}
+    assert Conductor.row_tracker("RM0486#59.7.1", "inherits the refresh findings", [f], texts, {}) == "F-1"
+    assert Conductor.row_tracker("RM0486#59.7", "inherits the refresh findings", [f], texts, {}) is None
+    assert Conductor.row_tracker("RM0486#59.4", "", [f], texts, {}) is None
+    assert Conductor.row_tracker("RM9999#59.2", "", [f], texts, {}) is None
