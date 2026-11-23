@@ -1,0 +1,14 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261123T050243Z-4e9839/events.jsonl",
+  "run_id": "r20261123T050243Z-4e9839",
+  "stages": [
+    {
+      "gates": {},
+      "outcome": "BLOCKED",
+      "reason": "author wrote outside its write scope: ['.claude/skills/hi-gates/scripts/forge_hi/__pycache__/__init__.cpython-313.pyc', '.claude/skills/hi-gates/scripts/forge_hi/__pycache__/config.cpython-313.pyc', '.claude/skills/hi-gates/scripts/forge_hi/__pycache__/doc_index.cpython-313.pyc', '.claude/skills/hi-",
+      "stage": "sw-req"
+    }
+  ],
+  "status": "BLOCKED"
+}
