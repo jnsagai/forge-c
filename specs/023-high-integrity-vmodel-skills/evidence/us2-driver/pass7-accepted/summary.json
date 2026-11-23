@@ -1,0 +1,22 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261123T064457Z-5a4c55/events.jsonl",
+  "run_id": "r20261123T064457Z-5a4c55",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sw-req"
+    }
+  ],
+  "status": "DONE"
+}

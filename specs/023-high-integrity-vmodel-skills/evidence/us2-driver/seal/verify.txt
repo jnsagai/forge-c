@@ -1,0 +1,4 @@
+$ python3 -I verify_package.py <package-dir>
+{"errors": [], "package_status": "READY_FOR_OFFLINE_REVIEW", "verified": true}
+$ python3 -I verify_package.py review.tar.gz   (archive + .sha256 only)
+{"errors": [], "package_status": "READY_FOR_OFFLINE_REVIEW", "verified": true}

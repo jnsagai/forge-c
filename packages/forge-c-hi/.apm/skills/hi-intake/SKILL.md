@@ -36,6 +36,9 @@ it comes from the user's own hazard or risk analysis, which this package does no
 - **Constraints** (given platform facts) get ids `CON-<AREA>-<NNN>`.
 - **Reference documents** stay the user's own copy and are never redistributed. Register them with a document id, e.g.
   `--input docs/rm.pdf:reference_document:RM0486`.
+- **Linked projects:** a middleware project that uses a driver written with forge-c-hi links to it with
+  `--link <path-to-driver-project>:driver_interface`. Its software requirements then cite the driver's `DRV-*` ids, and
+  the trace gate checks them in that project.
 - Check the inputs for personal data and secrets; `hi init` warns about e-mail addresses and keys, and the user must
   remove them.
 

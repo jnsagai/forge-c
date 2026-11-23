@@ -90,6 +90,7 @@ def init(
     ears: bool | None = None,
     driver_level: str | None = None,
     allowed_terms: list[str] | None = None,
+    links: list[str] | None = None,
 ) -> tuple[int, dict]:
     root = Path(root)
     path = root / ".hi" / "project.json"
@@ -115,6 +116,14 @@ def init(
     doc.setdefault("entry_stage", "sys-req" if doc["input_class"] == "natural_language" else "sw-req")
     if stages_list:
         doc["stages"] = stages_list
+    for spec in links or []:
+        link_path, _, level = spec.rpartition(":")
+        if not link_path or not level:
+            raise ConfigError(f"--link must be PATH:LEVEL, got {spec!r}")
+        if not (root / link_path / ".hi" / "project.json").is_file():
+            raise ConfigError(f"--link {link_path}: no forge-c-hi project there")
+        doc["links"] = [x for x in doc.get("links", []) if x.get("project_path") != link_path] + \
+            [{"project_path": link_path, "level": level}]
     style = {k: v for k, v in (("ears", ears), ("driver_level", driver_level), ("allowed_terms", allowed_terms))
              if v not in (None, False, [])}
     if style:

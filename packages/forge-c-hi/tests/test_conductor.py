@@ -772,3 +772,25 @@ def test_coverage_row_citing_an_item_with_a_finding_is_tracked():
     texts = {"F-9": "DRV-IWDG-024 conflicts with the timeout handling."}
     assert Conductor.row_tracker("UC-IWDG-007", "The findings on DRV-IWDG-024 track it.", fs, texts, {}) == "F-9"
     assert Conductor.row_tracker("UC-IWDG-007", "See DRV-IWDG-099.", fs, texts, {}) is None
+
+
+def test_linked_project_items_are_snapshotted_for_the_roles(tmp_path):
+    # T052: the middleware's author must see the driver's DRV items to cite them
+    from hi_helpers import reqset
+    drv = tmp_path / "drv"
+    make_project(drv, stages=("sw-req",), swr_items=[
+        req("DRV-WDG-001", "The driver shall start the watchdog when the start service is called.",
+            [{"kind": "document", "doc_id": "RM1", "section": "4.2", "page": 3}], level="driver_interface")])
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}})
+    proj = json.loads((root / ".hi/project.json").read_text())
+    proj["links"] = [{"project_path": "../drv", "level": "driver_interface"}]
+    write(root / ".hi/project.json", proj)
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    c = Conductor(root, dry_run=True)
+    t = c.task("author", "sys-req", "create")
+    assert t["linked"] == [".hi/linked/01-drv-driver_interface.json"]
+    snap = json.loads((root / t["linked"][0]).read_text())
+    assert [i["id"] for i in snap["items"]] == ["DRV-WDG-001"] and "sources" not in snap["items"][0]

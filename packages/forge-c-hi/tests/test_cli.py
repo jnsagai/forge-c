@@ -204,3 +204,18 @@ def test_init_requirement_style(tmp_project):
     write(tmp_project / "hi/sys-req/requirements.json", __import__("hi_helpers").reqset("sys-req", SYS_ITEMS))
     code, out = hi(tmp_project, "quality", "sys-req")
     assert code == 1 and {t["code"] for t in out["top"]} == {"IQ-11.ears-missing"}
+
+
+def test_init_links_a_driver_project(tmp_project):
+    drv = tmp_project / "drv"
+    make_project(drv, stages=("sw-req",))
+    app = tmp_project / "app"
+    make_project(app)
+    (app / ".hi/project.json").unlink()
+    args = ["init", "--level", "HI-2", "--input", "needs/stakeholder-needs.md:needs"]
+    code, out = hi(app, *args, "--link", "../drv:driver_interface")
+    assert code == 0, out
+    assert json.loads((app / ".hi/project.json").read_text())["links"] == [
+        {"project_path": "../drv", "level": "driver_interface"}]
+    code, out = hi(app, *args, "--force", "--link", "../nowhere:driver_interface")
+    assert code == 2 and "no forge-c-hi project" in out["error"]

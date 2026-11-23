@@ -101,6 +101,25 @@ class Conductor:
         if roles["inspector"].get("read_only") is not True:
             raise ConfigError("the inspector binding must be read_only: true")
         self.scope_issues: list[dict] = []
+        self.linked_files = self.snapshot_links()
+
+    def snapshot_links(self) -> list[str]:
+        """Linked projects (`links` in project.json): their items of the linked level, copied into `.hi/linked/` so
+        that the roles can read them inside this project (id, level and text only; T052: the middleware software
+        requirements cite the driver's DRV items)."""
+        out = []
+        for n, ln in enumerate(self.project.get("links", []), 1):
+            other = (self.root / ln["project_path"]).resolve()
+            wp = other / stages()[trace.LEVEL_STAGE[ln["level"]]]["outputs"][0]
+            if not wp.is_file():
+                continue
+            items = [{"id": i.get("id"), "level": i.get("level"), "text": i.get("text")}
+                     for i in read_json(wp).get("items", []) if isinstance(i, dict) and i.get("level") == ln["level"]]
+            dest = self.root / ".hi" / "linked" / f"{n:02d}-{other.name}-{ln['level']}.json"
+            write_json(dest, {"schema": "forge-c-hi/linked-items@1", "project_path": ln["project_path"],
+                              "level": ln["level"], "source_sha256": sha256_file(wp), "items": items})
+            out.append(rel(self.root, dest))
+        return out
 
     # ---------------------------------------------------------------- records
     def event(self, **kw) -> None:
@@ -136,6 +155,8 @@ class Conductor:
         lock = self.root / ".hi" / "inputs.lock.json"
         hashes = dict(read_json(lock).get("inputs", {}) if lock.is_file() else {}, **self.input_hashes())
         extra = {}
+        if self.linked_files:
+            extra["linked"] = self.linked_files
         if self.governed(stage):
             extra["governance"] = rel(self.root, governance.path(self.root, stage))
             extra["governance_contract"] = rel(self.root, REFS / "schemas" / "governance.schema.json")

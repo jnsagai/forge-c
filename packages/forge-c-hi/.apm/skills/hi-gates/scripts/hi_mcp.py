@@ -38,7 +38,8 @@ TOOLS = {
               "author_family": {"type": "string"}, "inspector_family": {"type": "string"},
               "from_file": {"type": "string"}, "force": {"type": "boolean"}, "ears": {"type": "boolean"},
               "driver_level": {"type": "string", "enum": ["interface", "functional"]},
-              "allowed_terms": {"type": "array", "items": {"type": "string"}}}),
+              "allowed_terms": {"type": "array", "items": {"type": "string"}},
+              "links": {"type": "array", "items": {"type": "string"}}}),
         lambda r, a: api.init(r, **a),
     ),
     "hi_doc_index": (

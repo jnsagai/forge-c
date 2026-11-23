@@ -43,6 +43,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--ears", action="store_true", help="every requirement declares and follows an EARS pattern")
     s.add_argument("--driver-level", choices=["interface", "functional"],
                    help="driver requirements at register interface level (default) or API behaviour level")
+    s.add_argument("--link", dest="links", action="append",
+                   help="PATH:LEVEL of a linked project whose requirements of that level this project cites, "
+                        "e.g. ../iwdg-driver:driver_interface (repeatable)")
     s.add_argument("--allowed-term", dest="allowed_terms", action="append",
                    help="upper-case API name a functional-level statement may use, repeatable")
     s.add_argument("--force", action="store_true")
@@ -86,7 +89,7 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
                         author_model=args.author_model, inspector_model=args.inspector_model,
                         author_family=args.author_family, inspector_family=args.inspector_family,
                         from_file=args.from_file, force=args.force, ears=args.ears or None,
-                        driver_level=args.driver_level, allowed_terms=args.allowed_terms,
+                        driver_level=args.driver_level, allowed_terms=args.allowed_terms, links=args.links,
                         stages_list=args.stages.split(",") if args.stages else None)
     if c == "doc-index":
         return api.doc_index(root, args.pdf, args.doc_id)

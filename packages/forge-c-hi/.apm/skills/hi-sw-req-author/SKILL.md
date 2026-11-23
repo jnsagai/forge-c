@@ -67,8 +67,16 @@ system requirements above them (out of context).
 - Describe the driver's obligations in your own words. **Never quote** the document: no sentences, tables or register
   descriptions copied from it. Cite where the fact is.
 - Constraints of the driver task (scope file with `CON-*` ids) may be cited as upstream sources.
-- Middleware projects can link to these requirements (`links` in their project); their software requirements then cite
-  `DRV-*` ids and the link type becomes `interfaces`.
+- Middleware projects can link to these requirements (`hi init --link <driver-project>:driver_interface`); their software
+  requirements then cite `DRV-*` ids and the link type becomes `interfaces`.
+
+### Using a linked project (middleware side)
+
+When the `hi-task` block lists `linked` files (`.hi/linked/*.json`, copied by the conductor from the linked projects),
+they hold the linked requirements by id, level and text. A software requirement that relies on a driver service cites
+the `DRV-*` items it uses as upstream sources (`{"kind": "upstream", "id": "DRV-IWDG-001"}`) next to its system
+requirement. The trace gate resolves those ids in the linked project. Do not restate the driver's hardware obligations;
+state what your software needs from the service.
 
 ### Functional driver level
 

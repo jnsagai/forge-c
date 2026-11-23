@@ -1,0 +1,571 @@
+{
+  "adjusted": [],
+  "provided": true,
+  "round": 21,
+  "rows": [
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012"
+      ],
+      "source": "CON-IWDG-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Early-wakeup configuration is incorporated into start under CON-IWDG-013.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012"
+      ],
+      "source": "CON-IWDG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "CON-IWDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-044"
+      ],
+      "source": "CON-IWDG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-013",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028"
+      ],
+      "source": "CON-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver interface requirements provide targets for downstream Safety Supervisor traceability.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022"
+      ],
+      "source": "CON-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-045"
+      ],
+      "source": "CON-IWDG-009",
+      "status": "covered"
+    },
+    {
+      "reason": "CON-IWDG-018 clarifies the flag wait's application to automatic reloads.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-035",
+        "DRV-IWDG-044",
+        "DRV-IWDG-048"
+      ],
+      "source": "CON-IWDG-010",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "CON-IWDG-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "CON-IWDG-012",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024"
+      ],
+      "source": "CON-IWDG-013",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-014",
+      "status": "covered"
+    },
+    {
+      "reason": "Explicitly replaced by CON-IWDG-016.",
+      "requirements": [],
+      "source": "CON-IWDG-015",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-056",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-044",
+        "DRV-IWDG-050"
+      ],
+      "source": "CON-IWDG-016",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-051",
+        "DRV-IWDG-052",
+        "DRV-IWDG-053",
+        "DRV-IWDG-054",
+        "DRV-IWDG-055"
+      ],
+      "source": "CON-IWDG-017",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-044"
+      ],
+      "source": "CON-IWDG-018",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-054",
+        "DRV-IWDG-055"
+      ],
+      "source": "CON-IWDG-019",
+      "status": "covered"
+    },
+    {
+      "reason": "Chapter-level scope is addressed through its in-scope sections.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-011"
+      ],
+      "source": "RM0486#59",
+      "status": "covered"
+    },
+    {
+      "reason": "Introductory context is reflected in the driver scope.",
+      "requirements": [
+        "DRV-IWDG-001"
+      ],
+      "source": "RM0486#59.1",
+      "status": "covered"
+    },
+    {
+      "reason": "Applicable features are addressed by the driver services.",
+      "requirements": [
+        "DRV-IWDG-001"
+      ],
+      "source": "RM0486#59.2",
+      "status": "covered"
+    },
+    {
+      "reason": "Platform implementation context is addressed by the driver scope and operation constraints.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.3",
+      "status": "covered"
+    },
+    {
+      "reason": "Functional behaviour is addressed in the in-scope subsections.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007"
+      ],
+      "source": "RM0486#59.4",
+      "status": "covered"
+    },
+    {
+      "reason": "The block diagram supplies context for the driver boundary.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015"
+      ],
+      "source": "RM0486#59.4.1",
+      "status": "covered"
+    },
+    {
+      "reason": "The internal signals provide context for the reset and interrupt interfaces.",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "RM0486#59.4.2",
+      "status": "covered"
+    },
+    {
+      "reason": "Hardware watchdog mode is excluded by CON-IWDG-007.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "RM0486#59.4.3",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-023",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-056"
+      ],
+      "source": "RM0486#59.4.4",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.4.6",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-004 tracks the unspecified behaviour around low-power entry and is deferred to software architecture.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.5",
+      "status": "partial",
+      "tracked_by": "OP-DRV-004"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-046"
+      ],
+      "source": "RM0486#59.6",
+      "status": "covered"
+    },
+    {
+      "reason": "Applicable register behaviour is addressed through the in-scope register subsections.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-011"
+      ],
+      "source": "RM0486#59.7",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.7.1",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-017",
+        "DRV-IWDG-031"
+      ],
+      "source": "RM0486#59.7.2",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-029",
+        "DRV-IWDG-031",
+        "DRV-IWDG-038"
+      ],
+      "source": "RM0486#59.7.3",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-011",
+        "DRV-IWDG-021",
+        "DRV-IWDG-031",
+        "DRV-IWDG-044"
+      ],
+      "source": "RM0486#59.7.4",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023"
+      ],
+      "source": "RM0486#59.7.5",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024",
+        "DRV-IWDG-030",
+        "DRV-IWDG-051",
+        "DRV-IWDG-055"
+      ],
+      "source": "RM0486#59.7.6",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-026"
+      ],
+      "source": "RM0486#59.7.7",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043",
+        "DRV-IWDG-056"
+      ],
+      "source": "UC-IWDG-001",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022",
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "UC-IWDG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "UC-IWDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-051",
+        "DRV-IWDG-055"
+      ],
+      "source": "UC-IWDG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011"
+      ],
+      "source": "UC-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Reset-flag clearing and ownership are tracked separately by OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "UC-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-005",
+        "DRV-IWDG-021",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "UC-IWDG-007",
+      "status": "covered"
+    },
+    {
+      "reason": "The requirements provide driver interface targets for the Safety Supervisor.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "UC-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043",
+        "DRV-IWDG-056"
+      ],
+      "source": "start-up",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-010",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012",
+        "DRV-IWDG-022"
+      ],
+      "source": "normal operation",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "Ignored refresh detection is assigned to the caller by CON-IWDG-008.",
+      "requirements": [
+        "DRV-IWDG-021",
+        "DRV-IWDG-032",
+        "DRV-IWDG-034",
+        "DRV-IWDG-044",
+        "DRV-IWDG-048"
+      ],
+      "source": "fault detection and reaction",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver exposes the reset cause and interrupt clear; reset-flag clearing ownership is tracked by OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-012",
+        "DRV-IWDG-026"
+      ],
+      "source": "recovery or reset",
+      "status": "covered"
+    },
+    {
+      "reason": "CON-IWDG-003 excludes stopping a started watchdog; it remains active until reset.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-008",
+        "DRV-IWDG-013",
+        "DRV-IWDG-017",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045"
+      ],
+      "source": "limits",
+      "status": "covered"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-req"
+}
