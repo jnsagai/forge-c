@@ -5,14 +5,55 @@
   "integrity_level": "HI-2",
   "input_class": "reference_document",
   "entry_stage": "sw-req",
-  "stages": ["sw-req"],
+  "stages": [
+    "sw-req"
+  ],
   "inputs": [
-    {"path": "docs/rm0486.pdf", "kind": "reference_document", "doc_id": "RM0486"},
-    {"path": "scope.md", "kind": "constraints"}
+    {
+      "path": "docs/rm0486.pdf",
+      "kind": "reference_document",
+      "doc_id": "RM0486"
+    },
+    {
+      "path": "scope.md",
+      "kind": "constraints"
+    }
   ],
   "roles": {
-    "author": {"harness": "claude-code", "command": ["claude", "-p", "--permission-mode", "acceptEdits", "--allowedTools", "Read,Grep,Glob,Write,Edit"], "model": null, "model_family": "claude", "read_only": false},
-    "inspector": {"harness": "codex", "command": ["codex", "exec", "-s", "read-only", "--skip-git-repo-check"], "model": null, "model_family": "gpt", "read_only": true}
+    "author": {
+      "harness": "claude-code",
+      "command": [
+        "claude",
+        "-p",
+        "--permission-mode",
+        "acceptEdits",
+        "--allowedTools",
+        "Read,Grep,Glob,Write,Edit",
+        "--model",
+        "sonnet"
+      ],
+      "model": "sonnet",
+      "model_family": "claude",
+      "read_only": false
+    },
+    "inspector": {
+      "harness": "codex",
+      "command": [
+        "codex",
+        "exec",
+        "-s",
+        "read-only",
+        "--skip-git-repo-check",
+        "-m",
+        "gpt-6.1-terra"
+      ],
+      "model": "gpt-6.1-terra",
+      "model_family": "gpt",
+      "read_only": true
+    }
   },
-  "trace_capture": {"raw_prompts": false, "events": "standard"}
+  "trace_capture": {
+    "raw_prompts": false,
+    "events": "standard"
+  }
 }

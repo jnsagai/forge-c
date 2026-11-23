@@ -152,3 +152,21 @@ def test_intake_refuses_a_missing_or_unreadable_reference_document(tmp_project):
     make_pdf(tmp_project / "docs/rm.pdf", ["1 Introduction\nText."])
     code, out = api.init(tmp_project, **args)
     assert code == 0 and out["status"] == "DONE"
+
+
+def test_outline_handles_vendor_layout():
+    """T052 on a real 4669-page reference manual found 1706 of about 3500 headings. The cases, rebuilt here with
+    invented text: wide gaps between number and title, a contents page with spaced dot leaders and a wrapped entry,
+    numbered footnotes, and a table row that looks like a heading."""
+    toc = "\n".join([f"   {n}.{k}   Topic {k} . . . . . . . . . . . . {10 + k}" for n in (3, 4) for k in (1, 2, 3)]
+                    + ["7        Unit with a long name that wraps"])
+    pages = [
+        toc,
+        "3        Clock unit\n3.1      Clock overview\nBody text.\n",
+        "1. Certified by an independent body.\n4. Secret keys are protected against probing.\n"
+        "3.2                Clock registers\n12        Reserved\n",
+        "4             Watchdog unit\n4.1           Watchdog overview\n4.1.1             Watchdog key register (WD_KR)\n",
+    ]
+    secs = doc_index.outline(pages)
+    assert [s["section"] for s in secs] == ["3", "3.1", "3.2", "4", "4.1", "4.1.1"]
+    assert {s["section"]: s["page"] for s in secs}["3.2"] == 3 and secs[-1]["title"] == "Watchdog key register (WD_KR)"

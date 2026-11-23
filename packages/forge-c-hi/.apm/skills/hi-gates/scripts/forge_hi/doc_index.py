@@ -16,8 +16,10 @@ from pathlib import Path
 from . import gate_result
 from .io import read_json, sha256_file, write_json
 
-HEADING = re.compile(r"^\s{0,8}(\d{1,3}(?:\.\d{1,3}){0,5})\.?\s{1,6}([A-Z][^\n]{1,110}?)\s*$")
-TOC_LEADER = re.compile(r"\.{4,}|\s\d+\s*$")
+# RM0486 sets headings with up to ~13 spaces between number and title (T052: 59.7.1 IWDG key register was missed)
+HEADING = re.compile(r"^\s{0,8}(\d{1,3}(?:\.\d{1,3}){0,5})\.?\s{1,24}([A-Z][^\n]{1,110}?)\s*$")
+LEADER = re.compile(r"(?:\. ?){4,}")          # dot leaders, also spaced ". . . ." as in vendor tables of contents
+TOC_LEADER = re.compile(r"(?:\. ?){4,}|\s\d+\s*$")
 INDEX_DIR = Path(".hi") / "docs"
 
 
@@ -49,22 +51,35 @@ def _plausible(number: str, title: str) -> bool:
     if first == 0 or first > 200:
         return False
     words = title.split()
-    return 1 <= len(words) <= 16 and not title.endswith((",", ";"))
+    # a footnote or list item ("4. Private-key cryptography is protected ...") ends like a sentence; a heading does not
+    return 1 <= len(words) <= 16 and not title.rstrip().endswith((",", ";", "."))
 
 
 def outline(pages: list[str]) -> list[dict]:
-    """First body occurrence of each numbered heading, with its start page and the page before the next heading."""
+    """First body occurrence of each numbered heading, with its start page and the page before the next heading.
+
+    Pages that are part of a table of contents (5 or more dot-leader lines) are skipped, and headings must move forward
+    through the chapters (the chapter of a heading is the current one or the next), so a wrapped contents entry, a
+    numbered footnote or a table row cannot claim a section early."""
     seen: dict[str, dict] = {}
     order: list[str] = []
+    chapter = 0
     for pno, text in enumerate(pages, 1):
-        for line in text.splitlines():
+        lines = text.splitlines()
+        if sum(1 for ln in lines if LEADER.search(ln)) >= 5:
+            continue
+        for line in lines:
             m = HEADING.match(line)
             if not m or not _plausible(m.group(1), m.group(2)):
                 continue
             num, title = m.group(1), re.sub(r"\s{2,}.*$", "", m.group(2)).strip()
+            first = int(num.split(".")[0])
+            if chapter and not chapter <= first <= chapter + 1:
+                continue
             if num not in seen:
                 seen[num] = {"section": num, "title": title[:80], "page": pno}
                 order.append(num)
+                chapter = max(chapter, first)
     secs = [seen[n] for n in order]
     starts = sorted({s["page"] for s in secs})
     for s in secs:

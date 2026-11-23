@@ -112,3 +112,9 @@ decides them.
 | ID | Decision |
 |---|---|
 | CON-SUP-145 | The start-up message of CON-SUP-111 is the line `RST,<cause>` (the form and causes of CON-SUP-118) terminated by a line feed. It is transmitted within 10 ms of the instant start-up classified the reset cause, and before the code 8 report of CON-SUP-144 when there is one. |
+
+**Fourteenth round.** Raised by run 6 pass 3.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-146 | The end symbols `__app_end` and `__cfg_end` are the address **after** the last byte: the checked ranges are `__app_start` up to and excluding `__app_end`, and `__cfg_start` up to and excluding `__cfg_end`. |
