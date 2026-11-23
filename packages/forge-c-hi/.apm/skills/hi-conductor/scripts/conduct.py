@@ -34,6 +34,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 SKILLS = HERE.parents[2]
+sys.dont_write_bytecode = True  # never write __pycache__ into the installed skills (scope gate)
 sys.path.insert(0, str(SKILLS / "hi-gates" / "scripts"))
 
 from forge_hi import __version__, api, gate_result, gates, governance, scope, trace  # noqa: E402

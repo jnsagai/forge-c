@@ -17,6 +17,7 @@ import re
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # never write __pycache__ into the installed skills (scope gate)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from forge_hi.guard_glob import in_scope, protected  # noqa: E402
 

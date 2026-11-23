@@ -86,3 +86,23 @@ def test_snapshot_mode_flags_forged_gate_or_findings(tmp_path):
     doc = scope.run(tmp_path, "author", "sys-req", snapshot_file=snap, write=False)
     assert sorted(i["target_id"] for i in doc["issues"]) == [
         "hi/sys-req/gates/quality.json", "hi/sys-req/inspection/findings.json"]
+
+
+def test_running_hi_writes_no_bytecode_into_the_installed_skills(tmp_project):
+    """Negative case T042 found it: `hi` run inside a consumer project left __pycache__ under .claude/skills, and the
+    git-mode scope gate then reported those files as writes outside every role's scope."""
+    import shutil
+    import subprocess
+    import sys
+    from conftest import SKILLS
+    from hi_helpers import SYS_ITEMS, make_project
+    installed = tmp_project / ".claude" / "skills"
+    shutil.copytree(SKILLS / "hi-gates", installed / "hi-gates",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    make_project(tmp_project, sys_items=SYS_ITEMS)
+    for args in (["status"], ["gate", "sys-req"], ["quality", "sys-req"]):
+        subprocess.run([sys.executable, str(installed / "hi-gates/scripts/hi.py"), *args], cwd=tmp_project,
+                       capture_output=True, text=True, env={"PATH": "/usr/bin:/bin"})
+    subprocess.run([sys.executable, str(installed / "hi-gates/scripts/guard.py")], cwd=tmp_project, input="{}",
+                   capture_output=True, text=True)
+    assert list(installed.rglob("__pycache__")) == []
