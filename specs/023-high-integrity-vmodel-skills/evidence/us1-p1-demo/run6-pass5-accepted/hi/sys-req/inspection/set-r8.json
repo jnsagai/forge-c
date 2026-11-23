@@ -1,0 +1,143 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-001",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-037 requires a start-up reset-cause message after classification but gives no deadline. An observer cannot determine when the obligation has failed. OP-SYS-001 defers the missing deadline to software requirements.",
+      "id": "F-sys-req-set-r8-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Classify OP-SYS-001 as blocking.",
+      "round": 8,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-037"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: STK-SUP-011 - The start-up reset-cause message has no deadline; see OP-SYS-001 and the IQ-06 finding.",
+      "id": "F-sys-req-set-r8-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover STK-SUP-011 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: UC-SUP-008 - The start-up reset-cause message has no deadline; see OP-SYS-001 and the IQ-06 finding.",
+      "id": "F-sys-req-set-r8-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover UC-SUP-008 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: needs/product-decisions.md: initial decisions CON-SUP-101..116 - The reset-cause message deadline is unresolved; see OP-SYS-001 and the IQ-06 finding.",
+      "id": "F-sys-req-set-r8-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover needs/product-decisions.md: initial decisions CON-SUP-101..116 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: recovery or reset - The start-up reset-cause message has no deadline; see OP-SYS-001 and the IQ-06 finding.",
+      "id": "F-sys-req-set-r8-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover recovery or reset with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: non-functional limits - The start-up reset-cause message deadline remains unresolved; see OP-SYS-001 and the IQ-06 finding.",
+      "id": "F-sys-req-set-r8-006",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:47:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover non-functional limits with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 8,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

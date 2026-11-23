@@ -1,0 +1,949 @@
+{
+  "adjusted": [],
+  "provided": true,
+  "round": 16,
+  "rows": [
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-009"
+      ],
+      "source": "STK-SUP-001",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-005",
+        "SYS-SUP-092",
+        "SYS-SUP-056",
+        "SYS-SUP-093"
+      ],
+      "source": "STK-SUP-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-004",
+        "SYS-SUP-041"
+      ],
+      "source": "STK-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-007",
+        "SYS-SUP-076",
+        "SYS-SUP-077",
+        "SYS-SUP-078",
+        "SYS-SUP-079",
+        "SYS-SUP-080"
+      ],
+      "source": "STK-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-013",
+        "SYS-SUP-014"
+      ],
+      "source": "STK-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-011",
+        "SYS-SUP-012"
+      ],
+      "source": "STK-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-017",
+        "SYS-SUP-018",
+        "SYS-SUP-019",
+        "SYS-SUP-020"
+      ],
+      "source": "STK-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-023",
+        "SYS-SUP-058",
+        "SYS-SUP-066"
+      ],
+      "source": "STK-SUP-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-026",
+        "SYS-SUP-027",
+        "SYS-SUP-072",
+        "SYS-SUP-086"
+      ],
+      "source": "STK-SUP-009",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-031",
+        "SYS-SUP-032",
+        "SYS-SUP-033",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "STK-SUP-010",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-038"
+      ],
+      "source": "STK-SUP-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-041",
+        "SYS-SUP-042"
+      ],
+      "source": "STK-SUP-012",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-045",
+        "SYS-SUP-046",
+        "SYS-SUP-047",
+        "SYS-SUP-048",
+        "SYS-SUP-063",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069",
+        "SYS-SUP-081"
+      ],
+      "source": "STK-SUP-013",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-052"
+      ],
+      "source": "STK-SUP-014",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-053",
+        "SYS-SUP-054",
+        "SYS-SUP-055"
+      ],
+      "source": "STK-SUP-015",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-083"
+      ],
+      "source": "CON-SUP-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Identifies a reference manual and citation restrictions; it does not impose a separate product behavior.",
+      "requirements": [],
+      "source": "CON-SUP-002",
+      "status": "n/a"
+    },
+    {
+      "reason": "Identifies available peripherals; applicable functional uses are addressed by the requirements.",
+      "requirements": [
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-036",
+        "SYS-SUP-044"
+      ],
+      "source": "CON-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-084",
+        "SYS-SUP-087",
+        "SYS-SUP-088"
+      ],
+      "source": "CON-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-054"
+      ],
+      "source": "CON-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-076",
+        "SYS-SUP-077"
+      ],
+      "source": "CON-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-044"
+      ],
+      "source": "CON-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-076",
+        "SYS-SUP-077"
+      ],
+      "source": "CON-SUP-101",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-009"
+      ],
+      "source": "CON-SUP-102",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-078",
+        "SYS-SUP-079",
+        "SYS-SUP-080",
+        "SYS-SUP-085",
+        "SYS-SUP-091"
+      ],
+      "source": "CON-SUP-103",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-004"
+      ],
+      "source": "CON-SUP-104",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-025"
+      ],
+      "source": "CON-SUP-105",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-013",
+        "SYS-SUP-014"
+      ],
+      "source": "CON-SUP-106",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-020",
+        "SYS-SUP-089"
+      ],
+      "source": "CON-SUP-107",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-058",
+        "SYS-SUP-066"
+      ],
+      "source": "CON-SUP-108",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-026",
+        "SYS-SUP-028"
+      ],
+      "source": "CON-SUP-109",
+      "status": "covered"
+    },
+    {
+      "reason": "Read with the later product-owner clarifications.",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-033",
+        "SYS-SUP-059",
+        "SYS-SUP-060"
+      ],
+      "source": "CON-SUP-110",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-038"
+      ],
+      "source": "CON-SUP-111",
+      "status": "covered"
+    },
+    {
+      "reason": "Read with the later product-owner clarifications.",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-041"
+      ],
+      "source": "CON-SUP-112",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-045",
+        "SYS-SUP-048",
+        "SYS-SUP-049",
+        "SYS-SUP-081"
+      ],
+      "source": "CON-SUP-113",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-052"
+      ],
+      "source": "CON-SUP-114",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-008",
+        "SYS-SUP-057"
+      ],
+      "source": "CON-SUP-115",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-053",
+        "SYS-SUP-054",
+        "SYS-SUP-055"
+      ],
+      "source": "CON-SUP-116",
+      "status": "covered"
+    },
+    {
+      "reason": "Read with the later per-code counting clarification.",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "CON-SUP-117",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-038"
+      ],
+      "source": "CON-SUP-118",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-008",
+        "SYS-SUP-034",
+        "SYS-SUP-040"
+      ],
+      "source": "CON-SUP-119",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-029",
+        "SYS-SUP-039"
+      ],
+      "source": "CON-SUP-120",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-026",
+        "SYS-SUP-029",
+        "SYS-SUP-034",
+        "SYS-SUP-039"
+      ],
+      "source": "CON-SUP-121",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-041"
+      ],
+      "source": "CON-SUP-122",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-041"
+      ],
+      "source": "CON-SUP-123",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016"
+      ],
+      "source": "CON-SUP-124",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-046",
+        "SYS-SUP-047",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069"
+      ],
+      "source": "CON-SUP-125",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-042"
+      ],
+      "source": "CON-SUP-126",
+      "status": "covered"
+    },
+    {
+      "reason": "The test margins are recorded in the timing requirements; equality is assigned to analysis.",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-005",
+        "SYS-SUP-056",
+        "SYS-SUP-092",
+        "SYS-SUP-093"
+      ],
+      "source": "CON-SUP-127",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-002"
+      ],
+      "source": "CON-SUP-128",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-066"
+      ],
+      "source": "CON-SUP-129",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-035",
+        "SYS-SUP-046",
+        "SYS-SUP-061",
+        "SYS-SUP-062",
+        "SYS-SUP-065",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069"
+      ],
+      "source": "CON-SUP-130",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-042"
+      ],
+      "source": "CON-SUP-131",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-026",
+        "SYS-SUP-027",
+        "SYS-SUP-072",
+        "SYS-SUP-073"
+      ],
+      "source": "CON-SUP-132",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-025",
+        "SYS-SUP-086"
+      ],
+      "source": "CON-SUP-133",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-081"
+      ],
+      "source": "CON-SUP-134",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-032",
+        "SYS-SUP-059"
+      ],
+      "source": "CON-SUP-135",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-032",
+        "SYS-SUP-059"
+      ],
+      "source": "CON-SUP-136",
+      "status": "covered"
+    },
+    {
+      "reason": "The start-up servicing mechanism is deferred by OP-SYS-002; the observable outcome is specified.",
+      "requirements": [
+        "SYS-SUP-015",
+        "SYS-SUP-035",
+        "SYS-SUP-061",
+        "SYS-SUP-062"
+      ],
+      "source": "CON-SUP-137",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-049",
+        "SYS-SUP-051",
+        "SYS-SUP-063"
+      ],
+      "source": "CON-SUP-138",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-043",
+        "SYS-SUP-050",
+        "SYS-SUP-063",
+        "SYS-SUP-074"
+      ],
+      "source": "CON-SUP-139",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-030",
+        "SYS-SUP-031",
+        "SYS-SUP-059",
+        "SYS-SUP-065"
+      ],
+      "source": "CON-SUP-140",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-042"
+      ],
+      "source": "CON-SUP-141",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-018"
+      ],
+      "source": "CON-SUP-142",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-074",
+        "SYS-SUP-075"
+      ],
+      "source": "CON-SUP-143",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-034"
+      ],
+      "source": "CON-SUP-144",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-037",
+        "SYS-SUP-090"
+      ],
+      "source": "CON-SUP-145",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-066",
+        "SYS-SUP-089"
+      ],
+      "source": "CON-SUP-146",
+      "status": "covered"
+    },
+    {
+      "reason": "The equality requirements name analysis; the timing tests record the required margins.",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-005",
+        "SYS-SUP-056",
+        "SYS-SUP-092",
+        "SYS-SUP-093"
+      ],
+      "source": "CON-SUP-147",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004"
+      ],
+      "source": "UC-SUP-001",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-007",
+        "SYS-SUP-076",
+        "SYS-SUP-077",
+        "SYS-SUP-078",
+        "SYS-SUP-079",
+        "SYS-SUP-080"
+      ],
+      "source": "UC-SUP-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-013",
+        "SYS-SUP-014"
+      ],
+      "source": "UC-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-017",
+        "SYS-SUP-018",
+        "SYS-SUP-019",
+        "SYS-SUP-020"
+      ],
+      "source": "UC-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-023",
+        "SYS-SUP-058",
+        "SYS-SUP-066"
+      ],
+      "source": "UC-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-026",
+        "SYS-SUP-072",
+        "SYS-SUP-086"
+      ],
+      "source": "UC-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "UC-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-038"
+      ],
+      "source": "UC-SUP-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-041",
+        "SYS-SUP-042"
+      ],
+      "source": "UC-SUP-009",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-045",
+        "SYS-SUP-046",
+        "SYS-SUP-047",
+        "SYS-SUP-048",
+        "SYS-SUP-063",
+        "SYS-SUP-081"
+      ],
+      "source": "UC-SUP-010",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-052"
+      ],
+      "source": "UC-SUP-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-053",
+        "SYS-SUP-054",
+        "SYS-SUP-055"
+      ],
+      "source": "UC-SUP-012",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-015",
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-020",
+        "SYS-SUP-026",
+        "SYS-SUP-027",
+        "SYS-SUP-036"
+      ],
+      "source": "start-up",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004",
+        "SYS-SUP-013",
+        "SYS-SUP-014",
+        "SYS-SUP-021",
+        "SYS-SUP-067"
+      ],
+      "source": "normal operation",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-008",
+        "SYS-SUP-049",
+        "SYS-SUP-057"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004",
+        "SYS-SUP-017",
+        "SYS-SUP-019",
+        "SYS-SUP-023",
+        "SYS-SUP-024",
+        "SYS-SUP-039"
+      ],
+      "source": "fault detection and reaction",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-033",
+        "SYS-SUP-034",
+        "SYS-SUP-036",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-070"
+      ],
+      "source": "recovery or reset",
+      "status": "covered"
+    },
+    {
+      "reason": "The inputs specify reset and a power-cycle-cleared safe-state latch, but no commanded shutdown mode or shutdown sequence.",
+      "requirements": [],
+      "source": "shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-022",
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-052",
+        "SYS-SUP-058",
+        "SYS-SUP-063",
+        "SYS-SUP-086",
+        "SYS-SUP-089"
+      ],
+      "source": "non-functional limits",
+      "status": "covered"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sys-req"
+}

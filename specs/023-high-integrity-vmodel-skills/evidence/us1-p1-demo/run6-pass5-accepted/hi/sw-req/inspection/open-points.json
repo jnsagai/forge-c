@@ -1,0 +1,10 @@
+{
+  "ids": {
+    "OP-SWR-001": {
+      "retired": false,
+      "text": "Follows OP-SYS-002 (deferred to sw-req). The inputs do not say whether the window watchdog is already enabled before the first control cycle, nor how the watchdog servicing is scheduled while the start-up integrity checks run over an image of up to 1 MiB. SWR-WDG-006 and SWR-WDG-007 state the observable outcome (every IWDG service-free interval during start-up below 100 ms, from activation to the "
+    }
+  },
+  "run_id": "r20261123T050738Z-f2eb81",
+  "schema": "forge-c-hi/open-point-history@1"
+}

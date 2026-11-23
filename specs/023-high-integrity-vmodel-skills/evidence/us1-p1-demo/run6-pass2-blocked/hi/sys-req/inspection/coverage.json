@@ -1,0 +1,682 @@
+{
+  "adjusted": [
+    "STK-SUP-002: partial tracked by no finding or open point; raised F-sys-req-set-r10-004",
+    "UC-SUP-001: partial tracked by no finding or open point; raised F-sys-req-set-r10-005",
+    "needs/product-decisions.md: initial decisions CON-SUP-101..116: partial tracked by no finding or open point; raised F-sys-req-set-r10-006",
+    "needs/product-decisions.md: fifth round CON-SUP-124..128: partial tracked by no finding or open point; raised F-sys-req-set-r10-007",
+    "normal operation: partial tracked by no finding or open point; raised F-sys-req-set-r10-008",
+    "fault detection and reaction: partial tracked by no finding or open point; raised F-sys-req-set-r10-009"
+  ],
+  "provided": true,
+  "round": 10,
+  "rows": [
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-009"
+      ],
+      "source": "STK-SUP-001",
+      "status": "covered"
+    },
+    {
+      "reason": "The timing behavior is specified, but the CON-SUP-127 verification margins are not recorded; see the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-005",
+        "SYS-SUP-056",
+        "SYS-SUP-085"
+      ],
+      "source": "STK-SUP-002",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-004"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-004",
+        "SYS-SUP-041"
+      ],
+      "source": "STK-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-007",
+        "SYS-SUP-008",
+        "SYS-SUP-057",
+        "SYS-SUP-076",
+        "SYS-SUP-077",
+        "SYS-SUP-078",
+        "SYS-SUP-079",
+        "SYS-SUP-080"
+      ],
+      "source": "STK-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-013",
+        "SYS-SUP-014",
+        "SYS-SUP-015"
+      ],
+      "source": "STK-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-013",
+        "SYS-SUP-014"
+      ],
+      "source": "STK-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-017",
+        "SYS-SUP-018",
+        "SYS-SUP-019",
+        "SYS-SUP-020",
+        "SYS-SUP-089"
+      ],
+      "source": "STK-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-023",
+        "SYS-SUP-058",
+        "SYS-SUP-066",
+        "SYS-SUP-089"
+      ],
+      "source": "STK-SUP-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-026",
+        "SYS-SUP-027",
+        "SYS-SUP-072",
+        "SYS-SUP-073",
+        "SYS-SUP-086"
+      ],
+      "source": "STK-SUP-009",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-031",
+        "SYS-SUP-032",
+        "SYS-SUP-033",
+        "SYS-SUP-057",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "STK-SUP-010",
+      "status": "covered"
+    },
+    {
+      "reason": "The start-up reset-cause message deadline is unresolved in OP-SYS-001.",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-038"
+      ],
+      "source": "STK-SUP-011",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-002"
+    },
+    {
+      "reason": "The watchdog interruption exception follows CON-SUP-121.",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-041",
+        "SYS-SUP-042",
+        "SYS-SUP-043",
+        "SYS-SUP-074"
+      ],
+      "source": "STK-SUP-012",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-038",
+        "SYS-SUP-044",
+        "SYS-SUP-045",
+        "SYS-SUP-046",
+        "SYS-SUP-047",
+        "SYS-SUP-048",
+        "SYS-SUP-049",
+        "SYS-SUP-050",
+        "SYS-SUP-051",
+        "SYS-SUP-063",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069",
+        "SYS-SUP-075",
+        "SYS-SUP-081",
+        "SYS-SUP-082"
+      ],
+      "source": "STK-SUP-013",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-052"
+      ],
+      "source": "STK-SUP-014",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-053",
+        "SYS-SUP-054",
+        "SYS-SUP-055"
+      ],
+      "source": "STK-SUP-015",
+      "status": "covered"
+    },
+    {
+      "reason": "The timing-limit verification margins are missing; see the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004",
+        "SYS-SUP-005",
+        "SYS-SUP-009",
+        "SYS-SUP-041",
+        "SYS-SUP-056",
+        "SYS-SUP-085"
+      ],
+      "source": "UC-SUP-001",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-005"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-007",
+        "SYS-SUP-008",
+        "SYS-SUP-057",
+        "SYS-SUP-076",
+        "SYS-SUP-077",
+        "SYS-SUP-078",
+        "SYS-SUP-079",
+        "SYS-SUP-080"
+      ],
+      "source": "UC-SUP-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-013",
+        "SYS-SUP-014",
+        "SYS-SUP-015"
+      ],
+      "source": "UC-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-017",
+        "SYS-SUP-018",
+        "SYS-SUP-019",
+        "SYS-SUP-020",
+        "SYS-SUP-089"
+      ],
+      "source": "UC-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-023",
+        "SYS-SUP-058",
+        "SYS-SUP-066",
+        "SYS-SUP-089"
+      ],
+      "source": "UC-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-026",
+        "SYS-SUP-027",
+        "SYS-SUP-057",
+        "SYS-SUP-072",
+        "SYS-SUP-073",
+        "SYS-SUP-086"
+      ],
+      "source": "UC-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-031",
+        "SYS-SUP-032",
+        "SYS-SUP-033",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "UC-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "The start-up reset-cause message deadline is unresolved in OP-SYS-001.",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-038"
+      ],
+      "source": "UC-SUP-008",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-002"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-041",
+        "SYS-SUP-042",
+        "SYS-SUP-043",
+        "SYS-SUP-074"
+      ],
+      "source": "UC-SUP-009",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-038",
+        "SYS-SUP-044",
+        "SYS-SUP-045",
+        "SYS-SUP-046",
+        "SYS-SUP-047",
+        "SYS-SUP-048",
+        "SYS-SUP-049",
+        "SYS-SUP-050",
+        "SYS-SUP-051",
+        "SYS-SUP-063",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069",
+        "SYS-SUP-075",
+        "SYS-SUP-081",
+        "SYS-SUP-082"
+      ],
+      "source": "UC-SUP-010",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-022",
+        "SYS-SUP-052"
+      ],
+      "source": "UC-SUP-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-053",
+        "SYS-SUP-054",
+        "SYS-SUP-055",
+        "SYS-SUP-083",
+        "SYS-SUP-084",
+        "SYS-SUP-087",
+        "SYS-SUP-088"
+      ],
+      "source": "UC-SUP-012",
+      "status": "covered"
+    },
+    {
+      "reason": "The reference manual is a downstream design reference; platform, language, verification and serial constraints are represented.",
+      "requirements": [
+        "SYS-SUP-006",
+        "SYS-SUP-011",
+        "SYS-SUP-036",
+        "SYS-SUP-044",
+        "SYS-SUP-054",
+        "SYS-SUP-083",
+        "SYS-SUP-084",
+        "SYS-SUP-087",
+        "SYS-SUP-088"
+      ],
+      "source": "needs/constraints.md: CON-SUP-001..007",
+      "status": "covered"
+    },
+    {
+      "reason": "The CON-SUP-111 start-up message deadline is unresolved in OP-SYS-001; later decisions amend several initial decisions.",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-006",
+        "SYS-SUP-008",
+        "SYS-SUP-011",
+        "SYS-SUP-012",
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-024",
+        "SYS-SUP-026",
+        "SYS-SUP-029",
+        "SYS-SUP-033",
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-039",
+        "SYS-SUP-044",
+        "SYS-SUP-045",
+        "SYS-SUP-052",
+        "SYS-SUP-053"
+      ],
+      "source": "needs/product-decisions.md: initial decisions CON-SUP-101..116",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-006"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-038",
+        "SYS-SUP-039",
+        "SYS-SUP-040",
+        "SYS-SUP-064",
+        "SYS-SUP-065"
+      ],
+      "source": "needs/product-decisions.md: second round CON-SUP-117..120",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-010",
+        "SYS-SUP-034",
+        "SYS-SUP-039",
+        "SYS-SUP-041"
+      ],
+      "source": "needs/product-decisions.md: third round CON-SUP-121..122",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-041"
+      ],
+      "source": "needs/product-decisions.md: fourth round CON-SUP-123",
+      "status": "covered"
+    },
+    {
+      "reason": "CON-SUP-127's specified verification margins are not recorded; see the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-005",
+        "SYS-SUP-016",
+        "SYS-SUP-042",
+        "SYS-SUP-045",
+        "SYS-SUP-047",
+        "SYS-SUP-056",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069"
+      ],
+      "source": "needs/product-decisions.md: fifth round CON-SUP-124..128",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-007"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-035",
+        "SYS-SUP-046",
+        "SYS-SUP-061",
+        "SYS-SUP-062",
+        "SYS-SUP-066",
+        "SYS-SUP-067",
+        "SYS-SUP-068",
+        "SYS-SUP-069"
+      ],
+      "source": "needs/product-decisions.md: sixth round CON-SUP-129..130",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-025",
+        "SYS-SUP-027",
+        "SYS-SUP-032",
+        "SYS-SUP-042",
+        "SYS-SUP-059",
+        "SYS-SUP-072",
+        "SYS-SUP-073",
+        "SYS-SUP-081",
+        "SYS-SUP-086"
+      ],
+      "source": "needs/product-decisions.md: seventh round CON-SUP-131..135",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-032",
+        "SYS-SUP-059"
+      ],
+      "source": "needs/product-decisions.md: eighth round CON-SUP-136",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-015",
+        "SYS-SUP-035",
+        "SYS-SUP-049",
+        "SYS-SUP-051",
+        "SYS-SUP-061",
+        "SYS-SUP-062",
+        "SYS-SUP-063"
+      ],
+      "source": "needs/product-decisions.md: ninth round CON-SUP-137..138",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-031",
+        "SYS-SUP-043",
+        "SYS-SUP-050",
+        "SYS-SUP-059",
+        "SYS-SUP-063",
+        "SYS-SUP-074"
+      ],
+      "source": "needs/product-decisions.md: tenth round CON-SUP-139..140",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-042"
+      ],
+      "source": "needs/product-decisions.md: eleventh round CON-SUP-141",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-018",
+        "SYS-SUP-034",
+        "SYS-SUP-074",
+        "SYS-SUP-075"
+      ],
+      "source": "needs/product-decisions.md: twelfth round CON-SUP-142..144",
+      "status": "covered"
+    },
+    {
+      "reason": "The reset-cause start-up message deadline is unresolved in OP-SYS-001.",
+      "requirements": [
+        "SYS-SUP-015",
+        "SYS-SUP-016",
+        "SYS-SUP-018",
+        "SYS-SUP-020",
+        "SYS-SUP-026",
+        "SYS-SUP-034",
+        "SYS-SUP-036",
+        "SYS-SUP-037"
+      ],
+      "source": "start-up",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-001"
+    },
+    {
+      "reason": "The CON-SUP-127 timing-limit verification margins are missing; see the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004",
+        "SYS-SUP-013",
+        "SYS-SUP-014",
+        "SYS-SUP-021",
+        "SYS-SUP-022",
+        "SYS-SUP-052"
+      ],
+      "source": "normal operation",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-008"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SYS-SUP-008",
+        "SYS-SUP-049",
+        "SYS-SUP-050",
+        "SYS-SUP-057",
+        "SYS-SUP-063"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "The CON-SUP-127 timing-limit verification margins are missing; see the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-001",
+        "SYS-SUP-002",
+        "SYS-SUP-003",
+        "SYS-SUP-004",
+        "SYS-SUP-008",
+        "SYS-SUP-017",
+        "SYS-SUP-019",
+        "SYS-SUP-023",
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-039"
+      ],
+      "source": "fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-009"
+    },
+    {
+      "reason": "The reset-cause start-up message deadline is unresolved in OP-SYS-001.",
+      "requirements": [
+        "SYS-SUP-029",
+        "SYS-SUP-030",
+        "SYS-SUP-031",
+        "SYS-SUP-032",
+        "SYS-SUP-033",
+        "SYS-SUP-034",
+        "SYS-SUP-036",
+        "SYS-SUP-037",
+        "SYS-SUP-059",
+        "SYS-SUP-060",
+        "SYS-SUP-064",
+        "SYS-SUP-065",
+        "SYS-SUP-070",
+        "SYS-SUP-071"
+      ],
+      "source": "recovery or reset",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-002"
+    },
+    {
+      "reason": "The inputs describe continuous supervision, reset and a latched safe state; they specify no commanded shutdown mode.",
+      "requirements": [],
+      "source": "shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "The reset-cause start-up message deadline is unresolved in OP-SYS-001, and the timing-limit verification margins are missing as described in the SQ-10 finding.",
+      "requirements": [
+        "SYS-SUP-022",
+        "SYS-SUP-024",
+        "SYS-SUP-025",
+        "SYS-SUP-037",
+        "SYS-SUP-052",
+        "SYS-SUP-058",
+        "SYS-SUP-063",
+        "SYS-SUP-085",
+        "SYS-SUP-086",
+        "SYS-SUP-089"
+      ],
+      "source": "non-functional limits",
+      "status": "partial",
+      "tracked_by": "F-sys-req-set-r10-002"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sys-req"
+}

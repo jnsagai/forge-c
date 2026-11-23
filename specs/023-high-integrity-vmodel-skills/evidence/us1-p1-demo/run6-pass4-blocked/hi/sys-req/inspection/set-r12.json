@@ -1,0 +1,79 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-03",
+      "description": "CON-SUP-107, CON-SUP-124 and CON-SUP-129 do not establish whether the byte at __app_end is included in the CRC input. SYS-SUP-016 therefore admits different CRC inputs.",
+      "id": "F-sys-req-set-r12-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:58:44Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a product decision on the application CRC endpoint and specify the resulting range.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-016"
+    },
+    {
+      "blocked_by": "OP-SYS-005",
+      "checklist_item": "IQ-03",
+      "description": "CON-SUP-142 does not establish whether the byte at __cfg_end is included in the configuration CRC input. SYS-SUP-018 therefore admits different CRC inputs.",
+      "id": "F-sys-req-set-r12-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:58:44Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a product decision on the configuration CRC endpoint and specify the resulting range.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-018"
+    },
+    {
+      "blocked_by": "OP-SYS-005",
+      "checklist_item": "SQ-01",
+      "description": "Coverage of CON-SUP-142 is partial because the configuration CRC endpoint is ambiguous. OP-SYS-005 records the missing product decision.",
+      "id": "F-sys-req-set-r12-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:58:44Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-005 and specify the configuration CRC range.",
+      "round": 12,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 12,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

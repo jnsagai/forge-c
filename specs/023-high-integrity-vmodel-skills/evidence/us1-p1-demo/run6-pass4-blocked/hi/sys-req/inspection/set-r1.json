@@ -1,0 +1,122 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-018 leaves the configuration bytes covered by the CRC and the treatment of the stored reference undecided. CON-SUP-107 and CON-SUP-129 do not resolve them, so a verifier cannot determine the expected CRC for a configuration block.",
+      "id": "F-sys-req-set-r1-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:30:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the covered byte range, reference location and treatment of the reference bytes once the product decision is made.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-018"
+    },
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-04",
+      "description": "SYS-SUP-043 leaves fault-report priority undecided when a service answer is already being transmitted. CON-SUP-139 gives fault reports priority, and CON-SUP-112 requires a report within 10 ms; the line behavior for this case is incomplete.",
+      "id": "F-sys-req-set-r1-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:30:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the observable line behavior when a fault report becomes due during an answer, consistent with the decided priority and timing.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-043"
+    },
+    {
+      "checklist_item": "SQ-02",
+      "description": "CON-SUP-117 requires the safe-state latch to hold the safe state until power-on reset. SYS-SUP-030 and SYS-SUP-065 set the latch, but the set does not require the outputs and status to remain low while it is set or prevent task release after checks pass. SYS-SUP-026 only holds outputs low until the checks pass.",
+      "id": "F-sys-req-set-r1-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:30:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the controller's output and task-release behavior throughout the latched state, including after a software or watchdog reset, consistent with the required safe state.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-132 specifies external pull-down resistors holding the three signals low and microcontroller pins remaining inputs until software configures them. SYS-SUP-026 requires low outputs and SYS-SUP-027 requires subsequent configuration, but the set does not capture the specified board provision or pin state during that interval.",
+      "id": "F-sys-req-set-r1-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:30:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Capture the external pull-down and pre-configuration pin-state obligations, with appropriate hardware allocation and traceability to CON-SUP-132.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-112 requires fault reports within 10 ms, and CON-SUP-141 identifies the classification instant for a code 8 report. SYS-SUP-039 applies its deadline when a fault is detected, but CON-SUP-137 says a code 8 report at start-up is not a fault detection; SYS-SUP-034 requires the report without a time limit.",
+      "id": "F-sys-req-set-r1-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:30:46Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the applicable transmission deadline and timing origin for the code 8 start-up report, or record a blocking product decision if the source does not establish them.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 1,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

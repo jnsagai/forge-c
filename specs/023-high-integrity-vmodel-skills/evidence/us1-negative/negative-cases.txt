@@ -1,0 +1,48 @@
+## 0. Control: the unchanged copy seals READY
+(copy of run 5 with the current package installed, committed: 4ba24ef)
+$ python3 .claude/skills/hi-gates/scripts/hi.py seal
+{"cmd":"seal","files":69,"gaps":1,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044823Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"}]}
+exit 1
+
+## 1. Delete one trace link (SWR-SAFE-002 no longer cites SYS-SAFE-002, its only refinement)
+(copy of run 5 with the current package installed, committed: e4e20b0)
+removed SWR-SAFE-002 -> SYS-SAFE-002; remaining sources: ['SYS-SAFE-001']
+$ python3 .claude/skills/hi-gates/scripts/hi.py trace --stage sw-req
+{"cmd":"trace","gate":"trace","issues":2,"top":[{"code":"TR-SUSPECT","target_id":"SWR-SAFE-002"},{"code":"TR-UNCOVERED","target_id":"SYS-SAFE-002"}],"verdict":"FAIL","written":"hi/trace-matrix.md"}
+exit 1
+$ python3 .claude/skills/hi-gates/scripts/hi.py seal
+{"cmd":"seal","files":69,"gaps":4,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044828Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"},{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-FAIL","source":"sw-req/trace"}]}
+exit 1
+
+## 2a. A required gate that cannot run: a document source without a local index
+(copy of run 5 with the current package installed, committed: 57d8d47)
+declared RM-DEMO and cited it from SWR-SUP-001 - no 'hi doc-index' was run
+$ python3 .claude/skills/hi-gates/scripts/hi.py gate sw-req
+{"cmd":"gate","gates":{"doc-sources":"NOT_RUN","independence":"PASS","quality":"PASS","scope":"FAIL","trace":"FAIL","validate":"PASS"},"issues":2,"stage":"sw-req","top":[{"code":"TR-SUSPECT","gate":"trace","target_id":"SWR-SUP-001"},{"code":"SCOPE-OUTSIDE","gate":"scope","target_id":"docs/rm.pdf"}],"verdict":"FAIL","written":"hi/sw-req/gates/"}
+exit 1
+$ python3 .claude/skills/hi-gates/scripts/hi.py seal
+{"cmd":"seal","files":69,"gaps":5,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044833Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"},{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-NOT-RUN","source":"sw-req/doc-sources"},{"code":"GATE-FAIL","source":"sw-req/scope"}]}
+exit 1
+
+## 2b. Without poppler, building the index is NOT_RUN, never a pass
+$ env PATH=/nonexistent python3 .claude/skills/hi-gates/scripts/hi.py doc-index docs/rm.pdf --doc-id RM-DEMO
+{"cmd":"doc-index","doc_id":"RM-DEMO","not_run_reason":"poppler (pdfinfo, pdftotext) is not installed","top":[],"verdict":"NOT_RUN"}
+exit 1
+
+## 3. A write outside the author's scope
+(copy of run 5 with the current package installed, committed: b604be0)
+$ python3 .claude/skills/hi-gates/scripts/hi.py role set author sys-req
+{"cmd":"role set","role":"author","stage":"sys-req","status":"DONE","write_scope":["hi/sys-req/**"]}
+exit 0
+$ guard.py < Write src/supervisor.c   (author of sys-req may write hi/sys-req/** only)
+forge-c-hi guard: src/supervisor.c is outside the write scope of role author (sys-req): ['hi/sys-req/**']
+exit 2
+$ guard.py < Write hi/sys-req/notes.md   (inside the scope)
+exit 0
+-- bypass the hook: write the file directly
+$ python3 .claude/skills/hi-gates/scripts/hi.py scope --role author --stage sys-req
+{"cmd":"scope","gate":"scope","issues":1,"top":[{"code":"SCOPE-OUTSIDE","target_id":"src/supervisor.c"}],"verdict":"FAIL","written":"hi/sys-req/gates/scope.json"}
+exit 1
+$ python3 .claude/skills/hi-gates/scripts/hi.py role clear
+{"cleared":true,"cmd":"role clear","status":"DONE"}
+exit 0

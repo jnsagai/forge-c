@@ -1,0 +1,84 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-09",
+      "description": "The requirement reports STARTUP from any reset until the start-up checks pass, even if a fault is detected during start-up or the latch is set. SYS-SUP-068 and SYS-SUP-069 require SAFE and LATCHED respectively in those cases; CON-SUP-130 gives LATCHED priority.",
+      "id": "F-sys-req-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:29:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the start-up reporting condition and state precedence consistently with CON-SUP-130 and the other state requirements.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-046"
+    },
+    {
+      "checklist_item": "IQ-02",
+      "description": "The requirement clears a code's count after 60 s of OPERATIONAL time since that code's most recent detection. CON-SUP-140 requires 60 s of fault-free operation, so a detection of a different code during that interval prevents it from being fault-free. CON-SUP-136 also permits bounded under-counting, whereas the requirement demands clearing exactly when 60 s have accumulated.",
+      "id": "F-sys-req-item-r3-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:29:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define clearing using the fault-free interval and the permitted bounded under-count in CON-SUP-135, CON-SUP-136 and CON-SUP-140.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-059"
+    },
+    {
+      "checklist_item": "IQ-08",
+      "description": "The requirement mandates carrying a running CRC value from each segment to the next. CON-SUP-108 requires segmented processing and CON-SUP-129 defines the resulting CRC, but neither requires that intermediate computation method; the same whole-range result could be obtained by another method.",
+      "id": "F-sys-req-item-r3-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:29:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the required whole-range CRC outcome without prescribing intermediate CRC state, or provide an approved source for the computation method.",
+      "round": 3,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-066"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-021",
+    "SYS-SUP-046",
+    "SYS-SUP-059",
+    "SYS-SUP-066",
+    "SYS-SUP-067",
+    "SYS-SUP-068",
+    "SYS-SUP-069"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

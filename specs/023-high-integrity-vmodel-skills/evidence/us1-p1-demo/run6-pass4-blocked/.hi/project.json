@@ -1,0 +1,63 @@
+{
+  "entry_stage": "sys-req",
+  "input_class": "natural_language",
+  "inputs": [
+    {
+      "kind": "needs",
+      "path": "needs/stakeholder-needs.md"
+    },
+    {
+      "kind": "constraints",
+      "path": "needs/constraints.md"
+    },
+    {
+      "kind": "constraints",
+      "path": "needs/product-decisions.md"
+    }
+  ],
+  "integrity_level": "HI-2",
+  "profile": "generic",
+  "project_id": "safety-supervisor",
+  "roles": {
+    "author": {
+      "command": [
+        "claude",
+        "-p",
+        "--permission-mode",
+        "acceptEdits",
+        "--allowedTools",
+        "Read,Grep,Glob,Write,Edit",
+        "--model",
+        "sonnet"
+      ],
+      "harness": "claude-code",
+      "model": "sonnet",
+      "model_family": "claude",
+      "read_only": false
+    },
+    "inspector": {
+      "command": [
+        "codex",
+        "exec",
+        "-s",
+        "read-only",
+        "--skip-git-repo-check",
+        "-m",
+        "gpt-6.1-terra"
+      ],
+      "harness": "codex",
+      "model": "gpt-6.1-terra",
+      "model_family": "gpt",
+      "read_only": true
+    }
+  },
+  "schema": "forge-c-hi/project@1",
+  "stages": [
+    "sys-req",
+    "sw-req"
+  ],
+  "trace_capture": {
+    "events": "standard",
+    "raw_prompts": false
+  }
+}

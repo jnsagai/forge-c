@@ -1,0 +1,59 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-06",
+      "description": "The requirement specifies the result at exactly the start limit, but its cited verification constraint CON-SUP-127 calls for test margins of at least 200 µs on either side of the limit. A test using those margins does not establish the behavior at equality.",
+      "id": "F-sys-req-item-r12-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:04:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050216Z-7f98fb",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve with the product owner how equality is to be verified while satisfying CON-SUP-127, and record the resulting verification conditions or open point.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "checklist_item": "IQ-06",
+      "description": "The requirement specifies the result at exactly the execution limit, but its cited verification constraint CON-SUP-127 calls for test margins of at least 200 µs on either side of the limit. A test using those margins does not establish the behavior at equality.",
+      "id": "F-sys-req-item-r12-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:04:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050216Z-7f98fb",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve with the product owner how equality is to be verified while satisfying CON-SUP-127, and record the resulting verification conditions or open point.",
+      "round": 12,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-092"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-005",
+    "SYS-SUP-056",
+    "SYS-SUP-092",
+    "SYS-SUP-093"
+  ],
+  "phase": "item",
+  "round": 12,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

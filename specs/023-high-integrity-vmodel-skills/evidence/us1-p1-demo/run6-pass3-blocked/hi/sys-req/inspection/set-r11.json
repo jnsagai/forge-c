@@ -1,0 +1,99 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-03",
+      "description": "CON-SUP-107, CON-SUP-124 and CON-SUP-129 do not establish whether the byte at __app_end is included in the CRC input. SYS-SUP-016 therefore admits different CRC inputs.",
+      "id": "F-sys-req-set-r11-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:56:38Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-004 and specify the program-code CRC range endpoints.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-016"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "CON-SUP-142 defines the configuration CRC range using __cfg_start and __cfg_end but does not establish whether the byte at __cfg_end is included. SYS-SUP-018 therefore admits different CRC inputs. OP-SYS-004 addresses the application range, not the configuration range.",
+      "id": "F-sys-req-set-r11-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:56:38Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Record a blocking open point for the configuration-range endpoint and specify the endpoint after the product decision.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-018"
+    },
+    {
+      "checklist_item": "SQ-10",
+      "description": "CON-SUP-127 specifies verification margins of at least 200 µs on either side of a timing limit. SYS-SUP-002, SYS-SUP-003, SYS-SUP-005 and SYS-SUP-056 state the timing behavior, but the set does not record those verification margins.",
+      "id": "F-sys-req-set-r11-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:56:38Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Record the specified margins as verification intent for the applicable timing limits.",
+      "round": 11,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: needs/product-decisions.md: twelfth round CON-SUP-142..144 - The configuration CRC end address is ambiguous; see the SYS-SUP-018 finding.",
+      "id": "F-sys-req-set-r11-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:56:38Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover needs/product-decisions.md: twelfth round CON-SUP-142..144 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 11,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 11,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

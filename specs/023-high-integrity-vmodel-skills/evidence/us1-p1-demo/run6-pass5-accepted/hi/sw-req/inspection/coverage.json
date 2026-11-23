@@ -1,0 +1,864 @@
+{
+  "adjusted": [],
+  "provided": true,
+  "round": 2,
+  "rows": [
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-ALV-001"
+      ],
+      "source": "SYS-SUP-001",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-001"
+      ],
+      "source": "SYS-SUP-002",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-002"
+      ],
+      "source": "SYS-SUP-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-FLW-001"
+      ],
+      "source": "SYS-SUP-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-003"
+      ],
+      "source": "SYS-SUP-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-001"
+      ],
+      "source": "SYS-SUP-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-007"
+      ],
+      "source": "SYS-SUP-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-008"
+      ],
+      "source": "SYS-SUP-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-ALV-002"
+      ],
+      "source": "SYS-SUP-009",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-001"
+      ],
+      "source": "SYS-SUP-010",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-002"
+      ],
+      "source": "SYS-SUP-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-003",
+        "SWR-WDG-007",
+        "SWR-WDG-008",
+        "SWR-WDG-009",
+        "SWR-WDG-010",
+        "SWR-WDG-011",
+        "SWR-WDG-012"
+      ],
+      "source": "SYS-SUP-012",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-004",
+        "SWR-WDG-008",
+        "SWR-WDG-011",
+        "SWR-WDG-012"
+      ],
+      "source": "SYS-SUP-013",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-005"
+      ],
+      "source": "SYS-SUP-014",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-WDG-006",
+        "SWR-WDG-007",
+        "SWR-WDG-008",
+        "SWR-WDG-009",
+        "SWR-WDG-010",
+        "SWR-WDG-011",
+        "SWR-WDG-012"
+      ],
+      "source": "SYS-SUP-015",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-001"
+      ],
+      "source": "SYS-SUP-016",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-002"
+      ],
+      "source": "SYS-SUP-017",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-003"
+      ],
+      "source": "SYS-SUP-018",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-004"
+      ],
+      "source": "SYS-SUP-019",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-005"
+      ],
+      "source": "SYS-SUP-020",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-006"
+      ],
+      "source": "SYS-SUP-021",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-008"
+      ],
+      "source": "SYS-SUP-022",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-009"
+      ],
+      "source": "SYS-SUP-023",
+      "status": "covered"
+    },
+    {
+      "reason": "The software pin deadline supports the allocated software share; the output-stage delay is allocated to hardware.",
+      "requirements": [
+        "SWR-SAF-001"
+      ],
+      "source": "SYS-SUP-024",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-001"
+      ],
+      "source": "SYS-SUP-025",
+      "status": "covered"
+    },
+    {
+      "reason": "The software share begins when the pins are configured; the preceding low level is supplied by the hardware pull-downs.",
+      "requirements": [
+        "SWR-SAF-002",
+        "SWR-SAF-003",
+        "SWR-SAF-007"
+      ],
+      "source": "SYS-SUP-026",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-003"
+      ],
+      "source": "SYS-SUP-027",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-004"
+      ],
+      "source": "SYS-SUP-028",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-001"
+      ],
+      "source": "SYS-SUP-029",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-002"
+      ],
+      "source": "SYS-SUP-030",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-005"
+      ],
+      "source": "SYS-SUP-031",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-006"
+      ],
+      "source": "SYS-SUP-032",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-007",
+        "SWR-LAT-013",
+        "SWR-LAT-014"
+      ],
+      "source": "SYS-SUP-033",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-RST-003"
+      ],
+      "source": "SYS-SUP-034",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-012"
+      ],
+      "source": "SYS-SUP-035",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-RST-001"
+      ],
+      "source": "SYS-SUP-036",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-RST-002"
+      ],
+      "source": "SYS-SUP-037",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-001"
+      ],
+      "source": "SYS-SUP-038",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-001"
+      ],
+      "source": "SYS-SUP-039",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-002",
+        "SWR-DIA-008",
+        "SWR-DIA-009",
+        "SWR-DIA-010",
+        "SWR-DIA-011",
+        "SWR-DIA-012",
+        "SWR-DIA-013",
+        "SWR-DIA-014",
+        "SWR-DIA-015"
+      ],
+      "source": "SYS-SUP-040",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-FLW-002"
+      ],
+      "source": "SYS-SUP-041",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-003"
+      ],
+      "source": "SYS-SUP-042",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-004"
+      ],
+      "source": "SYS-SUP-043",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-007"
+      ],
+      "source": "SYS-SUP-044",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-002"
+      ],
+      "source": "SYS-SUP-045",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-003"
+      ],
+      "source": "SYS-SUP-046",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-007"
+      ],
+      "source": "SYS-SUP-047",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-008",
+        "SWR-SVC-014"
+      ],
+      "source": "SYS-SUP-048",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-011"
+      ],
+      "source": "SYS-SUP-049",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-012"
+      ],
+      "source": "SYS-SUP-050",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-013"
+      ],
+      "source": "SYS-SUP-051",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-RES-001"
+      ],
+      "source": "SYS-SUP-052",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TST-001"
+      ],
+      "source": "SYS-SUP-053",
+      "status": "covered"
+    },
+    {
+      "reason": "SWR-TST-002 covers all system requirements allocated to software with test or demonstration methods. The two hardware-only requirements in the current system set use inspection and analysis.",
+      "requirements": [
+        "SWR-TST-002"
+      ],
+      "source": "SYS-SUP-054",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TST-003"
+      ],
+      "source": "SYS-SUP-055",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-001"
+      ],
+      "source": "SYS-SUP-056",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-009"
+      ],
+      "source": "SYS-SUP-057",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-011"
+      ],
+      "source": "SYS-SUP-058",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-008"
+      ],
+      "source": "SYS-SUP-059",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-009"
+      ],
+      "source": "SYS-SUP-060",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-010"
+      ],
+      "source": "SYS-SUP-061",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-011"
+      ],
+      "source": "SYS-SUP-062",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-014"
+      ],
+      "source": "SYS-SUP-063",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-003"
+      ],
+      "source": "SYS-SUP-064",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-004"
+      ],
+      "source": "SYS-SUP-065",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-007"
+      ],
+      "source": "SYS-SUP-066",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-004"
+      ],
+      "source": "SYS-SUP-067",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-005"
+      ],
+      "source": "SYS-SUP-068",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-006"
+      ],
+      "source": "SYS-SUP-069",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-005"
+      ],
+      "source": "SYS-SUP-070",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-006"
+      ],
+      "source": "SYS-SUP-071",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SAF-007"
+      ],
+      "source": "SYS-SUP-073",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-005"
+      ],
+      "source": "SYS-SUP-074",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-DIA-006"
+      ],
+      "source": "SYS-SUP-075",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-002"
+      ],
+      "source": "SYS-SUP-076",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-003"
+      ],
+      "source": "SYS-SUP-077",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-004"
+      ],
+      "source": "SYS-SUP-078",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-005"
+      ],
+      "source": "SYS-SUP-079",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-006"
+      ],
+      "source": "SYS-SUP-080",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-009"
+      ],
+      "source": "SYS-SUP-081",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-SVC-010"
+      ],
+      "source": "SYS-SUP-082",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-PLT-001"
+      ],
+      "source": "SYS-SUP-083",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-PLT-002"
+      ],
+      "source": "SYS-SUP-084",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-005"
+      ],
+      "source": "SYS-SUP-085",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-PLT-003"
+      ],
+      "source": "SYS-SUP-087",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-PLT-004"
+      ],
+      "source": "SYS-SUP-088",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-010"
+      ],
+      "source": "SYS-SUP-089",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-RST-004"
+      ],
+      "source": "SYS-SUP-090",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-006"
+      ],
+      "source": "SYS-SUP-091",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-004"
+      ],
+      "source": "SYS-SUP-092",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-002"
+      ],
+      "source": "SYS-SUP-093",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CHK-001",
+        "SWR-CHK-003",
+        "SWR-CHK-005",
+        "SWR-SAF-002",
+        "SWR-SAF-003",
+        "SWR-WDG-006",
+        "SWR-WDG-007",
+        "SWR-WDG-009",
+        "SWR-WDG-010",
+        "SWR-WDG-011",
+        "SWR-WDG-012"
+      ],
+      "source": "start-up",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-ALV-001",
+        "SWR-TIM-001",
+        "SWR-TIM-002",
+        "SWR-FLW-001",
+        "SWR-CHK-006",
+        "SWR-CHK-007",
+        "SWR-WDG-004",
+        "SWR-WDG-005"
+      ],
+      "source": "normal operation",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-CFG-008",
+        "SWR-SVC-011",
+        "SWR-SVC-012"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-ALV-001",
+        "SWR-TIM-001",
+        "SWR-TIM-002",
+        "SWR-FLW-001",
+        "SWR-CHK-002",
+        "SWR-CHK-004",
+        "SWR-CHK-009",
+        "SWR-CFG-008",
+        "SWR-WDG-001",
+        "SWR-SAF-001",
+        "SWR-DIA-001"
+      ],
+      "source": "fault detection and reaction",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-LAT-001",
+        "SWR-LAT-002",
+        "SWR-LAT-003",
+        "SWR-LAT-004",
+        "SWR-LAT-008",
+        "SWR-LAT-009",
+        "SWR-RST-001",
+        "SWR-RST-002",
+        "SWR-RST-003"
+      ],
+      "source": "recovery and reset",
+      "status": "covered"
+    },
+    {
+      "reason": "The supplied inputs specify reset and a latched safe state, but no separate software shutdown mode.",
+      "requirements": [],
+      "source": "shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "SWR-TIM-005",
+        "SWR-TIM-006",
+        "SWR-WDG-002",
+        "SWR-WDG-003",
+        "SWR-CHK-008",
+        "SWR-CHK-010",
+        "SWR-CHK-011",
+        "SWR-SAF-001",
+        "SWR-RES-001"
+      ],
+      "source": "limits",
+      "status": "covered"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-req"
+}

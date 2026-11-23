@@ -1,0 +1,54 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SQ-10",
+      "description": "CON-SUP-127 and CON-SUP-147 require timing-limit tests to use margins of at least 200 µs on either side of a limit. The set records test methods for SYS-SUP-002, SYS-SUP-003, SYS-SUP-056 and SYS-SUP-093 but does not record that verification constraint.",
+      "id": "F-sys-req-set-r15-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:12:16Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050738Z-f2eb81",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Record the required timing-test margins in the verification intent for the affected requirements.",
+      "round": 15,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-05",
+      "description": "SYS-SUP-054 says every system requirement can be verified on the simulator or by host unit tests, while SYS-SUP-072 requires inspection of board pull-down resistors and SYS-SUP-086 specifies analysis of the board output-stage timing. Those verification approaches are not established as simulator or host unit tests.",
+      "id": "F-sys-req-set-r15-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:12:16Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050738Z-f2eb81",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the simulator verification claim with the specified verification methods and the scope supported by CON-SUP-005 and STK-SUP-015.",
+      "round": 15,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-054"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 15,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

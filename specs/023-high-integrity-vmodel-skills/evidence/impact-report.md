@@ -26,6 +26,7 @@ Metric: deterministic quality-rule violations per 100 requirements (`hi quality 
 | with package, run 2 | Claude / GPT default | + decisions | 90 | 1.1 | 100 % |
 | with package, run 4 | Sonnet / Terra | + decisions | 58 | 0.0 | 100 % |
 | **with package, run 5** (result of record) | **Sonnet / Terra** | **+ decisions** | 85 | **0.0** | 100 % |
+| with package, run 6 (governance step) | Sonnet / Terra | + decisions | 93 | 0.0 | 100 % |
 
 - **Target:** with the package, at most 50 % of the baseline. **Result:** 0.0 against 38.2 on the same model.
 - **Baseline 3's violations:**
@@ -131,11 +132,11 @@ or dangling link would have blocked them.
 ## 6. Run 6 (governance step, T087)
 
 Run 6 repeats the demo on a clean project with the governance step added (FR-030).
-- **Governance package:** written in 24 s, with 6 actors and 12 use cases covering all 15 needs. No coverage issue on
-  the first check.
-- **Pass 1 (system requirements):**
-  - item findings fell 17 → 5 → 3 → 0 over four rounds;
-  - every gate passed;
-  - the stage was BLOCKED only by three findings that wait on three new product questions.
-- **Decision round 12** answers those questions (CON-SUP-142..144).
-- **Pass 2** runs on the current package, which adds the coverage matrix (T089).
+- **Governance package:** written in 24 s, with 6 actors and 12 use cases covering all 15 needs, and no coverage
+  issue on the first check. Over 5 passes the inspector raised 4 more rounds of product questions (decisions 12–15),
+  each a real gap in the fictional inputs.
+- **Result:** both stages ACCEPTED, with 93 system and 104 software requirements and 0.0 rule violations per 100.
+  Sealed READY with 81 files and 0 gaps, and verified (`us5-seal/run6/`).
+- **Cost:** 109 model calls, 27 min author and 33 min inspector time.
+- **Coverage matrix:** in its last set round the inspector reported 87 coverage rows: 79 covered, 6 partial (each
+  tracked by a finding or an open point), and 2 n/a with a reason.

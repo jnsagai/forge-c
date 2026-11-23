@@ -1,0 +1,38 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-03",
+      "description": "The CRC range is stated as from __app_start to __app_end, but CON-SUP-107, CON-SUP-124 and CON-SUP-129 do not say whether the byte at __app_end is included. The two interpretations produce different CRC inputs, so the requirement cannot be verified consistently.",
+      "id": "F-sys-req-item-r10-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:55:03Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T045222Z-f90e57",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Once the product owner decides, specify whether the byte at __app_end is included in the checked range.",
+      "round": 10,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-016"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-016",
+    "SYS-SUP-029",
+    "SYS-SUP-085",
+    "SYS-SUP-091"
+  ],
+  "phase": "item",
+  "round": 10,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

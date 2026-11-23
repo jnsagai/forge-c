@@ -1,0 +1,2658 @@
+{
+  "baseline_id": "SYS-BL-1",
+  "items": [
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-001",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-102",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-101",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a supervised task has not completed an execution for 2 consecutive periods of its own, the controller shall detect an alive fault (fault code 1) for that task.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-002",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-128",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-127",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a supervised task has not started when its configured start limit after its release has expired (a start delay equal to the limit being within the limit), the controller shall detect a late start fault (fault code 2) for that task no later than 100 µs after the start limit expires.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-003",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-127",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a supervised task is still executing after its configured execution limit has expired (an execution time equal to the limit being within the limit), the controller shall detect an overrun fault (fault code 3) for that task no later than 100 µs after the execution limit expires.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-004",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-104",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At the end of each control cycle, when the checkpoints of the tasks released in that cycle are missing or have not arrived in the configured release order, the controller shall detect a program flow fault (fault code 4).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-005",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-127",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall treat a measured start delay or execution time equal to its configured limit as within the limit.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-002"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-006",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-101",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The default configuration shall define exactly four supervised tasks: the 10 ms tasks T_IN, T_CTRL and T_OUT, and the 100 ms task T_DIAG.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-002"]},
+      "derived": false,
+      "id": "SYS-SUP-076",
+      "level": "system",
+      "sources": [{"id": "CON-SUP-101", "kind": "upstream"}, {"id": "STK-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The default configuration shall define the release order of the 10 ms tasks in each 10 ms period as T_IN, then T_CTRL, then T_OUT.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-002"]},
+      "derived": false,
+      "id": "SYS-SUP-077",
+      "level": "system",
+      "sources": [{"id": "CON-SUP-101", "kind": "upstream"}, {"id": "STK-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The default configuration shall define the release of T_DIAG after T_OUT in every tenth 10 ms period.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-002"]},
+      "derived": false,
+      "id": "SYS-SUP-078",
+      "level": "system",
+      "sources": [{"id": "CON-SUP-103", "kind": "upstream"}, {"id": "STK-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The default configuration shall define a start limit of 2 ms after release for each of T_IN, T_CTRL, T_OUT and T_DIAG.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-002"]},
+      "derived": false,
+      "id": "SYS-SUP-079",
+      "level": "system",
+      "sources": [{"id": "CON-SUP-103", "kind": "upstream"}, {"id": "STK-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The default configuration shall define an execution limit of 3 ms for each of T_IN, T_CTRL and T_OUT.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-002"]},
+      "derived": false,
+      "id": "SYS-SUP-080",
+      "level": "system",
+      "sources": [{"id": "CON-SUP-103", "kind": "upstream"}, {"id": "STK-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The default configuration shall define an execution limit of 20 ms for T_DIAG.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-002"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-007",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall take the set of supervised tasks and their periods, timing limits and release order from configuration data, so that a change of any of them requires no change to the supervisor code.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-002",
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-008",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-115",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-119",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When, at start-up, a configuration value is outside its allowed range (a timing limit longer than its task period, a zero period or an unknown task), the controller shall detect a configuration fault (fault code 9, entity CONFIG).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001",
+          "UC-SUP-004"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-009",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-102",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-001",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall start alive supervision when the start-up integrity checks have passed.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-010",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-121",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From the instant a fault is detected, the controller shall not service the independent watchdog or the window watchdog until the next reset.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-011",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall use an independent watchdog, running from its own clock, with a timeout of 100 ms.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-012",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-006",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall use a window watchdog that causes a reset when a refresh arrives earlier than 6 ms or later than 12 ms after the previous refresh.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-013",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While every supervised task is healthy and no fault has been detected since the last reset, the controller shall refresh the window watchdog once at the end of each control cycle.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-014",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-106",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While every supervised task is healthy and no fault has been detected since the last reset, the controller shall service the independent watchdog so that no independent watchdog reset occurs.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-003",
+          "UC-SUP-004"
+        ]
+      },
+      "derived": true,
+      "id": "SYS-SUP-015",
+      "level": "system",
+      "rationale": "The start-up integrity checks over an image of up to 1 MiB run before any task is released and can take longer than the 100 ms independent watchdog timeout; CON-SUP-137 states that watchdog servicing continues during start-up. The mechanism is left to sw-req (OP-SYS-002).",
+      "sources": [
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "During a start-up in which no fault is detected, the controller shall prevent any independent watchdog reset and any window watchdog reset.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-016",
+      "level": "system",
+      "rationale": "Reworked for F-sys-req-set-r6-002: CON-SUP-124 places the reference word outside the checked range, now stated in the text.",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-124",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-129",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up before any task is released, the controller shall compute the CRC-32/MPEG-2 (polynomial 0x04C11DB7, initial value 0xFFFFFFFF, no reflection, no final XOR) over the program code from linker symbol __app_start to __app_end, taken in increasing address order, and compare it with the 32 bit little-endian reference word stored at linker symbol __app_crc, outside the range __app_start to __app_end.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004",
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-017",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-105",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the start-up program code check finds that the computed CRC-32 differs from the stored reference, the controller shall detect a code integrity fault at start-up (fault code 5, entity CODE).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-018",
+      "level": "system",
+      "rationale": "CON-SUP-107 and CON-SUP-129 give the algorithm and the reference format; CON-SUP-142 (decision round 12) gives the checked range __cfg_start..__cfg_end and the reference location __cfg_crc outside that range, which closes the former OP-SYS-003.",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-129",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-142",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At start-up before any task is released, the controller shall compute the CRC-32/MPEG-2 (polynomial 0x04C11DB7, initial value 0xFFFFFFFF, no reflection, no final XOR) over the configuration data block from linker symbol __cfg_start to __cfg_end, taken in increasing address order, and compare it with the 32 bit little-endian reference word stored at linker symbol __cfg_crc, outside the range __cfg_start to __cfg_end.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004",
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-019",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the start-up configuration check finds that the computed CRC-32 differs from the stored one, the controller shall detect a configuration integrity fault (fault code 6, entity CONFIG).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-020",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall not release any supervised task until both start-up integrity checks have passed.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-005"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-021",
+      "level": "system",
+      "rationale": "CON-SUP-107 allows an image of at most 1 MiB without requiring a multiple of 1 KiB; CON-SUP-124 and CON-SUP-107 define the checked range as __app_start..__app_end, so the final segment is shortened to the range end rather than padded with bytes outside the range. Reworked for F-sys-req-item-r2-002: this item now states the segment progression over the range; the running CRC across segments that yields the full-image CRC is SYS-SUP-066, and its comparison is SYS-SUP-023.",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-129",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the application runs, the controller shall process the range __app_start to __app_end one segment per control cycle in increasing address order, the first segment of a pass starting at __app_start, each later segment starting at the byte after the end of the previous segment, the first segment of the next pass following the last segment of the previous pass, and each segment being 1 KiB long except the last segment of an image whose length is not a multiple of 1 KiB, which contains only the remaining bytes and no byte outside the range.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-005"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-066",
+      "level": "system",
+      "rationale": "Split from SYS-SUP-021 for F-sys-req-item-r2-002. CON-SUP-108 gives one segment per cycle and CON-SUP-129 gives a CRC-32/MPEG-2 over the bytes in increasing address order; the full-image CRC compared by SYS-SUP-023 is therefore one CRC over the whole range per pass, not independent per-segment CRCs. Reworked for F-sys-req-item-r3-003: the requirement now states only the required whole-range outcome; how intermediate CRC state is carried between segments is not prescribed because no input requires a particular method.",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-129",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the application runs, the controller shall, at the end of each run-time pass over all segments, have determined the CRC-32/MPEG-2 value, with initial value 0xFFFFFFFF and bytes taken in increasing address order, of the whole range __app_start to __app_end, as one value over the whole range and not as separate values per segment.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-005",
+          "UC-SUP-011"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-022",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The run-time program code check shall use at most 0.5 ms of processor time in each control cycle.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-005",
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-023",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-105",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a completed run-time pass over the program code yields a CRC-32 that differs from the stored reference, the controller shall detect a run-time code integrity fault (fault code 7, entity CODE).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-024",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-105",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-120",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault of fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6, fault code 7 or fault code 9 is detected, the controller shall enter the safe state, with both control outputs driven low and the status signal low (not operational), within 50 ms of the instant the fault becomes detectable.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-006"
+        ]
+      },
+      "derived": true,
+      "id": "SYS-SUP-025",
+      "level": "system",
+      "rationale": "The board output stage takes at most 1 ms from pin change to output level (CON-SUP-133), so the 50 ms reaction budget leaves 49 ms to the software.",
+      "sources": [
+        {
+          "id": "CON-SUP-133",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-105",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault of fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6, fault code 7 or fault code 9 is detected, the controller software shall have changed the control output pins and the status signal pin to the low level within 49 ms of the instant the fault becomes detectable.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-026",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-132",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-121",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From any reset until the start-up integrity checks have passed, the controller shall hold both control outputs and the status signal low.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-027",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-132",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After a reset, the controller software shall configure the two control outputs and the status signal as outputs driven low before any other start-up step.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-028",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-109",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the start-up integrity checks have passed, no fault has been detected since the last reset and the safe-state latch is not set, the controller shall drive the status signal high (operational).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-029",
+      "level": "system",
+      "rationale": "Scope limited to fault codes 1 to 7 (gate fix IQ-05/IQ-11): code 9 latches at start-up without a reset request (CON-SUP-115, SYS-SUP-057); a code 8 start-up report is not a fault detection per CON-SUP-137, enters no safe state per CON-SUP-130 and requests no reset (SYS-SUP-065).",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-115",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-120",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault with fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6 or fault code 7 is detected as the first or second detection of that fault code counted since its detection count was last zero (SYS-SUP-059), the controller shall request a software reset within 20 ms after the later of the completion of the fault report and the entry into the safe state.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-030",
+      "level": "system",
+      "rationale": "Reworked for F-sys-req-item-r1-007 and F-sys-req-item-r1-008. This item now states only the latch obligation for codes 1 to 7. Safe-state entry on every detection is SYS-SUP-024, the fault report is SYS-SUP-039, the suppression of the reset is SYS-SUP-064, retention across resets is SYS-SUP-033 and clearing at power-on reset is SYS-SUP-060. Code 9 latches at its first detection (CON-SUP-115, SYS-SUP-057) and is not counted to three. Code 8 is SYS-SUP-065.",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-140",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault with fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6 or fault code 7 is detected as the third detection of that fault code counted since its detection count was last zero (SYS-SUP-059), the controller shall set the safe-state latch, which holds until the next power-on reset.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-064",
+      "level": "system",
+      "rationale": "Split from SYS-SUP-030 (F-sys-req-item-r1-008): CON-SUP-117 states that the third detection requests no reset, in contrast to the first and second detections handled by SYS-SUP-029.",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault with fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6 or fault code 7 is detected as the third detection of that fault code counted since its detection count was last zero (SYS-SUP-059), the controller shall not request a software reset.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-065",
+      "level": "system",
+      "rationale": "Split from SYS-SUP-030 for F-sys-req-item-r1-007. CON-SUP-130 and CON-SUP-137 say a code 8 start-up report counts toward the latch rule of CON-SUP-117 but does not by itself enter the safe state (SYS-SUP-061) and start-up continues (SYS-SUP-062); the first and second code 8 detections therefore only count (SYS-SUP-035) and only the third sets the latch, which then reports LATCHED (SYS-SUP-046). Whether a code 8 report that sets the latch also requests no reset is not needed here because a code 8 report requests no reset (SYS-SUP-029).",
+      "sources": [
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-140",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault code 8 report is made at start-up and it is the third detection of fault code 8 counted since the detection count of fault code 8 was last zero (SYS-SUP-059), the controller shall set the safe-state latch, which holds until the next power-on reset.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-031",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-140",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-135",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall keep a separate detection count for each fault code, so that a detection of a different code neither resets nor advances it.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-032",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-135",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-136",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall count fault-free operating time only while in the OPERATIONAL state, with an under-count of at most 10 ms per reset and at most 100 µs per update, and never with an over-count.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-033",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall retain the safe-state latch, the per-code detection counts and the fault history across software resets and watchdog resets.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007",
+          "UC-SUP-008",
+          "UC-SUP-009"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-034",
+      "level": "system",
+      "rationale": "CON-SUP-144 (decision round 12) sets the 10 ms transmission deadline from the instant start-up classified the reset cause (CON-SUP-141), which closes the former OP-SYS-005. Earlier rework for F-sys-req-set-r3-004:the code 8 report uses the FLT line format and line feed termination of CON-SUP-112; it is a report of a reset that already happened, not a fault detection (CON-SUP-137), so SYS-SUP-039 (reports of detected faults) does not govern it and the 10 ms limit of detection reports is not applied to it.",
+      "sources": [
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-119",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-121",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-144",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-141",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When, at start-up, the reset cause is classified as an independent watchdog reset or a window watchdog reset, the controller shall report fault code 8 with the entity IWDG or WWDG respectively as a fault report line FLT,<code>,<entity>,<ms since start> terminated by a line feed on the diagnostic serial line within 10 ms of the instant start-up classified the reset cause, including for a watchdog reset that interrupted the handling of an earlier fault.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-035",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault code 8 report is made at start-up, the controller shall count it as a detection of code 8 toward the latch rule.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-008"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-036",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-003",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After any reset, the controller shall classify the reset cause at start-up from the reset flags as power-on, independent watchdog, window watchdog, supervisor (software) reset or other.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-008"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-037",
+      "level": "system",
+      "rationale": "CON-SUP-111 gives no deadline or format for the start-up message of power-on, supervisor (software) and other resets; the requirement is verifiable as written (the cause is observable on the line) and the missing deadline (and format) is recorded as the blocking open point OP-SYS-001, because a deadline is an acceptance limit that needs a product decision. The 10 ms deadline of CON-SUP-144 applies only to the code 8 report (SYS-SUP-034).",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "After classifying the reset cause, the controller shall send the reset cause in a start-up message on the diagnostic serial line.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-008",
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-038",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-011",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-118",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-111",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the service request GET RESET is received while no answer is being transmitted, the controller shall answer RST,<cause> with <cause> one of POR, IWDG, WWDG, SW or OTHER, naming the class of the latest reset, within 50 ms measured from receipt of the terminating line feed, extended by the transmission time of the fault reports sent between the request and its answer.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-009"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-039",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-120",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-121",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-119",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault is detected, the controller shall transmit on the diagnostic serial line the fault report FLT,<code>,<entity>,<ms since start> terminated by a line feed within 10 ms of the detection, except for a fault interrupted by a watchdog reset before its report and safe-state entry have completed, for which no report is required and only the code 8 report at the next start-up applies.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-009"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-040",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-112",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-119",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall use in a fault report fault code 1 for alive, fault code 2 for late start, fault code 3 for overrun, fault code 4 for flow, fault code 5 for code integrity at start-up, fault code 6 for configuration integrity, fault code 7 for code integrity at run time, fault code 8 for watchdog reset and fault code 9 for configuration out of range, with the entity being the task name for fault code 1, fault code 2 and fault code 3, CODE for fault code 5 and fault code 7, and CONFIG for fault code 6 and fault code 9.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001",
+          "UC-SUP-009"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-041",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-003",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-122",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-123",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "For a program flow fault (code 4), the controller shall send one fault report per control cycle, with the entity being the task expected at the first position at which the received checkpoint differs from the configured release order or is missing.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-009"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-042",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-126",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-131",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-141",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall give <ms since start> in a fault report as an unsigned 32 bit decimal number of milliseconds since the latest reset of any kind, wrapping to 0 ms after 4294967295 ms, taken at the instant of detection of the fault, and for fault code 8 at the instant start-up classified the reset cause.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-009",
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-043",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault report is due for transmission after a service request has been received and before the first character of its answer has been transmitted, the controller shall transmit the fault report line on the diagnostic serial line before the first character of that answer.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": ["software"],
+        "safety_relevant": true,
+        "use_cases": ["UC-SUP-009", "UC-SUP-010"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-074",
+      "level": "system",
+      "rationale": "Added for CON-SUP-143 (decision round 12), which closes the former OP-SYS-004: the fault report waits only for the line feed of the answer line in transmission and never interrupts a line.",
+      "sources": [
+        {"id": "CON-SUP-143", "kind": "upstream"},
+        {"id": "CON-SUP-139", "kind": "upstream"},
+        {"id": "STK-SUP-012", "kind": "upstream"},
+        {"id": "STK-SUP-013", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "When a fault report is due for transmission while a line of an answer is being transmitted, the controller shall transmit the fault report line on the diagnostic serial line after the line feed of the answer line in transmission and before any further line of that answer, without interrupting the line in transmission.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": ["software"],
+        "safety_relevant": false,
+        "use_cases": ["UC-SUP-010"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-075",
+      "level": "system",
+      "rationale": "Added for CON-SUP-143 (decision round 12): the 40 character limit keeps the wait of SYS-SUP-074 at 3.5 ms at 115200 baud, within the 10 ms of CON-SUP-112.",
+      "sources": [
+        {"id": "CON-SUP-143", "kind": "upstream"},
+        {"id": "CON-SUP-112", "kind": "upstream"},
+        {"id": "STK-SUP-013", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "The controller shall limit each line of an answer to a service request to at most 40 characters including the terminating line feed.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-009",
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-044",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-012",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall use the diagnostic serial line at 115200 baud, 8 data bits, no parity and 1 stop bit.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-045",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the service request GET STATUS is received while no answer is being transmitted, the controller shall answer STS,<state>,<fault count> within 50 ms, measured from the instant the terminating line feed is received to the end of the last character of the answer, extended by the transmission time of the fault reports sent between the request and its answer.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-046",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-125",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From any reset until the start-up checks pass, while no fault has been detected since that reset and the safe-state latch is not set, the controller shall report <state> as STARTUP (a detected fault is reported as SAFE per SYS-SUP-068 and a set latch as LATCHED per SYS-SUP-069, which takes priority per CON-SUP-130); a code 8 report at start-up does not by itself cause SAFE and leaves the reported state at STARTUP (counting of that report toward the latch rule is covered by SYS-SUP-035).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-067",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-125",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the controller is supervising with the start-up checks passed, no fault detected since the last reset and the safe-state latch not set, the controller shall report <state> as OPERATIONAL.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-068",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-125",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "From the instant a fault is detected until the next reset, while the safe-state latch is not set, the controller shall report <state> as SAFE.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-069",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-125",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the safe-state latch is set, the controller shall report <state> as LATCHED, regardless of which other state condition holds.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-047",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-125",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall report <fault count> as the number of fault reports since the last power-on reset, retained across software resets and watchdog resets.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-048",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-134",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the service request GET FAULTS is received while no answer is being transmitted, the controller shall answer within 50 ms, extended by the transmission time of the fault reports sent between the request and its answer.",
+      "rationale": "Split for F-sys-req-item-r5-005: this item keeps the response timing only (wording of the deadline unchanged); the content of the answer is in SYS-SUP-081 and the replacement of the oldest stored report in SYS-SUP-082. Timing source: CON-SUP-139 (as cited earlier for this item).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-081",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-134",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the service request GET FAULTS is received while no answer is being transmitted, the controller shall answer with the most recent eight fault reports made before the instant of that reception and since the last power-on reset (all of them when fewer than eight have been made), oldest first, one per line, followed by a line END, and only the line END when none has been made; a fault report made after that instant is not a line of that answer.",
+      "rationale": "Split from SYS-SUP-048 for F-sys-req-item-r5-005: CON-SUP-113 requires the last eight fault reports and CON-SUP-134 gives the order and format. Scope since the last power-on reset follows the retention of the fault history in SYS-SUP-033. Rework for F-sys-req-item-r6-001: the history is fixed at the instant the request is received, so the answer content is the same however long the transmission takes. A fault report made after that instant is still transmitted as its own report between answer lines as CON-SUP-143 requires; it is not added to the answer and does not displace one of its eight reports. Rework for F-sys-req-item-r7-001: the obligation applies only to a request received while no answer is being transmitted; a GET FAULTS received during an answer is ignored without an answer, per SYS-SUP-050 and CON-SUP-139 (the answer timing is in the sibling timing item).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-082",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault report is made while eight fault reports are already held, the controller shall replace the oldest fault report held with the new one.",
+      "rationale": "Split from SYS-SUP-048 for F-sys-req-item-r5-005: CON-SUP-113 limits the history to the last eight fault reports, so each further report replaces the oldest one held.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-049",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-113",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-138",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-118",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a service request line other than GET STATUS, GET FAULTS or GET RESET is received, or a request line longer than 32 ASCII characters is received, while no answer is being transmitted, the controller shall answer ERR.",
+      "rationale": "Restricted to requests received while no answer is being transmitted; a request received during an answer is not answered, per SYS-SUP-050 and CON-SUP-139.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-050",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a service request is received while an answer is still being transmitted, the controller shall not answer that request.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-051",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-138",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall count a service request as received when its terminating line feed is received.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-011"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-052",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-014",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-114",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "In normal operation (no fault and no service request), the supervisor shall use at most 10 % of the processor time over any 1 s window, measured on the simulator at the configured core clock.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-012"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-053",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "In test builds, the controller shall provide a test hook that injects each of the fault classes of fault code 1, fault code 2, fault code 3, fault code 4, fault code 5, fault code 6, fault code 7, fault code 8 and fault code 9.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-012"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-054",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-005",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The supervisor shall run on the Renode simulator with the STM32N6 platform description, without the real board, so that every system requirement can be verified there or on host unit tests.",
+      "verification_method": "demonstration"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-012"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-055",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-116",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-015",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The production build of the supervisor shall not contain the fault-injection test hooks.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-001"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-056",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-127",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-103",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-002",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a measured start delay or execution time exceeds its configured limit, the controller shall detect the violation no later than 100 µs after the limit expires.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-002",
+          "UC-SUP-006"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-057",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-115",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-119",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-004",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-009",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When the controller detects a configuration fault (fault code 9) at start-up, it shall latch the safe state.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-004",
+          "UC-SUP-005"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-089",
+      "level": "system",
+      "type": "design_constraint",
+      "rationale": "Added for F-sys-req-set-r6-002: CON-SUP-107 limits the application image between __app_start and __app_end to at most 1 MiB; SYS-SUP-058 specifies the check time for a 1 MiB image but not the limit.",
+      "sources": [
+        {
+          "id": "STK-SUP-007",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-107",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The application image between the linker symbols __app_start and __app_end shall be at most 1 MiB long.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-005"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-058",
+      "level": "system",
+      "sources": [
+        {
+          "id": "STK-SUP-008",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-108",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-129",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "While the application runs, the controller shall complete a full run-time check pass over a program code image of 1 MiB within 11 s.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-059",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-140",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-135",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-136",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "Except at a power-on reset (SYS-SUP-060), the controller shall return a fault code's detection count to zero only after 60 s of fault-free operation, being time in the OPERATIONAL state since the most recent detection of any fault code, and no later than the end of that 60 s extended by the time lost to under-counting (at most 10 ms per reset and at most 100 us per update of the fault-free operating time).",
+      "rationale": "Reworked for F-sys-req-item-r3-002. Fault-free operation (CON-SUP-140, CON-SUP-135) is measured from the most recent detection of any code, because a detection of a different code is itself a fault and interrupts fault-free operation, while each code keeps its own count (CON-SUP-140). The clearing is bounded on both sides by CON-SUP-136: the fault-free time may under-count by at most 10 ms per reset and 100 us per update but never over-counts, so the count is never cleared before 60 s of true fault-free time and is cleared no later than 60 s plus the accepted under-count. Earlier rework: F-sys-req-item-r1-016 (power-on reset exception, SYS-SUP-060 clears the counts regardless of elapsed time) and F-sys-req-item-r2-005 (the count is cleared when the 60 s are complete, not merely allowed to be).",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software",
+          "hardware"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-060",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-110",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "At a power-on reset, the controller shall clear the safe-state latch, the per-code detection counts and the fault history.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-061",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault code 8 report is made at start-up, the controller shall not enter the safe state because of the report itself; the only effect of a code 8 report on the outputs is the safe-state latch set under SYS-SUP-065 at the third detection of code 8, which SYS-SUP-070 then holds.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": true,
+        "use_cases": [
+          "UC-SUP-007"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-062",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-130",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-137",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-117",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-010",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "When a fault code 8 report is made at start-up, the controller shall continue the start-up.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": [
+          "software"
+        ],
+        "safety_relevant": false,
+        "use_cases": [
+          "UC-SUP-010"
+        ]
+      },
+      "derived": false,
+      "id": "SYS-SUP-063",
+      "level": "system",
+      "sources": [
+        {
+          "id": "CON-SUP-138",
+          "kind": "upstream"
+        },
+        {
+          "id": "CON-SUP-139",
+          "kind": "upstream"
+        },
+        {
+          "id": "STK-SUP-013",
+          "kind": "upstream"
+        }
+      ],
+      "status": "proposed",
+      "text": "The controller shall complete the answer to each service request that it accepts, meaning a request received while no answer is being transmitted, within 50 ms, measured from the instant the terminating line feed is received to the end of the last character of the answer, extended by the transmission time of the fault reports sent between the request and its answer.",
+      "rationale": "The deadline applies only to accepted requests; a request received while an answer is being transmitted is ignored without an answer, per SYS-SUP-050 and CON-SUP-139.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": ["software"],
+        "safety_relevant": true,
+        "use_cases": ["UC-SUP-007"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-070",
+      "level": "system",
+      "rationale": "Added for F-sys-req-item-set-r1-003. CON-SUP-117 says the latch holds the safe state until a power-on reset; the safe state is defined by SYS-SUP-024 (both control outputs and the status signal low). SYS-SUP-033 retains the latch across software and watchdog resets, so the obligation also covers the start-up after such a reset, including after the start-up checks pass (SYS-SUP-026 only covers the interval before they pass).",
+      "sources": [
+        {"id": "STK-SUP-010", "kind": "upstream"},
+        {"id": "CON-SUP-117", "kind": "upstream"},
+        {"id": "CON-SUP-109", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "While the safe-state latch is set, including after a software reset or a watchdog reset, the controller shall hold both control outputs and the status signal low.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": ["software"],
+        "safety_relevant": true,
+        "use_cases": ["UC-SUP-007"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-071",
+      "level": "system",
+      "rationale": "Added for F-sys-req-item-set-r1-003. Staying in the safe state (STK-SUP-010, CON-SUP-117) is not kept if tasks are released after the start-up checks pass; SYS-SUP-020 only withholds release until the checks pass.",
+      "sources": [
+        {"id": "STK-SUP-010", "kind": "upstream"},
+        {"id": "CON-SUP-117", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "While the safe-state latch is set, including after a software reset or a watchdog reset and after the start-up integrity checks have passed, the controller shall not release any supervised task.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {
+        "allocation": ["hardware"],
+        "safety_relevant": true,
+        "use_cases": ["UC-SUP-006"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-072",
+      "level": "system",
+      "rationale": "Added for F-sys-req-item-set-r1-004. CON-SUP-132 specifies the board provision; SYS-SUP-026 holds the signals low in software terms and SYS-SUP-027 configures them.",
+      "sources": [
+        {"id": "CON-SUP-132", "kind": "upstream"},
+        {"id": "CON-SUP-109", "kind": "upstream"},
+        {"id": "STK-SUP-009", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "The board shall provide an external pull-down resistor on each of the two control outputs and the status signal that holds the signal low from any reset until software configures it.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {
+        "allocation": ["hardware", "software"],
+        "safety_relevant": true,
+        "use_cases": ["UC-SUP-006"]
+      },
+      "derived": false,
+      "id": "SYS-SUP-073",
+      "level": "system",
+      "rationale": "Added for F-sys-req-item-set-r1-004. CON-SUP-132 states the microcontroller pins are inputs in that interval; the requirement is that the pins are not driven by the controller until SYS-SUP-027 configures them.",
+      "sources": [
+        {"id": "CON-SUP-132", "kind": "upstream"},
+        {"id": "STK-SUP-009", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "From any reset until software configures them, the microcontroller pins of the two control outputs and the status signal shall be inputs.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": true, "use_cases": ["UC-SUP-001"]},
+      "derived": false,
+      "id": "SYS-SUP-085",
+      "level": "system",
+      "rationale": "Added for F-sys-req-set-r5-003 (renumbered from a duplicate SYS-SUP-081 for the gate finding IQ-12). CON-SUP-103 states that times are measured with a 100 µs resolution; the detection deadlines of SYS-SUP-002, SYS-SUP-003 and SYS-SUP-056 rest on that measurement.",
+      "sources": [
+        {"id": "CON-SUP-103", "kind": "upstream"},
+        {"id": "STK-SUP-002", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "The controller shall measure the start delay and the execution time of each supervised task with a resolution of 100 µs.",
+      "verification_method": "test"
+    },
+    {
+      "attributes": {"allocation": ["hardware"], "safety_relevant": true, "use_cases": ["UC-SUP-006"]},
+      "derived": false,
+      "id": "SYS-SUP-086",
+      "level": "system",
+      "rationale": "Added for F-sys-req-set-r5-002 (renumbered from a duplicate SYS-SUP-082 for the gate finding IQ-12). CON-SUP-133 allocates 1 ms of the 50 ms reaction time of SYS-SUP-024 to the board output stage; SYS-SUP-025 states the remaining 49 ms for software. Verified by analysis because real hardware is not required (CON-SUP-005).",
+      "sources": [
+        {"id": "CON-SUP-133", "kind": "upstream"},
+        {"id": "CON-SUP-105", "kind": "upstream"},
+        {"id": "STK-SUP-009", "kind": "upstream"}
+      ],
+      "status": "proposed",
+      "text": "The board output stage shall take at most 1 ms from a change of a control output pin or the status signal pin to the corresponding output level.",
+      "verification_method": "analysis"
+    },
+    {
+      "attributes": {"allocation": ["software", "hardware"], "safety_relevant": false, "use_cases": ["UC-SUP-012"]},
+      "derived": false,
+      "id": "SYS-SUP-083",
+      "level": "system",
+      "type": "design_constraint",
+      "rationale": "Added for F-sys-req-set-r5-004. CON-SUP-001 names the target microcontroller; downstream engineering needs it recorded in the system baseline.",
+      "sources": [{"id": "CON-SUP-001", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The controller shall use the STMicroelectronics STM32N657X0 (Arm Cortex-M55) as its microcontroller.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-012"]},
+      "derived": false,
+      "id": "SYS-SUP-084",
+      "level": "system",
+      "type": "design_constraint",
+      "rationale": "Added for F-sys-req-set-r5-004. CON-SUP-004 states the language and the two implementation restrictions; split into SYS-SUP-084, SYS-SUP-087 and SYS-SUP-088 (one shall each, IQ-11) so that downstream stages inherit them.",
+      "sources": [{"id": "CON-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The controller software shall be written in C11.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-012"]},
+      "derived": false,
+      "id": "SYS-SUP-087",
+      "level": "system",
+      "type": "design_constraint",
+      "rationale": "Split from SYS-SUP-084 for IQ-11. CON-SUP-004 restricts the software from using dynamic memory allocation.",
+      "sources": [{"id": "CON-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The controller software shall not use dynamic memory allocation.",
+      "verification_method": "inspection"
+    },
+    {
+      "attributes": {"allocation": ["software"], "safety_relevant": false, "use_cases": ["UC-SUP-012"]},
+      "derived": false,
+      "id": "SYS-SUP-088",
+      "level": "system",
+      "type": "design_constraint",
+      "rationale": "Split from SYS-SUP-084 for IQ-11. CON-SUP-004 restricts the software from using recursion.",
+      "sources": [{"id": "CON-SUP-004", "kind": "upstream"}],
+      "status": "proposed",
+      "text": "The controller software shall not use recursion.",
+      "verification_method": "inspection"
+    }
+  ],
+  "open_points": [
+    {
+      "blocks": true,
+      "id": "OP-SYS-001",
+      "raised_by": "author",
+      "text": "CON-SUP-111 says the reset cause is sent in a start-up message but gives no time limit for it. Without a deadline, SYS-SUP-037 cannot fail on lateness, so a tester cannot fully verify it; the deadline is an acceptance limit only a person can decide. CON-SUP-144 gives a 10 ms deadline only for the code 8 report of a watchdog reset (SYS-SUP-034) and must not be assumed for power-on, supervisor (software) and other resets. Needed: the deadline (and, if different from the CON-SUP-144 line format, the message format) of the start-up message for power-on, supervisor (software) and other resets. Affects STK-SUP-011, UC-SUP-008 and CON-SUP-111."
+    },
+    {
+      "blocks": false,
+      "deferred_to": "sw-req",
+      "id": "OP-SYS-002",
+      "raised_by": "author",
+      "text": "CON-SUP-137 says watchdog servicing continues during start-up but not how the window watchdog is handled before the first control cycle while the start-up checks run; SYS-SUP-015 states the observable outcome (no watchdog reset in a fault-free start-up). The servicing mechanism and window-watchdog start-up handling are needed."
+    }
+  ],
+  "provenance": {
+    "created_utc": "2026-11-23T04:34:43Z",
+    "harness": "claude-code",
+    "input_hashes": {
+      "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+      "needs/product-decisions.md": "6e0085facd437e365ba9e44d98a1b4508b555b3005c076880e413381939d24f5",
+      "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+    },
+    "model": "sonnet",
+    "model_family": "claude",
+    "role": "author",
+    "run_id": "r20261123T043432Z-23b50e",
+    "skill": "hi-sys-req-author",
+    "skill_version": "0.1.0"
+  },
+  "schema": "forge-c-hi/requirement-set@1",
+  "stage": "sys-req",
+  "status": "draft"
+}

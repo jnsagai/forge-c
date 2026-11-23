@@ -1,0 +1,56 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-06",
+      "description": "The requirement specifies behavior at exact equality and names test as its verification method, but CON-SUP-127 requires verification margins of at least 200 µs on either side of the limit. Those margin tests cannot establish the equality behavior.",
+      "id": "F-sys-req-set-r13-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:07:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050216Z-7f98fb",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the equality verification conditions and update the requirement or its verification method accordingly.",
+      "round": 13,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-005"
+    },
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-06",
+      "description": "The requirement specifies behavior at exact equality and names test as its verification method, but CON-SUP-127 requires verification margins of at least 200 µs on either side of the limit. Those margin tests cannot establish the equality behavior.",
+      "id": "F-sys-req-set-r13-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:07:10Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T050216Z-7f98fb",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the equality verification conditions and update the requirement or its verification method accordingly.",
+      "round": 13,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-092"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 13,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

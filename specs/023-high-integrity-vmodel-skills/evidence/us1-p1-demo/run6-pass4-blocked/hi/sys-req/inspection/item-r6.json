@@ -1,0 +1,44 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-03",
+      "description": "The requirement does not say when the most recent eight reports are selected. CON-SUP-143 permits a new fault report to be transmitted between lines of a GET FAULTS answer, so the history can change while the answer is being sent.",
+      "id": "F-sys-req-item-r6-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:37:37Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the point at which the fault history for a GET FAULTS answer is selected, including how reports made during that answer are treated.",
+      "round": 6,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SUP-081"
+    }
+  ],
+  "judged": [
+    "SYS-SUP-006",
+    "SYS-SUP-013",
+    "SYS-SUP-014",
+    "SYS-SUP-048",
+    "SYS-SUP-076",
+    "SYS-SUP-077",
+    "SYS-SUP-078",
+    "SYS-SUP-079",
+    "SYS-SUP-080",
+    "SYS-SUP-081",
+    "SYS-SUP-082"
+  ],
+  "phase": "item",
+  "round": 6,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

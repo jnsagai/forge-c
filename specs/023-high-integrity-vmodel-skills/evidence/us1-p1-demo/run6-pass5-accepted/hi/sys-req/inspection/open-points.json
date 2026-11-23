@@ -1,0 +1,14 @@
+{
+  "ids": {
+    "OP-SYS-002": {
+      "retired": false,
+      "text": "CON-SUP-137 says watchdog servicing continues during start-up but not how the window watchdog is handled before the first control cycle while the start-up checks run; SYS-SUP-015 states the observable outcome (no watchdog reset in a fault-free start-up). The servicing mechanism and window-watchdog start-up handling are needed."
+    },
+    "OP-SYS-003": {
+      "retired": true,
+      "text": "CON-SUP-127 states that a measured time equal to its limit is within the limit (SYS-SUP-005, and likewise SYS-SUP-092), yet requires verification margins of at least 200 µs on either side of a limit, which cannot establish behaviour at exact equality. The product owner must decide how equality is verified (for example a different verification method such as analysis or inspection, or an exception "
+    }
+  },
+  "run_id": "r20261123T050738Z-f2eb81",
+  "schema": "forge-c-hi/open-point-history@1"
+}

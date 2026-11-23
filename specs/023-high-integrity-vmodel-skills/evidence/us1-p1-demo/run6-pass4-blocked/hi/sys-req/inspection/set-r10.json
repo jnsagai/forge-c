@@ -1,0 +1,210 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-001",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-037 requires a start-up reset-cause message after classification but gives no deadline. CON-SUP-111 does not supply one, so lateness cannot be assessed. OP-SYS-001 records the missing acceptance limit.",
+      "id": "F-sys-req-set-r10-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the product owner's deadline and any necessary message format, then make the requirement verifiable.",
+      "round": 10,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-037"
+    },
+    {
+      "blocked_by": "OP-SYS-001",
+      "checklist_item": "SQ-01",
+      "description": "Coverage of STK-SUP-011, UC-SUP-008, CON-SUP-111, start-up, recovery or reset, and non-functional limits is partial because the reset-cause start-up message has no deadline. OP-SYS-001 tracks the decision. This combines the carried set findings that describe the same gap.",
+      "id": "F-sys-req-set-r10-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-001 and incorporate the agreed acceptance limit in the requirements.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-10",
+      "description": "CON-SUP-127 specifies verification margins of at least 200 µs on either side of a timing limit. SYS-SUP-002, SYS-SUP-003, SYS-SUP-005 and SYS-SUP-056 state the timing behavior but the set does not record those verification margins.",
+      "id": "F-sys-req-set-r10-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Record the specified timing-limit verification margins for downstream verification.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: STK-SUP-002 - The timing behavior is specified, but the CON-SUP-127 verification margins are not recorded; see the SQ-10 finding.",
+      "id": "F-sys-req-set-r10-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover STK-SUP-002 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: UC-SUP-001 - The timing-limit verification margins are missing; see the SQ-10 finding.",
+      "id": "F-sys-req-set-r10-005",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover UC-SUP-001 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: needs/product-decisions.md: initial decisions CON-SUP-101..116 - The CON-SUP-111 start-up message deadline is unresolved in OP-SYS-001; later decisions amend several initial decisions.",
+      "id": "F-sys-req-set-r10-006",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover needs/product-decisions.md: initial decisions CON-SUP-101..116 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: needs/product-decisions.md: fifth round CON-SUP-124..128 - CON-SUP-127's specified verification margins are not recorded; see the SQ-10 finding.",
+      "id": "F-sys-req-set-r10-007",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover needs/product-decisions.md: fifth round CON-SUP-124..128 with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: normal operation - The CON-SUP-127 timing-limit verification margins are missing; see the SQ-10 finding.",
+      "id": "F-sys-req-set-r10-008",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover normal operation with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "Coverage partial: fault detection and reaction - The CON-SUP-127 timing-limit verification margins are missing; see the SQ-10 finding.",
+      "id": "F-sys-req-set-r10-009",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:50:47Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T043432Z-23b50e",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Cover fault detection and reaction with a requirement, or record an open point if the inputs do not say enough.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 10,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

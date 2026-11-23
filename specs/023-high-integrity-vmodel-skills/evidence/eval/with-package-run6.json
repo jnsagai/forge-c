@@ -1,0 +1,50 @@
+{
+  "arm": "with_package",
+  "artefacts": [
+    "repos/f023-p1-demo-6"
+  ],
+  "author_model": "claude sonnet via claude-code",
+  "created_utc": "2026-11-23T05:26:24Z",
+  "harness_versions": {
+    "claude": "2.1.330 (Claude Code)",
+    "codex": "codex-cli 0.171.0"
+  },
+  "inputs_hash": {
+    "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+    "needs/product-decisions.md": "a7c5194710fd10e70e30fcb7696fe9f2ecd87ae3fb008df6612a78f2c615cd8d",
+    "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+  },
+  "inspector_model": "gpt gpt-6.1-terra via codex",
+  "metrics": {
+    "gate_verdicts": {
+      "governance": "PASS",
+      "independence": "PASS",
+      "quality": "PASS",
+      "scope": "PASS",
+      "trace": "PASS",
+      "validate": "PASS"
+    },
+    "items": 93,
+    "model_calls": 91,
+    "model_calls_by_role": {
+      "author:create": 1,
+      "author:fix-gates": 5,
+      "author:governance": 5,
+      "author:rework": 35,
+      "author:rework-set": 11,
+      "author:update": 4,
+      "inspector:item": 14,
+      "inspector:set": 16
+    },
+    "open_points": 1,
+    "passes": 5,
+    "rule_violations": 0,
+    "rule_violations_by_code": {},
+    "rule_violations_per_100": 0.0,
+    "stage_outcome": "ACCEPTED",
+    "tokens": null,
+    "trace_coverage": 100.0,
+    "trace_issues": {},
+    "wall_time_s_in_models": 2931.4
+  }
+}

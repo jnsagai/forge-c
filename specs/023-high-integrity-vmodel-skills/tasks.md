@@ -316,8 +316,10 @@ BLOCKED or NOT_RUN.
   - governance open points as seal gaps.
 
   Tests: `PKG/tests/test_governance.py` and the governance tests in `PKG/tests/test_conductor.py`.
-- [ ] T087 [US1] Run the safety-supervisor demo again with the governance step (reference config, run 6, clean
-  project) and store the governance package, its gate results and the run's events in `FEAT/evidence/us1-p1-demo/`
+- [x] T087 [US1] Run the safety-supervisor demo again with the governance step (reference config, run 6, clean
+  project) and store the governance package, its gate results and the run's events in `FEAT/evidence/us1-p1-demo/`.
+  Done: 5 passes, both stages ACCEPTED (93 system and 104 software requirements), sealed READY and verified
+  (`evidence/us5-seal/run6/`)
 - [x] T088 [US2] Driver functional level, ported from feature 020/021 template v3:
   - `hi init --driver-level functional` (`requirement_style.driver_level`) makes DRV items `level: driver_functional`;
   - the quality gate refuses register-level vocabulary (upper-case register names, 4-digit hex) apart from the
