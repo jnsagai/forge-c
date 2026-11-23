@@ -159,6 +159,10 @@ number there links to stored run evidence, and missed targets are reported as mi
 - Model output varies between runs; results come from a small number of runs.
 - MC/DC coverage is not measured (levels that require it report NOT_RUN).
 - The levels and rigor values in the profiles are Forge-C defaults, not readings of the standards' tables.
+- APM 0.37 drops the `tools` list when it generates the Codex version of the `hi-inspector` agent (it warns at
+  install), so that agent may see every MCP server of the session. In conductor runs the inspector is sandboxed by
+  `codex exec -s read-only` and the guard hook, and any write still fails the scope gate. When you use the generated
+  Codex agent interactively, run it read-only.
 
 **This package does not certify, qualify or approve anything.** It produces engineering input for an offline review by
 qualified people. Standards are cited by clause identifier only; no standard or vendor text is included.
