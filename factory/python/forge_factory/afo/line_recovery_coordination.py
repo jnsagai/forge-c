@@ -398,6 +398,10 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
                     "receipt_id": receipt["receipt_id"] if receipt else None,
                 },
             )
+            if new["resume_from"] is not None:
+                # The durable plan chooses a resume source. A first-phase seed
+                # retry hint from the initial planner is incompatible with it.
+                new.pop("retry_of", None)
             p.order, p.action, p.kind, p.phase, p.state, p.reason = (
                 new,
                 "PLACE",

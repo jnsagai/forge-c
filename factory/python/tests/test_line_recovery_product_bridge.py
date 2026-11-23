@@ -549,6 +549,25 @@ def test_capa188_a_withdrawn_order_never_keeps_its_launch_action(product):
     assert plan.reason == "DURABLE_SOURCE_ACCOUNTING_REQUIRED" and plan.order is None and plan.action is None
 
 
+def test_durable_continuation_replaces_the_first_phase_seed_hint(product, monkeypatch):
+    p = product
+    control = p.worker["control_ref"]
+    plan = _ended_plan(p, lineage_sha="new", control=control)
+    plan.lineage.wo = lambda phase, n: f"WO-NEXT-{phase}-{n}"
+    plan.order["retry_of"] = plan.current.wo
+    cmd = {"kind": "REPLAN", "order_id": p.oid, "attempt_id": p.aid, "state": "ACKED"}
+    monkeypatch.setattr(p.store, "commands", lambda: [cmd])
+    monkeypatch.setattr(K, "_decision", lambda *_: (
+        {"plan_id": "plan-validated", "strategy": "DEFER_TRANSIENT_DEPENDENCY", "affected_phase": "SWE.1"}, None
+    ))
+    placer = SimpleNamespace(_store=lambda **_: p.store, durable_control=control)
+    K.coordinate(placer, [plan], None, SimpleNamespace(allow=True), [], time.time(), execute=True)
+    assert plan.reason == "VALIDATED_DURABLE_RECOVERY"
+    assert plan.order["resume_from"] == plan.current.wo
+    assert "retry_of" not in plan.order
+    assert plan.order["durable_recovery"]["source_work_order"] == plan.current.wo
+
+
 def test_capa188_execute_refuses_a_plan_without_an_order():
     from forge_factory.afo import line_orders as LO
 

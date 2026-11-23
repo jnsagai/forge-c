@@ -98,7 +98,7 @@ def test_the_agent_payload_selects_the_line_lifecycle_and_binds_its_own_job(agen
     ("unauthorized", "LINE_STACK_AGENT_AUTHORITY_OR_EXECUTION_FENCED"),
     ("other_profile", "LINE_STACK_AGENT_AUTHORITY_OR_EXECUTION_FENCED"),
     ("foreign_owner", "LINE_STACK_RESOURCE_OR_REQUEST_NOT_QUIESCENT"),
-    ("live_request", "LINE_STACK_RESOURCE_OR_REQUEST_NOT_QUIESCENT"),
+    ("live_request", A.SERVE_REQUESTS_BUSY),
     ("other_scope", "LINE_STACK_SCOPE_MISMATCH"),
 ])
 def test_the_agent_fence_refuses_anything_but_its_own_quiescent_authorized_job(agent, monkeypatch, change, code):

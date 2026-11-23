@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import os
 import time
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 
 from .durable import Refused, canonical, digest
@@ -22,6 +22,7 @@ SHA = "FORGE_LINE_STACK_PAYLOAD_SHA256"
 # everything else is re-derived from the line store and the role's own authorization, and it permits only `serve`.
 AGENT_SCHEMA = "forge-c/line-stack-agent-serve/1"
 AGENT_ROLES = ("afo-recovery-planner", "afo-factory-maintainer")
+SERVE_REQUESTS_BUSY = "LINE_STACK_REQUESTS_NOT_QUIESCENT_BEFORE_SERVE"
 
 
 def selected():
@@ -112,14 +113,19 @@ def _scope(s):
 
 def _quiescent_owner(store, job, execution):
     with store.tx() as c:
-        owner = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
-        held = c.execute(
-            "SELECT record FROM afo_execution_liveness WHERE json_extract(record,'$.resource_lease')='HELD'"
-        ).fetchall()
-        requests = c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()
+        _require_quiescent_owner(c, job, execution)
+
+
+def _require_quiescent_owner(c, job, execution):
+    owner = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
+    held = c.execute(
+        "SELECT record FROM afo_execution_liveness WHERE json_extract(record,'$.resource_lease')='HELD'"
+    ).fetchall()
     if (not owner or tuple(owner) != (job["job_id"], execution["lease_epoch"])
-            or len(held) != 1 or json.loads(held[0][0])["job_id"] != job["job_id"] or requests):
+            or len(held) != 1 or json.loads(held[0][0])["job_id"] != job["job_id"]):
         raise Refused("LINE_STACK_RESOURCE_OR_REQUEST_NOT_QUIESCENT")
+    if c.execute("SELECT 1 FROM afo_request_ledger WHERE state IS NULL OR state!='QUIESCENT' LIMIT 1").fetchone():
+        raise Refused(SERVE_REQUESTS_BUSY)
 
 
 def _bound_agent(s, value):
@@ -359,6 +365,17 @@ def swap_in_progress(c, job_id):
         process_identity(fence.get("pid")), fence["identity"])
 
 
+def _same_serve_execution(previous, current):
+    """CAPA-275: a liveness observation can advance its revision without changing the execution."""
+    if current["revision"] < previous["revision"]:
+        return False
+    if current["revision"] == previous["revision"]:
+        return current == previous
+    observation_fields = {"revision", "last_reconciled_at"}
+    return ({k: v for k, v in previous.items() if k not in observation_fields}
+            == {k: v for k, v in current.items() if k not in observation_fields})
+
+
 @contextmanager
 def fenced(s, action, *, model=None, workspace=None):
     """No global intent transition/store; keep actual intent locked through the bounded effect."""
@@ -418,9 +435,9 @@ def fenced(s, action, *, model=None, workspace=None):
                 with store.tx() as c:
                     current_execution = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?",
                                                   (job["job_id"],)).fetchone()
-                    if (not current_execution or json.loads(current_execution[0]) != execution
-                            or c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()):
+                    if not current_execution or not _same_serve_execution(execution, json.loads(current_execution[0])):
                         raise Refused("LINE_STACK_EXECUTION_CHANGED_BEFORE_SERVE")
+                    _require_quiescent_owner(c, job, execution)
                     effect_guard()
                     fence = swap_fence(job["job_id"], model, "ACTIVE")
                     _write_swap_fence(c, job["job_id"], fence)
@@ -514,6 +531,22 @@ def start(s, *, recovery=False):
             raise
 
 
+@contextmanager
+def _serve_fence(s, model, workspace):
+    # Repeat only a pre-effect request-quiescence check. Every attempt takes all the original fences again.
+    for attempt in range(3):
+        with ExitStack() as resources:
+            try:
+                guard = resources.enter_context(fenced(s, "serve", model=model, workspace=workspace))
+            except Refused as exc:
+                if exc.code != SERVE_REQUESTS_BUSY or attempt == 2:
+                    raise
+            else:
+                yield guard
+                return
+        time.sleep(1)
+
+
 def serve(s, model, workspace=None):
     from ..lrtx import provider_process as provider
     from ..lrtx import stack
@@ -524,7 +557,7 @@ def serve(s, model, workspace=None):
             "llama_server") or {}
         if current.get("model") == model:
             return {"model_swap": "NOT_NEEDED", "model": model}
-    with fenced(s, "serve", model=model, workspace=workspace) as guard, stack.line_effect_guard(guard):
+    with _serve_fence(s, model, workspace) as guard, stack.line_effect_guard(guard):
         instance = stack.serving_instance(s)
         provider.require_live_instance(instance)
         return stack._serve_model(s, model, workspace, serving=instance)
