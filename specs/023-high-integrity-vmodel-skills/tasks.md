@@ -215,7 +215,7 @@ BLOCKED or NOT_RUN.
   Add the matching inspector checks (source-faithful, IQ-02) to `hi-sw-req-inspector/SKILL.md`
 - [x] T050 [P] [US2] Write the demo `PKG/examples/iwdg-driver/`: `scope.md` (the IWDG peripheral, citing a public STM32 reference manual by document id and revision only, with a download note and no text from it) and `hi-project.example.json` (reference_document, entry sw-req)
 - [x] T051 [US2] Implement cross-project links (`links[]` in project.json; the trace gate loads the linked project's driver_interface items). Add tests to `PKG/tests/test_trace.py`
-- [ ] T052 [US2] Run the driver demo with the reference config against the owner's local copy of the reference manual. Link the safety-supervisor SW-REQ to the IWDG DRV items. Store the evidence in `FEAT/evidence/us2-driver/`, including the index hash but not the index content
+- [x] T052 [US2] Run the driver demo with the reference config against the owner's local copy of the reference manual. Link the safety-supervisor SW-REQ to the IWDG DRV items. Store the evidence in `FEAT/evidence/us2-driver/`, including the index hash but not the index content. Done: the driver project was ACCEPTED in 7 passes (51 DRV requirements, 73 citations resolving in the local index), sealed READY and verified; the linked supervisor has 6 SWR items citing DRV with 11 valid `interfaces` links, ACCEPTED and sealed READY. The index hash is in `seal/index.sha256`
 - [x] T053 [US2] Run the US2-AS3 negative case (missing or unreadable document gives BLOCKED at intake) and store it in `FEAT/evidence/us2-negative/`. Done: `hi init` refuses a missing document and a file that is not a readable PDF (fixed in this task); with no index, doc-sources is NOT_RUN
 
 ---

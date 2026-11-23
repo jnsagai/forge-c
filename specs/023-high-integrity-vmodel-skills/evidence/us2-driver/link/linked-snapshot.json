@@ -1,0 +1,263 @@
+{
+  "items": [
+    {
+      "id": "DRV-IWDG-001",
+      "level": "driver_interface",
+      "text": "When the caller invokes the start service with a valid configuration structure and a wait limit within its range (every argument valid, DRV-IWDG-049) while the watchdog is not already running, and the start service reaches its prescaler step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), and any pending prescaler update completes before the wait limit is reached (DRV-IWDG-031, DRV-IWDG-032), the driver shall write the prescaler selection, taken unchanged from the timeout setting of that structure, to the prescaler setting of the watchdog peripheral, where the prescaler selection is the encoded value of the peripheral prescaler setting (the encoded field value, not the resulting clock divider), so that the driver performs no conversion between a divider and an encoding."
+    },
+    {
+      "id": "DRV-IWDG-002",
+      "level": "driver_interface",
+      "text": "If the configuration structure passed to the start service is a null reference, then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-003",
+      "level": "driver_interface",
+      "text": "When the driver modifies any protected watchdog configuration, the driver shall first enable write access as the hardware requires."
+    },
+    {
+      "id": "DRV-IWDG-004",
+      "level": "driver_interface",
+      "text": "When the driver waits for a prescaler, reload, window or early-wakeup update to complete, the driver shall end the wait no later than the wait limit, an integer number of milliseconds from 1 ms to 1000 ms inclusive supplied by the caller to that service, measured with the platform 1 ms tick."
+    },
+    {
+      "id": "DRV-IWDG-005",
+      "level": "driver_interface",
+      "text": "The driver shall offer no service that stops or pauses a started watchdog, including on entry to a low power mode."
+    },
+    {
+      "id": "DRV-IWDG-006",
+      "level": "driver_interface",
+      "text": "When the caller invokes the refresh service, the driver shall issue one counter reload request to the watchdog peripheral, with write protection handled as for any protected configuration change."
+    },
+    {
+      "id": "DRV-IWDG-007",
+      "level": "driver_interface",
+      "text": "Where the configuration structure enables the window option and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), and the start service reaches its window step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), the driver shall apply the window value from that structure to the watchdog peripheral as part of the start service, once any pending window update has completed (DRV-IWDG-031, DRV-IWDG-032)."
+    },
+    {
+      "id": "DRV-IWDG-008",
+      "level": "driver_interface",
+      "text": "If the configuration structure enables the window option and its window value, an unsigned integer in watchdog counter ticks, lies above 4095 ticks, then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-009",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service enables the early-wakeup option, with a comparison value given as an unsigned integer in the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), and the watchdog is not already running, and every other argument of the start service is valid so that the start service continues past argument validation (DRV-IWDG-049), and the start service reaches its early-wakeup configuration step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), and any pending early-wakeup update completes before the wait limit is reached (DRV-IWDG-031), the driver shall apply that value to the watchdog peripheral as the early-wakeup comparison value as part of the start service, so that the early-wakeup interrupt condition is met by a comparison of the watchdog counter against the supplied value that covers the counter value one tick below the supplied value (supplied value minus 1 tick) and the lower counter values, and excludes every counter value above the supplied value minus 1 tick, and so that the interrupt is generated only while the early-wakeup interrupt is enabled."
+    },
+    {
+      "id": "DRV-IWDG-010",
+      "level": "driver_interface",
+      "text": "When the caller invokes the early-wakeup clear service, the driver shall clear the pending early-wakeup interrupt flag."
+    },
+    {
+      "id": "DRV-IWDG-011",
+      "level": "driver_interface",
+      "text": "When the caller invokes the status query service, the driver shall return, without waiting, whether a prescaler, reload, window or early-wakeup update is still pending in the watchdog peripheral."
+    },
+    {
+      "id": "DRV-IWDG-012",
+      "level": "driver_interface",
+      "text": "When the caller invokes the reset-cause service, the driver shall return whether the independent watchdog reset flag of the reset status is set."
+    },
+    {
+      "id": "DRV-IWDG-013",
+      "level": "driver_interface",
+      "text": "The driver shall use no dynamic memory allocation."
+    },
+    {
+      "id": "DRV-IWDG-014",
+      "level": "driver_interface",
+      "text": "The driver shall return from every service a status taken from a set of pairwise-different values, one value each for success, invalid argument, timeout and already running (DRV-IWDG-043)."
+    },
+    {
+      "id": "DRV-IWDG-015",
+      "level": "driver_interface",
+      "text": "When the caller invokes the start service with a valid configuration structure and a wait limit within its range (every argument valid, DRV-IWDG-049) while the watchdog is not already running, the driver shall start the watchdog before it writes any of the settings."
+    },
+    {
+      "id": "DRV-IWDG-056",
+      "level": "driver_interface",
+      "text": "When the start service writes the settings of a valid configuration structure (DRV-IWDG-015), the driver shall write the prescaler, the reload value and, only where an early-wakeup register write is required (not the case under DRV-IWDG-053), the early-wakeup setting, in that order and, where the window option is enabled, the window value after all of the settings that are written, so that the counter load caused by the window write uses the configured reload value."
+    },
+    {
+      "id": "DRV-IWDG-016",
+      "level": "driver_interface",
+      "text": "When the start service has started the watchdog, written the settings of the configuration structure and, where the window option is not enabled, issued its counter reload request (DRV-IWDG-035), and the caller-supplied wait limit has not been reached at the time the driver finishes its check, made after the final write of a configuration setting by the start service, that every register-update flag is clear, the driver shall return a success status."
+    },
+    {
+      "id": "DRV-IWDG-050",
+      "level": "driver_interface",
+      "text": "When the start service completes the start sequence of DRV-IWDG-016, the driver shall not confirm that any counter reload took effect, neither before nor after it returns."
+    },
+    {
+      "id": "DRV-IWDG-017",
+      "level": "driver_interface",
+      "text": "If the prescaler selection in the timeout setting of the configuration structure passed to the start service is outside the encoded range from 0 codes to 15 codes, then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-018",
+      "level": "driver_interface",
+      "text": "If the start service rejects the configuration structure as invalid, then the driver shall not write to the watchdog peripheral."
+    },
+    {
+      "id": "DRV-IWDG-019",
+      "level": "driver_interface",
+      "text": "If the driver rejects the window value as outside the range the hardware accepts, then the driver shall not write the window setting."
+    },
+    {
+      "id": "DRV-IWDG-020",
+      "level": "driver_interface",
+      "text": "When the driver has issued a modification of a protected watchdog configuration, the driver shall restore write protection."
+    },
+    {
+      "id": "DRV-IWDG-021",
+      "level": "driver_interface",
+      "text": "When the wait limit supplied by the caller to the service is reached before a prescaler, reload, window or early-wakeup update has completed, the driver shall return a timeout status."
+    },
+    {
+      "id": "DRV-IWDG-022",
+      "level": "driver_interface",
+      "text": "When the refresh service has issued its counter reload request, the driver shall return a success status."
+    },
+    {
+      "id": "DRV-IWDG-023",
+      "level": "driver_interface",
+      "text": "Where the configuration structure does not enable the window option and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), and the start service reaches its window step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), the driver shall, as part of the start service, configure the watchdog peripheral, once any pending window update has completed (DRV-IWDG-031, DRV-IWDG-032), so that window operation is inactive, regardless of any window setting previously applied."
+    },
+    {
+      "id": "DRV-IWDG-024",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service enables the early-wakeup option with a valid comparison value (DRV-IWDG-009) and the watchdog is not already running, and every other argument of the start service, including the wait limit, is valid so that the start service continues past argument validation (DRV-IWDG-049), and the start service reaches the early-wakeup interrupt enable step without the wait limit having been reached earlier in the start service (DRV-IWDG-021, DRV-IWDG-032, DRV-IWDG-034), and either no early-wakeup update of the watchdog peripheral is pending or a pending early-wakeup update completes before the wait limit is reached (DRV-IWDG-031, DRV-IWDG-032), the driver shall enable the early-wakeup interrupt as part of the start service only when the early-wakeup update status indicates no update pending: at once if none was pending, otherwise after the pending update has completed."
+    },
+    {
+      "id": "DRV-IWDG-051",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service does not enable the early-wakeup option, and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), and the start service reaches its early-wakeup step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), and any pending early-wakeup update completes before the wait limit is reached (DRV-IWDG-031, DRV-IWDG-032), the driver shall, as part of the start service, leave the early-wakeup interrupt disabled regardless of any early-wakeup setting previously applied."
+    },
+    {
+      "id": "DRV-IWDG-052",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service does not enable the early-wakeup option, and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), the driver shall, as part of that start service, apply no early-wakeup comparison value taken from the configuration structure."
+    },
+    {
+      "id": "DRV-IWDG-053",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service does not enable the early-wakeup option, and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), and the early-wakeup interrupt is already disabled, the driver shall, as part of that start service, make no write to the early-wakeup register."
+    },
+    {
+      "id": "DRV-IWDG-054",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service does not enable the early-wakeup option, and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), the driver shall, as part of that start service, write the early-wakeup register only with the interrupt-enable bit cleared."
+    },
+    {
+      "id": "DRV-IWDG-055",
+      "level": "driver_interface",
+      "text": "Where the configuration structure passed to the start service does not enable the early-wakeup option, and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), the driver shall, as part of that start service, write the early-wakeup register, if it writes it at all, such that the comparison field of that register holds the same content after the write as it held before the write."
+    },
+    {
+      "id": "DRV-IWDG-026",
+      "level": "driver_interface",
+      "text": "When the pending early-wakeup interrupt flag has been cleared by the early-wakeup clear service, the driver shall return a success status."
+    },
+    {
+      "id": "DRV-IWDG-027",
+      "level": "driver_interface",
+      "text": "The driver shall use no recursion."
+    },
+    {
+      "id": "DRV-IWDG-028",
+      "level": "driver_interface",
+      "text": "The driver shall be written in C11."
+    },
+    {
+      "id": "DRV-IWDG-029",
+      "level": "driver_interface",
+      "text": "When the caller invokes the start service with a valid configuration structure and a wait limit within its range (every argument valid, DRV-IWDG-049) while the watchdog is not already running, and the start service reaches its reload step without having returned a timeout status for an earlier update (DRV-IWDG-021, DRV-IWDG-034), and any pending reload update completes before the wait limit is reached (DRV-IWDG-031, DRV-IWDG-032), the driver shall write the reload value, taken unchanged from the timeout setting of that structure, to the reload setting of the watchdog peripheral."
+    },
+    {
+      "id": "DRV-IWDG-030",
+      "level": "driver_interface",
+      "text": "If the configuration structure passed to the start service enables the early-wakeup option and its comparison value lies outside the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-033",
+      "level": "driver_interface",
+      "text": "If the driver rejects the early-wakeup comparison value in the configuration structure of the start service as outside the valid range, then the driver shall neither write the early-wakeup comparison setting nor enable the early-wakeup interrupt."
+    },
+    {
+      "id": "DRV-IWDG-031",
+      "level": "driver_interface",
+      "text": "When a service must write the prescaler, reload, window or early-wakeup setting while an update of that same setting is still pending in the watchdog peripheral, the driver shall defer that write until the pending update has completed."
+    },
+    {
+      "id": "DRV-IWDG-032",
+      "level": "driver_interface",
+      "text": "If the wait limit is reached before a pending update of a setting has completed (DRV-IWDG-021), then the driver shall leave that setting unwritten."
+    },
+    {
+      "id": "DRV-IWDG-034",
+      "level": "driver_interface",
+      "text": "If the wait limit is reached before a pending update of a setting has completed (DRV-IWDG-021), then the driver shall not perform any later step of the service that depends on that setting, including the counter load of the start service (DRV-IWDG-035) and enabling the early-wakeup interrupt."
+    },
+    {
+      "id": "DRV-IWDG-035",
+      "level": "driver_interface",
+      "text": "Where the configuration structure does not enable the window option and the watchdog is not already running, and every argument of the start service, including the wait limit, is valid (DRV-IWDG-049), when the start service reaches its final register-update flag check, made after the final write of a configuration setting by the start service, and finds every register-update flag clear within the wait limit, the driver shall then issue one counter reload request in that start-service call."
+    },
+    {
+      "id": "DRV-IWDG-036",
+      "level": "driver_interface",
+      "text": "Where the configuration structure enables the window option and the watchdog is not already running, the driver shall issue no counter reload request in the start service apart from the reload that the window value write (DRV-IWDG-007) causes in the watchdog peripheral."
+    },
+    {
+      "id": "DRV-IWDG-038",
+      "level": "driver_interface",
+      "text": "If the reload value in the timeout setting of the configuration structure passed to the start service lies outside the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-045",
+      "level": "driver_interface",
+      "text": "If the wait limit supplied by the caller to a service that waits for the watchdog peripheral is not an integer number of milliseconds from 1 ms to 1000 ms inclusive, then the driver shall return an invalid-argument status."
+    },
+    {
+      "id": "DRV-IWDG-049",
+      "level": "driver_interface",
+      "text": "If the wait limit supplied by the caller to a service that waits for the watchdog peripheral is not an integer number of milliseconds from 1 ms to 1000 ms inclusive, then the driver shall perform no hardware access during that call."
+    },
+    {
+      "id": "DRV-IWDG-046",
+      "level": "driver_interface",
+      "text": "The driver shall neither report to the caller nor guard against the counter reloads that a configuration write causes."
+    },
+    {
+      "id": "DRV-IWDG-047",
+      "level": "driver_interface",
+      "text": "The driver interface description shall state that the caller refreshes the watchdog only through the refresh service and keeps its refresh timing clear of the window."
+    },
+    {
+      "id": "DRV-IWDG-044",
+      "level": "driver_interface",
+      "text": "If the caller-supplied wait limit is reached in the start service before the driver has found every register-update flag of the watchdog peripheral clear, then the driver shall return a timeout status."
+    },
+    {
+      "id": "DRV-IWDG-048",
+      "level": "driver_interface",
+      "text": "If the caller-supplied wait limit is reached in the start service before every register-update flag of the watchdog peripheral is clear, then the driver shall issue no counter reload request from within that start-service call, from the moment the wait limit is reached until that call returns to the caller."
+    },
+    {
+      "id": "DRV-IWDG-042",
+      "level": "driver_interface",
+      "text": "If the caller invokes the start service while the watchdog is already running, regardless of whether the configuration structure is valid or invalid, then the driver shall issue no write to the watchdog peripheral."
+    },
+    {
+      "id": "DRV-IWDG-043",
+      "level": "driver_interface",
+      "text": "If the caller invokes the start service with valid arguments (a valid configuration structure and a wait limit within its range) while the watchdog is already running, then the driver shall return an already-running status and neither a success status nor an invalid-argument status."
+    }
+  ],
+  "level": "driver_interface",
+  "project_path": "../f023-drv-1",
+  "schema": "forge-c-hi/linked-items@1",
+  "source_sha256": "8fae248d2451b35fde7a3c4529cf81b2a464d0ddff6644587ebec243c07990f0"
+}
