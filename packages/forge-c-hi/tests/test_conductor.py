@@ -722,3 +722,17 @@ def test_an_open_point_id_names_one_question_across_passes(tmp_path):
     sys.path.insert(0, str(CONDUCT.parent))
     from conduct import Conductor
     assert Conductor._same_question(old["text"], reworded["text"]) and not Conductor._same_question(old["text"], new["text"])
+
+
+def test_an_existing_governance_package_with_gaps_is_fixed_before_writing(tmp_path):
+    # driver demo T052: a run stopped during fix-governance; the next run must not write requirements on that package
+    root = tmp_path / "p"
+    root.mkdir()
+    partial = gov(use_cases=[dict(GOV_UC, needs=["STK-SUP-001"])])
+    write(root / "hi/sys-req/governance.json", partial)
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance_fix": gov()},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    write(root / "hi/sys-req/governance.json", partial)              # setup() rewrote the project, not this file
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
+    assert code == 0, out
+    assert [c["phase"] for c in calls[:2]] == ["fix-governance", "create"]

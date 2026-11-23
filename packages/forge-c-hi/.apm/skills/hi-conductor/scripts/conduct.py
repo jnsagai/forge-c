@@ -309,10 +309,10 @@ class Conductor:
         """Feature 020 port: the governance package and its coverage, checked before the requirements are written.
         Coverage gaps go back to the author within the rework limit; what remains blocks the stage."""
         gp = governance.path(self.root, stage)
-        if gp.is_file() and not changed_inputs:
-            return
         wp = rel(self.root, gp)
-        self.run_role("author", stage, "governance", workproduct=wp, changed_inputs=changed_inputs or [])
+        if not gp.is_file() or changed_inputs:
+            self.run_role("author", stage, "governance", workproduct=wp, changed_inputs=changed_inputs or [])
+        # an existing package is checked again on every run (it may have been left with gaps by an earlier run)
         if self.dry_run:
             return
         if not gp.is_file():

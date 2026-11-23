@@ -9,7 +9,8 @@ The gate then checks, without a model:
 - GOV-MISSING / GOV-UNREADABLE / GOV-SCHEMA   the package exists and matches contracts/governance.schema.json;
 - GOV-DUPLICATE-ID                            ids are unique;
 - GOV-ACTOR-UNKNOWN                           every use case names a declared actor;
-- GOV-REF-UNKNOWN                             every need or section named exists in the inputs or the document scope;
+- GOV-REF-UNKNOWN                             every need, constraint or section named exists in the inputs or the
+                                              document scope (constraints may be named but need no use case);
 - GOV-NEED-UNCOVERED                          every stakeholder need is in a use case, out of scope, or an open point;
 - GOV-SECTION-UNCOVERED                       every in-scope document section is in a use case or an open point;
 - GOV-SCOPE-CONFLICT                          a need is both out of scope and served by a use case;
@@ -85,9 +86,12 @@ def check(root: Path, stage: str, *, realization: bool = True) -> list[dict]:
         ids = [x["id"] for x in doc[key]]
         for dup in sorted({i for i in ids if ids.count(i) > 1}):
             add("GOV-DUPLICATE-ID", f"{key}: {dup} is used twice", dup)
-    needs = sorted(n for n, v in trace.input_nodes(root, project).items() if v["kind"] == "needs")
+    nodes = trace.input_nodes(root, project)
+    needs = sorted(n for n, v in nodes.items() if v["kind"] == "needs")
+    # constraints may be named (a driver project's scope is stated as constraints) but need no use case
+    constraints = {n for n, v in nodes.items() if v["kind"] == "constraints"}
     sections, known_sections = _section_refs(project, doc)
-    known = set(needs) | known_sections
+    known = set(needs) | constraints | known_sections
     actors = {a["id"] for a in doc["actors"]}
     out = {o["ref"] for o in doc["out_of_scope"]}
     served: set[str] = set()
@@ -97,7 +101,7 @@ def check(root: Path, stage: str, *, realization: bool = True) -> list[dict]:
         refs = list(uc["needs"]) + list(uc.get("sections") or [])
         for r in refs:
             if r not in known:
-                add("GOV-REF-UNKNOWN", f"{uc['id']} names {r}, which is no stakeholder need of the inputs and no "
+                add("GOV-REF-UNKNOWN", f"{uc['id']} names {r}, which is no need or constraint of the inputs and no "
                     "section of the document scope", uc["id"])
         if not refs:
             add("GOV-UC-EMPTY", f"{uc['id']} serves no need and relies on no section", uc["id"])
@@ -111,7 +115,7 @@ def check(root: Path, stage: str, *, realization: bool = True) -> list[dict]:
     for o in doc["open_points"]:
         for c in o["concerns"]:
             if c not in known:
-                add("GOV-REF-UNKNOWN", f"{o['id']} concerns {c}, which is no stakeholder need and no section", o["id"])
+                add("GOV-REF-UNKNOWN", f"{o['id']} concerns {c}, which is no need, constraint or section", o["id"])
     for n in needs:
         if n not in served | out | concerned:
             add("GOV-NEED-UNCOVERED", f"stakeholder need {n} is in no use case, not declared out of scope and in no "

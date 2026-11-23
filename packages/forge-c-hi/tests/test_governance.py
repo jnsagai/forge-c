@@ -130,3 +130,15 @@ def test_cli_before_and_after_requirements(tmp_project):
     code, out = run()
     assert code == 1 and out["top"][0]["code"] == "GOV-UC-UNREALIZED"
     assert out["written"] == "hi/sys-req/gates/governance.json"
+
+
+def test_constraints_may_be_named_but_need_no_use_case(tmp_project):
+    # driver demo T052: the scope of a driver project is stated as constraints (CON-IWDG-002 lists the services)
+    make_project(tmp_project, sys_items=SYS_ITEMS)
+    uc = dict(governance_doc()["use_cases"][0], needs=["STK-SUP-001", "STK-SUP-002", "CON-SUP-001"])
+    op = {"id": "OP-GOV-001", "text": "Which core clock applies to the timing?", "concerns": ["CON-SUP-001"],
+          "blocks": False, "deferred_to": "sw-req"}
+    put(tmp_project, governance_doc(use_cases=[uc], open_points=[op]))
+    assert codes(tmp_project) == []
+    put(tmp_project, governance_doc())                     # CON-SUP-001 in no use case: not a coverage gap
+    assert codes(tmp_project) == []
