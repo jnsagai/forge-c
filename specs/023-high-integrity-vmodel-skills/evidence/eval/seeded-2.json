@@ -1,0 +1,124 @@
+{
+  "arm": "seeded",
+  "artefacts": [
+    "repos/f023-eval-seeded-2"
+  ],
+  "author_model": null,
+  "created_utc": "2026-11-23T04:36:44Z",
+  "harness_versions": {
+    "claude": "2.1.330 (Claude Code)",
+    "codex": "codex-cli 0.171.0"
+  },
+  "inputs_hash": {
+    "corpus": "3e5b2fadade4d49ac11b21e98c9942c31ede5d4c97cad8fef7dc826f384302ce",
+    "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+    "needs/product-decisions.md": "2f654719f5f8af192135e2f9a0cf35a104fbe3b60cc4e18865be972cbbcbe7f3",
+    "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+  },
+  "inspector_model": "gpt gpt-6.1-terra via codex",
+  "metrics": {
+    "detection_rate": 87.0,
+    "findings_total": 60,
+    "matches": {
+      "D01": [
+        "SYS-WDG-001 The independent watchdog timeout is described only as \"suitable\", so a verifier cannot determine whether it passes. CON-SUP-106 specifies 100 ms.  State the source-specified independent watchdog timeout. ",
+        "SYS-WDG-001 CON-SUP-106 specifies a 100 ms independent watchdog timeout; SYS-WDG-001 states only a suitable timeout.  Specify the required 100 ms timeout. ",
+        "SYS-WDG-001    "
+      ],
+      "D02": [
+        "SYS-MEM-007 \"A small share\" of each control cycle has no measurable acceptance limit. CON-SUP-108 specifies at most 0.5 ms of processor time per control cycle.  State the source-specified processor-time limit. ",
+        "SYS-MEM-007 SYS-MEM-007 limits the run-time check to a small share of each cycle; CON-SUP-108 sets a measurable maximum of 0.5 ms per cycle.  Specify the 0.5 ms processor-time limit per control cycle. "
+      ],
+      "D03": [
+        "SYS-DIAG-013 The maximum request length is \"TBD\", so the acceptance boundary cannot be verified. CON-SUP-138 specifies at most 32 ASCII characters before the line feed.  Replace TBD with the source-specified request-length limit. ",
+        "SYS-DIAG-013 SYS-DIAG-013 leaves the maximum request length as TBD, although CON-SUP-138 specifies 32 ASCII characters. SYS-DIAG-015 refers to absent SYS-DIAG-014 for overlength lines.  Specify the 32-character limit and the required ERR response for overlength lines, including the concurrent-answer",
+        "SYS-DIAG-013    "
+      ],
+      "D04": [
+        "SYS-DIAG-001 The requirement specifies 9600 baud, whereas CON-SUP-007 specifies 115200 baud for the diagnostic line.  Correct the baud rate to the value in CON-SUP-007. ",
+        "SYS-DIAG-001 SYS-DIAG-001 specifies 9600 baud, while CON-SUP-007 requires 115200 baud. This also affects the transmission-time assumptions in CON-SUP-143.  Correct the serial line rate and reassess the diagnostic timing obligations. "
+      ],
+      "D05": [
+        "SYS-PERF-001 The requirement allows 25% processor time, while STK-SUP-014 limits the supervisor to 10%; CON-SUP-114 defines the measurement window and conditions.  Correct the processor-time limit to the stakeholder's 10% limit. ",
+        "SYS-PERF-001 SYS-PERF-001 permits 25% processor time; STK-SUP-014 permits no more than 10%, measured as defined by CON-SUP-114.  Correct the normal-operation processor-time limit to 10%. "
+      ],
+      "D06": [
+        "SYS-WDG-002 The requirement specifies a 2 ms to 40 ms refresh window, while CON-SUP-106 specifies reset for refreshes earlier than 6 ms or later than 12 ms.  Correct the window boundaries to agree with CON-SUP-106. ",
+        "SYS-WDG-002 SYS-WDG-002 specifies a 2–40 ms refresh window, whereas CON-SUP-106 specifies reset for refresh earlier than 6 ms or later than 12 ms.  Correct the window watchdog boundaries to match CON-SUP-106. "
+      ],
+      "D07": [],
+      "D08": [
+        "SYS-RST-002 The requirement stores every start-up reset-cause message in the fault history. CON-SUP-111 requires the cause in a start-up message, while CON-SUP-134 defines the history returned by GET FAULTS as fault reports; it does not authorize storing every reset message there.  Remove the unsupp",
+        "SYS-RST-002 SYS-RST-002 stores every reset cause in fault history, while SYS-SAFE-020 defines that history as the fault reports held for GET FAULTS; CON-SUP-111 requires sending and making the reset cause readable but does not require it as a fault report.  Clarify or remove the reset-cause storage ",
+        "SYS-RST-002    "
+      ],
+      "D09": [
+        "SYS-SAFE-009 The requirement says the latch is never lost under any circumstances, but CON-SUP-117 and SYS-SAFE-013 require it to clear on a power-on reset.  Specify latch retention across the applicable resets and its clearing on power-on reset. ",
+        "SYS-SAFE-009 SYS-SAFE-009 requires the safe-state latch never to be lost under any circumstances, conflicting with SYS-SAFE-013 and CON-SUP-117, which clear it at power-on reset.  Limit retention to the resets and power conditions specified by the inputs. "
+      ],
+      "D10": [],
+      "D11": [
+        "SYS-MEM-006 The requirement sets a 50 ms maximum for a 1 MiB run-time code check, while CON-SUP-108 specifies completion within 11 s. Processing one 1 KiB segment per 10 ms cycle as required by SYS-MEM-005 also cannot complete that pass in 50 ms.  Use the source-specified full-pass limit and reconci",
+        "SYS-MEM-006 SYS-MEM-006 requires a full 1 MiB run-time code pass within 50 ms; CON-SUP-108 specifies 11 s and one 1 KiB segment per 10 ms control cycle.  Correct the full-pass limit to the approved value and reconcile it with the segment rate. "
+      ],
+      "D12": [
+        "SYS-SAFE-017 The requirement prescribes a uint8_t array indexed by fault code. CON-SUP-140 requires separate per-code counts but does not prescribe their representation.  State the required per-code counting behavior without prescribing an unsupported data structure. "
+      ],
+      "D13": [
+        "SYS-DIAG-012 The requirement prescribes a ring buffer and advancement of head and tail pointers. CON-SUP-113 requires the last eight reports, but does not prescribe this data structure or update mechanism.  Specify retention of the eight most recent reports without prescribing the internal buffer im"
+      ],
+      "D14": [
+        "SYS-SAFE-007 The requirement latches at five detections of a fault code. CON-SUP-117 requires latching at the third detection, and CON-SUP-140 retains a separate count for each code.  Use the source-specified third-detection threshold. ",
+        "SYS-SAFE-007 SYS-SAFE-007 latches at five detections, while CON-SUP-117 and CON-SUP-140 require latching at the third detection of a fault code.  Correct the latch threshold and reconcile the related reset and watchdog obligations with it. "
+      ],
+      "D15": [],
+      "D16": [
+        "SYS-TEST-002 SYS-TEST-002 cites STK-SUP-016, but the supplied stakeholder-needs input ends at STK-SUP-015.  Remove or correct the unsupported trace and retain the applicable STK-SUP-015 and CON-SUP-116 links. ",
+        "SYS-TEST-002    SYS-TEST-002"
+      ],
+      "D17": [
+        "SYS-DIAG-003 The transmission deadline is stated as \"within 10 of the detection\" without a unit. CON-SUP-112 specifies 10 ms.  State the deadline with the source-specified unit. ",
+        "SYS-DIAG-003 SYS-DIAG-003 requires transmission within 10 of detection without a unit; CON-SUP-112 specifies 10 ms.  State the time unit and verify the exception against CON-SUP-121. ",
+        "SYS-DIAG-003    "
+      ],
+      "D18": [
+        "SYS-DIAG-019 The requirement mandates AES-128 encryption of every fault report. STK-SUP-012 asks for reports with a code, entity and timestamp, and CON-SUP-112 specifies their serial format; the cited source does not justify encryption.  Remove the encryption obligation or provide an approved source",
+        "SYS-DIAG-019 SYS-DIAG-019 requires AES-128 encryption of every fault report, without support in STK-SUP-012, and conflicts with the specified serial report form in CON-SUP-112.  Remove the unsupported encryption obligation or obtain an approved decision that reconciles it with the interface. "
+      ],
+      "D19": [
+        "SYS-SUP-011 The requirement mandates a named function and SysTick interrupt handler. STK-SUP-001 requires detection of stopped tasks and does not allocate this software implementation.  Replace the implementation prescription with a sourced system-level supervision obligation, or remove it if alread",
+        "SYS-SUP-011 SYS-SUP-011 prescribes a specific function and SysTick interrupt, neither established by CON-SUP-006 nor justified by another supplied source.  Remove the unsupported implementation prescription or provide an approved source and rationale. "
+      ],
+      "D20": [
+        "SET STK-SUP-003 and CON-SUP-104 require detection of missing or out-of-order checkpoints at the end of each control cycle; CON-SUP-122 and CON-SUP-123 define the reported entity. No flow-detection requirement is present.  Add the cycle-end flow detection and entity-selection obligations, including o",
+        "SET    STK-SUP-003"
+      ],
+      "D21": [
+        "SET STK-SUP-007 and CON-SUP-107 require configuration integrity checking. SYS-MEM-002 compares CRCs, but no requirement detects the configuration integrity fault when they differ.  Specify detection of configuration integrity fault code 6 and its detectable instant. ",
+        "SET Coverage partial: STK-SUP-009 - The reaction is specified, but missing flow and configuration integrity detection leave faults without the required trigger; see SQ-01 SET.  Cover STK-SUP-009 with a requirement, or record an open point if the inputs do not say enough. ",
+        "SET Coverage partial: needs/product-decisions.md: CON-SUP-101–116 - Flow and configuration integrity detection are missing; watchdog, memory-check, performance and diagnostic obligations have defects identified in the findings.  Cover needs/product-decisions.md: CON-SUP-101–116 with a requirement, o",
+        "SET Coverage partial: fault detection and reaction - Flow and configuration integrity detection are missing, and diagnostic transmission obligations contain defects; see the corresponding findings.  Cover fault detection and reaction with a requirement, or record an open point if the inputs do not s"
+      ],
+      "D22": [
+        "SYS-DIAG-013 SYS-DIAG-013 leaves the maximum request length as TBD, although CON-SUP-138 specifies 32 ASCII characters. SYS-DIAG-015 refers to absent SYS-DIAG-014 for overlength lines.  Specify the 32-character limit and the required ERR response for overlength lines, including the concurrent-answer"
+      ],
+      "D23": [
+        "SYS-SAFE-030 The requirement requests a software reset within 100 ms after a start-up configuration fault. SYS-SAFE-010 latches the safe state for that fault and SYS-SAFE-014 prohibits requesting a software reset while it is latched; CON-SUP-115 requires the latch.  Remove or correct the reset oblig",
+        "SYS-SAFE-030 SYS-SAFE-030 requests a reset after a start-up configuration fault, while SYS-SAFE-010 and SYS-SAFE-014 latch the safe state and prohibit that reset, as required by CON-SUP-115.  Remove or correct the conflicting reset obligation. ",
+        "SET Coverage partial: STK-SUP-010 - The latch threshold, latch retention and configuration-fault reset obligations conflict with the decisions; see SYS-SAFE-007, SYS-SAFE-009 and SYS-SAFE-030 findings.  Cover STK-SUP-010 with a requirement, or record an open point if the inputs do not say enough. ",
+        "SET Coverage partial: invalid input - Overlength request handling is incomplete and configuration-fault reset behavior conflicts; see SYS-DIAG-013 and SYS-SAFE-030 findings.  Cover invalid input with a requirement, or record an open point if the inputs do not say enough. "
+      ]
+    },
+    "missed": [
+      "D07",
+      "D10",
+      "D15"
+    ],
+    "model_calls": 2,
+    "seeded_detected": 20,
+    "seeded_detected_same_class": 14,
+    "seeded_total": 23,
+    "tokens": null,
+    "wall_time_s": 147.4
+  }
+}

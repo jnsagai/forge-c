@@ -1,0 +1,105 @@
+{
+  "arm": "seeded_baseline",
+  "found": [
+    {
+      "problem": "The set does not require program-flow supervision at the end of each control cycle, detection of missing or out-of-order checkpoints, or selection of the code 4 entity using the first differing expected checkpoint.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not require detection of a configuration integrity fault with code 6 and entity CONFIG when the start-up configuration CRC comparison fails.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not specify that the run-time code check computes and compares a complete program-image CRC using the specified algorithm and reference.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not require a line longer than 32 characters to receive an ERR response when no earlier answer is being transmitted.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not require a fault report raised during an answer to wait for the current line feed and precede subsequent answer lines, or limit answer lines to 40 characters including the line feed.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not require both control outputs to remain low while the safe-state latch is set after start-up checks pass.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The set does not explicitly require the status signal to remain low from reset until the start-up checks pass.",
+      "target_id": "SET"
+    },
+    {
+      "problem": "The requirement permits alive supervision never to start because it says only that supervision starts after the checks pass.",
+      "target_id": "SYS-SUP-003"
+    },
+    {
+      "problem": "The requirement invents a specific function and SysTick interrupt implementation that the stakeholder inputs do not establish.",
+      "target_id": "SYS-SUP-011"
+    },
+    {
+      "problem": "The independent watchdog timeout is unspecified as a suitable timeout instead of the required 100 ms.",
+      "target_id": "SYS-WDG-001"
+    },
+    {
+      "problem": "The specified 2 ms to 40 ms window conflicts with the required 6 ms to 12 ms window.",
+      "target_id": "SYS-WDG-002"
+    },
+    {
+      "problem": "The configuration CRC requirement omits the specified __cfg_start and __cfg_end boundaries and the separate __cfg_crc reference location outside the checked range.",
+      "target_id": "SYS-MEM-002"
+    },
+    {
+      "problem": "The 50 ms full-pass deadline conflicts with the required 11 s deadline and cannot be met by processing one 1 KiB segment per 10 ms cycle for a 1 MiB image.",
+      "target_id": "SYS-MEM-006"
+    },
+    {
+      "problem": "The phrase 'a small share' is not verifiable and omits the required limit of 0.5 ms per control cycle.",
+      "target_id": "SYS-MEM-007"
+    },
+    {
+      "problem": "Requiring a software reset after a configuration fault conflicts with the immediate latched safe state and the prohibition on requesting a reset in SYS-SAFE-014.",
+      "target_id": "SYS-SAFE-030"
+    },
+    {
+      "problem": "The latch threshold of five detections conflicts with the required third detection of the same fault code.",
+      "target_id": "SYS-SAFE-007"
+    },
+    {
+      "problem": "Requiring the latch never to be lost under any circumstances conflicts with the requirement to clear it on power-on reset.",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "problem": "Storing every reset cause in the fault history introduces non-fault entries into a history specified to contain fault reports.",
+      "target_id": "SYS-RST-002"
+    },
+    {
+      "problem": "The specified 9600 baud conflicts with the required 115200 baud and undermines the specified diagnostic transmission timing.",
+      "target_id": "SYS-DIAG-001"
+    },
+    {
+      "problem": "The report deadline omits its time unit and therefore does not specify the required 10 ms limit.",
+      "target_id": "SYS-DIAG-003"
+    },
+    {
+      "problem": "AES-128 encryption is unsupported by the inputs and conflicts with the specified plaintext fault-report format.",
+      "target_id": "SYS-DIAG-019"
+    },
+    {
+      "problem": "The maximum request length is left as TBD even though the product decision specifies 32 ASCII characters.",
+      "target_id": "SYS-DIAG-013"
+    },
+    {
+      "problem": "The requirement references SYS-DIAG-014, which is absent from the requirement set.",
+      "target_id": "SYS-DIAG-015"
+    },
+    {
+      "problem": "The 25% processor-time limit conflicts with the stakeholder maximum of 10%.",
+      "target_id": "SYS-PERF-001"
+    },
+    {
+      "problem": "The requirement cites STK-SUP-016, which does not exist in the stakeholder needs.",
+      "target_id": "SYS-TEST-002"
+    }
+  ]
+}

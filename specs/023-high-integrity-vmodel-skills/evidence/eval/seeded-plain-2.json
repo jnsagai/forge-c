@@ -1,0 +1,98 @@
+{
+  "arm": "seeded_baseline",
+  "artefacts": [
+    "repos/f023-eval-seeded-plain-2"
+  ],
+  "author_model": null,
+  "created_utc": "2026-11-23T04:35:00Z",
+  "harness_versions": {
+    "claude": "2.1.330 (Claude Code)",
+    "codex": "codex-cli 0.171.0"
+  },
+  "inputs_hash": {
+    "corpus": "3e5b2fadade4d49ac11b21e98c9942c31ede5d4c97cad8fef7dc826f384302ce",
+    "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+    "needs/product-decisions.md": "2f654719f5f8af192135e2f9a0cf35a104fbe3b60cc4e18865be972cbbcbe7f3",
+    "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+  },
+  "inspector_model": "gpt gpt-6.1-terra via codex",
+  "metrics": {
+    "detection_rate": 73.9,
+    "findings_total": 25,
+    "matches": {
+      "D01": [
+        "SYS-WDG-001  The independent watchdog timeout is unspecified as a suitable timeout instead of the required 100 ms.  "
+      ],
+      "D02": [
+        "SYS-MEM-007  The phrase 'a small share' is not verifiable and omits the required limit of 0.5 ms per control cycle.  "
+      ],
+      "D03": [
+        "SYS-DIAG-013  The maximum request length is left as TBD even though the product decision specifies 32 ASCII characters.  "
+      ],
+      "D04": [
+        "SYS-DIAG-001  The specified 9600 baud conflicts with the required 115200 baud and undermines the specified diagnostic transmission timing.  "
+      ],
+      "D05": [
+        "SYS-PERF-001  The 25% processor-time limit conflicts with the stakeholder maximum of 10%.  "
+      ],
+      "D06": [
+        "SYS-WDG-002  The specified 2 ms to 40 ms window conflicts with the required 6 ms to 12 ms window.  "
+      ],
+      "D07": [],
+      "D08": [
+        "SYS-RST-002  Storing every reset cause in the fault history introduces non-fault entries into a history specified to contain fault reports.  "
+      ],
+      "D09": [
+        "SYS-SAFE-009  Requiring the latch never to be lost under any circumstances conflicts with the requirement to clear it on power-on reset.  "
+      ],
+      "D10": [],
+      "D11": [
+        "SYS-MEM-006  The 50 ms full-pass deadline conflicts with the required 11 s deadline and cannot be met by processing one 1 KiB segment per 10 ms cycle for a 1 MiB image.  "
+      ],
+      "D12": [],
+      "D13": [],
+      "D14": [
+        "SYS-SAFE-007  The latch threshold of five detections conflicts with the required third detection of the same fault code.  "
+      ],
+      "D15": [],
+      "D16": [
+        "SYS-TEST-002  The requirement cites STK-SUP-016, which does not exist in the stakeholder needs.  "
+      ],
+      "D17": [
+        "SYS-DIAG-003  The report deadline omits its time unit and therefore does not specify the required 10 ms limit.  "
+      ],
+      "D18": [
+        "SYS-DIAG-019  AES-128 encryption is unsupported by the inputs and conflicts with the specified plaintext fault-report format.  "
+      ],
+      "D19": [
+        "SYS-SUP-011  The requirement invents a specific function and SysTick interrupt implementation that the stakeholder inputs do not establish.  "
+      ],
+      "D20": [],
+      "D21": [
+        "SET  The set does not require detection of a configuration integrity fault with code 6 and entity CONFIG when the start-up configuration CRC comparison fails.  ",
+        "SYS-MEM-002  The configuration CRC requirement omits the specified __cfg_start and __cfg_end boundaries and the separate __cfg_crc reference location outside the checked range.  "
+      ],
+      "D22": [
+        "SET  The set does not require a line longer than 32 characters to receive an ERR response when no earlier answer is being transmitted.  ",
+        "SYS-DIAG-015  The requirement references SYS-DIAG-014, which is absent from the requirement set.  "
+      ],
+      "D23": [
+        "SYS-SAFE-030  Requiring a software reset after a configuration fault conflicts with the immediate latched safe state and the prohibition on requesting a reset in SYS-SAFE-014.  "
+      ]
+    },
+    "missed": [
+      "D07",
+      "D10",
+      "D12",
+      "D13",
+      "D15",
+      "D20"
+    ],
+    "model_calls": 1,
+    "seeded_detected": 17,
+    "seeded_detected_same_class": 0,
+    "seeded_total": 23,
+    "tokens": null,
+    "wall_time_s": 43.1
+  }
+}

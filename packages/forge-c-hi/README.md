@@ -136,6 +136,18 @@ reply.
 
 ## Benefits and measured impact
 
+Measured on the fictional Safety Supervisor example, with the same models (Claude Sonnet author, GPT-6.1 Terra
+inspector) in both arms:
+
+| | Without the package (plain prompt) | With the package |
+|---|---|---|
+| Deterministic rule violations per 100 system requirements | 38.2 | 0.0 |
+| Gaps in the needs made explicit as open points | 0 (gaps filled with values) | every one, blocking until decided |
+| Trace coverage (needs to requirements) | 100 % | 100 %, re-checked when sealed |
+| Seeded defects found, 23 per sample, 2 samples (finding on the right item) | 84.8 % | 91.3 % |
+| Seeded defects found with the right checklist class (pre-registered target 80 %) | not measurable | 56.5 % and 60.9 %: **missed** |
+| Cost of system requirements | 1 call, under 1 min | 74 calls, 23 min model time, 4 passes |
+
 See [the impact report](../../specs/023-high-integrity-vmodel-skills/evidence/impact-report.md): rule violations with
 and without the package on the same model and inputs, seeded-defect detection, traceability coverage, and cost. Every
 number there links to stored run evidence, and missed targets are reported as missed.
