@@ -794,3 +794,19 @@ def test_linked_project_items_are_snapshotted_for_the_roles(tmp_path):
     assert t["linked"] == [".hi/linked/01-drv-driver_interface.json"]
     snap = json.loads((root / t["linked"][0]).read_text())
     assert [i["id"] for i in snap["items"]] == ["DRV-WDG-001"] and "sources" not in snap["items"][0]
+
+
+def test_code_gate_issues_go_back_to_the_author(tmp_path, monkeypatch):
+    # full-V run T068: sw-design ended BLOCKED with a build error and a static-analysis error never sent to the author
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct
+    fake = {"verdict": "FAIL", "gates": {"build": "FAIL", "static-analysis": "FAIL", "scope": "FAIL"}, "issues": [
+        {"gate": "build", "code": "BUILD-ERROR", "message": "src/crc32.c:29: 'NULL' undeclared"},
+        {"gate": "static-analysis", "code": "SA-arrayIndexOutOfBounds", "message": "src/diag.c:83"},
+        {"gate": "scope", "code": "SCOPE-OUTSIDE", "message": "x"}]}
+    monkeypatch.setattr(conduct.gates, "gate_stage", lambda *a, **k: fake)
+    _, issues = conduct.Conductor(root, dry_run=True).det_issues("sys-req")
+    assert [i["gate"] for i in issues] == ["build", "static-analysis"]

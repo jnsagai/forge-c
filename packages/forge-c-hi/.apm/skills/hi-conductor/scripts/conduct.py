@@ -45,7 +45,9 @@ from forge_hi.jsonschema_lite import validate  # noqa: E402
 from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
-DET_GATES = ("validate", "quality", "trace", "governance")
+# gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
+# (full-V run T068: sw-design ended with a build error and an out-of-bounds access the author was never shown)
+DET_GATES = ("validate", "quality", "trace", "governance", "build", "static-analysis", "unit-test", "coverage")
 GOV_PHASES = ("governance", "fix-governance")
 
 
@@ -186,8 +188,11 @@ class Conductor:
                       "open points the inputs now answer (remove those). Keep every item the changes do not affect "
                       "exactly as it is, with its id.",
             "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct"
-                         + (" (issues of the `governance` gate may instead need a change in `governance`)."
-                            if t.get("governance") else "."),
+                         + (" (issues of the `governance` gate may instead need a change in `governance`)"
+                            if t.get("governance") else "")
+                         + "; issues of the build, static-analysis, unit-test and coverage gates are fixed in the code "
+                           "or tests inside your write scope. If a fix lies outside your write scope, record an open "
+                           "point instead.",
             "governance": "Before any requirement is written, write the governance package `governance` (contract "
                           "`governance_contract`): the actors, the use cases (each naming every stakeholder need it "
                           "serves and, for a reference document, the sections it relies on), the document scope for "
