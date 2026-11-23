@@ -79,3 +79,6 @@
 - **Driver demo, fourth round:** `CON-IWDG-016..017`. The start service follows the manual's documented sequence, which
   replaces CON-IWDG-015: that decision had forbidden the load step the manual's sequence needs. No early-wakeup value
   is written when the option is off. Raised by driver demo pass 5. Fictional, by Claude.
+- **Driver demo, fifth round:** `CON-IWDG-018..019`. They clarify how two earlier decisions apply to the manual's
+  register-level sequence (the automatic reload caused by the window write, and the shared early-wakeup register).
+  Raised by driver demo pass 6. Fictional, by Claude.
