@@ -118,3 +118,9 @@ decides them.
 | ID | Decision |
 |---|---|
 | CON-SUP-146 | The end symbols `__app_end` and `__cfg_end` are the address **after** the last byte: the checked ranges are `__app_start` up to and excluding `__app_end`, and `__cfg_start` up to and excluding `__cfg_end`. |
+
+**Fifteenth round.** Raised by run 6 pass 4.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-147 | Behaviour at exact equality with a timing limit (CON-SUP-127: equal is within the limit) is verified by **analysis** of the measurement and the comparison (100 µs resolution, a fault only when the measured value is greater than the limit). Tests keep the margins of CON-SUP-127. A requirement that states the equality rule therefore names analysis as its verification method. |
