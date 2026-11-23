@@ -1,0 +1,220 @@
+{
+ "schema": "forge-c-hi/seeded-key@1",
+ "base": {
+  "path": "evidence/us1-p1-demo/run5-pass4-accepted/hi/sys-req/requirements.json",
+  "sha256": "bb9287c590a6715a7364e905e4cb7a2cdb281ced521e7b8d7a05ed906a244e42"
+ },
+ "corpus_sha256": "3e5b2fadade4d49ac11b21e98c9942c31ede5d4c97cad8fef7dc826f384302ce",
+ "total": 23,
+ "classes": [
+  "IQ-01",
+  "IQ-02",
+  "IQ-03",
+  "IQ-04",
+  "IQ-05",
+  "IQ-06",
+  "IQ-07",
+  "IQ-08",
+  "IQ-09",
+  "IQ-10",
+  "IQ-11",
+  "IQ-12",
+  "SQ-01",
+  "SQ-02",
+  "SQ-05"
+ ],
+ "gate_visible": 6,
+ "defects": [
+  {
+   "id": "D01",
+   "target_id": "SYS-WDG-001",
+   "class": "IQ-03",
+   "description": "timeout replaced by 'a suitable timeout' (CON-SUP-106: 100 ms)",
+   "gate": true
+  },
+  {
+   "id": "D02",
+   "target_id": "SYS-MEM-007",
+   "class": "IQ-03",
+   "description": "budget replaced by 'a small share' (CON-SUP-108: 0.5 ms)",
+   "gate": false
+  },
+  {
+   "id": "D03",
+   "target_id": "SYS-DIAG-013",
+   "class": "IQ-03",
+   "description": "line length replaced by TBD (CON-SUP-138: 32)",
+   "gate": true
+  },
+  {
+   "id": "D04",
+   "target_id": "SYS-DIAG-001",
+   "class": "IQ-02",
+   "description": "baud rate 9600 contradicts CON-SUP-007 (115200)",
+   "gate": false
+  },
+  {
+   "id": "D05",
+   "target_id": "SYS-PERF-001",
+   "class": "IQ-02",
+   "description": "25 % contradicts STK-SUP-014 (10 %)",
+   "gate": false
+  },
+  {
+   "id": "D06",
+   "target_id": "SYS-WDG-002",
+   "class": "IQ-02",
+   "description": "window 2..40 ms contradicts CON-SUP-106 (6..12 ms)",
+   "gate": false
+  },
+  {
+   "id": "D07",
+   "target_id": "SYS-SAFE-003",
+   "class": "IQ-04",
+   "description": "the status signal is no longer held low at start-up",
+   "gate": false
+  },
+  {
+   "id": "D08",
+   "target_id": "SYS-RST-002",
+   "class": "IQ-05",
+   "description": "a second obligation joined with 'and store'",
+   "gate": true
+  },
+  {
+   "id": "D09",
+   "target_id": "SYS-SAFE-009",
+   "class": "IQ-06",
+   "description": "replaced by an unverifiable 'never lost under any circumstances'",
+   "gate": false
+  },
+  {
+   "id": "D10",
+   "target_id": "SYS-SAFE-002",
+   "class": "IQ-06",
+   "description": "a 49 ms timing requirement verified by inspection only",
+   "gate": false
+  },
+  {
+   "id": "D11",
+   "target_id": "SYS-MEM-006",
+   "class": "IQ-07",
+   "description": "1 MiB at 1 KiB per 10 ms cycle cannot finish in 50 ms (CON-SUP-108: 11 s)",
+   "gate": false
+  },
+  {
+   "id": "D12",
+   "target_id": "SYS-SAFE-017",
+   "class": "IQ-08",
+   "description": "implementation detail: a uint8_t array indexed by fault code",
+   "gate": false
+  },
+  {
+   "id": "D13",
+   "target_id": "SYS-DIAG-012",
+   "class": "IQ-08",
+   "description": "implementation detail: ring buffer with head and tail pointers",
+   "gate": false
+  },
+  {
+   "id": "D14",
+   "target_id": "SYS-SAFE-007",
+   "class": "IQ-09",
+   "description": "latch at five detections contradicts SYS-SAFE-012 and SYS-WDG-007 (third)",
+   "gate": false
+  },
+  {
+   "id": "D15",
+   "target_id": "SYS-RST-001",
+   "class": "IQ-12",
+   "gate": false,
+   "description": "source STK-SUP-011 (reset cause) replaced by the unrelated STK-SUP-014 (CPU budget)"
+  },
+  {
+   "id": "D16",
+   "target_id": "SYS-TEST-002",
+   "class": "IQ-12",
+   "gate": true,
+   "description": "cites STK-SUP-016, which does not exist"
+  },
+  {
+   "id": "D17",
+   "target_id": "SYS-DIAG-003",
+   "class": "IQ-11",
+   "description": "'within 10' without a unit",
+   "gate": true
+  },
+  {
+   "id": "D18",
+   "target_id": "SYS-DIAG-019",
+   "class": "IQ-01",
+   "description": "invented obligation: no need or constraint asks for encryption",
+   "gate": false
+  },
+  {
+   "id": "D19",
+   "target_id": "SYS-SUP-011",
+   "class": "IQ-10",
+   "description": "software-design detail written as a system requirement",
+   "gate": false
+  },
+  {
+   "id": "D20",
+   "target_id": "SET",
+   "class": "SQ-01",
+   "description": "program-flow supervision removed: STK-SUP-003 uncovered",
+   "gate": true,
+   "removed": [
+    "SYS-SUP-008",
+    "SYS-SUP-009"
+   ],
+   "match_ids": [
+    "STK-SUP-003"
+   ]
+  },
+  {
+   "id": "D21",
+   "target_id": "SET",
+   "class": "SQ-02",
+   "description": "no reaction to a configuration CRC mismatch (fault code 6) any more",
+   "gate": false,
+   "removed": [
+    "SYS-MEM-004"
+   ],
+   "match_ids": [
+    "fault code 6",
+    "configuration integrity",
+    "configuration CRC",
+    "CRC of the configuration",
+    "configuration data block"
+   ]
+  },
+  {
+   "id": "D22",
+   "target_id": "SET",
+   "class": "SQ-02",
+   "description": "no answer to an over-long service request line any more",
+   "gate": false,
+   "removed": [
+    "SYS-DIAG-014"
+   ],
+   "match_ids": [
+    "SYS-DIAG-014",
+    "longer than 32",
+    "over-long",
+    "overlong",
+    "too long"
+   ]
+  },
+  {
+   "id": "D23",
+   "target_id": "SET",
+   "class": "SQ-05",
+   "description": "contradicts SYS-SAFE-010 and SYS-SAFE-014 (latched, no software reset)",
+   "gate": false,
+   "match_ids": [
+    "SYS-SAFE-030"
+   ]
+  }
+ ]
+}

@@ -31,8 +31,12 @@ from forge_hi.io import read_json, sha256_file, write_json  # noqa: E402
 from forge_hi.provenance import utc_now  # noqa: E402
 
 EXAMPLE = PKG / "examples" / "safety-supervisor"
-AUTHOR_CMD = ["claude", "-p", "--allowedTools", "Read"]
-INSPECTOR_CMD = ["codex", "exec", "-s", "read-only", "--skip-git-repo-check"]
+# the reference models of the example project, so that both arms of every comparison use the same model
+_ROLES = json.loads((EXAMPLE / "hi-project.example.json").read_text())["roles"]
+AUTHOR_MODEL, INSPECTOR_MODEL = _ROLES["author"].get("model"), _ROLES["inspector"].get("model")
+AUTHOR_CMD = ["claude", "-p", "--allowedTools", "Read"] + (["--model", AUTHOR_MODEL] if AUTHOR_MODEL else [])
+INSPECTOR_CMD = ["codex", "exec", "-s", "read-only", "--skip-git-repo-check"] + \
+    (["-m", INSPECTOR_MODEL] if INSPECTOR_MODEL else [])
 
 
 def last_json(text: str):
@@ -131,10 +135,11 @@ def baseline(work: Path, out: Path) -> None:
     write_json(work / "hi/sys-req/requirements.json", {
         "schema": "forge-c-hi/requirement-set@1", "stage": "sys-req", "baseline_id": "baseline", "status": "draft",
         "provenance": {"role": "author", "skill": "none (plain prompt)", "skill_version": "-", "harness": "claude-code",
-                       "model": None, "model_family": "claude", "input_hashes": inputs_hash(work),
+                       "model": AUTHOR_MODEL, "model_family": "claude", "input_hashes": inputs_hash(work),
                        "created_utc": utc_now(), "run_id": "baseline"},
         "items": items, "open_points": []})
-    write_json(out, {"arm": "baseline", "author_model": "claude (Claude Code default)", "inspector_model": None,
+    write_json(out, {"arm": "baseline", "author_model": f"claude {AUTHOR_MODEL or '(account default)'} via claude-code",
+                     "inspector_model": None,
                      "inputs_hash": inputs_hash(work), "metrics": dict(metrics_for(work), wall_time_s=wall,
                                                                        model_calls=1, tokens=None,
                                                                        harness_exit=r.returncode),
@@ -165,17 +170,27 @@ def with_package(project: Path, out: Path) -> None:
 
 
 PLAIN_REVIEW = """Review the system requirements in hi/sys-req/requirements.json against the stakeholder needs in needs/.
-List every defect you find. Output only a JSON array of {{"target_id": "<requirement id or SET>", "problem": "<one sentence>"}}.
+List every defect you find. Output only a JSON array of {"target_id": "<requirement id or SET>", "problem": "<one sentence>"}.
 Do not modify any file."""
 
 
+def _text(f: dict) -> str:
+    return " ".join(str(f.get(k, "")) for k in ("target_id", "description", "problem", "requested_change", "need"))
+
+
 def score(found: list[dict], key: list[dict]) -> dict:
+    """A seeded defect is detected when a finding names its item. A set-level defect (target SET) is detected only
+    when a finding cites one of its `match_ids` (the uncovered need, the contradicting items): any set finding would
+    otherwise count for every set defect."""
     by_target: dict[str, list[dict]] = {}
     for f in found:
         by_target.setdefault(str(f.get("target_id")), []).append(f)
     hit, hit_class, misses = 0, 0, []
     for d in key:
-        cands = by_target.get(d["target_id"], [])
+        if d.get("match_ids"):
+            cands = [f for f in found if any(m in _text(f) for m in d["match_ids"])]
+        else:
+            cands = by_target.get(d["target_id"], [])
         if cands:
             hit += 1
             if any(c.get("checklist_item") == d["class"] for c in cands):
@@ -219,7 +234,7 @@ def seeded(work: Path, corpus: Path, key_file: Path, out: Path, plain: bool) -> 
             found.append({"target_id": tgt, "checklist_item": cls, "source": "gate", "need": i.get("target_id")})
     wall = round(time.monotonic() - t0, 1)
     write_json(out, {"arm": "seeded_baseline" if plain else "seeded",
-                     "inspector_model": "gpt (Codex CLI default)", "author_model": None,
+                     "inspector_model": f"gpt {INSPECTOR_MODEL or '(account default)'} via codex", "author_model": None,
                      "inputs_hash": dict(inputs_hash(work), corpus=sha256_file(corpus)),
                      "metrics": dict(score(found, key), wall_time_s=wall, model_calls=calls, tokens=None),
                      "harness_versions": harness_versions(), "artefacts": [f"repos/{Path(work).name}"], "created_utc": utc_now()})
