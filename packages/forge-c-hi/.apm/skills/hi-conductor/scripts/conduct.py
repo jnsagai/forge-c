@@ -335,10 +335,58 @@ class Conductor:
                           findings=[{"gate": "governance", **{k: i[k] for k in ("code", "target_id", "message")
                                                               if k in i}} for i in issues[:40]])
 
+    # ---------------------------------------------------------------- open-point identity across passes
+    def _op_history_path(self, stage: str) -> Path:
+        return self.root / "hi" / stage / "inspection" / "open-points.json"
+
+    def _current_ops(self, stage: str) -> dict[str, str]:
+        try:
+            ops = read_json(self.workproduct(stage)).get("open_points", [])
+        except (OSError, ValueError):
+            ops = []
+        return {str(o.get("id")): str(o.get("text", "")) for o in ops + governance.open_points(self.root, stage)
+                if isinstance(o, dict) and o.get("id")}
+
+    @staticmethod
+    def _same_question(a: str, b: str) -> bool:
+        import difflib
+        return difflib.SequenceMatcher(None, a.lower().split(), b.lower().split()).ratio() >= 0.35
+
+    def op_reuse_issues(self, stage: str) -> list[dict]:
+        """An open point id names one question for the life of the stage (author skills, 88e8bf63). Run 6 pass 3: the
+        author answered OP-SYS-004 and gave a new, unrelated question the same id in the same call. Heuristic: the
+        text of an id from an earlier pass is compared by word similarity; renumbering is always a valid fix."""
+        hp = self._op_history_path(stage)
+        hist = read_json(hp).get("ids", {}) if hp.is_file() else {}
+        out = []
+        for oid, text in self._current_ops(stage).items():
+            h = hist.get(oid)
+            if h and (h.get("retired") or not self._same_question(h.get("text", ""), text)):
+                why = "was answered and removed in an earlier pass" if h.get("retired") else \
+                    "named a different question in an earlier pass"
+                out.append({"gate": "quality", "code": "IQ-12.open-point-id-reused", "target_id": oid,
+                            "message": f"{oid} {why} ({h.get('text', '')[:120]!r}); give this question a new id that "
+                                       "was never used in this stage"})
+        return out
+
+    def record_open_points(self, stage: str) -> None:
+        if self.dry_run or not self.workproduct(stage).is_file() or self.op_reuse_issues(stage):
+            return
+        hp = self._op_history_path(stage)
+        hist = read_json(hp).get("ids", {}) if hp.is_file() else {}
+        now = self._current_ops(stage)
+        for oid, text in now.items():
+            hist[oid] = {"text": text[:400], "retired": False}
+        for oid in hist:
+            if oid not in now:
+                hist[oid]["retired"] = True
+        write_json(hp, {"schema": "forge-c-hi/open-point-history@1", "run_id": self.run_id, "ids": hist})
+
     def det_issues(self, stage: str) -> tuple[dict, list[dict]]:
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
         # suspect links are cleared by re-inspection, not by the author
         issues = [i for i in summ["issues"] if i.get("gate") in DET_GATES and i.get("code") != "TR-SUSPECT"]
+        issues += self.op_reuse_issues(stage)
         self.event(stage=stage, step="gate", verdict=summ["verdict"], gates=summ["gates"], issues=len(summ["issues"]))
         return summ, issues
 
@@ -735,6 +783,7 @@ class Conductor:
                 srnd += 1
         except Blocked as exc:
             self.save_findings(stage, all_findings)
+            self.record_open_points(stage)
             summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc()) if self.workproduct(stage).is_file() else None
             self.set_state(stage, "blocked", reason=str(exc)[:300])
             self.event(stage=stage, step="stage-end", outcome="BLOCKED", reason=str(exc)[:300])
@@ -759,6 +808,7 @@ class Conductor:
                 f"open major findings {open_major[:5]}" if open_major else "") if x)
         else:
             outcome, state, reason = "ACCEPTED", "accepted", ""
+        self.record_open_points(stage)
         if state == "accepted":
             trace.rebaseline(self.root, stage)
         self.set_state(stage, state, outcome=outcome, reason=reason.strip()[:300], gates=summ["gates"],

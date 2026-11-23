@@ -688,3 +688,37 @@ def test_coverage_row_that_points_at_a_finding_or_open_point_is_tracked(tmp_path
     auto = [f["description"] for f in r1 if f["description"].startswith("Coverage")]
     assert auto == ["Coverage partial: shutdown - Only power loss is covered."]
     assert code == 0, out                                   # the one real gap was reworked in round 2
+
+
+def test_an_open_point_id_names_one_question_across_passes(tmp_path):
+    # run 6 pass 3: OP-SYS-004 was answered, and the author gave a new, unrelated question the same id
+    root = tmp_path / "p"
+    root.mkdir()
+    old = {"id": "OP-SYS-001", "text": "Which fault reports wait while an answer line is being transmitted?",
+           "raised_by": "author", "blocks": True}
+    new = {"id": "OP-SYS-001", "text": "Does the checked CRC range include the byte at the end symbol address?",
+           "raised_by": "author", "blocks": True}
+    reworded = dict(old, text="Which fault reports must wait while an answer line is still being transmitted?")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "open_points": [old]},
+                      "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 1                  # blocked on the open point
+    hist = json.loads((root / "hi/sys-req/inspection/open-points.json").read_text())["ids"]
+    assert hist["OP-SYS-001"]["retired"] is False
+    with open(root / "needs/stakeholder-needs.md", "a") as fh:
+        fh.write("\nA decision by the product owner.\n")
+    fresh_id = dict(new, id="OP-SYS-002")
+    sc.write_text(json.dumps({"author": {"items": SYS_ITEMS, "update": {"open_points": [new]},
+                                         "fix_open_points": [fresh_id]},
+                              "inspector": {"item_rounds": [{}], "set_rounds": [[]]}}))
+    log = root.parent / f"{root.name}-calls.jsonl"
+    log.unlink()
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert [c["phase"] for c in calls if c["role"] == "author"][:2] == ["update", "fix-gates"]
+    wp = json.loads((root / "hi/sys-req/requirements.json").read_text())
+    assert [o["id"] for o in wp["open_points"]] == ["OP-SYS-002"]
+    hist = json.loads((root / "hi/sys-req/inspection/open-points.json").read_text())["ids"]
+    assert hist["OP-SYS-001"]["retired"] is True and hist["OP-SYS-002"]["retired"] is False
+    # a reworded question keeps its id
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    assert Conductor._same_question(old["text"], reworded["text"]) and not Conductor._same_question(old["text"], new["text"])

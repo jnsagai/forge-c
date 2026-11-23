@@ -10,6 +10,7 @@ Scenario keys:
   author.split            {item_id: [new items]} appended on rework of item_id
   author.rework_touch     true: every rework also writes "rework round N" into the item's rationale (a real change)
   author.fix_gates        [{id, field: value}] applied on phase "fix-gates"
+  author.fix_open_points  open points written on phase "fix-gates" (replacing the list)
   author.set_fix          {item_id: {field: value}} applied on phase "rework-set"
   author.update           {"patch": {item_id: {field: value}}, "open_points": [...]} applied on phase "update"
   author.skip_create_once the first "create" call writes nothing (an author that forgets the work product)
@@ -118,6 +119,8 @@ def main() -> int:
             elif task["phase"] == "fix-gates":
                 for fix in a.get("fix_gates", []):
                     by_id[fix["id"]].update({k: v for k, v in fix.items() if k != "id"})
+                if "fix_open_points" in a:
+                    doc["open_points"] = a["fix_open_points"]
             elif task["phase"] == "update":
                 up = a.get("update", {})
                 for iid, patch in up.get("patch", {}).items():
