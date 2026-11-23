@@ -148,9 +148,16 @@ def with_package(project: Path, out: Path) -> None:
     roles = [e for e in events if e.get("step") == "role" and e.get("stage") == "sys-req"]
     wall = round(sum(e.get("duration_s") or 0 for e in roles), 1)
     ends = [e for e in events if e.get("step") == "stage-end" and e.get("stage") == "sys-req"]
-    write_json(out, {"arm": "with_package", "author_model": "claude (Claude Code default)",
-                     "inspector_model": "gpt (Codex CLI default)", "inputs_hash": inputs_hash(project),
+    roles_cfg = json.loads((project / ".hi" / "project.json").read_text()).get("roles", {})
+
+    def label(r: str) -> str:
+        b = roles_cfg.get(r, {})
+        return f"{b.get('model_family')} {b.get('model') or '(account default)'} via {b.get('harness')}"
+
+    write_json(out, {"arm": "with_package", "author_model": label("author"),
+                     "inspector_model": label("inspector"), "inputs_hash": inputs_hash(project),
                      "metrics": dict(metrics_for(project), wall_time_s_in_models=wall, model_calls=len(roles),
+                                     passes=len(list((project / ".hi" / "runs").glob("*/events.jsonl"))),
                                      model_calls_by_role=_count(f"{e['role']}:{e['phase']}" for e in roles),
                                      stage_outcome=ends[-1].get("outcome") if ends else None,
                                      gate_verdicts=ends[-1].get("gates") if ends else None, tokens=None),

@@ -1,0 +1,39 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-09",
+      "description": "The statement says each per-code count includes every detection after the power-on reset. SYS-SAFE-017 assigns detections to separate fault-code counts, and SYS-SAFE-018 returns each count to zero after 60 s of fault-free operation, as required by CON-SUP-140.",
+      "id": "F-sys-req-item-r11-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:26:43Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Limit the initialization outcome to preserving subsequent detections in their corresponding per-code counts, subject to the reset rule in SYS-SAFE-018.",
+      "round": 11,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-027"
+    }
+  ],
+  "judged": [
+    "SYS-SAFE-013",
+    "SYS-SAFE-023",
+    "SYS-SAFE-024",
+    "SYS-SAFE-025",
+    "SYS-SAFE-026",
+    "SYS-SAFE-027"
+  ],
+  "phase": "item",
+  "round": 11,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

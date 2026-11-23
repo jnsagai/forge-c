@@ -1,0 +1,273 @@
+{
+  "findings": [
+    {
+      "checklist_item": "IQ-09",
+      "description": "The requirement applies the 49 ms pin change to every fault detection. SWR-SAFE-011 counts a code 8 report as a detection for the latch rule, while CON-SUP-130 and CON-SUP-137 say a non-latching code 8 report alone does not enter the safe state.",
+      "id": "F-sw-req-item-r1-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:19:23Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Limit the pin-change obligation consistently with the specified exception for a non-latching code 8 report.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-002"
+    },
+    {
+      "checklist_item": "IQ-09",
+      "description": "The requirement calls for the status signal to be driven high when the start-up checks pass and no fault has been detected. A latch retained across a watchdog reset under SWR-SAFE-009 can still be set at that point; SWR-SAFE-007 and SWR-SAFE-010 require the safe state to remain latched until power-on reset.",
+      "id": "F-sw-req-item-r1-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:19:23Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Make the operational status indication conditional on the safe-state latch being clear.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-005"
+    },
+    {
+      "checklist_item": "IQ-10",
+      "description": "The requirement makes software responsible for keeping the signals low from reset by configuring the pins. CON-SUP-132 and SYS-PLAT-002 allocate the interval before software configures the pins to external pull-downs; software cannot configure them from the instant of reset.",
+      "id": "F-sw-req-item-r1-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:19:23Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the software obligation from the point at which software can configure and drive the pins, and reference the board's reset-state provision for the preceding interval.",
+      "round": 1,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-WDG-006"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "The report format applies when a fault is detected, but CON-SUP-137 says a code 8 report at start-up is not a fault detection except for the latch count. SWR-RST-003 requires that report without specifying its format, so the code 8 report's required format is unclear.",
+      "id": "F-sw-req-item-r1-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:19:23Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Explicitly apply the fault-report format to the watchdog reset report required by SWR-RST-003.",
+      "round": 1,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-DIAG-002"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "The timestamp is defined as the time of detection since the latest reset, but a code 8 report records a watchdog reset that already occurred and CON-SUP-137 says the report is not a fault detection in the ordinary sense. The timestamp event for that report is therefore unclear.",
+      "id": "F-sw-req-item-r1-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:19:23Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain or reference a product decision defining the timestamp event for a code 8 report and specify it in the requirement.",
+      "round": 1,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-DIAG-005"
+    },
+    {
+      "checklist_item": "IQ-09",
+      "description": "The instruction to keep all three signals low has no end condition. After a watchdog reset, SWR-SAFE-016 permits start-up to continue when code 8 does not latch the safe state, while SWR-SAFE-005 requires the status signal to become high after successful start-up. These obligations conflict if the signals must remain low indefinitely.",
+      "id": "F-sw-req-item-r2-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:21:12Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define how long the signals must remain low after this reset, consistent with the latch and subsequent operational-state requirements.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-WDG-006"
+    },
+    {
+      "checklist_item": "IQ-03",
+      "description": "The condition 'no fault has been detected' is ambiguous after a watchdog reset: SWR-SAFE-011 counts the code 8 report as a detection for the latch rule, while SWR-SAFE-016 and CON-SUP-137 allow start-up to continue when it does not latch the safe state. It is unclear whether that report prevents the status signal from becoming high.",
+      "id": "F-sw-req-item-r2-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:21:12Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Clarify the fault condition so that the operational indication is unambiguous after a non-latching code 8 report.",
+      "round": 2,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-005"
+    },
+    {
+      "blocked_by": "OP-SWR-003",
+      "checklist_item": "IQ-02",
+      "description": "SYS-DIAG-005 specifies a timestamp for fault reports, but this requirement excludes code 8. SWR-DIAG-002 still requires the timestamp field in code 8 reports, and OP-SWR-003 records that its timestamp event has not been decided.",
+      "id": "F-sw-req-item-r2-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:21:12Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SWR-003 and specify the timestamp event for code 8 reports consistently with the approved decision.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-DIAG-005"
+    },
+    {
+      "blocked_by": "OP-SWR-003",
+      "checklist_item": "IQ-02",
+      "description": "SYS-DIAG-005 specifies a timestamp for fault reports, but SWR-DIAG-005 excludes code 8. SWR-DIAG-002 still requires the timestamp field in code 8 reports, and OP-SWR-003 records that its timestamp event has not been decided.",
+      "id": "F-sw-req-set-r1-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:22:41Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the code 8 timestamp event and specify its value consistently with the fault report format and the system requirement.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-DIAG-005"
+    },
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines retention of the latch, fault history, fault count and per-code detection counts; any one of those can be lost while the others are retained. SYS-SAFE-009 and SYS-SAFE-020 through SYS-SAFE-022 specify these separately.",
+      "id": "F-sw-req-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:31:37Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Limit this requirement to latch retention and leave the other retention obligations to the separately stated requirements.",
+      "round": 4,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-009"
+    },
+    {
+      "checklist_item": "IQ-09",
+      "description": "The requirement says the software loses the latch and counts at loss of power, although software cannot act while unpowered. It also says each count starts at zero after power-on reset without ordering initialization before new events, which can erase start-up detections or reports required by SWR-SAFE-027 and SWR-SAFE-028. SYS-SAFE-013 instead specifies clearing the prior latch at power-on reset without preventing it from being set again.",
+      "id": "F-sw-req-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:31:37Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the software obligation at power-on reset in line with SYS-SAFE-013, preserving later latch events, and leave history and count initialization to the separate requirements.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-013"
+    },
+    {
+      "checklist_item": "IQ-05",
+      "description": "Loss of the latch, fault history, fault count and per-code detection counts are independently judgeable obligations. The system requirements split these behaviors between SYS-SAFE-013 and SYS-SAFE-024 through SYS-SAFE-027.",
+      "id": "F-sw-req-item-r4-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:31:37Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Restrict this requirement to the prior safe-state latch and rely on the separate requirements for fault history and count initialization.",
+      "round": 4,
+      "severity": "major",
+      "status": "resolved",
+      "target_id": "SWR-SAFE-013"
+    }
+  ],
+  "run_id": "r20261123T002306Z-99fe51",
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

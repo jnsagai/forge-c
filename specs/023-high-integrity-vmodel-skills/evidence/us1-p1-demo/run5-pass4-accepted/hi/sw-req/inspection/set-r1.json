@@ -1,0 +1,33 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SWR-003",
+      "checklist_item": "IQ-02",
+      "description": "SYS-DIAG-005 specifies a timestamp for fault reports, but SWR-DIAG-005 excludes code 8. SWR-DIAG-002 still requires the timestamp field in code 8 reports, and OP-SWR-003 records that its timestamp event has not been decided.",
+      "id": "F-sw-req-set-r1-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:22:41Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T001206Z-ef303a",
+        "skill": "hi-sw-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the code 8 timestamp event and specify its value consistently with the fault report format and the system requirement.",
+      "round": 1,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWR-DIAG-005"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 1,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-req"
+}

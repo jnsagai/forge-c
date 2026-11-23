@@ -1,0 +1,61 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-02",
+      "description": "The requirement limits the GET FAULTS response to requests received when no earlier request is unanswered and no transmission is in progress. CON-SUP-113 and CON-SUP-138 specify a response within 50 ms without those conditions. OP-SYS-002 records the missing concurrency decision.",
+      "id": "F-sys-req-item-r5-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:09:44Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the request concurrency and timing rules with the product owner, then align the requirement and its sources with that decision.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-009"
+    },
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-07",
+      "description": "The unconditional 50 ms response to GET RESET can conflict with an ongoing GET FAULTS response or other diagnostic transmission on the same 115200-baud line. CON-SUP-118 and CON-SUP-138 give no concurrency or request-spacing rule; OP-SYS-002 records the decision needed to establish feasible behavior.",
+      "id": "F-sys-req-item-r5-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:09:44Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the permitted request concurrency and response timing with the product owner, then specify a feasible GET RESET obligation consistent with that decision.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-010"
+    }
+  ],
+  "judged": [
+    "SYS-DIAG-009",
+    "SYS-DIAG-010",
+    "SYS-SAFE-011",
+    "SYS-SAFE-016"
+  ],
+  "phase": "item",
+  "round": 5,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -1,0 +1,61 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines loss of the latch, fault history, fault count and per-code detection counts at power loss. Each can pass or fail independently; CON-SUP-110 and CON-SUP-125 identify distinct retained information.",
+      "id": "F-sys-req-item-r9-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:24:26Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Split the power-loss obligations so each independently verifiable item of retained information is addressed separately.",
+      "round": 9,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-013"
+    },
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines initialization of the fault report count from SYS-DIAG-008 and the separate per-code detection counts from SYS-SAFE-017. One count can be initialized correctly while the other is not.",
+      "id": "F-sys-req-item-r9-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:24:26Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Separate initialization of the fault report count from initialization of the per-code detection counts.",
+      "round": 9,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-023"
+    }
+  ],
+  "judged": [
+    "SYS-SAFE-009",
+    "SYS-SAFE-013",
+    "SYS-SAFE-020",
+    "SYS-SAFE-021",
+    "SYS-SAFE-022",
+    "SYS-SAFE-023"
+  ],
+  "phase": "item",
+  "round": 9,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

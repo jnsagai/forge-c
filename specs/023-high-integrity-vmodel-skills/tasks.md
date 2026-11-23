@@ -168,7 +168,7 @@ BLOCKED or NOT_RUN.
   - severity rules
 - [x] T039 [P] [US1] Write `hi-sw-req-author/SKILL.md` (software level; allocation from SYS; middleware and application focus; the driver mode section is added in US2) and `hi-sw-req-inspector/SKILL.md`
 - [x] T040 [P] [US1] Write the demo inputs for the **Safety Supervisor** (owner decision 2026-11-22: one real STM32N6 project carried down the whole V): `PKG/examples/safety-supervisor/needs/stakeholder-needs.md` with original natural-language needs (alive, deadline and program-flow supervision of cyclic tasks; IWDG/WWDG servicing only while healthy; CRC self-test of code and configuration at start-up and periodically; safe state and reset within stated times; fault reporting over USART; status pin), `needs/constraints.md` (target STM32N657X0, Cortex-M55, Renode simulation, peripherals IWDG/WWDG/CRC/TIM/USART/GPIO/RCC, no vendor text) and `hi-project.example.json` (generic, HI-2, reference role bindings)
-- [ ] T041 [US1] Run the P1 demo with the reference config (Claude Code author, Codex/GPT inspector) on a clean consumer project per quickstart V2. Store the run directory, the events, the gate results and the trace matrix in `FEAT/evidence/us1-p1-demo/`. Report READY or BLOCKED honestly
+- [X] T041 [US1] Run the P1 demo with the reference config (Claude Code author, Codex/GPT inspector) on a clean consumer project per quickstart V2. Store the run directory, the events, the gate results and the trace matrix in `FEAT/evidence/us1-p1-demo/`. Report READY or BLOCKED honestly
 - [ ] T042 [US1] Run the quickstart V3 negative cases (a deleted link, a forced NOT_RUN, an out-of-scope write) and store them in `FEAT/evidence/us1-negative/`
 
 **Checkpoint**: US1 is demonstrable on its own. This is the MVP.
@@ -191,7 +191,7 @@ BLOCKED or NOT_RUN.
   - a package is still produced when stages failed
 - [x] T044 [US5] Implement `ENG/seal.py` and `hi seal`. Adapt the manifest and hash logic from `factory/release-manager/scripts/build_review_package.py`, with attribution. Render `findings.md` and `gates.md`, and produce `review.tar.gz` deterministically (sorted entries, fixed mtime). Make T043 pass
 - [x] T045 [P] [US5] Write `hi-release/SKILL.md`. The release role summarises the gaps, never upgrades a status, refuses certification or release claims (and records the request as a finding), then calls `hi seal`
-- [ ] T046 [US5] Seal the US1 evidence run and verify it with an independent hash re-check script, `PKG/.apm/skills/hi-release/scripts/verify_package.py` (shipped with the release skill so consumers have it). Store the result in `FEAT/evidence/us5-seal/`
+- [X] T046 [US5] Seal the US1 evidence run and verify it with an independent hash re-check script, `PKG/.apm/skills/hi-release/scripts/verify_package.py` (shipped with the release skill so consumers have it). Store the result in `FEAT/evidence/us5-seal/`
 
 **Checkpoint M1**: the US1 and US5 evidence exists, `pytest` is green, and the regression `python3 tests/spec/validate_design.py` passes.
 

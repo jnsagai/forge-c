@@ -1,0 +1,62 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines retention of the latch, fault history, fault count and per-code detection counts across resets. Retention of any one can pass while another fails.",
+      "id": "F-sys-req-item-r8-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:23:39Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Split the independently verifiable retention obligations so each can be judged separately.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-009"
+    },
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines loss of the latch, fault history and counts at power loss with initialization of each count after power-on reset. These behaviors can pass or fail independently.",
+      "id": "F-sys-req-item-r8-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:23:39Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Split the independently verifiable power-loss and count-initialization obligations.",
+      "round": 8,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-013"
+    }
+  ],
+  "judged": [
+    "SYS-SAFE-018",
+    "SYS-SAFE-019",
+    "SYS-SAFE-009",
+    "SYS-SAFE-013",
+    "SYS-DIAG-005",
+    "SYS-DIAG-014",
+    "SYS-DIAG-015"
+  ],
+  "phase": "item",
+  "round": 8,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

@@ -3,8 +3,8 @@
   "artefacts": [
     "repos/f023-p1-demo-3"
   ],
-  "author_model": "claude (Claude Code default)",
-  "created_utc": "2026-11-22T22:43:44Z",
+  "author_model": "claude sonnet via claude-code",
+  "created_utc": "2026-11-23T00:33:14Z",
   "harness_versions": {
     "claude": "2.1.330 (Claude Code)",
     "codex": "codex-cli 0.171.0"
@@ -14,7 +14,7 @@
     "needs/product-decisions.md": "6c59d12cccfeb816b295b134d41674bec25bdc633a67f4bd2bb6fa8c6c7fd077",
     "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
   },
-  "inspector_model": "gpt (Codex CLI default)",
+  "inspector_model": "gpt gpt-6.1-terra via codex",
   "metrics": {
     "gate_verdicts": {
       "independence": "PASS",
@@ -34,6 +34,7 @@
       "inspector:set": 4
     },
     "open_points": 12,
+    "passes": 1,
     "rule_violations": 0,
     "rule_violations_by_code": {},
     "rule_violations_per_100": 0.0,

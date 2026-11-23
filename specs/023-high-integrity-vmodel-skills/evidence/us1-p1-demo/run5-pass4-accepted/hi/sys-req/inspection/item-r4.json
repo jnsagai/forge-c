@@ -1,0 +1,89 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-05",
+      "description": "The requirement combines counting a code 8 report toward the latch rule with continuing start-up without entering the safe state. Either behavior could pass while the other fails.",
+      "id": "F-sys-req-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:08:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Separate the latch-counting obligation from the start-up continuation obligation so each can be judged independently.",
+      "round": 4,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-011"
+    },
+    {
+      "checklist_item": "IQ-07",
+      "description": "The unconditional 50 ms response limit is infeasible for sufficiently frequent GET FAULTS requests. With eight retained reports, each response is much longer than its request; repeated requests can arrive faster than the 115200-baud line can transmit the answers. CON-SUP-138 specifies no request-spacing or concurrency limit.",
+      "id": "F-sys-req-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:08:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain an agreed service-request rate or concurrency rule, or another source-supported response policy, and state the resulting testable conditions.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-009"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "The answer requires <cause> to be one of five values but does not require it to represent the classified reset cause. Returning POR for every request would satisfy the stated value constraint while failing CON-SUP-118 and CON-SUP-111.",
+      "id": "F-sys-req-item-r4-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:08:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Require the returned value to correspond to the classified reset cause, with the mapping between reset classes and response values specified or referenced.",
+      "round": 4,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-DIAG-010"
+    }
+  ],
+  "judged": [
+    "SYS-WDG-003",
+    "SYS-WDG-005",
+    "SYS-WDG-008",
+    "SYS-SAFE-001",
+    "SYS-SAFE-011",
+    "SYS-DIAG-006",
+    "SYS-DIAG-009",
+    "SYS-DIAG-012",
+    "SYS-DIAG-010",
+    "SYS-DIAG-011",
+    "SYS-DIAG-013",
+    "SYS-DIAG-014"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

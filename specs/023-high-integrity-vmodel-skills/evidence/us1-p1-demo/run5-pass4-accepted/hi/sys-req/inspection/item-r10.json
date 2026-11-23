@@ -1,0 +1,149 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "IQ-04",
+      "description": "“After a loss of power” has no endpoint, so the prohibition on holding the latch can be read as continuing after subsequent faults. CON-SUP-117 requires a new latch on the third detection.",
+      "id": "F-sys-req-item-r10-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the power-on initialization point and make clear that the prior latch is cleared without preventing a later latch.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-013"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "“After a loss of power” has no endpoint, so the prohibition on holding fault history can be read as preventing storage of new reports after power returns. CON-SUP-110 concerns history surviving power loss, not new history.",
+      "id": "F-sys-req-item-r10-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that the pre-loss history is cleared at power-on and identify when initialization is complete.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-024"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "The prohibition on holding the fault count “after a loss of power” has no endpoint. CON-SUP-125 requires the count of reports since the last power-on reset, including new reports.",
+      "id": "F-sys-req-item-r10-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that the pre-loss count is cleared at power-on without preventing subsequent reports from being counted.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-025"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "The prohibition on holding per-code counts “after a loss of power” has no endpoint. CON-SUP-140 requires new detections to be counted for the latch rule.",
+      "id": "F-sys-req-item-r10-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that the pre-loss counts are cleared at power-on without preventing subsequent detections from being counted.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-026"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "Setting the report count to zero “after a power-on reset” does not establish whether initialization precedes a start-up fault report. A later zeroing could erase a report that CON-SUP-125 requires the count to include.",
+      "id": "F-sys-req-item-r10-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify initialization before any post-reset fault report can be counted.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-023"
+    },
+    {
+      "checklist_item": "IQ-04",
+      "description": "Setting per-code counts to zero “after a power-on reset” does not establish whether initialization precedes a start-up fault detection. A later zeroing could erase a detection needed by the CON-SUP-140 latch rule.",
+      "id": "F-sys-req-item-r10-006",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:25:22Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T002306Z-99fe51",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify initialization before any post-reset fault detection can be counted.",
+      "round": 10,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYS-SAFE-027"
+    }
+  ],
+  "judged": [
+    "SYS-SAFE-013",
+    "SYS-SAFE-023",
+    "SYS-SAFE-024",
+    "SYS-SAFE-025",
+    "SYS-SAFE-026",
+    "SYS-SAFE-027"
+  ],
+  "phase": "item",
+  "round": 10,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

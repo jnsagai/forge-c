@@ -1,0 +1,2 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T002306Z-99fe51/events.jsonl","run_id":"r20261123T002306Z-99fe51","stages":[{"carried":0,"gates":{"independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"outcome":"ACCEPTED","stage":"sys-req"},{"carried":0,"gates":{"doc-sources":"PASS","independence":"PASS","quality":"PASS","scope":"PASS","trace":"PASS","validate":"PASS"},"outcome":"ACCEPTED","stage":"sw-req"}],"status":"DONE"}
+exit=0
