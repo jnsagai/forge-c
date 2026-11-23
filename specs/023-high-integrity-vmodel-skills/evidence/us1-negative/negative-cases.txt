@@ -1,27 +1,27 @@
 ## 0. Control: the unchanged copy seals READY
-(copy of run 5 with the current package installed, committed: 4ba24ef)
+(copy of the READY project with the current package installed, committed: 6e7d34b)
 $ python3 .claude/skills/hi-gates/scripts/hi.py seal
-{"cmd":"seal","files":69,"gaps":1,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044823Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"}]}
-exit 1
+{"cmd":"seal","files":81,"gaps":0,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T052733Z","status":"READY_FOR_OFFLINE_REVIEW","top":[]}
+exit 0
 
-## 1. Delete one trace link (SWR-SAFE-002 no longer cites SYS-SAFE-002, its only refinement)
-(copy of run 5 with the current package installed, committed: e4e20b0)
-removed SWR-SAFE-002 -> SYS-SAFE-002; remaining sources: ['SYS-SAFE-001']
+## 1. Delete one trace link: a software requirement no longer cites the system requirement only it refines
+(copy of the READY project with the current package installed, committed: be9c072)
+removed SWR-TIM-001 -> SYS-SUP-002; remaining sources: ['SYS-SUP-056']
 $ python3 .claude/skills/hi-gates/scripts/hi.py trace --stage sw-req
-{"cmd":"trace","gate":"trace","issues":2,"top":[{"code":"TR-SUSPECT","target_id":"SWR-SAFE-002"},{"code":"TR-UNCOVERED","target_id":"SYS-SAFE-002"}],"verdict":"FAIL","written":"hi/trace-matrix.md"}
+{"cmd":"trace","gate":"trace","issues":2,"top":[{"code":"TR-SUSPECT","target_id":"SWR-TIM-001"},{"code":"TR-UNCOVERED","target_id":"SYS-SUP-002"}],"verdict":"FAIL","written":"hi/trace-matrix.md"}
 exit 1
 $ python3 .claude/skills/hi-gates/scripts/hi.py seal
-{"cmd":"seal","files":69,"gaps":4,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044828Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"},{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-FAIL","source":"sw-req/trace"}]}
+{"cmd":"seal","files":81,"gaps":3,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T052738Z","status":"BLOCKED","top":[{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-FAIL","source":"sw-req/trace"}]}
 exit 1
 
 ## 2a. A required gate that cannot run: a document source without a local index
-(copy of run 5 with the current package installed, committed: 57d8d47)
-declared RM-DEMO and cited it from SWR-SUP-001 - no 'hi doc-index' was run
+(copy of the READY project with the current package installed, committed: c132d7f)
+declared RM-DEMO and cited it from SWR-ALV-001 - no 'hi doc-index' was run
 $ python3 .claude/skills/hi-gates/scripts/hi.py gate sw-req
-{"cmd":"gate","gates":{"doc-sources":"NOT_RUN","independence":"PASS","quality":"PASS","scope":"FAIL","trace":"FAIL","validate":"PASS"},"issues":2,"stage":"sw-req","top":[{"code":"TR-SUSPECT","gate":"trace","target_id":"SWR-SUP-001"},{"code":"SCOPE-OUTSIDE","gate":"scope","target_id":"docs/rm.pdf"}],"verdict":"FAIL","written":"hi/sw-req/gates/"}
+{"cmd":"gate","gates":{"doc-sources":"NOT_RUN","independence":"PASS","quality":"PASS","scope":"FAIL","trace":"FAIL","validate":"PASS"},"issues":2,"stage":"sw-req","top":[{"code":"TR-SUSPECT","gate":"trace","target_id":"SWR-ALV-001"},{"code":"SCOPE-OUTSIDE","gate":"scope","target_id":"docs/rm.pdf"}],"verdict":"FAIL","written":"hi/sw-req/gates/"}
 exit 1
 $ python3 .claude/skills/hi-gates/scripts/hi.py seal
-{"cmd":"seal","files":69,"gaps":5,"package":"hi/packages/r20261123T002306Z-99fe51-20261123T044833Z","status":"BLOCKED","top":[{"code":"GATE-FAIL","source":"sys-req/governance"},{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-NOT-RUN","source":"sw-req/doc-sources"},{"code":"GATE-FAIL","source":"sw-req/scope"}]}
+{"cmd":"seal","files":81,"gaps":4,"package":"hi/packages/r20261123T050738Z-f2eb81-20261123T052742Z","status":"BLOCKED","top":[{"code":"CHANGED-AFTER-INSPECTION","source":"sw-req"},{"code":"TRACE-SUSPECT","source":"sw-req/trace"},{"code":"GATE-NOT-RUN","source":"sw-req/doc-sources"},{"code":"GATE-FAIL","source":"sw-req/scope"}]}
 exit 1
 
 ## 2b. Without poppler, building the index is NOT_RUN, never a pass
@@ -30,7 +30,7 @@ $ env PATH=/nonexistent python3 .claude/skills/hi-gates/scripts/hi.py doc-index 
 exit 1
 
 ## 3. A write outside the author's scope
-(copy of run 5 with the current package installed, committed: b604be0)
+(copy of the READY project with the current package installed, committed: c0cd2da)
 $ python3 .claude/skills/hi-gates/scripts/hi.py role set author sys-req
 {"cmd":"role set","role":"author","stage":"sys-req","status":"DONE","write_scope":["hi/sys-req/**"]}
 exit 0
