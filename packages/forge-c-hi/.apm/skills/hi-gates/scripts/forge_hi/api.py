@@ -145,6 +145,8 @@ def init(
         if not p.is_file():
             raise ConfigError(f"input {inp['path']} does not exist")
         lock[inp["path"]] = sha256_file(p)
+        if inp["kind"] == "reference_document" and p.suffix.lower() == ".pdf":
+            warnings += _check_pdf(p, inp["path"])
         if inp["kind"] in ("needs", "constraints") and PRIVACY.search(p.read_text(encoding="utf-8", errors="replace")):
             warnings.append(f"{inp['path']} may contain personal data or a secret; remove it before running")
     write_json(path, doc)
@@ -154,6 +156,22 @@ def init(
     return 0, {"cmd": "init", "status": "DONE", "project": doc["project_id"], "profile": rigor["profile"],
                "level": rigor["level"], "level_name": rigor["level_name"], "entry": doc["entry_stage"],
                "inputs": len(lock), "warnings": warnings, "written": ".hi/project.json"}
+
+
+def _check_pdf(p: Path, rel: str) -> list[str]:
+    """US2-AS3: an unreadable reference document stops the project at intake, before any author runs."""
+    from . import doc_index
+    with open(p, "rb") as fh:
+        if not fh.read(5).startswith(b"%PDF-"):
+            raise ConfigError(f"input {rel} is not a readable PDF (no PDF header)")
+    if not doc_index.tools_available():
+        return [f"{rel}: poppler is not installed, so its readability is unchecked and the doc-sources gate will be "
+                "NOT_RUN until 'hi doc-index' can run"]
+    try:
+        doc_index.page_count(p)
+    except (ValueError, OSError) as exc:
+        raise ConfigError(f"input {rel} is not a readable PDF: {exc}"[:300]) from exc
+    return []
 
 
 def validate(root: Path, file: str) -> tuple[int, dict]:

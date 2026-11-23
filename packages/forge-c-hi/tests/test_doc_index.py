@@ -131,3 +131,24 @@ def test_doc_sources_not_run_without_index_and_stale_index(tmp_project):
     make_pdf(root / "docs/fm.pdf", PAGES + [["3 Appendix"]])
     res = gates.doc_sources(root, "sw-req")
     assert res["verdict"] == "FAIL" and res["issues"][0]["code"] == "DOC-STALE-INDEX"
+
+
+def test_intake_refuses_a_missing_or_unreadable_reference_document(tmp_project):
+    """US2-AS3 (T053): no document, or an unreadable one, stops the project at intake with the reason."""
+    from forge_hi import api
+    from forge_hi.config import ConfigError
+    (tmp_project / "docs").mkdir()
+    args = dict(level="HI-2", input_class="reference_document", inputs=["docs/rm.pdf:reference_document:RM0001"])
+    with pytest.raises(ConfigError, match="does not exist"):
+        api.init(tmp_project, **args)
+    (tmp_project / "docs/rm.pdf").write_text("this is not a PDF\n")
+    with pytest.raises(ConfigError, match="not a readable PDF"):
+        api.init(tmp_project, **args)
+    assert not (tmp_project / ".hi/project.json").exists()
+    if POPPLER:
+        (tmp_project / "docs/rm.pdf").write_bytes(b"%PDF-1.4\n% truncated\n")
+        with pytest.raises(ConfigError, match="not a readable PDF"):
+            api.init(tmp_project, **args)
+    make_pdf(tmp_project / "docs/rm.pdf", ["1 Introduction\nText."])
+    code, out = api.init(tmp_project, **args)
+    assert code == 0 and out["status"] == "DONE"

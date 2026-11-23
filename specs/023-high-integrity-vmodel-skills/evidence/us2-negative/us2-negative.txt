@@ -1,0 +1,23 @@
+## 1. The reference document does not exist
+$ python3 <package>/.apm/skills/hi-gates/scripts/hi.py init --level HI-2 --class reference_document --input docs/rm.pdf:reference_document:RM-DEMO --input needs/scope.md:constraints
+{"cmd":"init","error":"input docs/rm.pdf does not exist","status":"ERROR"}
+exit 2
+no project.json written
+
+## 2. The reference document exists but is not a readable PDF
+$ python3 <package>/.apm/skills/hi-gates/scripts/hi.py init --level HI-2 --class reference_document --input docs/rm.pdf:reference_document:RM-DEMO --input needs/scope.md:constraints
+{"cmd":"init","error":"input docs/rm.pdf is not a readable PDF (no PDF header)","status":"ERROR"}
+exit 2
+$ python3 <package>/.apm/skills/hi-gates/scripts/hi.py doc-index docs/rm.pdf --doc-id RM-DEMO
+{"cmd":"doc-index","error":"no project configuration at <repos>/f023-neg-us2/.hi/project.json; run 'hi init'","status":"ERROR"}
+exit 2
+no index written
+
+## 3. A readable document, but no index built yet: a citation cannot pass the source gate
+$ python3 <package>/.apm/skills/hi-gates/scripts/hi.py init --force --level HI-2 --class reference_document --input docs/rm.pdf:reference_document:RM-DEMO --input needs/scope.md:constraints
+{"cmd":"init","entry":"sw-req","inputs":2,"level":"HI-2","level_name":"HI-2","profile":"generic","project":"f023-neg-us2","status":"DONE","warnings":[],"written":".hi/project.json"}
+exit 0
+wrote one DRV item citing RM-DEMO 4.2 p.12
+$ python3 <package>/.apm/skills/hi-gates/scripts/hi.py gate sw-req
+{"cmd":"gate","gates":{"doc-sources":"NOT_RUN","governance":"FAIL","independence":"PASS","quality":"PASS","scope":"NOT_RUN","trace":"PASS","validate":"PASS"},"issues":1,"stage":"sw-req","top":[{"code":"GOV-MISSING","gate":"governance"}],"verdict":"FAIL","written":"hi/sw-req/gates/"}
+exit 1
