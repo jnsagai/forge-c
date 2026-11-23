@@ -421,7 +421,7 @@ class Conductor:
                                model_family=binding.get("model_family"))
         out, dropped = [], 0
         open_points = {o.get("id") for o in read_json(self.workproduct(stage)).get("open_points", [])
-                       if isinstance(o, dict)}
+                       + governance.open_points(self.root, stage) if isinstance(o, dict)}
         for n, f in enumerate(reply["findings"], 1):
             if not isinstance(f, dict):
                 dropped += 1

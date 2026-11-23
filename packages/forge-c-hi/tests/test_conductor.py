@@ -610,3 +610,18 @@ def test_a_changed_checklist_or_inspector_skill_invalidates_earlier_judgements(t
     assert code == 0, out
     assert [tuple(c["items"]) for c in calls if c["phase"] == "item"] == [("SYS-SUP-001", "SYS-SUP-002")]
     assert any(e["step"] == "basis-changed" for e in events(root, out))
+
+
+def test_findings_may_wait_on_a_governance_open_point(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = {"id": "OP-GOV-001", "text": "Is lateness measured per task or per cycle?", "concerns": ["STK-SUP-002"],
+          "blocks": True}
+    waits = dict(F("IQ-04", "blocking"), blocked_by="OP-GOV-001")
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "governance": gov(open_points=[op])},
+                      "inspector": {"item_rounds": [{"SYS-SUP-002": [waits]}, {}], "set_rounds": [[]]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert [c for c in calls if c["phase"] == "rework"] == []        # waits on the decision, no rework
+    fs = json.loads((root / "hi/sys-req/inspection/findings.json").read_text())["findings"]
+    assert [f["status"] for f in fs if f.get("blocked_by") == "OP-GOV-001"] == ["carried"]
+    assert code == 1 and "OP-GOV-001" in out["stages"][0]["reason"]
