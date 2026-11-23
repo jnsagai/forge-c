@@ -97,4 +97,5 @@ Same phases as the system-requirements author: `fix-gates`, `rework` (only the n
 ## Open points during rework
 
 Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
-instead of adding a duplicate. Rework cannot answer an open point; only a change in the inputs (a human decision) can.
+instead of adding a duplicate. Never reuse an open point's id for a different question: when the inputs answer one, remove it,
+and give a new question a new id. Rework cannot answer an open point; only a change in the inputs (a human decision) can.
