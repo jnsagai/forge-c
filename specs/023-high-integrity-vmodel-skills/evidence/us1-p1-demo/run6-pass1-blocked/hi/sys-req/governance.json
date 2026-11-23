@@ -1,0 +1,34 @@
+{
+  "schema": "forge-c-hi/governance@1",
+  "stage": "sys-req",
+  "actors": [
+    {"id": "ACT-SUP-001", "name": "Supervised application tasks", "description": "The cyclic application tasks (T_IN, T_CTRL, T_OUT at 10 ms, T_DIAG at 100 ms, CON-SUP-101) whose execution, timing and order the supervisor observes."},
+    {"id": "ACT-SUP-002", "name": "Hardware watchdogs and reset logic", "description": "The independent watchdog, the window watchdog and the reset flags of the platform (CON-SUP-003) that the supervisor services or reads."},
+    {"id": "ACT-SUP-003", "name": "Controlled equipment", "description": "The external equipment that receives the two control outputs and the status signal (CON-SUP-109) and that must end in a safe condition on a fault."},
+    {"id": "ACT-SUP-004", "name": "Service tool", "description": "The tool on the diagnostic serial line that receives fault reports and sends service requests (CON-SUP-007, CON-SUP-113)."},
+    {"id": "ACT-SUP-005", "name": "Test engineer", "description": "The person who verifies the supervisor on host tests and the Renode simulator, including fault injection (CON-SUP-005, CON-SUP-116)."},
+    {"id": "ACT-SUP-006", "name": "Product owner", "description": "The person who sets the configuration (tasks, timing, order) and the processor-time budget for the supervisor."}
+  ],
+  "use_cases": [
+    {"id": "UC-SUP-001", "title": "Supervise task execution", "actor": "ACT-SUP-001", "goal": "Detect a stopped task, a late start, an overrun, and a wrong or skipped task order in a control cycle, against configured timing.", "needs": ["STK-SUP-001", "STK-SUP-002", "STK-SUP-003"], "origin": "generated"},
+    {"id": "UC-SUP-002", "title": "Configure supervision", "actor": "ACT-SUP-006", "goal": "Set which tasks are supervised, and their timing and order, by configuration data without changing supervisor code.", "needs": ["STK-SUP-004"], "origin": "generated"},
+    {"id": "UC-SUP-003", "title": "Service the hardware watchdogs only while healthy", "actor": "ACT-SUP-002", "goal": "Service the independent and the window watchdog only while every supervised task is healthy, so an unhandled failure ends in a hardware reset.", "needs": ["STK-SUP-005", "STK-SUP-006"], "origin": "generated"},
+    {"id": "UC-SUP-004", "title": "Check memory integrity at start-up", "actor": "ACT-SUP-002", "goal": "Check that program code and configuration data are intact after a reset and before the application runs.", "needs": ["STK-SUP-007"], "origin": "generated"},
+    {"id": "UC-SUP-005", "title": "Check program code integrity at run time", "actor": "ACT-SUP-001", "goal": "Repeat the program-code check in the background, completing a full pass in bounded time without disturbing application timing.", "needs": ["STK-SUP-008"], "origin": "generated"},
+    {"id": "UC-SUP-006", "title": "Enter the safe state on a fault", "actor": "ACT-SUP-003", "goal": "On any detected fault, switch the control outputs off and show not-operational on the status signal within 50 ms.", "needs": ["STK-SUP-009"], "origin": "generated"},
+    {"id": "UC-SUP-007", "title": "Recover by reset or latch the safe state", "actor": "ACT-SUP-003", "goal": "After the safe state, recover by a reset, or stay in the safe state until power-cycle when the same fault has repeated.", "needs": ["STK-SUP-010"], "origin": "generated"},
+    {"id": "UC-SUP-008", "title": "Identify the reset cause", "actor": "ACT-SUP-004", "goal": "Classify the cause of any reset as watchdog, supervisor or power-on and make it known to the outside.", "needs": ["STK-SUP-011"], "origin": "generated"},
+    {"id": "UC-SUP-009", "title": "Report faults on the diagnostic line", "actor": "ACT-SUP-004", "goal": "Report every detected fault on the diagnostic serial line with a fault code, the affected task or memory area, and a time stamp.", "needs": ["STK-SUP-012"], "origin": "generated"},
+    {"id": "UC-SUP-010", "title": "Answer service requests", "actor": "ACT-SUP-004", "goal": "Let a service tool read the current supervision status and the last faults over the diagnostic serial line.", "needs": ["STK-SUP-013"], "origin": "generated"},
+    {"id": "UC-SUP-011", "title": "Stay within the processor-time budget", "actor": "ACT-SUP-006", "goal": "Keep the supervisor's use of processor time within 10 % in normal operation.", "needs": ["STK-SUP-014"], "origin": "generated"},
+    {"id": "UC-SUP-012", "title": "Verify the supervisor on a simulator", "actor": "ACT-SUP-005", "goal": "Test the supervisor without the real board, including injection of each fault class.", "needs": ["STK-SUP-015"], "origin": "generated"}
+  ],
+  "out_of_scope": [],
+  "assumptions": [
+    {"id": "ASM-SUP-001", "text": "The fifteen stakeholder needs STK-SUP-001..015 are the complete set of needs; the platform constraints CON-SUP-001..007 and the product-owner decisions CON-SUP-101..141 are given facts, not needs, and are cited as sources."},
+    {"id": "ASM-SUP-002", "text": "'Any fault above' in STK-SUP-009 covers the fault classes of STK-SUP-001, 002, 003, 007 and 008 and the configuration fault and watchdog-reset reports named in the product-owner decisions (CON-SUP-112, CON-SUP-115)."},
+    {"id": "ASM-SUP-003", "text": "The application tasks, scheduler and board output stage outside the supervisor are provided by others; the system requirements state only what the supervisor-based controller must do at its boundary."},
+    {"id": "ASM-SUP-004", "text": "STK-SUP-014 and STK-SUP-015 are constraints on the product rather than behaviours; they are served by use cases UC-SUP-011 and UC-SUP-012 with analysis or test as verification."}
+  ],
+  "open_points": []
+}

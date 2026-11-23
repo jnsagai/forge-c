@@ -1,0 +1,32 @@
+{
+  "arm": "seeded",
+  "artefacts": [
+    "repos/f023-eval-seeded-1"
+  ],
+  "author_model": null,
+  "created_utc": "2026-11-23T04:33:50Z",
+  "harness_versions": {
+    "claude": "2.1.330 (Claude Code)",
+    "codex": "codex-cli 0.171.0"
+  },
+  "inputs_hash": {
+    "corpus": "3e5b2fadade4d49ac11b21e98c9942c31ede5d4c97cad8fef7dc826f384302ce",
+    "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+    "needs/product-decisions.md": "6e0085facd437e365ba9e44d98a1b4508b555b3005c076880e413381939d24f5",
+    "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+  },
+  "inspector_model": "gpt gpt-6.1-terra via codex",
+  "metrics": {
+    "detection_rate": 95.7,
+    "findings_total": 70,
+    "missed": [
+      "D07"
+    ],
+    "model_calls": 2,
+    "seeded_detected": 22,
+    "seeded_detected_same_class": 13,
+    "seeded_total": 23,
+    "tokens": null,
+    "wall_time_s": 175.7
+  }
+}

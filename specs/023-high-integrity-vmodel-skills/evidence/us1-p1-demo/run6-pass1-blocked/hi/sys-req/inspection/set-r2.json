@@ -1,0 +1,101 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-06",
+      "description": "SYS-SUP-018 leaves the configuration bytes covered by the CRC and the treatment of the stored reference undecided. CON-SUP-107 and CON-SUP-129 do not resolve them, so a verifier cannot determine the expected CRC for a configuration block.",
+      "id": "F-sys-req-set-r2-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:31:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-003 and specify the covered byte range and treatment and location of the stored reference.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-018"
+    },
+    {
+      "blocked_by": "OP-SYS-004",
+      "checklist_item": "IQ-04",
+      "description": "SYS-SUP-043 leaves fault-report priority undecided when a service answer is already being transmitted. CON-SUP-139 gives fault reports priority, and CON-SUP-112 requires a report within 10 ms; the line behavior for this case is incomplete.",
+      "id": "F-sys-req-set-r2-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:31:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-004 and specify the line behavior when a fault report arises during transmission of an answer.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SUP-043"
+    },
+    {
+      "blocked_by": "OP-SYS-005",
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-112 requires fault reports within 10 ms, but SYS-SUP-034 requires a code 8 report without a time limit. CON-SUP-137 says that report is not a fault detection, and CON-SUP-141 identifies its timestamp but does not settle the transmission deadline.",
+      "id": "F-sys-req-set-r2-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:31:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve OP-SYS-005 and specify the applicable code 8 report deadline and its starting instant.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    },
+    {
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-113 requires GET FAULTS to return the last eight fault reports. SYS-SUP-048 returns up to eight reports held in oldest-first order, but the set does not require the held reports to be the most recent eight.",
+      "id": "F-sys-req-set-r2-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T04:31:42Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T041826Z-55312d",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify retention and replacement behavior so GET FAULTS returns the most recent eight reports, or all reports if fewer than eight are available.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SET"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 2,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

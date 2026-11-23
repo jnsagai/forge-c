@@ -61,3 +61,4 @@
 - **Tenth round:** `CON-SUP-139..140` (overlapping service requests; per-code latch counts). Same status: fictional,
   by Claude.
 - **Eleventh round:** `CON-SUP-141` (timestamp of a code 8 report). Same status: fictional, by Claude.
+- **Twelfth round:** `CON-SUP-142..144` (configuration CRC layout, a fault report during an answer, deadline of the code 8 report), raised by run 6 (governance step). Same status: fictional, by Claude.

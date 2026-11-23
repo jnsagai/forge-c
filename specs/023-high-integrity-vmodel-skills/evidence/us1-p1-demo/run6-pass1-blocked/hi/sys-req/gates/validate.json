@@ -1,0 +1,18 @@
+{
+  "evidence": [
+    {
+      "path": "hi/sys-req/requirements.json",
+      "sha256": "45a22cf0217e1de9595fc7ff924ae12eea45300f1015eebe9381bbf18d365245"
+    }
+  ],
+  "exit_code": 0,
+  "gate": "validate",
+  "integrity_level": "HI-2",
+  "issues": [],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "PASS"
+}

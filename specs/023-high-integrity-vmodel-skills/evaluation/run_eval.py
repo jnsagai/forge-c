@@ -185,12 +185,13 @@ def score(found: list[dict], key: list[dict]) -> dict:
     by_target: dict[str, list[dict]] = {}
     for f in found:
         by_target.setdefault(str(f.get("target_id")), []).append(f)
-    hit, hit_class, misses = 0, 0, []
+    hit, hit_class, misses, matches = 0, 0, [], {}
     for d in key:
         if d.get("match_ids"):
             cands = [f for f in found if any(m in _text(f) for m in d["match_ids"])]
         else:
             cands = by_target.get(d["target_id"], [])
+        matches[d["id"]] = [_text(c)[:300] for c in cands[:5]]
         if cands:
             hit += 1
             if any(c.get("checklist_item") == d["class"] for c in cands):
@@ -198,12 +199,13 @@ def score(found: list[dict], key: list[dict]) -> dict:
         else:
             misses.append(d["id"])
     return {"seeded_total": len(key), "seeded_detected": hit, "seeded_detected_same_class": hit_class,
-            "detection_rate": round(100.0 * hit / max(1, len(key)), 1), "missed": misses,
+            "detection_rate": round(100.0 * hit / max(1, len(key)), 1), "missed": misses, "matches": matches,
             "findings_total": len(found)}
 
 
 def seeded(work: Path, corpus: Path, key_file: Path, out: Path, plain: bool) -> None:
     work = setup(work)
+    (work / "hi/sys-req").mkdir(parents=True, exist_ok=True)
     shutil.copyfile(corpus, work / "hi/sys-req/requirements.json")
     key = read_json(key_file)["defects"]
     t0 = time.monotonic()
@@ -233,6 +235,7 @@ def seeded(work: Path, corpus: Path, key_file: Path, out: Path, plain: bool) -> 
             tgt = "SET" if i["code"] == "TR-UNCOVERED" else i.get("target_id")
             found.append({"target_id": tgt, "checklist_item": cls, "source": "gate", "need": i.get("target_id")})
     wall = round(time.monotonic() - t0, 1)
+    write_json(out.with_suffix(".found.json"), {"arm": "seeded_baseline" if plain else "seeded", "found": found})
     write_json(out, {"arm": "seeded_baseline" if plain else "seeded",
                      "inspector_model": f"gpt {INSPECTOR_MODEL or '(account default)'} via codex", "author_model": None,
                      "inputs_hash": dict(inputs_hash(work), corpus=sha256_file(corpus)),

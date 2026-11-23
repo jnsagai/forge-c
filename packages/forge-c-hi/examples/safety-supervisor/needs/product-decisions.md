@@ -98,3 +98,11 @@ decides them.
 | ID | Decision |
 |---|---|
 | CON-SUP-141 | The `<ms since start>` of a code 8 report is the time, since the latest reset, at which start-up classified the reset cause (CON-SUP-111). |
+
+**Twelfth round.** Raised by run 6, the first run with the governance step.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-142 | The configuration data block lies between the linker symbols `__cfg_start` and `__cfg_end`. Its stored CRC-32 reference is the 4 bytes at linker symbol `__cfg_crc`, outside the checked range `__cfg_start`..`__cfg_end`: the same treatment as for program code (CON-SUP-124). |
+| CON-SUP-143 | A fault report raised while an answer is being transmitted waits only for the end of the answer line in transmission (its line feed); it is sent before any further line of that answer. Answer lines are at most 40 characters including the line feed (at most 3.5 ms at 115200 baud), so the 10 ms of CON-SUP-112 still holds. A fault report never interrupts a line in the middle. |
+| CON-SUP-144 | The code 8 report at start-up (CON-SUP-130) is transmitted within 10 ms of the instant start-up classified the reset cause (CON-SUP-141). |
