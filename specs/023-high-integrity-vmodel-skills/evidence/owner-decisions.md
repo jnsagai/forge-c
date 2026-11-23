@@ -76,3 +76,6 @@
   issues no extra reload and does not confirm one, and refresh timing within the window stays the caller's duty.
   Raised by driver demo pass 4; two of its questions were conflicts that Claude's earlier decisions had created.
   Fictional, by Claude.
+- **Driver demo, fourth round:** `CON-IWDG-016..017`. The start service follows the manual's documented sequence, which
+  replaces CON-IWDG-015: that decision had forbidden the load step the manual's sequence needs. No early-wakeup value
+  is written when the option is off. Raised by driver demo pass 5. Fictional, by Claude.

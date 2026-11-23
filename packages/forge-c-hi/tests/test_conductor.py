@@ -762,3 +762,13 @@ def test_task_gives_the_author_the_current_input_hashes(tmp_path):
     from forge_hi.io import sha256_file
     t = Conductor(root, dry_run=True).task("author", "sys-req", "create")
     assert t["input_hashes"]["needs/stakeholder-needs.md"] == sha256_file(root / "needs/stakeholder-needs.md")
+
+
+def test_coverage_row_citing_an_item_with_a_finding_is_tracked():
+    # driver demo pass 5: "The findings on DRV-IWDG-024 and DRV-IWDG-051 track ..." was raised again
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    fs = [{"id": "F-9", "checklist_item": "SQ-05", "target_id": "DRV-IWDG-024"}]
+    texts = {"F-9": "DRV-IWDG-024 conflicts with the timeout handling."}
+    assert Conductor.row_tracker("UC-IWDG-007", "The findings on DRV-IWDG-024 track it.", fs, texts, {}) == "F-9"
+    assert Conductor.row_tracker("UC-IWDG-007", "See DRV-IWDG-099.", fs, texts, {}) is None

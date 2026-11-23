@@ -575,6 +575,10 @@ class Conductor:
         for fid in re.findall(r"\bF-[\w.-]+-\d{3}\b", reason):
             if fid in texts:
                 return fid
+        for iid in re.findall(r"\b(?:STK|SYS|SWR|DRV)-[A-Z0-9_]+-\d{3}\b", reason):  # "see the finding on DRV-IWDG-024"
+            hit = next((f["id"] for f in findings if f.get("target_id") == iid), None)
+            if hit:
+                return hit
         for cid in re.findall(r"\b(?:IQ|SQ)-\d{2}\b", reason):
             hit = next((f["id"] for f in findings if f.get("checklist_item") == cid), None)
             if hit:
