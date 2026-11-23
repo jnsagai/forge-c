@@ -71,3 +71,8 @@
 - **Driver demo, second round:** `CON-IWDG-010..012`. Window and early-wakeup settings are written only at start, after
   the update flags clear. There is no driver guard on configuration-induced reloads; the refresh timing is the caller's
   duty. An out-of-range timeout returns invalid-parameter. Raised by driver demo pass 3. Fictional, by Claude.
+- **Driver demo, third round:** `CON-IWDG-013..015`. Early wakeup is part of the start configuration (resolving a
+  conflict between two earlier decisions). Argument checks take precedence over "already running". The start sequence
+  issues no extra reload and does not confirm one, and refresh timing within the window stays the caller's duty.
+  Raised by driver demo pass 4; two of its questions were conflicts that Claude's earlier decisions had created.
+  Fictional, by Claude.
