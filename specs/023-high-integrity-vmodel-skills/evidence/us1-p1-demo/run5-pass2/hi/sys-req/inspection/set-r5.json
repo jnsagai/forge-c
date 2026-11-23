@@ -1,0 +1,79 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-02",
+      "description": "SYS-DIAG-009 limits the GET FAULTS response to requests received when no earlier request is unanswered and no transmission is in progress. CON-SUP-113 and CON-SUP-138 specify a response within 50 ms without those conditions. OP-SYS-002 records the missing concurrency decision.",
+      "id": "F-sys-req-set-r5-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:11:29Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the request concurrency and response obligations with the product owner, then align the requirement with that decision.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-009"
+    },
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-07",
+      "description": "The unconditional 50 ms response to GET RESET can conflict with an ongoing GET FAULTS response or another diagnostic transmission on the same 115200-baud line. CON-SUP-118 and CON-SUP-138 give no concurrency or request-spacing rule; OP-SYS-002 records the decision needed to establish feasible behavior.",
+      "id": "F-sys-req-set-r5-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:11:29Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the request concurrency and response obligations with the product owner, then state a feasible response deadline under those conditions.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-010"
+    },
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-110 requires consecutive occurrences of the same fault code for the repeated-fault latch. SYS-SAFE-007 specifies the third detection of the same code without 60 seconds of fault-free operation but does not address an intervening different fault code. OP-SYS-003 records the unresolved behavior.",
+      "id": "F-sys-req-set-r5-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:11:29Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the effect of an intervening different fault code with the product owner and specify the resulting latch behavior.",
+      "round": 5,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-007"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 5,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

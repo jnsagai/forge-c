@@ -58,3 +58,5 @@
 - **Ninth round:** `CON-SUP-137..138`, raised by the clean run 5: a contradiction between CON-SUP-121 and CON-SUP-130
   (watchdog servicing after a start-up code 8 report) and when a service request counts as received. Same status:
   fictional, by Claude.
+- **Tenth round:** `CON-SUP-139..140` (overlapping service requests; per-code latch counts). Same status: fictional,
+  by Claude.

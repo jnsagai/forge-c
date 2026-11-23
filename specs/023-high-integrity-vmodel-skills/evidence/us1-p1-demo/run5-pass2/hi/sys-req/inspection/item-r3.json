@@ -1,0 +1,39 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "IQ-02",
+      "description": "The requirement exempts a start-up code 8 report from stopping watchdog service. CON-SUP-121 says servicing stops at fault detection without exception, while CON-SUP-130 counts that report as a detection for the latch rule and says start-up continues. OP-SYS-003 records that the inputs do not resolve whether servicing continues in this case.",
+      "id": "F-sys-req-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:05:27Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261122T235856Z-1936d4",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain the product decision on watchdog servicing for a start-up code 8 report and align the requirement and its sources with that decision.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-WDG-005"
+    }
+  ],
+  "judged": [
+    "SYS-SAFE-006",
+    "SYS-SUP-005",
+    "SYS-SUP-006",
+    "SYS-WDG-005",
+    "SYS-SAFE-015"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}

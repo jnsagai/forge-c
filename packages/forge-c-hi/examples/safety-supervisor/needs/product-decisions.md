@@ -85,3 +85,10 @@ decides them.
 |---|---|
 | CON-SUP-137 | A code 8 report at start-up (CON-SUP-130) records a reset that already happened; it is **not** a fault detection in the sense of CON-SUP-121. Watchdog servicing during start-up continues as for any start-up, and the report counts only toward the latch rule of CON-SUP-117. |
 | CON-SUP-138 | A service request is a line of at most 32 ASCII characters ended by a line feed. It counts as received when its line feed is received. The 50 ms answer time of CON-SUP-113 runs from that instant to the end of the answer's last character on the line. A line longer than 32 characters is answered `ERR`. |
+
+**Tenth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-139 | The service tool sends a request only after it has received the complete answer to its previous one. A request received while an answer is still being transmitted is ignored (no answer). Fault reports have priority over answers: the 50 ms answer time of CON-SUP-138 is extended by the transmission time of the fault reports sent between the request and its answer. |
+| CON-SUP-140 | Each fault code keeps its own count for the latch of CON-SUP-117: a detection of a different code neither resets nor advances it (codes 1, 2, 1, 1 latch at the third detection of code 1). A count returns to zero only after 60 s of fault-free operation (CON-SUP-135). This replaces "consecutive" in CON-SUP-110. |

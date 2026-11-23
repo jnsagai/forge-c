@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sys-req": {
+      "gates": {
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-req-set-r2-001', 'F-sys-req-set-r5-001', 'F-sys-req-set-r5-002', 'F-sys-req-set-r5-003'] blocking open points ['OP-SYS-002', 'OP-SYS-003']",
+      "run_id": "r20261123T000719Z-e41017",
+      "state": "blocked",
+      "utc": "2026-11-23T00:11:29Z",
+      "wp_sha256": "b103e034eb47f1da02478e39460cedb19b07a234dd43e0837a42826197b04265"
+    }
+  }
+}

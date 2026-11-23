@@ -1,0 +1,101 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-02",
+      "description": "SYS-DIAG-009 limits the GET FAULTS response to requests received when no earlier request is unanswered and no transmission is in progress. CON-SUP-113 and CON-SUP-138 specify a response within 50 ms without those conditions. OP-SYS-002 records the missing concurrency decision.",
+      "id": "F-sys-req-set-r4-001",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:10:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a decision on request concurrency and response behavior, then align the requirement with that decision.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-009"
+    },
+    {
+      "blocked_by": "OP-SYS-002",
+      "checklist_item": "IQ-07",
+      "description": "The unconditional 50 ms response to GET RESET can conflict with an ongoing GET FAULTS response or another diagnostic transmission on the same 115200-baud line. CON-SUP-118 and CON-SUP-138 give no concurrency or request-spacing rule; OP-SYS-002 records the decision needed to establish feasible behavior.",
+      "id": "F-sys-req-set-r4-002",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:10:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a decision on diagnostic transmission concurrency and update the response obligations accordingly.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-010"
+    },
+    {
+      "blocked_by": "OP-SYS-003",
+      "checklist_item": "SQ-01",
+      "description": "CON-SUP-110 requires consecutive occurrences of the same fault code for the repeated-fault latch. SYS-SAFE-007 specifies the third detection of the same code without 60 seconds of fault-free operation but does not address an intervening different fault code. OP-SYS-003 records the unresolved behavior.",
+      "id": "F-sys-req-set-r4-003",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:10:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Obtain a decision on the effect of an intervening different fault code and specify the latch and reset behavior consistently.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-SAFE-007"
+    },
+    {
+      "checklist_item": "SQ-05",
+      "description": "SYS-DIAG-002 requires a report whenever a fault is detected, while SYS-DIAG-003 and CON-SUP-121 permit the original report to be omitted when a watchdog reset interrupts its transmission. The obligations conflict for that case.",
+      "id": "F-sys-req-set-r4-004",
+      "phase": "set",
+      "raised_by": {
+        "created_utc": "2026-11-23T00:10:59Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T000719Z-e41017",
+        "skill": "hi-sys-req-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the fault-report obligation with the watchdog-reset exception in CON-SUP-121.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYS-DIAG-002"
+    }
+  ],
+  "judged": [],
+  "phase": "set",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-req"
+}
