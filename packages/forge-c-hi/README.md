@@ -109,6 +109,22 @@ python3 $HI seal                                                # READY_FOR_OFFL
 Or work **assisted**: ask your agent to use the `hi-intake` skill, then `hi-sys-req-author`, run `hi gate sys-req`,
 and have the inspector skill run in a separate session or by a different model.
 
+Expect the first run to stop **BLOCKED** on open points: the needs leave real decisions open, and the package asks
+instead of guessing. Each answer goes into `needs/product-decisions.md`, and the next run updates only what the answers
+affect. The example's decision file holds the answers given while recording the evidence, all labelled fictional.
+
+## Examples
+
+| Example | Input class | What it shows | Recorded result |
+|---|---|---|---|
+| `examples/safety-supervisor` | natural-language needs | Governance (actors, use cases), then system requirements, then software requirements, with two-phase inspection | Run 6: both stages ACCEPTED in 5 passes, 93 system and 104 software requirements, sealed READY ([evidence](../../specs/023-high-integrity-vmodel-skills/evidence/us1-p1-demo/README.md)) |
+| `examples/iwdg-driver` | reference manual (bring your own copy) | Driver interface requirements cited by section and page, checked against a local index of the manual | 51 requirements, 73 citations all resolving in the index, ACCEPTED in 7 passes, sealed READY ([evidence](../../specs/023-high-integrity-vmodel-skills/evidence/us2-driver/README.md)) |
+| both, linked | `hi init --link <driver-project>:driver_interface` | Middleware software requirements cite the driver's requirements, and the trace gate checks them across projects | 11 `interfaces` links, all valid, sealed READY |
+
+For the driver example, put your own copy of the vendor reference manual at `docs/rm0486.pdf` and run
+`hi doc-index docs/rm0486.pdf --doc-id RM0486` before the conductor (`--stage sw-req`). The manual and its index stay in
+your project; neither is ever redistributed, and the requirements cite it without quoting it.
+
 ## Inputs, outputs and parameters
 
 | | |
