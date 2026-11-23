@@ -1,0 +1,14 @@
+# T070: publish check of packages/forge-c-hi at 9b023ceb (2026-11-23T07:08Z)
+$ python3 packages/forge-c-hi/tools/publish_check.py packages/forge-c-hi   (apm 0.37 on PATH for the hidden-Unicode audit)
+{
+ "by_class": {},
+ "denylist_entries": 5,
+ "first": [],
+ "hidden_unicode_audit": {
+  "failed": [],
+  "files": 28,
+  "verdict": "PASS"
+ },
+ "status": "PASS",
+ "violations": 0
+}
