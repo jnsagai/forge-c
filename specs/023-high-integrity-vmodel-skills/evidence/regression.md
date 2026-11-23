@@ -15,6 +15,24 @@ branch: they need reference inputs that are not tracked in git (for example a da
 `examples/0002-arm_55_rcc_st/inputs/`), local model runs, or the simulator, which a fresh worktree does not have.
 Verdict: no change in results (PASS for T083).
 
+## Rerun before the tag (2026-11-23)
+
+- **Worktree:** fresh detached at `cee8b943`, with the factory environment (`. scripts/forge-env.sh`, PYTHONPATH
+  cleared).
+- **What the branch changes outside the package and the feature folder:** the constitution, the root README, one
+  website page, and the new `tools/hi_floor_line.py` with its test. Nothing under `factory/` or `config/`.
+
+| Suite | Branch at cee8b943 |
+|---|---|
+| tests/spec/validate_design.py | PASS 14 |
+| unittest discover -s tests | 19 OK (16 earlier plus the 3 new floor-line tests) |
+| pytest factory/python/tests | 1115 passed, 130 skipped, 41 failed, 42 errors (exit 1) |
+
+The 83 failing and erroring test ids are **identical** to the list below (`diff` is empty). Verdict: no change (PASS).
+
+In this run pytest ended without its final count line, both times it was run. The counts above come from its
+progress characters (`.` passed, `s` skipped, `F` failed, `E` error), which add up to the 1328 collected tests.
+
 ## Failed / errored test ids (identical on main and branch)
 
 - ERROR factory/python/tests/test_brownfield_checklist.py::test_st_pilot_items_record_vendor_findings
