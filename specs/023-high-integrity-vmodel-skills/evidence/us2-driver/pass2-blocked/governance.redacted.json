@@ -1,0 +1,293 @@
+{
+ "schema": "forge-c-hi/governance@1",
+ "stage": "sw-req",
+ "document_scope": [
+  {
+   "ref": "RM0486#59",
+   "title": "<vendor heading, sha256 d132558e80d9>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.1",
+   "title": "<vendor heading, sha256 bd811fead60f>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.2",
+   "title": "<vendor heading, sha256 5f754bb8ff86>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.3",
+   "title": "<vendor heading, sha256 5126c87ee493>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4",
+   "title": "<vendor heading, sha256 1a5834208ba7>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4.1",
+   "title": "<vendor heading, sha256 ef62b41222e3>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4.2",
+   "title": "<vendor heading, sha256 62fb2ccbcf24>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4.3",
+   "title": "<vendor heading, sha256 cfc1985b2989>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4.4",
+   "title": "<vendor heading, sha256 ff20e52a6779>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.4.5",
+   "title": "<vendor heading, sha256 1a03bd2fd107>",
+   "scope": "out",
+   "reason": "Behaviour of the watchdog counter while a debugger is attached is not among the driver services listed in CON-IWDG-002, so the driver offers no debug-freeze configuration."
+  },
+  {
+   "ref": "RM0486#59.4.6",
+   "title": "<vendor heading, sha256 8c987aca7d9f>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.5",
+   "title": "<vendor heading, sha256 50ab1a82c24b>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.6",
+   "title": "<vendor heading, sha256 77e5a1414de7>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7",
+   "title": "<vendor heading, sha256 7ce3e9830512>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.1",
+   "title": "<vendor heading, sha256 aa65c8325f8e>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.2",
+   "title": "<vendor heading, sha256 be87a558520d>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.3",
+   "title": "<vendor heading, sha256 b133ba8960c3>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.4",
+   "title": "<vendor heading, sha256 f078a50d07b8>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.5",
+   "title": "<vendor heading, sha256 15a8247bb05e>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.6",
+   "title": "<vendor heading, sha256 bb8a05b7703a>",
+   "scope": "in"
+  },
+  {
+   "ref": "RM0486#59.7.7",
+   "title": "<vendor heading, sha256 65871f7072b2>",
+   "scope": "in"
+  }
+ ],
+ "actors": [
+  {
+   "id": "ACT-IWDG-001",
+   "name": "Driver caller",
+   "description": "Application or middleware code that calls the driver and supplies the configuration structure."
+  },
+  {
+   "id": "ACT-IWDG-002",
+   "name": "Safety Supervisor middleware",
+   "description": "Middleware in examples/safety-supervisor that uses this driver (CON-IWDG-006)."
+  },
+  {
+   "id": "ACT-IWDG-003",
+   "name": "IWDG peripheral",
+   "description": "The independent watchdog hardware of the STM32N657X0 that the driver controls and that the driver waits on."
+  }
+ ],
+ "use_cases": [
+  {
+   "id": "UC-IWDG-001",
+   "title": "Configure and start the watchdog",
+   "actor": "ACT-IWDG-001",
+   "goal": "Apply a caller-supplied configuration (timeout setting) to the watchdog and start it, without ever offering a way to stop it.",
+   "needs": [],
+   "sections": [
+    "RM0486#59",
+    "RM0486#59.1",
+    "RM0486#59.2",
+    "RM0486#59.3",
+    "RM0486#59.4",
+    "RM0486#59.4.1",
+    "RM0486#59.4.2",
+    "RM0486#59.4.3",
+    "RM0486#59.4.6",
+    "RM0486#59.5",
+    "RM0486#59.7",
+    "RM0486#59.7.1",
+    "RM0486#59.7.2",
+    "RM0486#59.7.3"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-002",
+   "title": "Refresh the watchdog",
+   "actor": "ACT-IWDG-001",
+   "goal": "Reload the watchdog counter in time so that the watchdog does not reset the device while the software is healthy.",
+   "needs": [],
+   "sections": [
+    "RM0486#59.7.1"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-003",
+   "title": "Configure the optional window",
+   "actor": "ACT-IWDG-001",
+   "goal": "Optionally set a window so that a refresh outside the permitted period is treated as a fault by the hardware.",
+   "needs": [],
+   "sections": [
+    "RM0486#59.4.4",
+    "RM0486#59.7.5"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-004",
+   "title": "Configure the early-wakeup interrupt",
+   "actor": "ACT-IWDG-001",
+   "goal": "Enable and configure the early-wakeup interrupt and clear its pending flag, so the caller is warned before the watchdog expires.",
+   "needs": [],
+   "sections": [
+    "RM0486#59.6",
+    "RM0486#59.7.6",
+    "RM0486#59.7.7"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-005",
+   "title": "Query pending register updates",
+   "actor": "ACT-IWDG-001",
+   "goal": "Let the caller ask whether a prescaler, reload, window or early-wakeup update is still pending in the hardware, without blocking.",
+   "needs": [],
+   "sections": [
+    "RM0486#59.7.4"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-006",
+   "title": "Read the IWDG reset cause",
+   "actor": "ACT-IWDG-001",
+   "goal": "Let the caller read the reset cause flag set by the IWDG after a restart, to decide whether the last reset was a watchdog reset.",
+   "needs": [],
+   "sections": [
+    "RM0486#59"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-007",
+   "title": "Bounded waiting and no stop",
+   "actor": "ACT-IWDG-001",
+   "goal": "Every wait for the hardware ends within a bound with a reported timeout, and no driver service stops a started watchdog.",
+   "needs": [],
+   "sections": [
+    "RM0486#59.4"
+   ],
+   "origin": "generated"
+  },
+  {
+   "id": "UC-IWDG-008",
+   "title": "Use of the driver by the Safety Supervisor",
+   "actor": "ACT-IWDG-002",
+   "goal": "Provide driver interface requirements the Safety Supervisor software requirements can link to as interfaces.",
+   "needs": [],
+   "sections": [
+    "RM0486#59"
+   ],
+   "origin": "generated"
+  }
+ ],
+ "out_of_scope": [
+  {
+   "ref": "RM0486#59.4.5",
+   "reason": "Debug freeze behaviour is not in the list of driver services of CON-IWDG-002."
+  }
+ ],
+ "assumptions": [
+  {
+   "id": "ASM-IWDG-001",
+   "text": "CON-IWDG-001 to CON-IWDG-006 in scope.md are the only stakeholder needs; no separate STK needs exist, so use cases leave needs empty and rely on document sections."
+  },
+  {
+   "id": "ASM-IWDG-002",
+   "text": "Only chapter 59 of RM0486 is in the document scope, except for the reset cause flag, whose location is an open point."
+  },
+  {
+   "id": "ASM-IWDG-003",
+   "text": "Driver requirements are written at the level set in the project's requirement_style; no hardware fact is stated without a section and page of RM0486."
+  }
+ ],
+ "open_points": [
+  {
+   "id": "OP-GOV-001",
+   "text": "The reset cause flag set by the IWDG (UC-IWDG-006) is not described in the IWDG chapter; the chapter and page that describe it have not yet been identified in the outline.",
+   "concerns": [
+    "RM0486#59"
+   ],
+   "blocks": false,
+   "deferred_to": "sw-design"
+  },
+  {
+   "id": "OP-GOV-002",
+   "text": "The inputs give no numeric limit for the bounded waits. The requirements can state that the wait ends within a caller-supplied or configured limit and reports a timeout; the concrete value and its unit are not decided.",
+   "concerns": [
+    "RM0486#59.4"
+   ],
+   "blocks": false,
+   "deferred_to": "sw-design"
+  },
+  {
+   "id": "OP-GOV-003",
+   "text": "Whether the watchdog is started by software or already running in hardware mode depends on device configuration that the driver may not control; the inputs do not say whether the driver must support hardware mode.",
+   "concerns": [
+    "RM0486#59.4.3"
+   ],
+   "blocks": false,
+   "deferred_to": "sw-arch"
+  },
+  {
+   "id": "OP-GOV-004",
+   "text": "The inputs do not say how the driver must behave when the device enters a low power mode while the watchdog runs; only the manual section is known.",
+   "concerns": [
+    "RM0486#59.5"
+   ],
+   "blocks": false,
+   "deferred_to": "sw-arch"
+  }
+ ]
+}

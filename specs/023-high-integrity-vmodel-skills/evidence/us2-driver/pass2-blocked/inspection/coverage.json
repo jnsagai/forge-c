@@ -1,0 +1,493 @@
+{
+  "adjusted": [
+    "RM0486#59.2: partial tracked by no finding or open point; raised F-sw-req-set-r5-010",
+    "RM0486#59.7: partial tracked by no finding or open point; raised F-sw-req-set-r5-011",
+    "RM0486#59.7.1: partial tracked by no finding or open point; raised F-sw-req-set-r5-012",
+    "RM0486#59.7.3: partial tracked by no finding or open point; raised F-sw-req-set-r5-013",
+    "RM0486#59.7.5: partial tracked by no finding or open point; raised F-sw-req-set-r5-014"
+  ],
+  "provided": true,
+  "round": 5,
+  "rows": [
+    {
+      "reason": "Start mode, refresh outcome and configuration interactions remain open; see SQ-01 and SQ-02 findings.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-041"
+      ],
+      "source": "CON-IWDG-001",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-005"
+    },
+    {
+      "reason": "Service coverage is incomplete for the start and refresh interactions; see SQ-01 finding.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012",
+        "DRV-IWDG-041"
+      ],
+      "source": "CON-IWDG-002",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-005"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "CON-IWDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "The wait-limit unit and interpretation remain unresolved; see OP-DRV-001 and SQ-10 finding.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-031",
+        "DRV-IWDG-032",
+        "DRV-IWDG-034"
+      ],
+      "source": "CON-IWDG-004",
+      "status": "partial",
+      "tracked_by": "OP-DRV-001"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-002",
+        "DRV-IWDG-013",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028",
+        "DRV-IWDG-029"
+      ],
+      "source": "CON-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "The refresh status contract lacks established observability; see SQ-01 finding.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-022",
+        "DRV-IWDG-041"
+      ],
+      "source": "CON-IWDG-006",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-005"
+    },
+    {
+      "reason": "The chapter's applicable service behaviour inherits the start and refresh findings.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-012",
+        "DRV-IWDG-041"
+      ],
+      "source": "RM0486#59",
+      "status": "partial",
+      "tracked_by": "OP-GOV-001"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.1",
+      "status": "covered"
+    },
+    {
+      "reason": "Feature coverage inherits the refresh and configuration-interaction findings.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009"
+      ],
+      "source": "RM0486#59.2",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-010"
+    },
+    {
+      "reason": "Hardware-start and low-power decisions are recorded in OP-DRV-003 and OP-DRV-004.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.3",
+      "status": "partial",
+      "tracked_by": "OP-DRV-003"
+    },
+    {
+      "reason": "The functional description inherits the start, refresh and configuration-interaction findings.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036"
+      ],
+      "source": "RM0486#59.4",
+      "status": "partial",
+      "tracked_by": "OP-GOV-002"
+    },
+    {
+      "reason": "The diagram supplies context for the configured timeout elements.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-029"
+      ],
+      "source": "RM0486#59.4.1",
+      "status": "covered"
+    },
+    {
+      "reason": "The applicable reset and watchdog context is represented by the no-stop and reset-cause services.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-012"
+      ],
+      "source": "RM0486#59.4.2",
+      "status": "covered"
+    },
+    {
+      "reason": "Hardware-start and already-running behaviour remain open in OP-DRV-003.",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-040"
+      ],
+      "source": "RM0486#59.4.3",
+      "status": "partial",
+      "tracked_by": "OP-DRV-003"
+    },
+    {
+      "reason": "Refresh completion and configuration-induced reload interactions remain unresolved; see SQ-05 and SQ-07 findings.",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-023",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-039",
+        "DRV-IWDG-040",
+        "DRV-IWDG-041"
+      ],
+      "source": "RM0486#59.4.4",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-001"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.4.6",
+      "status": "covered"
+    },
+    {
+      "reason": "Behaviour around low-power entry remains an identified decision in OP-DRV-004.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.5",
+      "status": "partial",
+      "tracked_by": "OP-DRV-004"
+    },
+    {
+      "reason": "The interaction between the configuration-induced reload and subsequent refresh remains unresolved; see SQ-07 finding and OP-DRV-011.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-037"
+      ],
+      "source": "RM0486#59.6",
+      "status": "partial",
+      "tracked_by": "OP-DRV-011"
+    },
+    {
+      "reason": "Register-level service coverage inherits the refresh, start-mode and configuration-interaction findings.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-009",
+        "DRV-IWDG-011",
+        "DRV-IWDG-041"
+      ],
+      "source": "RM0486#59.7",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-011"
+    },
+    {
+      "reason": "Refresh completion and the already-running start outcome remain unresolved.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-020",
+        "DRV-IWDG-041"
+      ],
+      "source": "RM0486#59.7.1",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-012"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-017",
+        "DRV-IWDG-031"
+      ],
+      "source": "RM0486#59.7.2",
+      "status": "covered"
+    },
+    {
+      "reason": "Initial loading and later refresh interactions remain subject to the start-mode and refresh findings.",
+      "requirements": [
+        "DRV-IWDG-029",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-038",
+        "DRV-IWDG-040"
+      ],
+      "source": "RM0486#59.7.3",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-013"
+    },
+    {
+      "reason": "The update-wait limit is unverifiable until OP-DRV-001 is resolved.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-011",
+        "DRV-IWDG-021",
+        "DRV-IWDG-031",
+        "DRV-IWDG-032"
+      ],
+      "source": "RM0486#59.7.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-001"
+    },
+    {
+      "reason": "Already-running behaviour and the subsequent refresh interaction remain unresolved.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-036",
+        "DRV-IWDG-039",
+        "DRV-IWDG-040"
+      ],
+      "source": "RM0486#59.7.5",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-014"
+    },
+    {
+      "reason": "The configuration-induced reload interaction remains unresolved; see SQ-07 finding.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024",
+        "DRV-IWDG-030",
+        "DRV-IWDG-033",
+        "DRV-IWDG-037"
+      ],
+      "source": "RM0486#59.7.6",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-003"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-026"
+      ],
+      "source": "RM0486#59.7.7",
+      "status": "covered"
+    },
+    {
+      "reason": "The already-running case remains open in OP-DRV-003.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-029",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-040"
+      ],
+      "source": "UC-IWDG-001",
+      "status": "partial",
+      "tracked_by": "OP-DRV-003"
+    },
+    {
+      "reason": "The refresh outcome and its observability remain unresolved; see SQ-05 finding.",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022",
+        "DRV-IWDG-041"
+      ],
+      "source": "UC-IWDG-002",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-001"
+    },
+    {
+      "reason": "Already-running behaviour and subsequent refresh interaction remain unresolved.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-036",
+        "DRV-IWDG-039",
+        "DRV-IWDG-040"
+      ],
+      "source": "UC-IWDG-003",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-008"
+    },
+    {
+      "reason": "The early-wakeup write's reload interaction remains unresolved; see SQ-07 finding.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-025",
+        "DRV-IWDG-026",
+        "DRV-IWDG-037"
+      ],
+      "source": "UC-IWDG-004",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-003"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011"
+      ],
+      "source": "UC-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "UC-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "The wait-limit unit and interpretation remain unresolved; see OP-DRV-001.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-005",
+        "DRV-IWDG-021"
+      ],
+      "source": "UC-IWDG-007",
+      "status": "partial",
+      "tracked_by": "OP-DRV-001"
+    },
+    {
+      "reason": "The middleware-facing refresh outcome is not yet established as observable; see SQ-01 finding.",
+      "requirements": [
+        "DRV-IWDG-014",
+        "DRV-IWDG-022",
+        "DRV-IWDG-041"
+      ],
+      "source": "UC-IWDG-008",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-005"
+    },
+    {
+      "reason": "Already-running and hardware-start behaviour remain open in OP-DRV-003.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-040"
+      ],
+      "source": "start-up",
+      "status": "partial",
+      "tracked_by": "OP-DRV-003"
+    },
+    {
+      "reason": "Refresh outcome and configuration-induced reload interactions remain unresolved.",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-009",
+        "DRV-IWDG-011",
+        "DRV-IWDG-022",
+        "DRV-IWDG-041"
+      ],
+      "source": "normal operation",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-009"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-018",
+        "DRV-IWDG-030",
+        "DRV-IWDG-033",
+        "DRV-IWDG-038"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "The wait limit is unverifiable and ignored-refresh detection is unresolved; see SQ-10 and SQ-05 findings.",
+      "requirements": [
+        "DRV-IWDG-021",
+        "DRV-IWDG-032",
+        "DRV-IWDG-034",
+        "DRV-IWDG-041"
+      ],
+      "source": "fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r5-002"
+    },
+    {
+      "reason": "The requested reset-cause read is specified; clearing ownership is recorded in OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "recovery or reset",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver is required to offer no service that stops or pauses a started watchdog.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "shutdown",
+      "status": "covered"
+    },
+    {
+      "reason": "The bounded-wait limit is not verifiable until OP-DRV-001 is resolved.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-013",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028"
+      ],
+      "source": "non-functional limits",
+      "status": "partial",
+      "tracked_by": "OP-DRV-001"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-req"
+}

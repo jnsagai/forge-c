@@ -1,0 +1,26 @@
+{
+  "evidence": [
+    {
+      "path": "hi/trace.json",
+      "sha256": "8efac23599927e97afd97ef085c79dc7873251c1f68e01722949c504fd304eb7"
+    },
+    {
+      "path": "hi/trace-matrix.md",
+      "sha256": "ffc36a2eb371363af9adb4f6690fac81c33f300cd4887b95090109956972696a"
+    },
+    {
+      "path": "hi/sw-req/requirements.json",
+      "sha256": "895ea381e4f9056fc4a29047630295f1ed574f0d9c5a7493b2f5df50284cf2c2"
+    }
+  ],
+  "exit_code": 0,
+  "gate": "trace",
+  "integrity_level": "HI-2",
+  "issues": [],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "PASS"
+}

@@ -1,0 +1,849 @@
+{
+  "schema": "forge-c-hi/requirement-set@1",
+  "stage": "sw-req",
+  "baseline_id": "iwdg-driver-sw-req-r20261123T050632Z-08f4d7",
+  "status": "draft",
+  "provenance": {
+    "role": "author",
+    "skill": "hi-sw-req-author",
+    "skill_version": "0.1.0",
+    "harness": "claude-code",
+    "model": "sonnet",
+    "model_family": "claude",
+    "input_hashes": {
+      "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "scope.md": "580dd1f1a4a34314d4b090ac263d63398321395f758b96cdd7deb6842c2aeb34"
+    },
+    "created_utc": "2026-11-23T05:06:45Z",
+    "run_id": "r20261123T050632Z-08f4d7"
+  },
+  "items": [
+    {
+      "id": "DRV-IWDG-001",
+      "level": "driver_interface",
+      "title": "Apply the prescaler selection on start",
+      "text": "When the caller invokes the start service with a valid configuration structure, the driver shall write, once any pending prescaler update has completed (DRV-IWDG-031, DRV-IWDG-032), the prescaler selection, taken unchanged from the timeout setting of that structure, to the prescaler setting of the watchdog peripheral, where the prescaler selection is the encoded value of the peripheral prescaler setting (the encoded field value, not the resulting clock divider), so that the driver performs no conversion between a divider and an encoding.",
+      "rationale": "Realises the prescaler part of the configuration-and-start service of CON-IWDG-002. Rework for F-sw-req-item-r1-001: the timeout setting is defined as two caller-supplied fields, a prescaler selection and a reload value (a count in counter ticks, no time unit), which the hardware keeps as separate settings (sections 59.7.2 and 59.7.3). Rework for F-sw-req-item-r2-001: the reload obligation is split off into DRV-IWDG-029 so each setting can be verified on its own. Rework for F-sw-req-item-r3-001: the manual distinguishes the encoded prescaler field from the divider it selects (59.7.2, page 2989), so the caller-facing representation is now stated: the caller supplies the encoded field value, not a divider. This is the representation under which 'unchanged' is well defined, and it keeps the driver free of a divider-to-encoding table; the mapping of encoded values to dividers is a hardware fact the caller or a higher layer takes from the cited section and is not restated here. The required relationship is identity: the peripheral prescaler setting equals the caller's prescaler selection. Conversion between the fields and a duration depends on the watchdog clock and is not required here (OP-DRV-006). Overview, features, implementation and block diagram sections are cited as the place where the peripheral instance and its timeout elements are described.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.1", "page": 2979},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.2", "page": 2979},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.3", "page": 2979},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.1", "page": 2980},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.3", "page": 2981},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.2", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-002",
+      "level": "driver_interface",
+      "title": "Reject an invalid configuration",
+      "text": "If the configuration structure passed to the start service is a null reference, then the driver shall return an invalid-argument status.",
+      "rationale": "The caller supplies the configuration structure (CON-IWDG-005); an invalid one must be reported rather than applied. The accepted ranges of the individual fields are in DRV-IWDG-017, DRV-IWDG-038 and DRV-IWDG-008.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.2", "page": 2989},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.3", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-003",
+      "level": "driver_interface",
+      "title": "Handle register access protection",
+      "text": "When the driver modifies any protected watchdog configuration, the driver shall first enable write access as the hardware requires.",
+      "rationale": "Configuration writes are guarded by the access protection described in the cited section; the driver hides this from the caller.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.6", "page": 2985},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.1", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003", "UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-004",
+      "level": "driver_interface",
+      "title": "Bounded wait for update completion",
+      "text": "When the driver waits for a prescaler, reload, window or early-wakeup update to complete, the driver shall end the wait no later than the wait limit, a non-negative integer supplied by the caller to that service, in the unit fixed by OP-DRV-001.",
+      "rationale": "Implements CON-IWDG-004. Rework for F-sw-req-set-r4-009: the limit is a caller-supplied input of each waiting service (the early-wakeup service takes no configuration structure), so a test can choose any limit value and check the wait ends within it. The numeric range and the unit are not decided by the inputs (OP-DRV-001).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-005",
+      "level": "driver_interface",
+      "title": "No service stops the watchdog",
+      "text": "The driver shall offer no service that stops or pauses a started watchdog, including on entry to a low power mode.",
+      "rationale": "Implements CON-IWDG-003. Low power behaviour of the hardware is cited; the driver's handling of low power transitions beyond this is open (OP-DRV-004).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-003"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.3", "page": 2981},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.5", "page": 2986}
+      ],
+      "derived": false,
+      "verification_method": "inspection",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "design_constraint",
+      "test_level": "not_testable",
+      "ears": "ubiquitous"
+    },
+    {
+      "id": "DRV-IWDG-006",
+      "level": "driver_interface",
+      "title": "Refresh the watchdog",
+      "text": "When the caller invokes the refresh service, the driver shall issue one counter reload request to the watchdog peripheral, with write protection handled as for any protected configuration change.",
+      "rationale": "Realises the refresh service of CON-IWDG-002. Rework for F-sw-req-item-r1-002: the manual states that a refresh request can be ignored while a previous refresh is still in progress (section 59.4.4), so the outcome the driver can guarantee is that the request is issued, not that the counter is reloaded every time. Success reporting after an actual reload stays in DRV-IWDG-022. Whether the driver must detect or report an ignored request is not decided by the inputs (OP-DRV-007).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2984},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.1", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-002"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-007",
+      "level": "driver_interface",
+      "title": "Optional window configuration",
+      "text": "Where the configuration structure enables the window option, the driver shall apply the window value from that structure to the watchdog peripheral as part of the start service, once any pending window update has completed (DRV-IWDG-031, DRV-IWDG-032).",
+      "rationale": "Realises the optional window configuration of CON-IWDG-002. Rework for F-sw-req-set-r1-009: application depends on pending-update handling. Caller-visible reload effect of window configuration: the manual states that a window write reloads the counter automatically (59.4.4, page 2982); the sequencing at start is in DRV-IWDG-036 and DRV-IWDG-039 (rework for F-sw-req-set-r2-005 and F-sw-req-set-r2-007).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "optional"
+    },
+    {
+      "id": "DRV-IWDG-008",
+      "level": "driver_interface",
+      "title": "Reject a window value outside the range",
+      "text": "If the configuration structure enables the window option and its window value, an unsigned integer in watchdog counter ticks, lies outside the range from 0 ticks to 4095 ticks inclusive, then the driver shall return an invalid-argument status.",
+      "rationale": "Invalid input is reported, not applied. Rework for F-sw-req-set-r2-001: the window value is a count in counter ticks (no time unit, OP-DRV-006); the window field of the manual is 12 bits wide, giving 0 to 4095 (59.7.5, page 2992), and the highest value is the one the manual gives as the window-disabled default (59.4.4, page 2982). The refresh boundary the value sets is stated in 59.7.5.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-009",
+      "level": "driver_interface",
+      "title": "Early-wakeup interrupt configuration",
+      "text": "When the caller invokes the early-wakeup configuration service with a comparison value given as an unsigned integer in the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), the driver shall apply that value to the watchdog peripheral as the early-wakeup comparison value, so that the early-wakeup interrupt condition is met by a comparison of the watchdog counter against the supplied value that covers the counter value one tick below the supplied value (supplied value minus 1 tick) and the lower counter values, and excludes every counter value above the supplied value minus 1 tick, and so that the interrupt is generated only while the early-wakeup interrupt is enabled; the value is applied once any pending early-wakeup update has completed (DRV-IWDG-031, DRV-IWDG-032).",
+      "rationale": "Realises the early-wakeup interrupt configuration of CON-IWDG-002. The valid input domain is the 12-bit comparison field with a lower bound greater than 1 (59.7.6, pages 2992-2993). The supplied value is the programmed comparison value, not a single interrupt position: per 59.6 (page 2986) and 59.7.6 (page 2993) the comparison includes the counter value one less than the comparison value and also lower counter values, and interrupt generation is conditioned on the interrupt enable (see DRV-IWDG-024). Reworked for F-sw-req-item-r3-002. The caller passes the value in counter ticks, not as a duration (see OP-DRV-006). Handling of a value outside this range is specified in DRV-IWDG-030 and DRV-IWDG-033. Rework for F-sw-req-set-r1-003: the comparison boundary is now complete, with the exclusion of counter values above it (59.7.6, page 2993). Rework for F-sw-req-set-r1-004: application depends on the update being permitted; pending-update handling and the timeout outcome are in DRV-IWDG-031 and DRV-IWDG-032 (59.7.4, pages 2990-2991). Caller-visible reload effect of this configuration: see DRV-IWDG-037.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.6", "page": 2986},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.6", "page": 2992},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.6", "page": 2993}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-010",
+      "level": "driver_interface",
+      "title": "Clear the early-wakeup pending flag",
+      "text": "When the caller invokes the early-wakeup clear service, the driver shall clear the pending early-wakeup interrupt flag.",
+      "rationale": "Realises the pending-flag handling for the early-wakeup interrupt of CON-IWDG-002.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.7", "page": 2993}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-011",
+      "level": "driver_interface",
+      "title": "Non-blocking pending-update query",
+      "text": "When the caller invokes the status query service, the driver shall return, without waiting, whether a prescaler, reload, window or early-wakeup update is still pending in the watchdog peripheral.",
+      "rationale": "Realises the status queries of CON-IWDG-002; the query itself never waits, so it needs no wait limit.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-005"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-012",
+      "level": "driver_interface",
+      "title": "Read the IWDG reset cause flag",
+      "text": "When the caller invokes the reset-cause service, the driver shall return whether the independent watchdog reset flag of the reset status is set.",
+      "rationale": "Realises the reset-cause reading of CON-IWDG-002. Rework for F-sw-req-item-r1-005: the flag is defined in the reset status register description of the reset and clock control chapter (14.10.8, page 489), not in the watchdog chapter. The manual says hardware sets it when an independent watchdog reset occurs and software clears it by writing the remove-reset-flag bit, which clears all reset flags of that register; so 'set' means an independent watchdog reset occurred since the flags were last cleared. Section 14.5.11 (page 420) states that the CPU identifies the reset source from these flags and shows that an independent watchdog reset sets this flag. The service reports the flag state and matches that meaning. Whether the driver also clears the flag, and who owns the shared reset status, is not decided by the inputs (OP-DRV-008). Replaces OP-DRV-005, now answered.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "14.5.11", "page": 420},
+        {"kind": "document", "doc_id": "RM0486", "section": "14.10.8", "page": 489},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.2", "page": 2981}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-006"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-013",
+      "level": "driver_interface",
+      "title": "No dynamic memory allocation",
+      "text": "The driver shall use no dynamic memory allocation.",
+      "rationale": "Implements CON-IWDG-005.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"}
+      ],
+      "derived": false,
+      "verification_method": "inspection",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "design_constraint",
+      "test_level": "not_testable",
+      "ears": "ubiquitous"
+    },
+    {
+      "id": "DRV-IWDG-014",
+      "level": "driver_interface",
+      "title": "Distinct status for each outcome",
+      "text": "The driver shall return from every service a status taken from a set of pairwise-different values, one value each for success, invalid argument, timeout, refresh not performed (DRV-IWDG-041).",
+      "rationale": "The Safety Supervisor links its software requirements to these driver requirements as interfaces (CON-IWDG-006); distinct statuses make the driver outcomes usable at that boundary.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-006"},
+        {"kind": "upstream", "id": "CON-IWDG-004"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-007", "UC-IWDG-008"]},
+      "status": "proposed",
+      "type": "interface",
+      "test_level": "unit",
+      "ears": "ubiquitous"
+    },
+    {
+      "id": "DRV-IWDG-015",
+      "level": "driver_interface",
+      "title": "Start the watchdog after configuration",
+      "text": "When the caller invokes the start service with a valid configuration structure, the driver shall start the watchdog after the timeout setting has been applied.",
+      "rationale": "Split from DRV-IWDG-001: the start action of the configuration-and-start service of CON-IWDG-002.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.1", "page": 2980},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.1", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-016",
+      "level": "driver_interface",
+      "title": "Success status after start",
+      "text": "When the watchdog has been started by the start service and its counter has been loaded with the reload value of the timeout setting (DRV-IWDG-035, DRV-IWDG-036, DRV-IWDG-040), the driver shall return a success status.",
+      "rationale": "Split from DRV-IWDG-001: the reported outcome of the start service (CON-IWDG-002). Rework for F-sw-req-set-r2-007: success now also requires the counter load that makes the timeout setting effective.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-017",
+      "level": "driver_interface",
+      "title": "Reject an out-of-range timeout setting",
+      "text": "If the prescaler selection in the timeout setting of the configuration structure passed to the start service is not one of the eight encoded prescaler values that the rationale lists, then the driver shall return an invalid-argument status.",
+      "rationale": "Split from DRV-IWDG-002. Rework for F-sw-req-set-r2-002: the accepted encoded values are 0, 1, 2, 3, 4, 5, 6 and 7 (dimensionless codes) and each selects a distinct divider (59.7.2, page 2990); the manual maps all other values of the 4-bit field to one further divider, so the driver accepts only 0 to 7 to keep the selection one-to-one. This acceptance limit is a driver-level restriction, not a hardware fact. The reload range is in DRV-IWDG-038.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.2", "page": 2989},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.2", "page": 2990},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.3", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-018",
+      "level": "driver_interface",
+      "title": "No peripheral write for a rejected configuration",
+      "text": "If the start service rejects the configuration structure as invalid, then the driver shall not write to the watchdog peripheral.",
+      "rationale": "Split from DRV-IWDG-002: an invalid configuration must be reported rather than applied (CON-IWDG-005).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-019",
+      "level": "driver_interface",
+      "title": "No window write for a rejected window value",
+      "text": "If the driver rejects the window value as outside the range the hardware accepts, then the driver shall not write the window setting.",
+      "rationale": "Split from DRV-IWDG-008: invalid input is reported, not applied (CON-IWDG-005).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-020",
+      "level": "driver_interface",
+      "title": "Restore write protection",
+      "text": "When the driver has issued a modification of a protected watchdog configuration, the driver shall restore write protection.",
+      "rationale": "Split from DRV-IWDG-003; the driver hides the access protection from the caller.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.6", "page": 2985},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.1", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003", "UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-021",
+      "level": "driver_interface",
+      "title": "Timeout status when an update does not complete",
+      "text": "When the wait limit supplied by the caller to the service is reached before a prescaler, reload, window or early-wakeup update has completed, the driver shall return a timeout status.",
+      "rationale": "Split from DRV-IWDG-004; implements CON-IWDG-004. The numeric limit and its unit are open (OP-DRV-001).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-022",
+      "level": "driver_interface",
+      "title": "Success status after refresh",
+      "text": "When the watchdog counter has been reloaded by the refresh service, the driver shall return a success status.",
+      "rationale": "Split from DRV-IWDG-006: reported outcome of the refresh service (CON-IWDG-002).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-002"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-023",
+      "level": "driver_interface",
+      "title": "Window operation inactive when the option is off",
+      "text": "Where the configuration structure does not enable the window option, the driver shall, as part of the start service, configure the watchdog peripheral, once any pending window update has completed (DRV-IWDG-031, DRV-IWDG-032), so that window operation is inactive, regardless of any window setting previously applied.",
+      "rationale": "Split from DRV-IWDG-007: the optional window configuration of CON-IWDG-002. Reworked for F-sw-req-item-r1-007: a disabled or omitted option now has a defined observable outcome (window operation inactive, an earlier non-default window setting is overridden) instead of leaving the setting untouched. The setting that makes window operation inactive is open (OP-DRV-009).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "optional"
+    },
+    {
+      "id": "DRV-IWDG-024",
+      "level": "driver_interface",
+      "title": "Enable the early-wakeup interrupt",
+      "text": "When the caller invokes the early-wakeup configuration service with a valid comparison value, the driver shall enable the early-wakeup interrupt, once any pending early-wakeup update has completed (DRV-IWDG-031, DRV-IWDG-032).",
+      "rationale": "Split from DRV-IWDG-009: early-wakeup interrupt configuration of CON-IWDG-002.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.6", "page": 2986},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.6", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-025",
+      "level": "driver_interface",
+      "title": "Success status after early-wakeup configuration",
+      "text": "When the early-wakeup interrupt has been configured by the early-wakeup configuration service, the driver shall return a success status.",
+      "rationale": "Split from DRV-IWDG-009: reported outcome (CON-IWDG-002).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-026",
+      "level": "driver_interface",
+      "title": "Success status after clearing the early-wakeup flag",
+      "text": "When the pending early-wakeup interrupt flag has been cleared by the early-wakeup clear service, the driver shall return a success status.",
+      "rationale": "Split from DRV-IWDG-010: reported outcome (CON-IWDG-002).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-027",
+      "level": "driver_interface",
+      "title": "No recursion",
+      "text": "The driver shall use no recursion.",
+      "rationale": "Split from DRV-IWDG-013; implements CON-IWDG-005.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"}
+      ],
+      "derived": false,
+      "verification_method": "inspection",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "design_constraint",
+      "test_level": "not_testable",
+      "ears": "ubiquitous"
+    },
+    {
+      "id": "DRV-IWDG-028",
+      "level": "driver_interface",
+      "title": "Implementation language C11",
+      "text": "The driver shall be written in C11.",
+      "rationale": "Split from DRV-IWDG-013; implements CON-IWDG-005.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"}
+      ],
+      "derived": false,
+      "verification_method": "inspection",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "design_constraint",
+      "test_level": "not_testable",
+      "ears": "ubiquitous"
+    },
+    {
+      "id": "DRV-IWDG-029",
+      "level": "driver_interface",
+      "title": "Apply the reload value on start",
+      "text": "When the caller invokes the start service with a valid configuration structure, the driver shall write, once any pending reload update has completed (DRV-IWDG-031, DRV-IWDG-032), the reload value, taken unchanged from the timeout setting of that structure, to the reload setting of the watchdog peripheral.",
+      "rationale": "Split from DRV-IWDG-001 for F-sw-req-item-r2-001: the reload part of the configuration-and-start service of CON-IWDG-002. The reload value is a count in counter ticks with no time unit; the peripheral reload setting equals the caller's reload value (section 59.7.3). Conversion to a duration is not required here (OP-DRV-006).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.3", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-030",
+      "level": "driver_interface",
+      "title": "Reject an out-of-range early-wakeup value",
+      "text": "If the comparison value passed to the early-wakeup configuration service lies outside the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), then the driver shall return an invalid-argument status.",
+      "rationale": "Added for F-sw-req-set-r1-005: DRV-IWDG-009 and DRV-IWDG-024 cover only valid values; this states the rejection and gives DRV-IWDG-014 its trigger for this service. Valid range as in DRV-IWDG-009 (59.7.6, page 2992).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.6", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-033",
+      "level": "driver_interface",
+      "title": "No peripheral effect for a rejected early-wakeup value",
+      "text": "If the driver rejects the comparison value of the early-wakeup configuration service as outside the valid range, then the driver shall neither write the early-wakeup comparison setting nor enable the early-wakeup interrupt.",
+      "rationale": "Added for F-sw-req-set-r1-005: invalid input is reported, not applied (CON-IWDG-005); no hardware change results from a rejected value.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.6", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": false, "use_cases": ["UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-031",
+      "level": "driver_interface",
+      "title": "Defer a setting write while its update is pending",
+      "text": "When a service must write the prescaler, reload, window or early-wakeup setting while an update of that same setting is still pending in the watchdog peripheral, the driver shall defer that write until the pending update has completed.",
+      "rationale": "Added for F-sw-req-set-r1-004 and F-sw-req-set-r1-009: the manual restricts changing a setting while its update is pending (59.7.4, pages 2990-2991), so the configuration obligations of DRV-IWDG-001, 007, 009, 023, 024 and 029 apply once the update is permitted. The outcome when the wait limit is reached first is DRV-IWDG-032.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2991}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003", "UC-IWDG-004", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-032",
+      "level": "driver_interface",
+      "title": "No write and no dependent step on update timeout",
+      "text": "If the wait limit is reached before a pending update of a setting has completed (DRV-IWDG-021), then the driver shall leave that setting unwritten.",
+      "rationale": "Added for F-sw-req-set-r1-004 and F-sw-req-set-r1-009: reconciles the timeout outcome of DRV-IWDG-021 with the configuration obligations of DRV-IWDG-015, 016 and 024; success statuses (DRV-IWDG-016, 025) are therefore not returned in this case. Dependent steps are covered by DRV-IWDG-034 (split for IQ-11).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2991}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003", "UC-IWDG-004", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-034",
+      "level": "driver_interface",
+      "title": "No dependent step on update timeout",
+      "text": "If the wait limit is reached before a pending update of a setting has completed (DRV-IWDG-021), then the driver shall not perform any later step of the service that depends on that setting, including starting the watchdog and enabling the early-wakeup interrupt.",
+      "rationale": "Split from DRV-IWDG-032 for IQ-11 (one shall per requirement): the dependent-step part of the timeout outcome of DRV-IWDG-021.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-004"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2990},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.4", "page": 2991}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003", "UC-IWDG-004", "UC-IWDG-007"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-035",
+      "level": "driver_interface",
+      "title": "Load the counter on start without the window option",
+      "text": "When the start service has started the watchdog and the configuration structure does not enable the window option, the driver shall, once the prescaler and reload updates of that service have completed, issue one counter reload request, so that the watchdog counter is loaded with the reload value of the timeout setting.",
+      "rationale": "Added for F-sw-req-set-r2-007: after start the manual has the counter begin from its reset value, not from the reload setting (59.4.3, page 2981); the manual's configuration sequence without the window option ends with a counter reload (59.4.4, page 2984), and a window write that leaves the value unchanged is not assumed to reload. Window-enabled case: DRV-IWDG-036.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.3", "page": 2981},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2984},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.1", "page": 2989}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-036",
+      "level": "driver_interface",
+      "title": "Load the counter on start through the window write",
+      "text": "Where the configuration structure enables the window option and its window value is below 4095 ticks (watchdog counter ticks), the driver shall write the window setting after the watchdog has been started and after the prescaler and reload updates of the start service have completed, so that the window write, which changes the window setting from the value 4095 that the manual gives as the window-disabled default of a newly started watchdog, loads the watchdog counter with the reload value of the timeout setting.",
+      "rationale": "Added for F-sw-req-set-r2-007; reworked for F-sw-req-set-r3-005: the manual describes the automatic reload as following a change of the window value (59.4.4, pages 2982-2983), so this requirement is limited to window values that differ from the default 4095 of a newly started watchdog, where a change certainly occurs. The window value 4095 (unchanged) is covered by DRV-IWDG-040. DRV-IWDG-007 states what is written; this states the ordering. A start of an already-running watchdog, where the current window setting is unknown, is outside this requirement (OP-DRV-003).",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2983},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "optional"
+    },
+    {
+      "id": "DRV-IWDG-037",
+      "level": "driver_interface",
+      "title": "No extra reload in the early-wakeup configuration",
+      "text": "When the caller invokes the early-wakeup configuration service, the driver shall issue no counter reload request in that service.",
+      "rationale": "Added for F-sw-req-set-r2-005: the manual states that writing the early-wakeup setting already reloads the counter (59.6, page 2986), so the counter restarts from the reload value as a caller-visible effect of this service; an additional request is not needed. With the window option enabled, a refresh while the counter is above the window limit generates a reset (59.4.4, page 2982), so the caller refreshes only after the counter has fallen below that limit. Whether the driver also reports this effect to the caller is OP-DRV-011.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.6", "page": 2986},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-002", "UC-IWDG-004"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "event"
+    },
+    {
+      "id": "DRV-IWDG-038",
+      "level": "driver_interface",
+      "title": "Reject an out-of-range reload value",
+      "text": "If the reload value in the timeout setting of the configuration structure passed to the start service lies outside the range from 2 ticks to 4095 ticks inclusive (watchdog counter ticks), then the driver shall return an invalid-argument status.",
+      "rationale": "Added for F-sw-req-set-r2-002: the reload field is 12 bits wide (59.7.3, page 2990), and the manual advises against values below 2, so the driver accepts 2 to 4095. The lower limit is a driver-level restriction following that advice.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-005"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.3", "page": 2990}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    },
+    {
+      "id": "DRV-IWDG-039",
+      "level": "driver_interface",
+      "title": "No separate reload request when the window option is enabled",
+      "text": "Where the configuration structure enables the window option and its window value is below 4095 ticks (watchdog counter ticks), the driver shall issue no counter reload request in the start service.",
+      "rationale": "Added for F-sw-req-set-r2-005 and F-sw-req-set-r2-007; reworked for F-sw-req-set-r3-005: a reload while the counter is above the window limit generates a reset (59.4.4, page 2982), and for a window value below 4095 the window write already loads the counter (DRV-IWDG-036). For the window value 4095 the counter cannot be above the limit, and the reload is specified in DRV-IWDG-040.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "optional"
+    }
+    ,
+    {
+      "id": "DRV-IWDG-040",
+      "level": "driver_interface",
+      "title": "Load the counter on start when the window value is unchanged",
+      "text": "Where the configuration structure enables the window option and its window value is 4095 ticks (watchdog counter ticks), the driver shall, once the window update of the start service has completed (DRV-IWDG-031, DRV-IWDG-032), issue one counter reload request, so that the watchdog counter is loaded with the reload value of the timeout setting.",
+      "rationale": "Added for F-sw-req-set-r3-005 (and the dependent coverage findings r3-006 to r3-019 on start, initial counter load and window-enabled start): a window write that supplies the default value 4095 (59.4.4, page 2982; 59.7.5, page 2992) is a write of an unchanged value, and the manual describes the reload as following a change of the window value, so the window write is not relied on to load the counter. The counter cannot exceed the window limit 4095, so the reload request cannot violate the window (the reset case of 59.4.4, page 2982 requires the counter above the limit). Together with DRV-IWDG-035 (no window option) and DRV-IWDG-036 (window value below 4095) every accepted window configuration yields a counter load at start, as DRV-IWDG-016 requires. Already-running behaviour stays in OP-DRV-003.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-001"},
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2982},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.7.5", "page": 2992}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-001", "UC-IWDG-003"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "optional"
+    },
+    {
+      "id": "DRV-IWDG-041",
+      "level": "driver_interface",
+      "title": "Refresh-not-performed status for an ignored refresh",
+      "text": "If the watchdog peripheral ignores the counter reload request of the refresh service because a previous refresh is still in progress, then the driver shall return a refresh-not-performed status that differs from the success status.",
+      "rationale": "Added for F-sw-req-set-r4-005, r4-006 and r4-014: the manual says a refresh request can be ignored while a previous refresh is in progress (59.4.4, page 2984), and DRV-IWDG-022 allows success only after an actual reload, so the ignored case needs a distinct, caller-visible outcome for the Safety Supervisor (CON-IWDG-006, DRV-IWDG-014). Retry policy stays with the caller; how the driver detects the ignored request is OP-DRV-007.",
+      "sources": [
+        {"kind": "upstream", "id": "CON-IWDG-002"},
+        {"kind": "upstream", "id": "CON-IWDG-006"},
+        {"kind": "document", "doc_id": "RM0486", "section": "59.4.4", "page": 2984}
+      ],
+      "derived": false,
+      "verification_method": "test",
+      "attributes": {"safety_relevant": true, "use_cases": ["UC-IWDG-002", "UC-IWDG-008"]},
+      "status": "proposed",
+      "type": "functional",
+      "test_level": "unit",
+      "ears": "unwanted"
+    }
+  ],
+  "open_points": [
+    {
+      "id": "OP-DRV-011",
+      "text": "The caller-visible reload effects of window and early-wakeup writes are now stated (DRV-IWDG-036, DRV-IWDG-037, DRV-IWDG-039). The inputs do not say whether the driver must also report them to the caller or guard refresh timing while the window option is enabled; the requirements are correct without it and the mechanism is decided in architecture.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-arch"
+    },
+    {
+      "id": "OP-DRV-001",
+      "text": "The inputs give no numeric limit or unit for the bounded waits of DRV-IWDG-004 (continues OP-GOV-002). The requirement is correct with a caller-supplied limit; the value and unit are fixed in design.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-design"
+    },
+    {
+      "id": "OP-DRV-003",
+      "text": "Decision needed: the inputs do not say whether the driver must support hardware watchdog mode (RM0486 section 59.4.3, page 2981), where the watchdog is already running at power-on, or what the start service returns and does when the watchdog is already running (continues OP-GOV-003). The start service requirements (DRV-IWDG-001, 015, 016, 035, 036, 040) assume a watchdog started by the driver in software mode; the outcome for an already-running watchdog is a product decision the manual does not make.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": true
+    },
+    {
+      "id": "OP-DRV-004",
+      "text": "The inputs do not say how the driver must behave around low power mode entry beyond never stopping the watchdog (DRV-IWDG-005) (continues OP-GOV-004).",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-arch"
+    },
+    {
+      "id": "OP-DRV-008",
+      "text": "The reset-cause flag read by DRV-IWDG-012 belongs to the reset and clock control block and is cleared together with all other reset flags. The inputs do not say whether the driver offers a clear service, or which software part owns clearing and the access rights for that block. DRV-IWDG-012 is correct as a read of the flag state; ownership and clearing are decided in architecture (answers the location question of former OP-DRV-005, continues OP-GOV-001).",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-arch"
+    },
+    {
+      "id": "OP-DRV-009",
+      "text": "DRV-IWDG-023 requires window operation to be inactive when the window option is off. The setting that achieves this, and whether it must be written explicitly or is already the state after reset, is taken by the driver design from the window register description (RM0486 section 59.4.4, page 2982, and section 59.7.5, page 2992); this level does not state it.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-design"
+    },
+    {
+      "id": "OP-DRV-006",
+      "text": "The timeout setting is defined in DRV-IWDG-001 and DRV-IWDG-029 as a prescaler selection and a reload value in counter ticks. The inputs do not say whether callers also need a duration-based form (for example milliseconds) or what clock frequency applies; if so, the conversion and its clock reference are fixed in design with section and page.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-design"
+    },
+    {
+      "id": "OP-DRV-007",
+      "text": "The manual says a refresh request can be ignored while a previous refresh is in progress (DRV-IWDG-006). The inputs do not say whether the driver must detect this, report it to the caller with a distinct status, or leave retry policy to the caller. DRV-IWDG-006 is correct as the issuing of one request; the caller-visible outcome is now DRV-IWDG-041, and only the detection mechanism is decided in architecture.",
+      "raised_by": "hi-sw-req-author",
+      "blocks": false,
+      "deferred_to": "sw-arch"
+    }
+  ]
+}
