@@ -373,6 +373,13 @@ class Conductor:
         mine = set(self.item_ids(stage)) if self.workproduct(stage).is_file() else set()
         return sorted({i["target_id"] for i in issues if i["code"] == "TR-SUSPECT" and i["target_id"] in mine})
 
+    def judging_basis(self, stage: str) -> dict[str, str]:
+        """What an item judgement depends on besides the item: the stage's checklists and the inspector skill."""
+        st = stages()[stage]
+        files = {f"checklists/{c}.json": REFS / "checklists" / f"{c}.json" for c in st["checklists"]}
+        files[st["inspector_skill"]] = SKILLS / st["inspector_skill"] / "SKILL.md"
+        return {k: sha256_file(v) for k, v in sorted(files.items()) if v.is_file()}
+
     def input_hashes(self) -> dict[str, str]:
         return {i["path"]: sha256_file(self.root / i["path"]) for i in self.project["inputs"]
                 if i.get("kind") != "reference_document" and (self.root / i["path"]).is_file()}
@@ -521,7 +528,14 @@ class Conductor:
                 all_findings = gates.findings(self.root, stage)
                 base_item, base_set = self.last_rounds(stage)
                 jp = self.root / "hi" / stage / "inspection" / "judged.json"
-                judged = read_json(jp).get("items", {}) if jp.is_file() else {}
+                rec = read_json(jp) if jp.is_file() else {}
+                judged = rec.get("items", {})
+                if judged and rec.get("basis") != self.judging_basis(stage):
+                    # guideline carry rule: a judgement holds only against the checklist and inspector skill it was
+                    # made with; when either changed, every item is judged again
+                    self.event(stage=stage, step="basis-changed", recorded=rec.get("basis"),
+                               now=self.judging_basis(stage))
+                    judged = {}
                 changes = self.changes(stage)
                 self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items()})
                 if self.governed(stage):
@@ -563,7 +577,8 @@ class Conductor:
                 judged.update({i: hashes[i] for i in to_judge if i in hashes})
                 judged_now |= set(to_judge)
                 write_json(self.root / "hi" / stage / "inspection" / "judged.json",
-                           {"schema": "forge-c-hi/judged@1", "items": judged, "inputs": self.input_hashes()})
+                           {"schema": "forge-c-hi/judged@1", "items": judged, "inputs": self.input_hashes(),
+                            "basis": self.judging_basis(stage)})
                 for f in all_findings:
                     if f["status"] == "open" and f["phase"] == "item" and f["target_id"] in to_judge:
                         f["status"] = "resolved"

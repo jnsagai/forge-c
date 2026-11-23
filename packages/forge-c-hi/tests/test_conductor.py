@@ -589,3 +589,24 @@ def test_governance_is_updated_only_when_inputs_change(tmp_path):
     assert code == 0, out
     assert calls[0]["phase"] == "governance" and calls[0]["changed_inputs"] == ["needs/stakeholder-needs.md"]
     assert calls[1]["phase"] == "update"
+
+
+def test_a_changed_checklist_or_inspector_skill_invalidates_earlier_judgements(tmp_path, monkeypatch):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS}, "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    jp = root / "hi/sys-req/inspection/judged.json"
+    rec = json.loads(jp.read_text())
+    assert "checklists/requirements-item.json" in rec["basis"] and "hi-sys-req-inspector" in rec["basis"]
+    log = root.parent / f"{root.name}-calls.jsonl"
+    log.unlink()
+    _, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert [c["phase"] for c in calls if c["role"] == "inspector"] == ["set"]   # nothing changed: judgements kept
+    rec["basis"]["checklists/requirements-item.json"] = "0" * 64              # as if the checklist had changed
+    jp.write_text(json.dumps(rec))
+    log.unlink()
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert code == 0, out
+    assert [tuple(c["items"]) for c in calls if c["phase"] == "item"] == [("SYS-SUP-001", "SYS-SUP-002")]
+    assert any(e["step"] == "basis-changed" for e in events(root, out))

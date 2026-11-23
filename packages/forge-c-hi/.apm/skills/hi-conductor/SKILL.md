@@ -30,7 +30,8 @@ python3 <this-skill>/scripts/conduct.py --stage sys-req --until sw-req [--timeou
 
 `--dry-run` records what would run without calling any harness. A second run on an existing workproduct **updates**
 it: the author is called only if inputs changed or upstream links are suspect, and only new, changed, suspect or
-still-flagged items are judged again (earlier judgements are kept). `--fresh` re-authors from scratch.
+still-flagged items are judged again. Earlier judgements are kept only while the stage's checklists and inspector
+skill are unchanged. `--fresh` re-authors from scratch.
 
 ## What happens per stage
 

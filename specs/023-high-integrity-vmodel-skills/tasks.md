@@ -324,8 +324,9 @@ BLOCKED or NOT_RUN.
   criterion not applicable with a reason, or as waiting on input, instead of passing or failing it
 - [ ] T090 [US1] Optional requirement fields from the guideline: `type`, `title`, `precondition`, `test_level`, and
   optional EARS patterns in the author skills, checked when present
-- [ ] T091 [US1] Carry hardening: `judged.json` records the checklist hash, and a changed checklist invalidates
-  earlier judgements
+- [x] T091 [US1] Carry hardening: `judged.json` records the judging basis (the hashes of the stage's checklists and
+  of the inspector skill). When the basis has changed, every item is judged again (event `basis-changed`). Test:
+  `test_a_changed_checklist_or_inspector_skill_invalidates_earlier_judgements`
 - [ ] T085 Run `/speckit-analyze` for cross-artifact consistency. Fix the findings, then mark the feature tasks complete only where evidence exists
 
 ---
