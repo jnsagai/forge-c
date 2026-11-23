@@ -1,0 +1,583 @@
+{
+  "adjusted": [
+    "CON-IWDG-010: partial tracked by no finding or open point; raised F-sw-req-set-r16-005",
+    "UC-IWDG-007: partial tracked by no finding or open point; raised F-sw-req-set-r16-006",
+    "fault detection and reaction: partial tracked by no finding or open point; raised F-sw-req-set-r16-007"
+  ],
+  "provided": true,
+  "round": 16,
+  "rows": [
+    {
+      "reason": "The start interface has unresolved sequence and option-off setting decisions, tracked by OP-DRV-030 and OP-DRV-031.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012"
+      ],
+      "source": "CON-IWDG-001",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "Start behavior and the option-off early-wakeup setting are tracked by OP-DRV-030 and OP-DRV-031; CON-IWDG-013 replaces the separate early-wakeup configuration service.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-011",
+        "DRV-IWDG-012",
+        "DRV-IWDG-015",
+        "DRV-IWDG-051"
+      ],
+      "source": "CON-IWDG-002",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "CON-IWDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-044"
+      ],
+      "source": "CON-IWDG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-013",
+        "DRV-IWDG-027",
+        "DRV-IWDG-028"
+      ],
+      "source": "CON-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011",
+        "DRV-IWDG-012",
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-007",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022",
+        "DRV-IWDG-050"
+      ],
+      "source": "CON-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-021",
+        "DRV-IWDG-045"
+      ],
+      "source": "CON-IWDG-009",
+      "status": "covered"
+    },
+    {
+      "reason": "The early-wakeup enable and option-off steps conflict with timeout handling, as described in the findings on DRV-IWDG-024 and DRV-IWDG-051.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-023",
+        "DRV-IWDG-024",
+        "DRV-IWDG-042",
+        "DRV-IWDG-044",
+        "DRV-IWDG-048"
+      ],
+      "source": "CON-IWDG-010",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r16-005"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "CON-IWDG-011",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "CON-IWDG-012",
+      "status": "covered"
+    },
+    {
+      "reason": "Option-off behavior is unresolved in OP-DRV-031, and timeout handling is inconsistent as described in the findings on DRV-IWDG-024 and DRV-IWDG-051.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024",
+        "DRV-IWDG-051"
+      ],
+      "source": "CON-IWDG-013",
+      "status": "partial",
+      "tracked_by": "OP-DRV-031"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045",
+        "DRV-IWDG-043"
+      ],
+      "source": "CON-IWDG-014",
+      "status": "covered"
+    },
+    {
+      "reason": "The option-off early-wakeup write and initial counter behavior are unresolved in OP-DRV-031 and OP-DRV-030.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-023",
+        "DRV-IWDG-029",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-044",
+        "DRV-IWDG-050",
+        "DRV-IWDG-051"
+      ],
+      "source": "CON-IWDG-015",
+      "status": "partial",
+      "tracked_by": "OP-DRV-031"
+    },
+    {
+      "reason": "OP-DRV-030 and OP-DRV-031 track the start-sequence and option-off setting decisions.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-029",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "UC-IWDG-001",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-022",
+        "DRV-IWDG-046",
+        "DRV-IWDG-047"
+      ],
+      "source": "UC-IWDG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Initial counter behavior remains unresolved in OP-DRV-030.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023",
+        "DRV-IWDG-036"
+      ],
+      "source": "UC-IWDG-003",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "OP-DRV-031 tracks the option-off setting; the findings on DRV-IWDG-024 and DRV-IWDG-051 track timeout conflicts.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-026",
+        "DRV-IWDG-051"
+      ],
+      "source": "UC-IWDG-004",
+      "status": "partial",
+      "tracked_by": "OP-DRV-031"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011"
+      ],
+      "source": "UC-IWDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "The flag read is specified; clearing and ownership are deferred in OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-012"
+      ],
+      "source": "UC-IWDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "The findings on DRV-IWDG-024 and DRV-IWDG-051 track conflicts between start steps and timeout handling.",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-005",
+        "DRV-IWDG-021",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "UC-IWDG-007",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r16-006"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011",
+        "DRV-IWDG-012",
+        "DRV-IWDG-014",
+        "DRV-IWDG-043"
+      ],
+      "source": "UC-IWDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "Start behavior is unresolved in OP-DRV-030.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-012",
+        "DRV-IWDG-015"
+      ],
+      "source": "RM0486#59",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006"
+      ],
+      "source": "RM0486#59.1",
+      "status": "covered"
+    },
+    {
+      "reason": "Window and early-wakeup start behavior is tracked by OP-DRV-030 and OP-DRV-031.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009"
+      ],
+      "source": "RM0486#59.2",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "Start behavior is unresolved in OP-DRV-030; hardware watchdog mode is excluded by CON-IWDG-007.",
+      "requirements": [
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "RM0486#59.3",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "Start order and initial counter behavior are tracked by OP-DRV-030.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-004",
+        "DRV-IWDG-015",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "The block diagram provides context for the in-scope driver functions.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-009"
+      ],
+      "source": "RM0486#59.4.1",
+      "status": "covered"
+    },
+    {
+      "reason": "Internal signals provide context for the interrupt and reset interfaces.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-012"
+      ],
+      "source": "RM0486#59.4.2",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-030 tracks the initial counter behavior and start order.",
+      "requirements": [
+        "DRV-IWDG-005",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "RM0486#59.4.3",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "OP-DRV-030 tracks the relationship between the configuration sequence and initial counter behavior.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-023",
+        "DRV-IWDG-035",
+        "DRV-IWDG-036",
+        "DRV-IWDG-047"
+      ],
+      "source": "RM0486#59.4.4",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.4.6",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver offers no pause service; further behavior around low-power entry is deferred in OP-DRV-004.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "RM0486#59.5",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-031 tracks the option-off setting, and the findings on DRV-IWDG-024 and DRV-IWDG-051 track timeout conflicts.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-024",
+        "DRV-IWDG-051"
+      ],
+      "source": "RM0486#59.6",
+      "status": "partial",
+      "tracked_by": "OP-DRV-031"
+    },
+    {
+      "reason": "OP-DRV-030 and OP-DRV-031 track unresolved start and early-wakeup behavior.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-003",
+        "DRV-IWDG-006",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-010",
+        "DRV-IWDG-011",
+        "DRV-IWDG-029"
+      ],
+      "source": "RM0486#59.7",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "OP-DRV-030 tracks start order and initial counter behavior.",
+      "requirements": [
+        "DRV-IWDG-003",
+        "DRV-IWDG-006",
+        "DRV-IWDG-015",
+        "DRV-IWDG-020"
+      ],
+      "source": "RM0486#59.7.1",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-017",
+        "DRV-IWDG-031"
+      ],
+      "source": "RM0486#59.7.2",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-029",
+        "DRV-IWDG-031",
+        "DRV-IWDG-038"
+      ],
+      "source": "RM0486#59.7.3",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-011",
+        "DRV-IWDG-031",
+        "DRV-IWDG-044"
+      ],
+      "source": "RM0486#59.7.4",
+      "status": "covered"
+    },
+    {
+      "reason": "The inactive-window encoding is deferred in OP-DRV-009.",
+      "requirements": [
+        "DRV-IWDG-007",
+        "DRV-IWDG-008",
+        "DRV-IWDG-023"
+      ],
+      "source": "RM0486#59.7.5",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-031 tracks the option-off comparison setting; the findings on DRV-IWDG-024 and DRV-IWDG-051 track timeout conflicts.",
+      "requirements": [
+        "DRV-IWDG-009",
+        "DRV-IWDG-024",
+        "DRV-IWDG-030",
+        "DRV-IWDG-051"
+      ],
+      "source": "RM0486#59.7.6",
+      "status": "partial",
+      "tracked_by": "OP-DRV-031"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-010",
+        "DRV-IWDG-026"
+      ],
+      "source": "RM0486#59.7.7",
+      "status": "covered"
+    },
+    {
+      "reason": "OP-DRV-030 and OP-DRV-031 track unresolved start behavior; the findings on DRV-IWDG-024 and DRV-IWDG-051 track timeout conflicts.",
+      "requirements": [
+        "DRV-IWDG-001",
+        "DRV-IWDG-007",
+        "DRV-IWDG-009",
+        "DRV-IWDG-015",
+        "DRV-IWDG-016",
+        "DRV-IWDG-023",
+        "DRV-IWDG-024",
+        "DRV-IWDG-029",
+        "DRV-IWDG-051"
+      ],
+      "source": "start-up",
+      "status": "partial",
+      "tracked_by": "OP-DRV-030"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-006",
+        "DRV-IWDG-010",
+        "DRV-IWDG-011",
+        "DRV-IWDG-022",
+        "DRV-IWDG-026",
+        "DRV-IWDG-047"
+      ],
+      "source": "normal operation",
+      "status": "covered"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-002",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-018",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045",
+        "DRV-IWDG-049"
+      ],
+      "source": "invalid input",
+      "status": "covered"
+    },
+    {
+      "reason": "The findings on DRV-IWDG-024 and DRV-IWDG-051 track inconsistencies between timeout handling and early-wakeup configuration.",
+      "requirements": [
+        "DRV-IWDG-021",
+        "DRV-IWDG-032",
+        "DRV-IWDG-034",
+        "DRV-IWDG-044",
+        "DRV-IWDG-048"
+      ],
+      "source": "fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "F-sw-req-set-r16-007"
+    },
+    {
+      "reason": "Reset-cause reading and already-running response are specified; reset-flag clearing ownership is deferred in OP-DRV-008.",
+      "requirements": [
+        "DRV-IWDG-012",
+        "DRV-IWDG-042",
+        "DRV-IWDG-043"
+      ],
+      "source": "recovery or reset",
+      "status": "covered"
+    },
+    {
+      "reason": "The driver offers no service to stop or pause a started watchdog, as required by CON-IWDG-003.",
+      "requirements": [
+        "DRV-IWDG-005"
+      ],
+      "source": "shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "",
+      "requirements": [
+        "DRV-IWDG-004",
+        "DRV-IWDG-008",
+        "DRV-IWDG-017",
+        "DRV-IWDG-030",
+        "DRV-IWDG-038",
+        "DRV-IWDG-045"
+      ],
+      "source": "limits",
+      "status": "covered"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-req"
+}

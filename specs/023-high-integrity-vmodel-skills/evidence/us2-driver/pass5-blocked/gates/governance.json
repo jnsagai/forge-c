@@ -1,0 +1,18 @@
+{
+  "evidence": [
+    {
+      "path": "hi/sw-req/governance.json",
+      "sha256": "de59c694a567358508e9d15857cc7f8dc11e70eb26391d806c06d966bf322338"
+    }
+  ],
+  "exit_code": 0,
+  "gate": "governance",
+  "integrity_level": "HI-2",
+  "issues": [],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi governance",
+    "version": "0.1.0"
+  },
+  "verdict": "PASS"
+}
