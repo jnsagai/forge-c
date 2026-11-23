@@ -103,6 +103,26 @@ case needs at least one requirement; the gate reports a use case without one.
 Cover the whole behaviour the needs imply: start-up, normal operation, each fault and its reaction, recovery, timing
 and resource limits, and the interfaces (diagnostic line, status signal). Do not add features nobody asked for.
 
+## Optional fields and EARS
+
+Each item may also carry `type` (`functional`, `non_functional`, `interface`, `design_constraint`), a short `title`,
+a `precondition` (the state or condition in which it applies) and a `test_level` (`unit`, `integration`,
+`qualification`, `system`, `not_testable`). A design constraint is verified by `inspection` or `analysis`.
+
+When the project sets `requirement_style.ears` (`hi init --ears`), every item declares its EARS pattern in `ears`
+and its text follows it. The quality gate checks this:
+
+| `ears` | Form |
+|---|---|
+| `ubiquitous` | The <system> shall <response>. |
+| `event` | When <trigger>, the <system> shall <response>. |
+| `state` | While <state>, the <system> shall <response>. |
+| `unwanted` | If <unwanted condition>, then the <system> shall <response>. |
+| `optional` | Where <feature is present>, the <system> shall <response>. |
+| `complex` | While <state>, when <trigger>, the <system> shall <response>. |
+
+EARS is a writing convention the project chooses, not a requirement of any standard.
+
 ## Open points
 
 Write an open point (`OP-SYS-<NNN>`) whenever the inputs leave a value or behaviour undecided. Never fill the gap with

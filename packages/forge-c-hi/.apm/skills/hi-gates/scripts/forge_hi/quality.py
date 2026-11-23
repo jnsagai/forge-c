@@ -26,6 +26,17 @@ STOPWORDS = {
     "at", "for", "with", "from", "by", "is", "are", "be", "shall",
 }
 SHALL = re.compile(r"\bshall\b", re.I)
+# EARS (Mavin et al.): the clause before "shall" decides the pattern; "the <system> shall" alone is ubiquitous.
+EARS = {
+    "ubiquitous": re.compile(r"^(?:The|An?)\s(?!.*\b(?:when|while|if|where)\b.*\bshall\b)", re.I),
+    "event": re.compile(r"^When\s[^,]+,\s.*\bshall\b", re.I),
+    "state": re.compile(r"^While\s[^,]+,\s.*\bshall\b", re.I),
+    "unwanted": re.compile(r"^If\s.+,\s*then\s.*\bshall\b", re.I),
+    "optional": re.compile(r"^Where\s[^,]+,\s.*\bshall\b", re.I),
+    "complex": re.compile(r"^(?:While|Where)\s[^,]+,\s*(?:when|if)\s.+,\s.*\bshall\b", re.I),
+}
+# functional driver level (feature 020 level rule): no register-level vocabulary in a statement
+REGISTER_TERMS = (re.compile(r"\b0x[0-9A-Fa-f]{4,}\b"), re.compile(r"\b[A-Z][A-Z0-9]*_[A-Z0-9_]*[A-Z0-9]\b"))
 NUMBER = re.compile(r"(?<![\w\-./#])(\d+(?:\.\d+)?)(?:\s*([A-Za-zµ°%/]+))?")
 
 
@@ -121,11 +132,14 @@ def check_items(
     stage: str,
     allowed_methods: tuple[str, ...] | list[str] = METHODS,
     other_ids: set[str] | None = None,
+    style: dict | None = None,
 ) -> list[dict]:
     """All deterministic item and set rules for one requirement set. Returns gate issues."""
     issues: list[dict] = []
     seen: dict[str, int] = {}
     prefixes = ID_PREFIX.get(stage)
+    style = style or {}
+    allowed_terms = set(style.get("allowed_terms") or [])
     for item in items:
         iid = str(item.get("id", ""))
         seen[iid] = seen.get(iid, 0) + 1
@@ -170,6 +184,21 @@ def check_items(
             add("IQ-11.value-without-unit", "number(s) without a unit: " + ", ".join(bare[:6]))
         if item.get("derived") is True and not str(item.get("rationale", "")).strip():
             add("IQ-12.rationale-missing", "derived requirement without rationale")
+        pattern = item.get("ears")
+        if pattern:
+            if pattern in EARS and not EARS[pattern].match(text.strip()):
+                add("IQ-11.ears-pattern", f"the text does not follow the declared EARS pattern '{pattern}'")
+        elif style.get("ears"):
+            add("IQ-11.ears-missing", "the project writes requirements in EARS: declare the pattern in 'ears'")
+        if item.get("type") == "design_constraint" and method in ("test", "demonstration"):
+            add("IQ-06.constraint-verification", "a design constraint is verified by inspection or analysis")
+        if iid.startswith("DRV-") and style.get("driver_level") == "functional":
+            if item.get("level") != "driver_functional":
+                add("IQ-10.driver-level", "the project writes functional driver requirements: level driver_functional")
+            terms = sorted({m.group(0) for rx in REGISTER_TERMS for m in rx.finditer(text)} - allowed_terms)
+            if terms:
+                add("IQ-10.register-vocabulary", "register-level terms in a functional statement: "
+                    + ", ".join(terms[:6]) + " (name the behaviour; registers belong in the design)")
     return issues
 
 
@@ -218,7 +247,7 @@ def run(root: Path, stage: str, *, write: bool = True) -> dict:
                     other |= {i.get("id") for i in read_json(requirement_file(root, s)).get("items", [])}
             issues = check_items(
                 wp.get("items", []), stage=stage, allowed_methods=rigor.get("verification_methods") or METHODS,
-                other_ids=other,
+                other_ids=other, style=project.get("requirement_style"),
             ) + check_open_points(wp.get("open_points"), stage=stage)
             doc = gate_result.result("quality", issues, evidence=[path], **common)
     if write:

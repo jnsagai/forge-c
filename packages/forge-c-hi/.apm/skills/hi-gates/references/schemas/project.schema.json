@@ -115,6 +115,7 @@
           "level": {
             "enum": [
               "driver_interface",
+              "driver_functional",
               "software",
               "system"
             ]
@@ -268,6 +269,31 @@
             "standard",
             "verbose"
           ]
+        }
+      }
+    },
+    "requirement_style": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Project writing conventions (not a standard's rigor): EARS for every requirement, and the level of driver requirements.",
+      "properties": {
+        "ears": {
+          "type": "boolean",
+          "description": "Every requirement declares its EARS pattern and its text follows it."
+        },
+        "driver_level": {
+          "enum": [
+            "interface",
+            "functional"
+          ],
+          "description": "interface (default): driver requirements may name registers and bits. functional: statements stay at API behaviour level; no register names or addresses (feature 020 level rule)."
+        },
+        "allowed_terms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Upper-case names a functional-level statement may use (public API constants)."
         }
       }
     }

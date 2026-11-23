@@ -40,6 +40,11 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument(f"--{r}-model")
         s.add_argument(f"--{r}-family")
     s.add_argument("--from", dest="from_file", help="start from an example project JSON")
+    s.add_argument("--ears", action="store_true", help="every requirement declares and follows an EARS pattern")
+    s.add_argument("--driver-level", choices=["interface", "functional"],
+                   help="driver requirements at register interface level (default) or API behaviour level")
+    s.add_argument("--allowed-term", dest="allowed_terms", action="append",
+                   help="upper-case API name a functional-level statement may use, repeatable")
     s.add_argument("--force", action="store_true")
 
     s = sub.add_parser("doc-index", help="section/page outline of your own reference document")
@@ -80,7 +85,8 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
                         inputs=args.input, project_id=args.project_id, author=args.author, inspector=args.inspector,
                         author_model=args.author_model, inspector_model=args.inspector_model,
                         author_family=args.author_family, inspector_family=args.inspector_family,
-                        from_file=args.from_file, force=args.force,
+                        from_file=args.from_file, force=args.force, ears=args.ears or None,
+                        driver_level=args.driver_level, allowed_terms=args.allowed_terms,
                         stages_list=args.stages.split(",") if args.stages else None)
     if c == "doc-index":
         return api.doc_index(root, args.pdf, args.doc_id)

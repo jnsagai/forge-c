@@ -87,6 +87,9 @@ def init(
     from_file: str | None = None,
     stages_list: list[str] | None = None,
     force: bool = False,
+    ears: bool | None = None,
+    driver_level: str | None = None,
+    allowed_terms: list[str] | None = None,
 ) -> tuple[int, dict]:
     root = Path(root)
     path = root / ".hi" / "project.json"
@@ -112,6 +115,10 @@ def init(
     doc.setdefault("entry_stage", "sys-req" if doc["input_class"] == "natural_language" else "sw-req")
     if stages_list:
         doc["stages"] = stages_list
+    style = {k: v for k, v in (("ears", ears), ("driver_level", driver_level), ("allowed_terms", allowed_terms))
+             if v not in (None, False, [])}
+    if style:
+        doc["requirement_style"] = {**doc.get("requirement_style", {}), **style}
     for spec in inputs or []:
         parts = spec.split(":")
         if len(parts) < 2:

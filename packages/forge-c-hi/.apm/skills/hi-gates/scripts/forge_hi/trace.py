@@ -104,7 +104,7 @@ def checked_stages(project: dict, until: str | None) -> list[str]:
     return wanted
 
 
-LEVEL_STAGE = {"driver_interface": "sw-req", "software": "sw-req", "system": "sys-req"}
+LEVEL_STAGE = {"driver_interface": "sw-req", "driver_functional": "sw-req", "software": "sw-req", "system": "sys-req"}
 
 
 def linked_nodes(root: Path, project: dict) -> tuple[dict[str, dict], list[dict]]:
@@ -198,7 +198,7 @@ def check(root: Path, project: dict, until: str | None = None) -> tuple[list[dic
                 why = doc_index.resolve(idx, str(d.get("section")), int(d.get("page", 0))) if idx else None
                 if why:
                     issues.append(gate_result.issue("TR-DOC-UNRESOLVED", f"{it['id']} cites {d['doc_id']}: {why}", it["id"]))
-            doc_ok = bool(docs) and (ref_doc_project or it.get("level") == "driver_interface")
+            doc_ok = bool(docs) and (ref_doc_project or it.get("level") in ("driver_interface", "driver_functional"))
             needs_parent = it.get("level") in ("system", "software") or s not in ("sys-req", "sw-req")
             if not ups and not it.get("derived") and not doc_ok and needs_parent:
                 issues.append(gate_result.issue("TR-ORPHAN", f"{it['id']} has no upstream source and is not derived", it["id"]))

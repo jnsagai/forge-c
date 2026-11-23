@@ -35,7 +35,9 @@ TOOLS = {
               "project_id": {"type": "string"}, "author": {"type": "string"}, "inspector": {"type": "string"},
               "author_model": {"type": "string"}, "inspector_model": {"type": "string"},
               "author_family": {"type": "string"}, "inspector_family": {"type": "string"},
-              "from_file": {"type": "string"}, "force": {"type": "boolean"}}),
+              "from_file": {"type": "string"}, "force": {"type": "boolean"}, "ears": {"type": "boolean"},
+              "driver_level": {"type": "string", "enum": ["interface", "functional"]},
+              "allowed_terms": {"type": "array", "items": {"type": "string"}}}),
         lambda r, a: api.init(r, **a),
     ),
     "hi_doc_index": (

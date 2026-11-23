@@ -209,3 +209,55 @@ def test_checklists_are_pinned_to_the_forge_c_guideline():
             for i in json.loads((refs / f"{n}.json").read_text())["items"]}
     assert ids == ours
 
+
+
+# ---------------------------------------------------------------- T090 / T088: optional fields, EARS, driver level
+@pytest.mark.parametrize("pattern,text,ok", [
+    ("ubiquitous", "The supervisor shall keep a fault counter per task.", True),
+    ("ubiquitous", "When a fault is detected, the supervisor shall enter the safe state.", False),
+    ("event", "When a fault is detected, the supervisor shall enter the safe state within 50 ms.", True),
+    ("event", "The supervisor shall enter the safe state when a fault is detected.", False),
+    ("state", "While the safe state is latched, the supervisor shall keep the outputs off.", True),
+    ("unwanted", "If the configuration checksum is wrong, then the supervisor shall stay in the safe state.", True),
+    ("unwanted", "If the configuration checksum is wrong, the supervisor shall stay in the safe state.", False),
+    ("optional", "Where a second watchdog is fitted, the supervisor shall service it.", True),
+    ("complex", "While in run mode, when a task misses its deadline, the supervisor shall report fault code 2.", True),
+])
+def test_ears_pattern_is_checked_when_declared(pattern, text, ok):
+    found = "IQ-11.ears-pattern" in codes([dict(GOOD, text=text, ears=pattern)])
+    assert found is not ok
+
+
+def test_ears_required_by_the_project_style():
+    assert "IQ-11.ears-missing" in codes([GOOD], style={"ears": True})
+    assert codes([dict(GOOD, ears="event", text="When a fault is detected, the supervisor shall enter the safe "
+                                                 "state within 50 ms.")], style={"ears": True}) == []
+    assert codes([GOOD]) == []                      # off by default: EARS is a writing convention, not a standard
+
+
+def test_design_constraint_is_verified_by_inspection_or_analysis():
+    assert "IQ-06.constraint-verification" in codes([dict(GOOD, type="design_constraint")])
+    assert codes([dict(GOOD, type="design_constraint", verification_method="inspection")]) == []
+
+
+def test_functional_driver_level_has_no_register_vocabulary():
+    style = {"driver_level": "functional", "allowed_terms": ["IWDG_PRESCALER_32"]}
+    item = req("DRV-IWDG-001", "The driver shall start the watchdog with prescaler IWDG_PRESCALER_32.",
+               [{"kind": "document", "doc_id": "RM0486", "section": "34.4", "page": 1200}], level="driver_functional")
+    assert codes([item], stage="sw-req", style=style) == []
+    regs = dict(item, text="The driver shall write 0xCCCC to IWDG_KR to start the watchdog.")
+    found = quality.check_items([regs], stage="sw-req", style=style)
+    assert [i["code"] for i in found] == ["IQ-10.register-vocabulary"] and "0xCCCC, IWDG_KR" in found[0]["message"]
+    assert "IQ-10.driver-level" in codes([dict(item, level="driver_interface")], stage="sw-req", style=style)
+    assert codes([dict(regs, level="driver_interface")], stage="sw-req") == []   # interface level: registers allowed
+
+
+def test_optional_fields_pass_the_contract():
+    from forge_hi.config import schema
+    from forge_hi.jsonschema_lite import validate
+    from hi_helpers import reqset
+    doc = reqset("sys-req", [dict(GOOD, type="functional", title="Safe state on fault", precondition="Run mode.",
+                                  test_level="qualification", ears="event")])
+    assert validate(doc, schema("requirement-set")) == []
+    doc["items"][0]["test_level"] = "smoke"
+    assert validate(doc, schema("requirement-set")) != []

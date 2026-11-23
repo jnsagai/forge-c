@@ -318,8 +318,13 @@ BLOCKED or NOT_RUN.
   Tests: `PKG/tests/test_governance.py` and the governance tests in `PKG/tests/test_conductor.py`.
 - [ ] T087 [US1] Run the safety-supervisor demo again with the governance step (reference config, run 6, clean
   project) and store the governance package, its gate results and the run's events in `FEAT/evidence/us1-p1-demo/`
-- [ ] T088 [US2] Driver functional level (port of feature 020/021 template v3): driver mode distinguishes
-  driver-interface obligations from functional obligations, with a level rule the gate can check
+- [x] T088 [US2] Driver functional level, ported from feature 020/021 template v3:
+  - `hi init --driver-level functional` (`requirement_style.driver_level`) makes DRV items `level: driver_functional`;
+  - the quality gate refuses register-level vocabulary (upper-case register names, 4-digit hex) apart from the
+    `allowed_terms` (`IQ-10.register-vocabulary`, `IQ-10.driver-level`);
+  - the interface level (the default) keeps registers allowed.
+
+  Test: `test_functional_driver_level_has_no_register_vocabulary`
 - [x] T089 [US1] Coverage dispositions from guideline v1.0 section 3.1. The set inspector returns a coverage matrix
   with one row per source and per scenario, each Covered, Partial, Gap or N/A. Contract:
   `coverage-matrix.schema.json`. The conductor checks the rows without a model:
@@ -331,8 +336,14 @@ BLOCKED or NOT_RUN.
   The matrix is stored in `hi/<stage>/inspection/coverage.json` and rendered in the package's `findings.md`. Tests:
   `test_coverage_matrix_rules`, `test_set_reply_without_coverage_is_recorded_as_not_provided`, and
   `test_coverage_matrix_is_rendered_in_the_findings_report`
-- [ ] T090 [US1] Optional requirement fields from the guideline: `type`, `title`, `precondition`, `test_level`, and
-  optional EARS patterns in the author skills, checked when present
+- [x] T090 [US1] Optional requirement fields from guideline 4.2 and template v3: `type`, `title`, `precondition` and
+  `test_level`, plus `ears`.
+  - The EARS pattern is checked when declared (`IQ-11.ears-pattern`).
+  - It is required on every item with `hi init --ears` (`IQ-11.ears-missing`).
+  - A design constraint is verified by inspection or analysis (`IQ-06.constraint-verification`).
+
+  Tests: `test_ears_*`, `test_design_constraint_*`, `test_optional_fields_pass_the_contract` and
+  `test_init_requirement_style`
 - [x] T091 [US1] Carry hardening: `judged.json` records the judging basis (the hashes of the stage's checklists and
   of the inspector skill). When the basis has changed, every item is judged again (event `basis-changed`). Test:
   `test_a_changed_checklist_or_inspector_skill_invalidates_earlier_judgements`

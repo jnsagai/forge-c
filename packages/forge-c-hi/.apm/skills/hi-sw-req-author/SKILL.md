@@ -70,6 +70,14 @@ system requirements above them (out of context).
 - Middleware projects can link to these requirements (`links` in their project); their software requirements then cite
   `DRV-*` ids and the link type becomes `interfaces`.
 
+### Functional driver level
+
+When the project sets `requirement_style.driver_level: functional` (`hi init --driver-level functional`), write the
+driver requirements at the level of the driver's API behaviour, with `"level": "driver_functional"`. The statement
+names what the caller gets: services, states, errors and time limits. It never names registers, bit fields or
+addresses; the quality gate refuses upper-case register names and 4-digit hex values, apart from the public API
+names the project lists in `allowed_terms`. The document sources stay the same: section and page.
+
 ### Governance package in driver mode
 
 When `sw-req` is the entry stage, write `hi/sw-req/governance.json` first, as the system-requirements author does

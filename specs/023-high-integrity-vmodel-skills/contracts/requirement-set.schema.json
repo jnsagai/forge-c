@@ -113,7 +113,8 @@
               "stakeholder",
               "system",
               "software",
-              "driver_interface"
+              "driver_interface",
+              "driver_functional"
             ]
           },
           "text": {
@@ -206,6 +207,44 @@
               "open",
               "rejected"
             ]
+          },
+          "type": {
+            "enum": [
+              "functional",
+              "non_functional",
+              "interface",
+              "design_constraint"
+            ],
+            "description": "Optional requirement type (guideline 4.2). A design constraint is verified by inspection or analysis."
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "precondition": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Optional: the state or condition that must hold for the requirement to apply."
+          },
+          "test_level": {
+            "enum": [
+              "unit",
+              "integration",
+              "qualification",
+              "system",
+              "not_testable"
+            ]
+          },
+          "ears": {
+            "enum": [
+              "ubiquitous",
+              "event",
+              "state",
+              "unwanted",
+              "optional",
+              "complex"
+            ],
+            "description": "Optional EARS pattern of the text; when given, the quality gate checks the text against it. Required on every item when the project sets requirement_style.ears."
           }
         },
         "if": {

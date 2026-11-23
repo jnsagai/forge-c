@@ -22,6 +22,7 @@ written only by `hi init` (see the `hi-gates` skill for how to call `hi`).
 | Integrity level | `HI-0` (no integrity claim) to `HI-4` (highest); the profile shows its own name, e.g. HI-2 = ASIL B under `iso26262` | none: the user must choose |
 | Input class | `natural_language` (needs for middleware or application) or `reference_document` (datasheet, reference manual or reference model for HAL or low-level drivers) | `natural_language` |
 | Entry stage | `sys-req` for needs; `sw-req` for a driver from a reference document | from the class |
+| Writing style | `--ears` (every requirement in an EARS pattern); for drivers `--driver-level interface` (registers allowed) or `functional` (API behaviour only, with `--allowed-term` for public API names) | off; `interface` |
 | Author and inspector | harness presets `claude-code`, `codex`, `codex-oss-ollama` (local models), `manual`; a model and model family per role | Claude Code author, Codex inspector |
 
 Explain the consequence of the level: higher levels require more gates (quality, scope, independence, build, tests,

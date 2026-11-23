@@ -190,3 +190,17 @@ def test_runs_from_a_subdirectory(tmp_project):
     (tmp_project / "deep/er").mkdir(parents=True)
     code, out = hi(tmp_project / "deep/er", "validate", str(tmp_project / "hi/sys-req/requirements.json"))
     assert code == 0, out
+
+
+def test_init_requirement_style(tmp_project):
+    make_project(tmp_project)
+    (tmp_project / ".hi/project.json").unlink()
+    code, out = hi(tmp_project, "init", "--level", "HI-1", "--class", "nl", "--input", "needs/stakeholder-needs.md:needs",
+                   "--ears", "--driver-level", "functional", "--allowed-term", "IWDG_PRESCALER_32")
+    assert code == 0, out
+    proj = json.loads((tmp_project / ".hi/project.json").read_text())
+    assert proj["requirement_style"] == {"ears": True, "driver_level": "functional",
+                                         "allowed_terms": ["IWDG_PRESCALER_32"]}
+    write(tmp_project / "hi/sys-req/requirements.json", __import__("hi_helpers").reqset("sys-req", SYS_ITEMS))
+    code, out = hi(tmp_project, "quality", "sys-req")
+    assert code == 1 and {t["code"] for t in out["top"]} == {"IQ-11.ears-missing"}
