@@ -88,3 +88,4 @@
   Claude's earlier decisions. `CON-SUP-157..158` are facts: the simulator models that exist, and a counted compiled loop.
 - **Seventeenth round:** `CON-SUP-159` (reports pending at a reset), raised by full-V attempt 3. Fictional, by Claude.
 - **Eighteenth round:** `CON-SUP-160..161`. 160 replaces an unsafe rule in CON-SUP-151 (Claude): an update interrupted by a reset would have cleared the safe-state latch. Raised by full-V attempt 3. Fictional, by Claude.
+- **Nineteenth round:** `CON-SUP-162..163` (update number and equal copies), raised by full-V attempt 3. Fictional, by Claude.
