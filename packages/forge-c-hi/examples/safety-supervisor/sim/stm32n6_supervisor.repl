@@ -3,6 +3,7 @@
 cpu: CPU.CortexM @ sysbus
     cpuType: "cortex-m55"
     nvic: nvic
+    PerformanceInMips: 50   // assumption of 4 clock cycles per instruction at 200 MHz (CON-SUP-167), not a measurement
 
 nvic: IRQControllers.NVIC @ sysbus 0xE000E000
     priorityMask: 0xF0

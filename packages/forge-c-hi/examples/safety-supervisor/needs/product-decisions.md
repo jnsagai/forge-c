@@ -139,7 +139,7 @@ contradictions between earlier decisions.
 | CON-SUP-155 | The window watchdog is enabled at the end of the first control cycle after the start-up integrity checks have passed, and refreshed once per control cycle from then on. During the start-up checks only the independent watchdog runs; it is serviced after every 64 KiB checked. |
 | CON-SUP-156 | There is no memory protection between the supervisor and the application tasks on the shared core. The application tasks are developed to the same integrity level as the supervisor, and freedom from interference is not claimed. |
 | CON-SUP-157 | Withdrawn; replaced by CON-SUP-166: the missing models were built. |
-| CON-SUP-158 | **Measurement (fact).** A table-driven CRC-32/MPEG-2 loop compiled with arm-none-eabi-gcc 10.3.1 (`-mcpu=cortex-m55 -O2`) has 6 instructions per byte, about 6150 for a 1 KiB segment. The 0.5 ms limit at 200 MHz is 100 000 core cycles. Cycles per instruction and memory wait states were not measured. Execution-time evidence on the target is not available in this project and stays an identified gap for the offline review; it does not block the architecture. |
+| CON-SUP-158 | **Measurement (fact).** A table-driven CRC-32/MPEG-2 loop compiled with arm-none-eabi-gcc 10.3.1 (`-mcpu=cortex-m55 -O2`) has 6 instructions per byte, about 6150 for a 1 KiB segment. The 0.5 ms limit at 200 MHz is 100 000 core cycles. Cycles per instruction and memory wait states were not measured. Execution-time evidence on the target is not available in this project; see CON-SUP-167. |
 
 **Seventeenth round.**
 
@@ -172,4 +172,10 @@ contradictions between earlier decisions.
 
 | ID | Decision |
 |---|---|
-| CON-SUP-166 | **Verification environment (fact).** Host tests with the hardware interface replaced by fakes, and one combined simulator platform (`sim/`, Renode, Cortex-M55) with time-driven IWDG, WWDG, reset flags, USART1, GPIOA, TIM2, CRC and retained RAM, on which every fault class can be injected and its complete reaction observed. The watchdog reset times measured on it are 100.0 ms (IWDG) and 10.49 ms (WWDG). Its limits are listed in `sim/README.md`; in particular it is not cycle accurate, so execution time and processor load cannot be verified on it. |
+| CON-SUP-166 | **Verification environment (fact).** Host tests with the hardware interface replaced by fakes, and one combined simulator platform (`sim/`, Renode, Cortex-M55) with time-driven IWDG, WWDG, reset flags, USART1, GPIOA, TIM2, CRC and retained RAM, on which every fault class can be injected and its complete reaction observed. The watchdog reset times measured on it are 100.0 ms (IWDG) and 10.49 ms (WWDG). Its limits are listed in `sim/README.md`; in particular it is not cycle accurate: execution time is verified on it only under the assumption of CON-SUP-167. |
+
+**Twenty-second round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-167 | **Timing assumption.** Processor-time limits (CON-SUP-108, CON-SUP-114) are verified by test on the simulator platform, which executes 50 million instructions per second: an assumed average of 4 clock cycles per instruction at the 200 MHz of CON-SUP-152. A limit is met when the time measured there is within it. The assumption is not confirmed on hardware. Confirming it on the target is an obligation on the integrator of the product, listed in the review package; until then the result holds under this assumption only. |

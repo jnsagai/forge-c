@@ -96,3 +96,4 @@
 - **Twenty-first round:** the independent inspector did not accept the deviation `CON-SUP-165`, so the missing
   simulator models were built (`examples/safety-supervisor/sim`). `CON-SUP-157` and `CON-SUP-165` are withdrawn;
   `CON-SUP-166` states the environment and its limits as facts.
+- **Twenty-second round:** `CON-SUP-167`, a timing assumption (4 clock cycles per instruction) made by Claude so that processor-time limits have a verifiable basis. It is **not confirmed on hardware** and is an obligation on the integrator. Raised by full-V attempt 3.

@@ -12,6 +12,8 @@ sources and runs it; `selftest/test_platform.c` checks the watchdogs and reset f
 Limits, to be stated with every result:
 - It is not the silicon: no clock tree (fixed 200 MHz timer and USART clock, 50 MHz WWDG clock, 32 kHz IWDG clock), no
   oscillator tolerance, no security filtering, no early-wakeup interrupts, register updates take effect at once.
-- It is **not cycle accurate**: instruction timing, wait states, execution-time limits and processor load cannot be shown.
+- It is **not cycle accurate**. Every instruction takes the same virtual time: 50 million per second, i.e. an assumed 4
+  clock cycles per instruction at 200 MHz. Times measured on it are exact instruction counts under that assumption
+  (CON-SUP-167), which nobody has confirmed on hardware.
 - There is no board: pins are logical levels only. Memory holds the code in RAM, not in flash.
 - RAM content is kept over every simulated reset; whether a region is retained on the device is not shown.
