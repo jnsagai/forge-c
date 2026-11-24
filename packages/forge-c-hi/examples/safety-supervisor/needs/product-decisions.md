@@ -252,3 +252,10 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-185 | **Replaces the last sentence of CON-SUP-184.** From the instant the boot code starts the supervisor (CON-SUP-178) only the supervisor uses the CRC unit, and its uses never overlap; that the application tasks and test software leave the unit alone is an assumption on the integrator. What the boot code does with the unit before that instant is outside this product; the supervisor sets the unit up itself before its first use. |
+
+**Thirty-fourth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-186 | **Limits CON-SUP-170.** One update of the retained data has to record at most 16 pending faults. The 0.5 ms of processor time and the 1 ms and 2 ms of CON-SUP-170 hold for up to 16 and are verified with 16. With four tasks, at most one fault of each of the codes 1, 2 and 3 per task, one flow fault and one code 7 fault in a control cycle, more cannot be pending at once; what happens with more is not specified. |
+| CON-SUP-187 | **Content of an answer, relaxes the exact instant of reception.** The fault history of a `GET FAULTS` answer, and the state and fault count of a `GET STATUS` answer, are those held at one instant not more than 1 ms before and not more than 1 ms after the request's line feed is received. A fault recorded, or a state entered, inside that interval may be in the answer or not; both are accepted. The content is never a mixture of two instants. |

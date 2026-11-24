@@ -134,3 +134,6 @@
   require that code in `src/`; host tests link the sources as a library.
 - **Thirty-third round:** `CON-SUP-185` narrows the last sentence of CON-SUP-184, which forgot the boot code. Raised by
   full-V attempt 3 pass 21 (sw-req returned OP-SWR-031 to sys-req, which needs a person: OP-SYS-020). Fictional, by Claude.
+- **Thirty-fourth round:** `CON-SUP-186` (at most 16 faults in one update) and `CON-SUP-187` (**relaxes** the content of an
+  answer to one instant within 1 ms of the line feed). Raised by full-V attempt 3 pass 22: the system architecture
+  returned OP-SYE-008 and 009, the system requirements need a person (OP-SYS-021, 022). Fictional, by Claude.
