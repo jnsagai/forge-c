@@ -103,3 +103,6 @@
 - **Twenty-fourth round:** `CON-SUP-172` **relaxes** the late-start and overrun detection bound from 100 µs to 200 µs and
   accepts either verdict inside the first 100 µs. Raised by full-V attempt 3 pass 8 (system architecture): CON-SUP-127
   counted the measurement resolution but not the supervisor's reaction time. Fictional, by Claude.
+- **Twenty-fifth round:** `CON-SUP-173` states one rule for faults not yet recorded at a reset (present or absent, both
+  accepted, as CON-SUP-161 already allowed during an update; it now also covers a reset before the update begins).
+  Raised by full-V attempt 3 pass 9 (system requirements). Fictional, by Claude.

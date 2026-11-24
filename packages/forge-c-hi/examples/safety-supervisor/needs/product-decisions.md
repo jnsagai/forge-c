@@ -194,3 +194,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-172 | **Replaces the 100 µs detection bound of CON-SUP-127.** A late start or an overrun is detected no later than 200 µs after the limit expires: 100 µs for the measurement resolution and 100 µs for the supervisor's reaction. A task that starts or completes no more than 100 µs after its limit may be treated as within the limit or as a violation; both are accepted. A task that starts or completes within its limit is never a violation. The verification margins of at least 200 µs on either side of a limit stay as they are; a test may check the 200 µs bound with a violation that lasts longer than 200 µs. |
+
+**Twenty-fifth round.** Raised by the system requirements stage of the full-V run. One rule instead of separate exceptions.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-173 | **Recorded fault.** A fault is recorded when the update of the retained data that contains it has completed. Every rule that a fault is in the fault count, in the fault history or in its detection count (CON-SUP-125, CON-SUP-140, CON-SUP-150, CON-SUP-159, CON-SUP-161, CON-SUP-170), also for a dropped report, applies to recorded faults and to the retained data as it is until the next power-on reset or the next start-up without intact retained data (CON-SUP-164). A fault that is detected but not yet recorded when a reset occurs, whether or not its update has begun, is after a reset other than power-on either completely present or completely absent; both are accepted. Requirements state this rule once and refer to "a recorded fault" instead of listing the resets as exceptions. |

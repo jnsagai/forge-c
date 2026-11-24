@@ -1,0 +1,22 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T080309Z-6c97fd/events.jsonl",
+  "run_id": "r20261124T080309Z-6c97fd",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-req-set-r40-001']",
+      "stage": "sys-req"
+    }
+  ],
+  "status": "BLOCKED"
+}
