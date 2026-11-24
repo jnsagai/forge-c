@@ -1,0 +1,122 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-arch": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/sw-arch.json": "5065c8d8310680665c98f9117239c66fe679a4a3cbc087d340a7069e06d57eff",
+        "basis:hi-sw-arch-inspector": "16cb83ec728d32d22a95f9db714aca1ef87dd6777889ac9441c9aac3332210b9",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sw-arch/architecture.json": "f47bcdd2d1353e9a38911184b697c00f469320ef79e8520a2d45f93adb8af4a7",
+        "hi/sw-req/requirements.json": "45c7253d85a4dea77cb67386bb491845113d4469a774ebe3c553fe0bb6ba4562",
+        "hi/sys-arch/architecture.json": "941eaf2076fa83a3940d4d9c975168abc5139e685ca4caae8abf6b4a3897ebf5",
+        "hi/sys-req/requirements.json": "50366d874796d6250d8634327c201ec7cfca34f33cfa2f4e65ae464bf481e5a9",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "9441e744e73cd6fbcd2e05387ae970b17678c62fa6deac1b4ef241b41fa2536f",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "accepted",
+      "utc": "2026-11-24T17:53:22Z",
+      "wp_sha256": "f47bcdd2d1353e9a38911184b697c00f469320ef79e8520a2d45f93adb8af4a7"
+    },
+    "sw-design": {
+      "reason": "author harness failed (exit 1) in sw-design rework-set",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "blocked",
+      "utc": "2026-11-24T18:31:52Z"
+    },
+    "sw-req": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/requirements-item.json": "d03998b0a068342407c45ad9f1ecbd82a01000831ae97fbe3b6e9db541c0a25a",
+        "basis:checklists/requirements-set.json": "36a71b105f9cb0f75161ba80803249fb8ce3deabc3cba072e21d2947de9d561f",
+        "basis:hi-sw-req-inspector": "57d712f6501fc240b1d636d551ae178bd80d4bb850dc684cad543953418c667c",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sw-req/requirements.json": "45c7253d85a4dea77cb67386bb491845113d4469a774ebe3c553fe0bb6ba4562",
+        "hi/sys-arch/architecture.json": "941eaf2076fa83a3940d4d9c975168abc5139e685ca4caae8abf6b4a3897ebf5",
+        "hi/sys-req/requirements.json": "50366d874796d6250d8634327c201ec7cfca34f33cfa2f4e65ae464bf481e5a9",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "9441e744e73cd6fbcd2e05387ae970b17678c62fa6deac1b4ef241b41fa2536f",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "accepted",
+      "utc": "2026-11-24T17:40:14Z",
+      "wp_sha256": "45c7253d85a4dea77cb67386bb491845113d4469a774ebe3c553fe0bb6ba4562"
+    },
+    "sys-arch": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/sys-arch.json": "a7b66358d935c46898f6d39ae26eb53149a2d6a563926007380c41d88bdcefb1",
+        "basis:hi-sys-arch-inspector": "3aca44a2b14ceacc75431ede0237bf54922c1db9b2dbb9c0f928fc2b6c71b19e",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sys-arch/architecture.json": "941eaf2076fa83a3940d4d9c975168abc5139e685ca4caae8abf6b4a3897ebf5",
+        "hi/sys-req/requirements.json": "50366d874796d6250d8634327c201ec7cfca34f33cfa2f4e65ae464bf481e5a9",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "9441e744e73cd6fbcd2e05387ae970b17678c62fa6deac1b4ef241b41fa2536f",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "accepted",
+      "utc": "2026-11-24T17:32:06Z",
+      "wp_sha256": "941eaf2076fa83a3940d4d9c975168abc5139e685ca4caae8abf6b4a3897ebf5"
+    },
+    "sys-req": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/requirements-item.json": "d03998b0a068342407c45ad9f1ecbd82a01000831ae97fbe3b6e9db541c0a25a",
+        "basis:checklists/requirements-set.json": "36a71b105f9cb0f75161ba80803249fb8ce3deabc3cba072e21d2947de9d561f",
+        "basis:hi-sys-req-inspector": "f4f771c86ce12451a4da74884fae2e6c795a384632b147e49a012c93027654ec",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sys-req/governance.json": "9e72adad55344012709438d4e0346e5e3f29554c2a4b736d3c2c9f6f5040c722",
+        "hi/sys-req/requirements.json": "50366d874796d6250d8634327c201ec7cfca34f33cfa2f4e65ae464bf481e5a9",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "9441e744e73cd6fbcd2e05387ae970b17678c62fa6deac1b4ef241b41fa2536f",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "accepted",
+      "utc": "2026-11-24T17:29:11Z",
+      "wp_sha256": "50366d874796d6250d8634327c201ec7cfca34f33cfa2f4e65ae464bf481e5a9"
+    }
+  }
+}

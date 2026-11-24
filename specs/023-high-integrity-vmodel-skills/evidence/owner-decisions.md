@@ -147,3 +147,7 @@
 - **Thirty-sixth round:** `CON-SUP-189..192` (core facts, dispatch, `__asm__` deviation, watchdog limits). Raised by pass 24
   (software design, OP-SWU-014, 017, 020). **191 relaxes** the C11 rule and **192 relaxes** the exact 100 ms to 99.5 to
   100.5 ms. Fictional, by Claude.
+- **Full-V attempt 3, pass 25:** the four stages above software design ACCEPTED. Software design passed every gate, then
+  stopped in set rework because the Claude account reached its 5-hour usage limit (harness exit 1). Open then: OP-SWU-024
+  (placing the retained data in `.noinit` needs a person's decision), OP-SWU-023 (still blocking in the design) and two
+  blocking set findings without an open point (slot depth 10 against 16, long locked count step). No decision yet.
