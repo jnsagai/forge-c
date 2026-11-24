@@ -146,3 +146,10 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-159 | A fault is entered in the fault history and counted in the fault count when it is detected, not when its report is sent. Fault reports still pending or partly sent when a reset occurs are lost and are not sent again after the reset; CON-SUP-112 and CON-SUP-150 do not apply to them. Their faults stay in the history and the count as CON-SUP-125 and CON-SUP-151 say. |
+
+**Eighteenth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-160 | **Replaces the wrong-CRC rule of CON-SUP-151.** The retained data is kept in two copies, each with its own CRC-32 and an update number; an update writes one copy completely before the other. After a reset other than power-on, start-up uses the valid copy with the newer update number. If neither copy is valid after a reset other than power-on, the system starts with the safe state latched, the counts and the history empty, and reports no additional fault for it. After a power-on reset both copies are set to their power-on values. |
+| CON-SUP-161 | The history entry, the fault count and the per-code detection count of a fault are updated together, in one update of the retained data, completed within 1 ms of the detection. After a reset during that update the fault is either completely present (entry and both counts) or completely absent; both are acceptable. |
