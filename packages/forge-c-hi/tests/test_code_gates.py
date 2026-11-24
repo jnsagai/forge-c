@@ -124,3 +124,39 @@ def test_stage_gate_runs_code_gates(tmp_project):
     summ = gates.gate_stage(tmp_project, "sw-design")
     assert summ["gates"]["build"] == "PASS"
     assert summ["gates"].get("static-analysis") in ("PASS", "NOT_RUN")
+
+
+def test_verification_gate_runs_host_cases_and_never_passes_unexecuted_ones(tmp_path):
+    """T068: integration, qualification and system tests were specified but nothing executed them."""
+    from forge_hi import code_gates
+    from hi_helpers import make_project, write
+    root = tmp_path / "p"
+    make_project(root, stages=("sys-req", "sw-req", "sw-integ"))
+    write(root / "include/a.h", "int add(int a, int b);\n")
+    write(root / "src/a.c", '#include "a.h"\nint add(int a, int b) { return a + b; }\n')
+    prog = ('#include <stdio.h>\n#include "a.h"\nint main(void) { int ok = add(1, 2) == %d;\n'
+            ' printf("HI-TEST ITC-SUP-001 %%s\\n", ok ? "PASS" : "FAIL sum"); return ok ? 0 : 1; }\n')
+    write(root / "hi/sw-integ/host/test_a.c", prog % 3)
+
+    def spec(*kinds):
+        write(root / "hi/sw-integ/test-spec.json", {"items": [
+            {"id": f"ITC-SUP-{n:03d}", "automation": {"kind": k, "file": "x"}} for n, k in enumerate(kinds, 1)]})
+
+    def verdicts():
+        return {r["test_id"]: r["verdict"] for r in json.loads((root / "hi/sw-integ/results.json").read_text())["results"]}
+
+    import json
+    spec("host-unit")
+    assert code_gates.verification(root, "sw-integ")["verdict"] == "PASS"
+    spec("host-unit", "simulator", "manual")
+    res = code_gates.verification(root, "sw-integ")
+    assert res["verdict"] == "NOT_RUN" and "2 of 3" in res["not_run_reason"]
+    assert verdicts() == {"ITC-SUP-001": "PASS", "ITC-SUP-002": "NOT_RUN", "ITC-SUP-003": "NOT_RUN"}
+    spec("host-unit", "host-unit")
+    assert [i["code"] for i in code_gates.verification(root, "sw-integ")["issues"]] == ["VT-NOT-RUN"]
+    write(root / "hi/sw-integ/host/test_a.c", prog % 4)
+    spec("host-unit")
+    assert [i["code"] for i in code_gates.verification(root, "sw-integ")["issues"]] == ["VT-FAIL"]
+    spec()
+    (root / "hi/sw-integ/host/test_a.c").unlink()
+    assert code_gates.verification(root, "sw-integ")["verdict"] == "NOT_RUN"    # no cases is not a pass

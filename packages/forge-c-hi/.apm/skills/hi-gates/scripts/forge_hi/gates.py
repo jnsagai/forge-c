@@ -179,6 +179,8 @@ def _one_gate(root: Path, stage: str, g: str, scope_doc: dict | None) -> dict:
         return code_gates.unit_test(root)[0]
     if g == "coverage":
         return code_gates.coverage(root)
+    if g == "verification":
+        return code_gates.verification(root, stage)
     return tool_gate_not_run(root, stage, g)
 
 

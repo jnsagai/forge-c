@@ -114,7 +114,8 @@ def _spec_cases(root: Path) -> list[dict]:
     return [i for i in read_json(p).get("items", []) if (i.get("automation") or {}).get("kind") == "host-unit"]
 
 
-def run_unit_tests(root: Path, *, coverage: bool) -> tuple[dict[str, dict], list[dict], Path | None]:
+def run_unit_tests(root: Path, *, coverage: bool, programs: list[Path] | None = None,
+                   include: list[str] | None = None) -> tuple[dict[str, dict], list[dict], Path | None]:
     """Compile and run every test program. Returns per-case results, issues, and the build dir (coverage)."""
     root = Path(root)
     compiler = cc()
@@ -122,10 +123,11 @@ def run_unit_tests(root: Path, *, coverage: bool) -> tuple[dict[str, dict], list
     issues: list[dict] = []
     bdir = Path(tempfile.mkdtemp(prefix="hi-unit-"))
     extra = ["--coverage", "-O0", "-g"] if coverage else []
-    for t in test_programs(root):
+    for t in (test_programs(root) if programs is None else programs):
         exe = bdir / t.stem
         rel = t.relative_to(root).as_posix()
-        r = _run([compiler, *CFLAGS, *extra, "-Iinclude", "-Itests", rel,
+        r = _run([compiler, *CFLAGS, *extra, "-Iinclude", "-Itests",
+                  *[f"-I{i}" for i in include or []], rel,
                   *[s.relative_to(root).as_posix() for s in sources(root)], "-o", str(exe)], root)
         if r.returncode != 0:
             issues.append(gate_result.issue("UT-BUILD", f"{rel}: {r.stderr.strip()[:240]}", rel))
@@ -224,4 +226,54 @@ def coverage(root: Path, *, write: bool = True) -> dict:
                                              **common)
     if write:
         gate_result.write(root, "unit-verif", res)
+    return res
+
+
+def verification(root: Path, stage: str, *, write: bool = True) -> dict:
+    """The `verification` gate of sw-integ, sw-qual, sys-integ and sys-qual (T068): the host programs
+    ``hi/<stage>/host/test_*.c`` are compiled with the real sources and run. A simulator or manual case has no runner
+    in this package: it is NOT_RUN, so the gate is NOT_RUN at best and the package cannot be sealed READY on tests that
+    were only specified."""
+    root = Path(root)
+    _, common = _common(root)
+    spec_file = root / stages()[stage]["outputs"][0]
+    if cc() is None or not spec_file.is_file():
+        res = gate_result.result("verification", [], not_run_reason=(
+            "no C compiler ($CC or gcc) found" if cc() is None else f"{spec_file.name} does not exist"), **common)
+        if write:
+            gate_result.write(root, stage, res)
+        return res
+    cases = [i for i in read_json(spec_file).get("items", []) if isinstance(i, dict)]
+    host = {c["id"] for c in cases if (c.get("automation") or {}).get("kind") == "host-unit"}
+    hdir = root / "hi" / stage / "host"
+    results, issues, bdir = run_unit_tests(root, coverage=False, programs=sorted(hdir.glob("test_*.c")),
+                                           include=[f"hi/{stage}/host"])
+    if bdir is not None:
+        shutil.rmtree(bdir, ignore_errors=True)
+    for cid, r in sorted(results.items()):
+        if r["verdict"] == "FAIL":
+            issues.append(gate_result.issue("VT-FAIL", f"{cid}: {r['message']}", cid))
+        if cid not in host:
+            issues.append(gate_result.issue("VT-UNSPECIFIED", f"{cid} is not a host-unit case in the specification", cid))
+    not_run = []
+    for c in cases:
+        if c["id"] in results:
+            continue
+        kind = (c.get("automation") or {}).get("kind") or "none"
+        if c["id"] in host:
+            issues.append(gate_result.issue("VT-NOT-RUN", f"{c['id']} printed no result", c["id"]))
+        else:
+            not_run.append(c["id"])
+        results[c["id"]] = {"test_id": c["id"], "verdict": "NOT_RUN", "message": f"not executed (automation: {kind})"}
+    vr = write_json(root / "hi" / stage / "results.json", {
+        "schema": "forge-c-hi/verification-result@1", "stage": stage, "tool": _tool("verification"),
+        "results": [results[k] for k in sorted(results)], "created_utc": utc_now()}) if write else None
+    if not issues and (not_run or not cases):
+        res = gate_result.result("verification", [], not_run_reason=(
+            f"{len(not_run)} of {len(cases)} cases were not executed (no runner for simulator or manual cases): "
+            + ", ".join(not_run[:8]))[:300], **common)
+    else:
+        res = gate_result.result("verification", issues, evidence=[vr] if vr else [], tool=_tool("verification"), **common)
+    if write:
+        gate_result.write(root, stage, res)
     return res

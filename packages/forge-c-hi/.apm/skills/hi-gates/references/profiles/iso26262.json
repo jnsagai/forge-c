@@ -115,6 +115,7 @@
         "build",
         "static-analysis",
         "unit-test",
+        "verification",
         "coverage"
       ],
       "independence": "separate-session",
@@ -143,6 +144,7 @@
         "build",
         "static-analysis",
         "unit-test",
+        "verification",
         "coverage"
       ],
       "independence": "separate-model-family",
@@ -171,6 +173,7 @@
         "build",
         "static-analysis",
         "unit-test",
+        "verification",
         "coverage"
       ],
       "independence": "separate-model-family",

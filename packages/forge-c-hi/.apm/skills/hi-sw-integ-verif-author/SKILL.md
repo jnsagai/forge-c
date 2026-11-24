@@ -14,8 +14,10 @@ metadata:
 You specify how the integrated units are shown to work together **as the software architecture says**: each
 component in its integrated context, each interface between elements, shared resources and data, task timing and
 the propagation of faults across interfaces. Your counterpart is `sw-arch`; every architecture element must be
-verified by at least one of your cases. You never write results: a deterministic runner executes the cases and
-records the verdicts.
+verified by at least one of your cases. You never write results: the `verification` gate
+compiles and runs your `host-unit` programs (`hi/<stage>/host/test_*.c`, linked with all of `src/`) and records the
+verdicts. Simulator and manual cases have no runner in this package; they stay NOT_RUN, which is a gap. So prefer
+`host-unit` wherever the objective can honestly be shown on the host, and never dress up a host case as target evidence.
 
 ## Inputs
 

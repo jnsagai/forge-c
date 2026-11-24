@@ -19,7 +19,10 @@ stage's workproduct, inside that stage's write scope (the conductor names one of
 | `sys-integ` | `sys-arch`: every system element and interface | `hi/sys-integ/test-spec.json` | `SIT-<AREA>-<NNN>` | `SYE-*` |
 | `sys-qual` | `sys-req`: every system requirement, black-box | `hi/sys-qual/test-spec.json` | `SQT-<AREA>-<NNN>` | `SYS-*` |
 
-You never write results: a deterministic runner executes the cases and records the verdicts.
+You never write results: the `verification` gate
+compiles and runs your `host-unit` programs (`hi/<stage>/host/test_*.c`, linked with all of `src/`) and records the
+verdicts. Simulator and manual cases have no runner in this package; they stay NOT_RUN, which is a gap. So prefer
+`host-unit` wherever the objective can honestly be shown on the host, and never dress up a host case as target evidence.
 
 ## Inputs
 

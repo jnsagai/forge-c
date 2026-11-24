@@ -82,3 +82,7 @@
 - **Driver demo, fifth round:** `CON-IWDG-018..019`. They clarify how two earlier decisions apply to the manual's
   register-level sequence (the automatic reload caused by the window write, and the shared early-wakeup register).
   Raised by driver demo pass 6. Fictional, by Claude.
+- **2026-11-24, goal:** "move forward autonomously, fixing issues and blocks by yourself, and run until you finish a
+  complete v-model cycle".
+- **Sixteenth round:** `CON-SUP-149..156`, fictional decisions by Claude; 149 and 150 correct contradictions between
+  Claude's earlier decisions. `CON-SUP-157..158` are facts: the simulator models that exist, and a counted compiled loop.

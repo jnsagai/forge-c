@@ -47,7 +47,8 @@ from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 REWORK_SEVERITIES = ("blocking", "major")
 # gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
 # (full-V run T068: sw-design ended with a build error and an out-of-bounds access the author was never shown)
-DET_GATES = ("validate", "quality", "trace", "governance", "build", "static-analysis", "unit-test", "coverage")
+DET_GATES = ("validate", "quality", "trace", "governance", "build", "static-analysis", "unit-test", "coverage",
+             "verification")
 GOV_PHASES = ("governance", "fix-governance")
 
 
@@ -192,7 +193,9 @@ class Conductor:
                             if t.get("governance") else "")
                          + "; issues of the build, static-analysis, unit-test and coverage gates are fixed in the code "
                            "or tests inside your write scope. If a fix lies outside your write scope, record an open "
-                           "point instead.",
+                           "point instead. Never change an expected result, drop a case or relax a check to make a "
+                           "failing test pass: expected results come from the test basis. When the code is wrong, leave "
+                           "the test failing and record a blocking open point naming the function.",
             "governance": "Before any requirement is written, write the governance package `governance` (contract "
                           "`governance_contract`): the actors, the use cases (each naming every stakeholder need it "
                           "serves and, for a reference document, the sections it relies on), the document scope for "

@@ -59,6 +59,7 @@
         "build",
         "static-analysis",
         "unit-test",
+        "verification",
         "coverage"
       ],
       "independence": "separate-session",
