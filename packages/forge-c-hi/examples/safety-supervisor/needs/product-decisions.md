@@ -233,3 +233,10 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-181 | **Release instants, measured from the start of the control cycle.** The first 10 ms task in the configured release order is released at 0 ms, the second at 3 ms and the third at 6 ms; T_DIAG is released at 9 ms of every tenth control cycle. The defaults of CON-SUP-103 hold with these instants: each 10 ms task may execute for its 3 ms before the next is released. The start limit is measured from the release instant of the task itself. A task that has been released waits while an earlier 10 ms task still runs; the resulting late start is a fault of the waiting task when its start limit expires, in addition to the overrun of the running one. |
+
+**Thirty-first round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-182 | In normal operation each release instant of CON-SUP-181 is at most 100 µs early and at most 500 µs late, measured from the start of its control cycle; the start of a control cycle is at most 500 µs from 10 ms after the previous one. While a fault or a service request is handled these tolerances do not apply. Start and execution limits are measured from the actual release and the actual start. The limits of CON-SUP-103 and the end-of-cycle flow check of CON-SUP-104 apply independently: a 10 ms task that is within its start and execution limits but has not completed at the end of its control cycle is a flow fault. |
+| CON-SUP-183 | **Workload of the application (assumption for budgets, not a requirement on the supervisor).** In normal operation each 10 ms task needs at most 1 ms of processor time per cycle and T_DIAG at most 5 ms per 100 ms. The limits of CON-SUP-103 stay as they are. |

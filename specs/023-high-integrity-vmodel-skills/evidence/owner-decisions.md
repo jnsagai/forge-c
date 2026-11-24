@@ -120,3 +120,5 @@
   memory limits, task table) answer open points deferred to the design. Fictional, by Claude.
 - **Thirtieth round:** `CON-SUP-181` (release instants 0, 3, 6 and 9 ms). Claude's CON-SUP-101, 103 and 179 were not
   feasible together; raised by full-V attempt 3 pass 17 (system requirements, OP-SYS-017). Fictional, by Claude.
+- **Thirty-first round:** `CON-SUP-182..183` (release tolerance, independence of the limits, application workload). Raised by full-V attempt 3 pass 18
+  (system requirements, OP-SYS-018). Fictional, by Claude.
