@@ -100,3 +100,6 @@
 - **Twenty-third round:** `CON-SUP-168..171`, raised by full-V attempt 3 pass 7 (software architecture). 170 and 171
   **relax** two time bounds (retained-data update of concurrent faults 2 ms; counts cleared up to 20 ms late) that
   Claude's earlier decisions had stated without counting concurrent work. Fictional, by Claude.
+- **Twenty-fourth round:** `CON-SUP-172` **relaxes** the late-start and overrun detection bound from 100 µs to 200 µs and
+  accepts either verdict inside the first 100 µs. Raised by full-V attempt 3 pass 8 (system architecture): CON-SUP-127
+  counted the measurement resolution but not the supervisor's reaction time. Fictional, by Claude.
