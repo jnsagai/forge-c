@@ -810,3 +810,25 @@ def test_code_gate_issues_go_back_to_the_author(tmp_path, monkeypatch):
     monkeypatch.setattr(conduct.gates, "gate_stage", lambda *a, **k: fake)
     _, issues = conduct.Conductor(root, dry_run=True).det_issues("sys-req")
     assert [i["gate"] for i in issues] == ["build", "static-analysis"]
+
+
+def test_coverage_matrix_is_for_requirement_stages_only(tmp_path, monkeypatch):
+    # full-V run T068: 84 of 90 open sys-arch findings were raised by the conductor from coverage rows
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sys-arch"))
+    write(root / "hi/sys-arch/architecture.json", {"items": [], "open_points": []})
+    sys.path.insert(0, str(CONDUCT.parent))
+    from conduct import Conductor
+    c = Conductor(root)
+    reply = {"status": "DONE", "findings": [], "coverage": [
+        {"source": "STK-SUP-001", "requirements": ["SYS-SUP-001"], "status": "covered", "reason": ""}]}
+    monkeypatch.setattr(c, "run_role", lambda *a, **k: reply)
+    assert c.inspect("sys-arch", "set", 1, [], []) == []
+    assert not (root / "hi/sys-arch/inspection/coverage.json").exists()
+    for stage, wanted in (("sys-arch", False), ("sys-req", True), ("sw-req", True)):
+        assert Conductor.has_coverage(stage) is wanted
+    t = c.task("inspector", "sys-arch", "set")
+    assert "coverage" not in t["reply_contract"] and "coverage matrix" not in c.prompt(t)
+    t = c.task("inspector", "sys-req", "set")
+    assert "coverage" in t["reply_contract"] and "coverage matrix" in c.prompt(t)

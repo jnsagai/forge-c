@@ -176,7 +176,7 @@ class Conductor:
             "reply_contract": rel(self.root, REFS / "schemas" / "agent-status.schema.json") if role == "author"
             else '{"status": "DONE", "findings": [{"checklist_item", "target_id", "severity", "description", "requested_change", "blocked_by"?}]'
                  + (', "coverage": [{"source", "requirements", "status": "covered|partial|gap|n/a", "reason"}]}'
-                    if phase in ("set",) else "}"),
+                    if phase == "set" and self.has_coverage(stage) else "}"),
             **extra, **kw,
         }
 
@@ -207,13 +207,14 @@ class Conductor:
                       "any other existing item. You may add new items only to split this one.",
             "rework-set": "Resolve the set-level findings listed, changing as little as possible.",
             "item": f"Judge ONLY these items, each on its own, against the item checklist: {', '.join(t.get('items', []))}.",
-            "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed. Also return "
+            "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed."
+                   + ("" if not self.has_coverage(t["stage"]) else " Also return "
                    "the coverage matrix (`coverage`): one row per upstream source (each need, upstream requirement "
                    "or in-scope document section this stage must cover) and per applicable scenario (start-up, "
                    "normal operation, invalid input, fault detection and reaction, recovery, shutdown, limits), "
                    "with the requirements that cover it and a status: covered, partial, gap or n/a. n/a needs a "
                    "reason; a missing input is a gap, never n/a. Raise a finding (or cite the open point) for "
-                   "every partial or gap row.",
+                   "every partial or gap row."),
         }[t["phase"]]
         if t.get("governance") and t["role"] == "author" and t["phase"] in ("create", "update"):
             what += (" The governance package `governance` is written: name in `attributes.use_cases` of each "
@@ -528,7 +529,7 @@ class Conductor:
                 dropped += 1
                 continue
             out.append(rec)
-        if phase == "set":
+        if phase == "set" and self.has_coverage(stage):
             out += self.coverage(stage, rnd, reply.get("coverage"), out, open_points, raised_by)
         write_json(self.root / "hi" / stage / "inspection" / f"{phase}-r{rnd}.json",
                    {"schema": "forge-c-hi/findings@1", "stage": stage, "phase": phase, "round": rnd,
@@ -589,6 +590,13 @@ class Conductor:
                    **{s: sum(1 for r in out_rows if r["status"] == s) for s in ("covered", "partial", "gap")},
                    na=sum(1 for r in out_rows if r["status"] == "n/a"), raised=len(added))
         return added
+
+    @staticmethod
+    def has_coverage(stage: str) -> bool:
+        """The coverage matrix (guideline 3.1) belongs to the requirement stages. Full-V run T068: in the architecture
+        stages the rows name elements by their own ids, every covered row became a gap and 84 of 90 open findings
+        were raised by the conductor itself, under a checklist id those stages do not have."""
+        return "requirements-set" in stages()[stage]["checklists"]
 
     @staticmethod
     def row_tracker(src: str, reason: str, findings: list[dict], texts: dict, ops: dict) -> str | None:
