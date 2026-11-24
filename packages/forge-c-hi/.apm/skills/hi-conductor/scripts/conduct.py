@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import difflib
 import json
 import os
 import re
@@ -45,6 +46,7 @@ from forge_hi.jsonschema_lite import validate  # noqa: E402
 from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
+SAME_TEXT = 0.5  # word-sequence similarity above which two findings under one key are the same defect
 # gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
 # (full-V run T068: sw-design ended with a build error and an out-of-bounds access the author was never shown)
 DET_GATES = ("validate", "quality", "trace", "governance", "build", "static-analysis", "unit-test", "coverage",
@@ -640,9 +642,28 @@ class Conductor:
             return (f.get("target_id"), f.get("checklist_item"), ids)
         return (f.get("target_id"), f.get("checklist_item"))
 
-    def keep_going(self, stage: str, phase: str, rounds: int, keys: set, prev: set | None) -> bool:
-        """After `rounds` completed rework rounds, with `keys` still open: rework once more? Records why it stops."""
-        if prev is not None and keys == prev:
+    @classmethod
+    def texts(cls, findings: list[dict]) -> dict[tuple, list[str]]:
+        """finding key -> the descriptions raised under it."""
+        out: dict[tuple, list[str]] = {}
+        for f in findings:
+            out.setdefault(cls.finding_key(f), []).append(str(f.get("description", "")))
+        return out
+
+    @staticmethod
+    def same_findings(now: dict[tuple, list[str]], prev: dict[tuple, list[str]]) -> bool:
+        """The same keys, and under every key at least one description that says nearly the same as before. Two
+        different defects can share item, criterion and cited ids (full-V attempt 3 pass 13)."""
+        return now.keys() == prev.keys() and all(
+            any(difflib.SequenceMatcher(None, a.lower().split(), b.lower().split()).ratio() >= SAME_TEXT
+                for a in now[k] for b in prev[k]) for k in now)
+
+    def keep_going(self, stage: str, phase: str, rounds: int, now: list[dict], before: list[dict] | None) -> bool:
+        """After `rounds` completed rework rounds, with the findings `now` still open: rework once more? Records why
+        it stops."""
+        keys = {self.finding_key(f) for f in now}
+        prev = None if before is None else {self.finding_key(f) for f in before}
+        if before is not None and self.same_findings(self.texts(now), self.texts(before)):
             self.event(stage=stage, step="rework-stuck", phase=phase, rounds=rounds, open=len(keys))
             return False
         progressing = prev is not None and len(keys) < len(prev)
@@ -749,7 +770,7 @@ class Conductor:
             to_judge = [i for i in hashes if judged.get(i) != hashes[i] or i in pending]
             judged_now: set[str] = set()
             self.unchanged: set[str] = set()
-            prev_keys: set | None = None
+            prev_live: list[dict] | None = None
             rnd = base_item + 1
             while to_judge:
                 new = self.inspect(stage, "item", rnd, to_judge, [])
@@ -767,14 +788,13 @@ class Conductor:
                 # a finding that waits on an open point cannot be reworked away: it is carried to the decision
                 live = [f for f in all_findings if f["status"] == "open" and f["phase"] == "item"
                         and f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
-                keys = {self.finding_key(f) for f in live}
                 # an item the author left unchanged is not reworked again: its findings are carried as they are
                 flagged = sorted({f["target_id"] for f in live} - self.unchanged)
                 if not flagged:
                     break
-                if not self.keep_going(stage, "item", rnd - base_item - 1, keys, prev_keys):
+                if not self.keep_going(stage, "item", rnd - base_item - 1, live, prev_live):
                     break
-                prev_keys = keys
+                prev_live = live
                 added: list[str] = []
                 for iid in flagged:
                     mine = [f for f in all_findings if f["status"] == "open" and f["target_id"] == iid
@@ -792,7 +812,7 @@ class Conductor:
             self.save_findings(stage, all_findings)
             # set phase
             srnd = base_set + 1
-            prev_set: set | None = None
+            prev_set: list[dict] | None = None
             while True:
                 carried = [f for f in all_findings if f["status"] == "carried"]
                 prior_set = [f for f in all_findings if f["status"] == "open" and f["phase"] == "set"]
@@ -819,10 +839,9 @@ class Conductor:
                 open_set = [f for f in new if f["severity"] in REWORK_SEVERITIES and not f.get("blocked_by")]
                 if not open_set:
                     break
-                set_keys = {self.finding_key(f) for f in open_set}
-                if not self.keep_going(stage, "set", srnd - base_set - 1, set_keys, prev_set):
+                if not self.keep_going(stage, "set", srnd - base_set - 1, open_set, prev_set):
                     break
-                prev_set = set_keys
+                prev_set = open_set
                 self.run_role("author", stage, "rework-set", round=srnd,
                               findings=[{k: f[k] for k in ("id", "checklist_item", "target_id", "severity",
                                                            "description", "requested_change") if k in f}

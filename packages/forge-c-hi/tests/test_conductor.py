@@ -849,3 +849,21 @@ def test_different_set_findings_on_the_same_item_are_not_stuck(tmp_path):
     assert not [e for e in events(root, out) if e.get("step") == "rework-stuck"]
     assert len([c for c in calls if c["phase"] == "rework-set"]) == 2
     assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out
+
+
+def test_different_defects_citing_the_same_ids_are_not_stuck(tmp_path):
+    # full-V attempt 3 pass 13: two different defects in one decision share target, criterion and cited ids
+    def sq(text):
+        return dict(F("SYA-08", "blocking", desc=text), target_id="SET")
+
+    one = sq("DEC-SUP-001 compares a free-running count but does not say how SYS-SUP-001 holds across rollover.")
+    two = sq("SYS-SUP-001: the arm value of DEC-SUP-001 is one ahead, so an immediate check reports a violation.")
+    again = sq("DEC-SUP-001 compares a free-running count and still does not say how SYS-SUP-001 holds across rollover.")
+    for name, second, reworks in (("p", two, 2), ("q", again, 1)):
+        root = tmp_path / name
+        root.mkdir()
+        sc = setup(root, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                          "inspector": {"item_rounds": [{}], "set_rounds": [[one], [second], []]}})
+        code, out, calls = conduct(root, sc, "--stage", "sys-req")
+        assert len([c for c in calls if c["phase"] == "rework-set"]) == reworks, name
+        assert bool([e for e in events(root, out) if e.get("step") == "rework-stuck"]) == (name == "q")

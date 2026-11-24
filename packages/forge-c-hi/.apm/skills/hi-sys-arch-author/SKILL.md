@@ -112,6 +112,18 @@ assisted mode use `"harness": "assisted"`, your model name if you know it, and `
   that cannot be observed or exercised; say in the description how an element or interface can be observed (a pin,
   a serial message, a reset flag).
 
+## Level of detail
+
+State **what must hold and by how much**: the mechanism, the element that owns it, its time or size budget with the
+analysis that shows it fits the requirement limit, and the property the next stage must preserve. Leave **how** to
+the software architecture or the detailed design: counter arithmetic and wrap-around handling, instruction counts, data layouts, sequence
+numbers and commit steps. Detail given too early is judged here and must be right here, without the means to show it.
+
+A finding about such a detail is resolved by replacing the detail with the property it has to provide (for example
+"a deadline is never reported before its limit, and at most 200 us after it; the implementation keeps this across
+counter wrap-around") and the budget, not by adding more detail. Keep the property itself: never drop a limit, a safety
+mechanism or an analysis that a requirement needs. An input that is missing is an open point.
+
 ## Open points
 
 Write an open point (`OP-SYE-<NNN>`) whenever the inputs leave an allocation, an interface value or a hardware fact

@@ -120,6 +120,18 @@ per main interaction); the JSON stays the source of truth and must say everythin
   element of any kind will need a software integration test (`sw-arch` -> `sw-integ`). Do not add elements that
   cannot be integrated and observed.
 
+## Level of detail
+
+State **what must hold and by how much**: the mechanism, the element that owns it, its time or size budget with the
+analysis that shows it fits the requirement limit, and the property the next stage must preserve. Leave **how** to
+the detailed design: counter arithmetic and wrap-around handling, instruction counts, data layouts, sequence
+numbers and commit steps. Detail given too early is judged here and must be right here, without the means to show it.
+
+A finding about such a detail is resolved by replacing the detail with the property it has to provide (for example
+"a deadline is never reported before its limit, and at most 200 us after it; the implementation keeps this across
+counter wrap-around") and the budget, not by adding more detail. Keep the property itself: never drop a limit, a safety
+mechanism or an analysis that a requirement needs. An input that is missing is an open point.
+
 ## Open points
 
 `OP-SWC-<NNN>` for anything the requirements leave undecided at architecture level (a missing CPU budget, an
