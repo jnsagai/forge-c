@@ -49,8 +49,8 @@ REWORK_SEVERITIES = ("blocking", "major")
 SAME_TEXT = 0.5  # word-sequence similarity above which two findings under one key are the same defect
 # gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
 # (full-V run T068: sw-design ended with a build error and an out-of-bounds access the author was never shown)
-DET_GATES = ("validate", "quality", "trace", "governance", "build", "static-analysis", "unit-test", "coverage",
-             "verification")
+DET_GATES = ("validate", "quality", "trace", "doc-sources", "governance", "build", "static-analysis", "unit-test",
+             "coverage", "verification")
 GOV_PHASES = ("governance", "fix-governance")
 
 

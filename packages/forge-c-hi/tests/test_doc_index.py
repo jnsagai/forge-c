@@ -170,3 +170,22 @@ def test_outline_handles_vendor_layout():
     secs = doc_index.outline(pages)
     assert [s["section"] for s in secs] == ["3", "3.1", "3.2", "4", "4.1", "4.1.1"]
     assert {s["section"]: s["page"] for s in secs}["3.2"] == 3 and secs[-1]["title"] == "Watchdog key register (WD_KR)"
+
+
+@pytest.mark.parametrize("stage", ["sys-arch", "sw-req", "sw-arch", "sw-design"])
+def test_document_citations_are_a_required_gate_in_every_left_side_stage_that_may_cite(tmp_project, stage):
+    # full-V attempt 3: the architecture needs hardware facts; a wrong citation there must not pass unseen
+    from forge_hi.config import stages as all_stages
+    project = {**json.loads((doc_project(tmp_project) / ".hi/project.json").read_text()), "integrity_level": "HI-2"}
+    assert "doc-sources" in gates.required_gates(project, stage)
+    name = all_stages()[stage]["outputs"][0]
+    item = {"id": "SWC-SUP-001", "sources": [{"kind": "document", "doc_id": "NOPE", "section": "1", "page": 1}]}
+    write(tmp_project / name, {"stage": stage, "items": [item]})
+    res = gates.doc_sources(tmp_project, stage)
+    assert res["verdict"] == "FAIL" and res["issues"][0]["code"] == "DOC-UNKNOWN"
+
+
+def test_wrong_document_citations_go_back_to_the_author():
+    sys.path.insert(0, str(SCRIPTS.parents[1] / "hi-conductor" / "scripts"))
+    import conduct
+    assert "doc-sources" in conduct.DET_GATES

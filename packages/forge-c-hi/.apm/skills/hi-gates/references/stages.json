@@ -61,6 +61,7 @@
       "gates": [
         "validate",
         "trace",
+        "doc-sources",
         "scope"
       ]
     },
@@ -111,6 +112,7 @@
       "gates": [
         "validate",
         "trace",
+        "doc-sources",
         "scope"
       ]
     },
@@ -136,6 +138,7 @@
       "gates": [
         "validate",
         "trace",
+        "doc-sources",
         "scope",
         "build",
         "static-analysis"

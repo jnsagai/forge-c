@@ -120,6 +120,14 @@ per main interaction); the JSON stays the source of truth and must say everythin
   element of any kind will need a software integration test (`sw-arch` -> `sw-integ`). Do not add elements that
   cannot be integrated and observed.
 
+## Hardware facts
+
+When the project declares a reference document (`kind: reference_document` in `inputs`), look up each hardware property
+the architecture relies on there and cite it as an extra source of the item:
+`{"kind": "document", "doc_id": "<id>", "section": "<number>", "page": <n>}` (the `doc-sources` gate checks the section
+and page). Use `.hi/docs/<id>.index.json` to find the pages, and read only those pages. State the fact in your own
+words; never quote the document. A property the document does not give, or that you cannot find, is an open point.
+
 ## Level of detail
 
 State **what must hold and by how much**: the mechanism, the element that owns it, its time or size budget with the
