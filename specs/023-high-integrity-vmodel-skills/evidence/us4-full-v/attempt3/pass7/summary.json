@@ -1,0 +1,58 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T061049Z-e55d9e/events.jsonl",
+  "run_id": "r20261124T061049Z-e55d9e",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED_WITH_GAPS",
+      "reason": "open major findings ['F-sys-arch-set-r4-001', 'F-sys-arch-set-r4-002']",
+      "stage": "sys-arch"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sw-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-arch-set-r5-001', 'F-sw-arch-set-r5-002', 'F-sw-arch-set-r5-003', 'F-sw-arch-set-r5-004', 'F-sw-arch-set-r5-005'] blocking open points ['OP-SWC-010', 'OP-SWC-012', 'OP-SWC-015']",
+      "stage": "sw-arch"
+    }
+  ],
+  "status": "BLOCKED"
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-arch": {
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-arch-set-r5-001', 'F-sw-arch-set-r5-002', 'F-sw-arch-set-r5-003', 'F-sw-arch-set-r5-004', 'F-sw-arch-set-r5-005'] blocking open points ['OP-SWC-010', 'OP-SWC-012', 'OP-SWC-015']",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "blocked",
+      "utc": "2026-11-24T07:33:01Z",
+      "wp_sha256": "f03ae4614865c7fd164122142416e5af86f73acbef1203c095bfbd5a1839df99"
+    },
+    "sw-req": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "accepted",
+      "utc": "2026-11-24T06:44:16Z",
+      "wp_sha256": "9a73a20ccaa4ca17a0acb97085a4f2ba795ec901957a8beaf06c11a2ca497e35"
+    },
+    "sys-arch": {
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED_WITH_GAPS",
+      "reason": "open major findings ['F-sys-arch-set-r4-001', 'F-sys-arch-set-r4-002']",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "accepted",
+      "utc": "2026-11-24T06:30:23Z",
+      "wp_sha256": "cf7f2662c3b8d26677e31c466e133ecb0fb6161487ae44b546535651f28bea9b"
+    },
+    "sys-req": {
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "accepted",
+      "utc": "2026-11-24T06:13:53Z",
+      "wp_sha256": "a1397fd50f34b33942f46715c0b9a7aa34f25e6cd1217cf064a8e83b32fe421a"
+    }
+  }
+}

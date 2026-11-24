@@ -97,3 +97,6 @@
   simulator models were built (`examples/safety-supervisor/sim`). `CON-SUP-157` and `CON-SUP-165` are withdrawn;
   `CON-SUP-166` states the environment and its limits as facts.
 - **Twenty-second round:** `CON-SUP-167`, a timing assumption (4 clock cycles per instruction) made by Claude so that processor-time limits have a verifiable basis. It is **not confirmed on hardware** and is an obligation on the integrator. Raised by full-V attempt 3.
+- **Twenty-third round:** `CON-SUP-168..171`, raised by full-V attempt 3 pass 7 (software architecture). 170 and 171
+  **relax** two time bounds (retained-data update of concurrent faults 2 ms; counts cleared up to 20 ms late) that
+  Claude's earlier decisions had stated without counting concurrent work. Fictional, by Claude.
