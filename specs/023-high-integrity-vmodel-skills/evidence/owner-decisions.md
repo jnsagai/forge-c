@@ -86,3 +86,4 @@
   complete v-model cycle".
 - **Sixteenth round:** `CON-SUP-149..156`, fictional decisions by Claude; 149 and 150 correct contradictions between
   Claude's earlier decisions. `CON-SUP-157..158` are facts: the simulator models that exist, and a counted compiled loop.
+- **Seventeenth round:** `CON-SUP-159` (reports pending at a reset), raised by full-V attempt 3. Fictional, by Claude.

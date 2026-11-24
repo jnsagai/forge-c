@@ -140,3 +140,9 @@ contradictions between earlier decisions.
 | CON-SUP-156 | There is no memory protection between the supervisor and the application tasks on the shared core. The application tasks are developed to the same integrity level as the supervisor, and freedom from interference is not claimed. |
 | CON-SUP-157 | **Verification environment (fact).** The available simulator models cover IWDG, GPIO, USART, TIM, CRC and RCC, each on its own partial STM32N6 platform. There is no window-watchdog model and no model of the complete controller. Software behaviour is verified on the host with the hardware interface replaced by fakes; what only the target can show is stated as a limit and stays unverified here. |
 | CON-SUP-158 | **Measurement (fact).** A table-driven CRC-32/MPEG-2 loop compiled with arm-none-eabi-gcc 10.3.1 (`-mcpu=cortex-m55 -O2`) has 6 instructions per byte, about 6150 for a 1 KiB segment. The 0.5 ms limit at 200 MHz is 100 000 core cycles. Cycles per instruction and memory wait states were not measured. Execution-time evidence on the target is not available in this project and stays an identified gap for the offline review; it does not block the architecture. |
+
+**Seventeenth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-159 | A fault is entered in the fault history and counted in the fault count when it is detected, not when its report is sent. Fault reports still pending or partly sent when a reset occurs are lost and are not sent again after the reset; CON-SUP-112 and CON-SUP-150 do not apply to them. Their faults stay in the history and the count as CON-SUP-125 and CON-SUP-151 say. |
