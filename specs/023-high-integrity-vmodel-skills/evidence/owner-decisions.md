@@ -110,3 +110,6 @@
   attempt 3 pass 10 (system requirements, OP-SYS-014). Fictional, by Claude.
 - **Twenty-seventh round:** `CON-SUP-175` (controlled shutdown out of scope). Raised by full-V attempt 3 pass 12 (system
   requirements, OP-SYS-015). Fictional, by Claude.
+- **Full-V attempt 3, pass 14:** software architecture blocked on missing USART facts (OP-SWC-016). No decision: the
+  reference manual RM0486 is declared as a local reference document of the project (as in the driver demo). It is never
+  committed or redistributed; architecture and design cite section and page only.
