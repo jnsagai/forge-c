@@ -1,0 +1,65 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-arch": {
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-arch-set-r5-001', 'F-sw-arch-set-r5-002', 'F-sw-arch-set-r5-003', 'F-sw-arch-set-r5-004', 'F-sw-arch-set-r5-005'] blocking open points ['OP-SWC-010', 'OP-SWC-012', 'OP-SWC-015']",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "blocked",
+      "utc": "2026-11-24T07:33:01Z",
+      "wp_sha256": "f03ae4614865c7fd164122142416e5af86f73acbef1203c095bfbd5a1839df99"
+    },
+    "sw-req": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T061049Z-e55d9e",
+      "state": "accepted",
+      "utc": "2026-11-24T06:44:16Z",
+      "wp_sha256": "9a73a20ccaa4ca17a0acb97085a4f2ba795ec901957a8beaf06c11a2ca497e35"
+    },
+    "sys-arch": {
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-arch-set-r10-001']",
+      "run_id": "r20261124T085034Z-870ea8",
+      "state": "blocked",
+      "utc": "2026-11-24T09:02:38Z",
+      "wp_sha256": "046def2110f54b5cfac1db74257759fa5edbd3a4a1225896ceb0edb18f3a3cca"
+    },
+    "sys-req": {
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261124T085034Z-870ea8",
+      "state": "accepted",
+      "utc": "2026-11-24T08:53:57Z",
+      "wp_sha256": "754cfa4a9113dabfca3aa4871d7b29fe972c0d4669689e0382fe1651cc0ee1ee"
+    }
+  }
+}

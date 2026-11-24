@@ -1,0 +1,33 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T085034Z-870ea8/events.jsonl",
+  "run_id": "r20261124T085034Z-870ea8",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-arch-set-r10-001']",
+      "stage": "sys-arch"
+    }
+  ],
+  "status": "BLOCKED"
+}
