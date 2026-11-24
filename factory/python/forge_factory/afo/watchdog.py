@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 
@@ -20,12 +21,17 @@ ALERTS = "afo/alerts.jsonl"
 
 
 def check(max_age: float, now: float | None = None) -> dict:
-    now = now or time.time()
+    now = time.time() if now is None else now
     try:
         hb = json.loads(heartbeat_path().read_text())
     except (OSError, ValueError):
         return {"ok": False, "code": "HEARTBEAT_MISSING"}
-    age = now - float(hb.get("epoch", 0))
+    epoch = hb.get("epoch") if isinstance(hb, dict) else None
+    if type(epoch) not in (int, float) or not math.isfinite(epoch) or epoch <= 0:
+        return {"ok": False, "code": "HEARTBEAT_INVALID"}
+    age = now - epoch
+    if age < 0:
+        return {"ok": False, "code": "HEARTBEAT_CLOCK_REGRESSION"}
     if age > max_age:
         return {"ok": False, "code": "HEARTBEAT_STALE", "age_s": round(age, 1), "pid": hb.get("pid")}
     if not hb.get("ok", False):
@@ -42,7 +48,7 @@ def alert(result: dict, dedup_s: float, now: float | None = None) -> bool:
         last = [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
     except OSError:
         last = []
-    if any(a.get("code") == result["code"] and now - a.get("epoch", 0) < dedup_s for a in last[-50:]):
+    if any(a.get("code") == result["code"] and 0 <= now - a.get("epoch", 0) < dedup_s for a in last[-50:]):
         return False
     with p.open("a", encoding="utf-8") as f:
         f.write(json.dumps({"ts": utc_now(), "epoch": now, "source": "afo-watchdog", **result}) + "\n")
@@ -50,15 +56,15 @@ def alert(result: dict, dedup_s: float, now: float | None = None) -> bool:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from .host import preflight
+    from .operations import Intent, configured, recover, recover_profile
+
     ap = argparse.ArgumentParser(prog="forge_factory.afo.watchdog")
     ap.add_argument("--max-age", type=float, default=300)
     ap.add_argument("--dedup", type=float, default=900)
     a = ap.parse_args(argv)
     r = check(a.max_age)
     if not r["ok"]:
-        from .operations import configured
-        from .host import preflight
-
         if configured() and not preflight()["ok"]:
             # Surviving independent layer reports via journal/stdout, without data-root fallback writes.
             print(json.dumps({**r, "recovery": "WAITING_FOR_AUTHORITATIVE_VOLUME"}))
@@ -66,10 +72,7 @@ def main(argv: list[str] | None = None) -> int:
         r["alerted"] = alert(r, a.dedup)
         from .operations import recover
 
-        r["recovery"] = recover()
-    from .operations import configured, recover_profile, Intent, recover
-    from .host import preflight
-
+        r["recovery"] = ("WAITING_FOR_CURRENT_HEARTBEAT" if r["code"] == "HEARTBEAT_CLOCK_REGRESSION" else recover())
     if configured() and preflight()["ok"]:
         from .queue import Store
 

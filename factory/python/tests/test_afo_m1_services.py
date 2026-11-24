@@ -129,3 +129,24 @@ def test_watchdog_alerts_once_per_window(tmp_path, monkeypatch):
     assert watchdog.alert(stale, 900, now=2000.0)                            # after the window: alert again
     conductor.write_heartbeat(6, "OBSERVE_ONLY", False, "cycle error")
     assert watchdog.check(300)["code"] == "CYCLE_FAILED"
+
+
+def test_watchdog_reports_clock_regression_without_starting_a_recovery(tmp_path, monkeypatch, capsys):
+    import time
+
+    from forge_factory.afo import operations
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    monkeypatch.setattr(operations, "configured", lambda: False)
+    conductor.write_heartbeat(5, "OBSERVE_ONLY", True)
+    checkpoint = json.loads(conductor.heartbeat_path().read_text())
+    monkeypatch.setattr(time, "time", lambda: checkpoint["epoch"] - 60)
+
+    def unexpected_recovery():
+        pytest.fail("a future heartbeat alone cannot authorize a restart")
+
+    monkeypatch.setattr(operations, "recover", unexpected_recovery)
+    assert watchdog.main([]) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["code"] == "HEARTBEAT_CLOCK_REGRESSION"
+    assert result["recovery"] == "WAITING_FOR_CURRENT_HEARTBEAT"
