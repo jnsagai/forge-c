@@ -133,4 +133,9 @@ it needs. `blocks: true` when it prevents verifying a requirement. Never invent 
 
 Before adding an open point, check the existing ones: if the gap is already recorded, cite that id in your rationale
 instead of adding a duplicate. Never reuse an open point's id for a different question: when the inputs answer one, remove it,
-and give a new question a new id. The conductor checks this across passes (`IQ-12.open-point-id-reused`). Rework cannot answer an open point; only a change in the inputs (a human decision) can.
+and give a new question a new id. The conductor checks this across passes (`IQ-12.open-point-id-reused`). Rework cannot answer an open point; only a change in
+the inputs (a human decision) or, for a point with `returned_to`, in the earlier stage's workproduct can.
+
+A blocking open point needs `returned_to` (`hi-core-rules.md` rule 1): the earlier stage whose workproduct must change,
+or `null` when only a person can decide. When this stage can choose within what the earlier workproducts require, it
+chooses and gives the reason; it does not ask. In an `update` with `returned` points, settle each one here.

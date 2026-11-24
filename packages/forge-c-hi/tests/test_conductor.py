@@ -905,3 +905,104 @@ def test_different_defects_citing_the_same_ids_are_not_stuck(tmp_path):
         code, out, calls = conduct(root, sc, "--stage", "sys-req")
         assert len([c for c in calls if c["phase"] == "rework-set"]) == reworks, name
         assert bool([e for e in events(root, out) if e.get("step") == "rework-stuck"]) == (name == "q")
+
+
+def returning(**sw):
+    """sys-req and sw-req; the software author returns OP-SWR-001 to sys-req and drops it once told it was settled."""
+    op = [{"id": "OP-SWR-001", "text": "SYS-SUP-002 cannot be met with SYS-SUP-001.", "blocks": True,
+           "returned_to": "sys-req"}]
+    sc = clean_scenario(by_stage={
+        "sys-req": {"update": {"patch": {"SYS-SUP-002": {"rationale": "settled the returned point"}}}},
+        "sw-req": {"items": SWR_ITEMS, "open_points": op, "update": {"open_points": []}, **sw}})
+    return sc, op
+
+
+def test_a_returned_point_goes_back_to_the_earlier_stage_and_is_settled(tmp_path):
+    # full-V attempt 3 pass 19: sw-design found an accepted interface that could not meet an accepted time limit
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, returning()[0], stages=("sys-req", "sw-req"))
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 0, out
+    assert [(s["stage"], s["outcome"]) for s in out["stages"]] == [("sys-req", "ACCEPTED"), ("sw-req", "ACCEPTED")]
+    back = [c for c in calls if c["stage"] == "sys-req" and c["returned"]]
+    assert [(c["role"], c["phase"]) for c in back] == [("author", "update"), ("inspector", "set")]
+    assert back[0]["returned"][0]["id"] == "OP-SWR-001" and back[0]["returned"][0]["from_stage"] == "sw-req"
+    upd = [c for c in calls if c["stage"] == "sw-req" and c["phase"] == "update"]
+    assert upd and upd[0]["open_points"] == ["OP-SWR-001"]
+    assert [e["to_stage"] for e in events(root, out) if e.get("step") == "returned"] == ["sys-req"]
+
+
+def test_a_point_returned_again_unchanged_waits_for_a_person(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc0, op = returning()
+    sc0["author"]["by_stage"]["sw-req"]["update"] = {"open_points": op}
+    sc = setup(root, sc0, stages=("sys-req", "sw-req"))
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 1 and out["stages"][-1]["outcome"] == "BLOCKED"
+    assert "OP-SWR-001" in out["stages"][-1]["reason"]
+    assert sum(1 for c in calls if c["stage"] == "sys-req" and c["phase"] == "update") == 1
+
+
+def test_a_point_for_a_person_is_not_returned(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc0, op = returning()
+    op[0]["returned_to"] = None
+    sc = setup(root, sc0, stages=("sys-req", "sw-req"))
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 1 and [s["outcome"] for s in out["stages"]] == ["ACCEPTED", "BLOCKED"]
+    assert not [c for c in calls if c["returned"]]
+
+
+def test_a_returned_point_reopens_an_accepted_stage_in_a_later_run(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, returning()[0], stages=("sys-req", "sw-req"))
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    code, out, calls = conduct(root, sc, "--stage", "sw-req")   # sys-req is not in this run: it cannot go back
+    assert code == 1 and [s["stage"] for s in out["stages"]] == ["sw-req"]
+    (root.parent / "p-calls.jsonl").unlink()
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 0, out
+    assert calls[0]["stage"] == "sys-req" and calls[0]["returned"][0]["id"] == "OP-SWR-001"
+
+
+def test_failing_tests_returned_as_a_code_defect_are_not_sent_back_again(tmp_path, monkeypatch):
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-req", "sw-design", "unit-verif"))
+    write(root / "hi/unit-verif/test-spec.json", {"items": [], "open_points": [
+        {"id": "OP-UTC-001", "text": "am_step returns the wrong code.", "blocks": True, "returned_to": "sw-design"}]})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    c = cond.Conductor(root)
+    ran = []
+    monkeypatch.setattr(c, "run_role", lambda *a, **k: ran.append(a[2]))
+    fails = [{"gate": "unit-test", "code": "UT-FAIL", "message": "UTC-SUP-004"}]
+    monkeypatch.setattr(c, "det_issues", lambda s: (None, fails))
+    with pytest.raises(cond.Blocked, match="OP-UTC-001 to sw-design"):
+        c.author_with_gates_fix_only("unit-verif", fails)
+    assert ran == ["fix-gates"]
+
+
+def test_who_settles_a_blocking_open_point_is_stated(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-req", "sw-arch", "sw-design"))
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    project = cond.load_project(root)
+
+    def bad(stage, **kw):
+        return bool(cond.gates.check_returns(project, stage, [{"id": "OP-1", "text": "x", **kw}]))
+    assert bad("sw-design", blocks=True)                                      # unclassified
+    assert not bad("sw-design", blocks=True, returned_to="sw-arch")
+    assert not bad("sw-design", blocks=True, returned_to=None)
+    assert bad("sw-design", blocks=True, returned_to="unit-verif")            # not earlier
+    assert bad("sw-design", blocks=True, returned_to="sys-arch")              # not a stage of this project
+    assert bad("sw-design", blocks=False, returned_to="sw-arch")
+    assert bad("sw-design", blocks=False, deferred_to="sw-req")               # deferred upwards
+    assert not bad("sw-design", blocks=False, deferred_to="sw-integ")
+    assert not bad("sys-req", blocks=True)                                    # nothing earlier in the project

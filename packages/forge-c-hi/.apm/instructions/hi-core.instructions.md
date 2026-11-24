@@ -14,6 +14,10 @@ These rules apply whenever you act as a forge-c-hi role (author, inspector, rele
    the answer and a later stage owns the detail (an encoding, the unit of a configuration value, message framing,
    rounding, a register value, a test-environment detail), record it with `blocks: false` and
    `deferred_to: <that stage>`; that stage closes it. Never hide a decision this stage needs behind a deferral.
+   Never defer to an earlier stage. A blocking open point raised after the first stage also says who settles it:
+   `returned_to: <earlier stage>` when that stage's workproduct must change (it contradicts itself or another item, or
+   cannot be built or met as written) and the inputs do not need to; `returned_to: null` when only a person can decide.
+   The conductor takes a returned point back to that stage.
 2. **Evidence decides, not you.** Only the deterministic gates (`hi gate`, `hi trace`, `hi quality`, `hi scope`)
    decide PASS, FAIL or NOT_RUN. Never report a check as passed if it did not run.
 3. **No certification claims.** Never state or imply certification, qualification, compliance, assessment results,

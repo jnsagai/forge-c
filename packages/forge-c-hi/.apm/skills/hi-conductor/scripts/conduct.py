@@ -15,6 +15,9 @@ Per stage (contracts/cli-and-mcp.md):
 6. set inspection with the carried findings, set rework within the rework limit;
 7. final gates; the stage is accepted, accepted with gaps (NOT_RUN), or BLOCKED.
 
+A BLOCKED stage with open points returned to an earlier stage (`returned_to`) sends the run back to that stage, at most
+`rework_limit` times per run.
+
 Each role runs as a separate process with `.hi/active-role.json` set for the guard hook, and a file snapshot
 before and after so that any write outside the role's scope is caught (scope gate). The inspector binding must be
 read-only. Raw prompts and replies are not stored unless `trace_capture.raw_prompts` is true.
@@ -106,6 +109,7 @@ class Conductor:
         if roles["inspector"].get("read_only") is not True:
             raise ConfigError("the inspector binding must be read_only: true")
         self.scope_issues: list[dict] = []
+        self.returned: list[dict] = []  # points later stages returned to the stage being run
         self.linked_files = self.snapshot_links()
 
     def snapshot_links(self) -> list[str]:
@@ -188,16 +192,23 @@ class Conductor:
             "create": "Create the workproduct for this stage from the inputs and upstream workproducts.",
             "update": "The workproduct already exists and has been inspected. Update it only for what changed: the "
                       "inputs listed in `changed_inputs`, the items listed in `suspect` (their upstream changed), and "
-                      "open points the inputs now answer (remove those). Keep every item the changes do not affect "
-                      "exactly as it is, with its id.",
+                      "open points the inputs, or a changed earlier workproduct, now answer (remove those). Keep "
+                      "every item the changes do not affect exactly as it is, with its id."
+                      + ("" if not t.get("returned") else " A later stage returned the points in `returned` to this "
+                         "stage: it cannot be built as this stage's work now stands. Settle each with the smallest "
+                         "change that still meets every input and earlier workproduct; never relax or drop what they "
+                         "require. If the conflict comes from an earlier stage, record a blocking open point with "
+                         "`returned_to` that stage; if only a person can decide, one with `returned_to: null`. If the "
+                         "point is mistaken, change nothing and say why in the `rationale` of the item it names."),
             "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct"
                          + (" (issues of the `governance` gate may instead need a change in `governance`)"
                             if t.get("governance") else "")
                          + "; issues of the build, static-analysis, unit-test and coverage gates are fixed in the code "
                            "or tests inside your write scope. If a fix lies outside your write scope, record an open "
-                           "point instead. Never change an expected result, drop a case or relax a check to make a "
-                           "failing test pass: expected results come from the test basis. When the code is wrong, leave "
-                           "the test failing and record a blocking open point naming the function.",
+                           "point instead (with `returned_to` the earlier stage that owns the fix). Never change an "
+                           "expected result, drop a case or relax a check to make a failing test pass: expected "
+                           "results come from the test basis. When the code is wrong, leave the test failing and record "
+                           "a blocking open point naming the function, with `returned_to: \"sw-design\"`.",
             "governance": "Before any requirement is written, write the governance package `governance` (contract "
                           "`governance_contract`): the actors, the use cases (each naming every stakeholder need it "
                           "serves and, for a reference document, the sections it relies on), the document scope for "
@@ -213,6 +224,9 @@ class Conductor:
             "rework-set": "Resolve the set-level findings listed, changing as little as possible.",
             "item": f"Judge ONLY these items, each on its own, against the item checklist: {', '.join(t.get('items', []))}.",
             "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed."
+                   + ("" if not t.get("returned") else " A later stage returned the points in `returned`: check that "
+                      "the workproduct now settles each without breaking an input or earlier workproduct, or says why "
+                      "the point is mistaken; otherwise raise a finding.")
                    + ("" if not self.has_coverage(t["stage"]) else " Also return "
                    "the coverage matrix (`coverage`): one row per upstream source (each need, upstream requirement "
                    "or in-scope document section this stage must cover) and per applicable scenario (start-up, "
@@ -416,6 +430,53 @@ class Conductor:
                 hist[oid]["retired"] = True
         write_json(hp, {"schema": "forge-c-hi/open-point-history@1", "run_id": self.run_id, "ids": hist})
 
+    # ---------------------------------------------------------------- points returned to an earlier stage
+    @staticmethod
+    def _returned_path(root: Path, stage: str) -> Path:
+        return root / "hi" / stage / "inspection" / "returned.json"
+
+    def returned_by(self, stage: str) -> list[dict]:
+        """The blocking open points by which `stage` returns a question to an earlier stage (`returned_to`), each with
+        whether that stage has already dealt with it."""
+        if not self.workproduct(stage).is_file():
+            return []
+        try:
+            ops = read_json(self.workproduct(stage)).get("open_points", [])
+        except ValueError:
+            return []
+        out = []
+        for o in ops:
+            if not isinstance(o, dict) or not o.get("blocks") or not o.get("returned_to"):
+                continue
+            p = self._returned_path(self.root, o["returned_to"])
+            done = read_json(p).get("handled", {}) if p.is_file() else {}
+            out.append({"id": o.get("id"), "from_stage": stage, "to_stage": o["returned_to"], "text": o.get("text", ""),
+                        "handled": done.get(f"{stage}:{o.get('id')}") == o.get("text", "")})
+        return out
+
+    def returned_to(self, stage: str) -> list[dict]:
+        """Points later stages returned to `stage` that it has not dealt with yet (full-V attempt 3 pass 19: the design
+        showed that an accepted interface could not meet an accepted time limit, and nothing carried that back)."""
+        order = gates.trace.checked_stages(self.project, None)
+        return [{k: r[k] for k in ("id", "from_stage", "text")} for s in order[order.index(stage) + 1:]
+                for r in self.returned_by(s) if r["to_stage"] == stage and not r["handled"]]
+
+    def record_returned(self, stage: str, points: list[dict]) -> None:
+        """Offered once per wording: a point the later stage raises again unchanged then waits for a person."""
+        if not points:
+            return
+        p = self._returned_path(self.root, stage)
+        done = read_json(p).get("handled", {}) if p.is_file() else {}
+        done.update({f"{r['from_stage']}:{r['id']}": r["text"] for r in points})
+        write_json(p, {"schema": "forge-c-hi/returned-points@1", "run_id": self.run_id, "handled": done})
+
+    def stop_if_returned(self, stage: str, issues: list[dict]) -> None:
+        """Failing tests the author has returned to an earlier stage as a code defect: asking again would only press
+        the author to change the tests."""
+        mine = [r for r in self.returned_by(stage) if not r["handled"]]
+        if mine and issues and all(i.get("gate") in ("unit-test", "coverage", "verification") for i in issues):
+            raise Blocked("test failures returned as " + ", ".join(f"{r['id']} to {r['to_stage']}" for r in mine[:5]))
+
     def det_issues(self, stage: str) -> tuple[dict, list[dict]]:
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
         # suspect links are cleared by re-inspection, not by the author
@@ -441,6 +502,8 @@ class Conductor:
             _, issues = self.det_issues(stage)
             if not issues:
                 return
+            if fixes:
+                self.stop_if_returned(stage, issues)
             if fixes >= self.limit:
                 raise Blocked(f"deterministic gate issues remain after {fixes} fix rounds (rework limit {self.limit})")
             fixes += 1
@@ -493,6 +556,8 @@ class Conductor:
         judging an unchanged stage again would only sample the inspector a second time."""
         p = self.root / gates.STATE
         st = (read_json(p).get("stages", {}) if p.is_file() else {}).get(stage, {})
+        if self.returned_to(stage):
+            return None
         if st.get("outcome") != "ACCEPTED" or st.get("fingerprint") != self.fingerprint(stage):
             return None
         summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
@@ -514,14 +579,17 @@ class Conductor:
             if inp.get("kind") != "reference_document" and p.is_file() and recorded.get(inp["path"]) != sha256_file(p):
                 changed.append(inp["path"])
         suspect = self.suspect_items(stage)
-        ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict)] if changed else []
-        return {"changed_inputs": changed, "suspect": suspect, "open_points": ops}
+        answered = [r["id"] for r in self.returned_by(stage) if r["handled"]]
+        ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict)] if changed or suspect else answered
+        return {"changed_inputs": changed, "suspect": suspect, "open_points": ops, "returned": self.returned_to(stage)}
 
     def item_ids(self, stage: str) -> list[str]:
         return [i["id"] for i in read_json(self.workproduct(stage)).get("items", []) if isinstance(i, dict) and "id" in i]
 
     def inspect(self, stage: str, phase: str, rnd: int, items: list[str], carried: list[dict]) -> list[dict]:
         kw = {"round": rnd, "items": items}
+        if phase == "set" and self.returned:
+            kw["returned"] = self.returned
         if carried:
             kw["findings"] = [{k: f[k] for k in ("id", "checklist_item", "target_id", "severity", "description")}
                               for f in carried]
@@ -745,6 +813,7 @@ class Conductor:
 
     def run_stage(self, stage: str) -> dict:
         self.scope_issues = []
+        self.returned = []
         self.event(stage=stage, step="stage-start", profile=self.rigor["profile"], level=self.rigor["level"],
                    rework_limit=self.limit)
         kept = None if self.fresh or self.dry_run else self.still_accepted(stage)
@@ -769,7 +838,9 @@ class Conductor:
                                now=self.judging_basis(stage))
                     judged = {}
                 changes = self.changes(stage)
-                self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items()})
+                self.returned = changes["returned"]
+                self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items() if k != "returned"},
+                           returned=[f"{r['from_stage']}:{r['id']}" for r in self.returned][:20])
                 if self.governed(stage):
                     self.governance_step(stage, changes["changed_inputs"])
                 if any(changes.values()):
@@ -911,6 +982,7 @@ class Conductor:
         self.record_open_points(stage)
         if state == "accepted":
             trace.rebaseline(self.root, stage)
+            self.record_returned(stage, self.returned)
         self.set_state(stage, state, outcome=outcome, reason=reason.strip()[:300], gates=summ["gates"],
                        wp_sha256=sha256_file(self.workproduct(stage)),
                        **({"fingerprint": self.fingerprint(stage)} if outcome == "ACCEPTED" else {}))
@@ -923,6 +995,8 @@ class Conductor:
     def author_with_gates_fix_only(self, stage: str, issues: list[dict]) -> None:
         fixes = 0
         while issues:
+            if fixes:
+                self.stop_if_returned(stage, issues)
             if fixes >= self.limit:
                 raise Blocked(f"deterministic gate issues remain after rework (rework limit {self.limit})")
             fixes += 1
@@ -938,12 +1012,25 @@ class Conductor:
         last = until or first
         if last not in order or order.index(last) < order.index(first):
             raise ConfigError(f"--until {last} must be a later stage of this project ({order})")
-        results = []
-        for s in order[order.index(first): order.index(last) + 1]:
-            res = self.run_stage(s)
+        results, start, back = [], order.index(first), 0
+        n = start
+        while n <= order.index(last):
+            res = self.run_stage(order[n])
             results.append(res)
             if res["outcome"] == "BLOCKED":
-                break
+                # a point returned to an earlier stage goes back to it and the stages in between follow, at most
+                # `rework_limit` times per run; unchanged accepted stages are kept, so going back is cheap
+                goals = [order.index(r["to_stage"]) for r in self.returned_by(order[n]) if not r["handled"]
+                         and r["to_stage"] in order[start:n]]
+                if not goals or back >= self.limit:
+                    break
+                back += 1
+                self.event(stage=order[n], step="returned", to_stage=order[min(goals)], round=back,
+                           points=[r["id"] for r in self.returned_by(order[n]) if not r["handled"]][:20])
+                n = min(goals)
+                results = results[:n - start]
+                continue
+            n += 1
         outcomes = [r["outcome"] for r in results]
         status = ("BLOCKED" if "BLOCKED" in outcomes else "DRY_RUN" if self.dry_run
                   else "DONE_WITH_GAPS" if "ACCEPTED_WITH_GAPS" in outcomes else "DONE")

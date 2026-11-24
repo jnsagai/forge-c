@@ -19,6 +19,7 @@ Scenario keys:
                           repairs it ("always" in the list: fix-gates never repairs)
   author.governance       governance package written on phase "governance" (default: one use case serving every
                           STK need of the inputs); "fix-governance" applies author.governance_fix (a full package)
+  author.by_stage         {stage: {key: value}} overriding any author key for one stage
   author.no_use_cases     true: "create" does not tag the items with the use cases (realization gap)
   inspector.item_rounds   list per round of {item_id: [finding]}
   inspector.set_rounds    list per round of [finding]
@@ -47,6 +48,7 @@ def main() -> int:
         fh.write(json.dumps({
             "role": role, "phase": task["phase"], "round": task.get("round", 0), "items": task.get("items", []),
             "findings": len(task.get("findings", [])), "changed_inputs": task.get("changed_inputs"),
+            "stage": task["stage"], "returned": task.get("returned"), "open_points": task.get("open_points"),
             "suspect": task.get("suspect"), "notice": task.get("notice"),
             "active_role": json.loads(active.read_text()) if active.exists() else None,
             "env_role": os.environ.get("HI_ROLE"),
@@ -56,7 +58,7 @@ def main() -> int:
         import time
         time.sleep(sc[role]["sleep"])
     if role == "author":
-        a = sc.get("author", {})
+        a = {**sc.get("author", {}), **sc.get("author", {}).get("by_stage", {}).get(task["stage"], {})}
         if task["phase"] in ("governance", "fix-governance"):
             if task["phase"] == "governance":
                 needs = sorted({m for f in task["inputs"] if (root / f).is_file()

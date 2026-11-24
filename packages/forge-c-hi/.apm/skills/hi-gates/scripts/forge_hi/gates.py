@@ -38,6 +38,32 @@ def validate_doc(doc) -> tuple[str | None, list[dict]]:
     return name, issues
 
 
+def check_returns(project: dict, stage: str, ops) -> list[dict]:
+    """Who owns an open question. After the first stage a blocking open point says whether an earlier stage must settle
+    it (`returned_to: <stage>`) or a person (`returned_to: null`); a deferral only goes to a later stage. Full-V attempt
+    3 pass 19: a design question was deferred to the already accepted software requirements, where nobody reads it."""
+    order = trace.stage_order()
+    earlier = [s for s in trace.checked_stages(project, None) if s in order and order.index(s) < order.index(stage)]
+    out = []
+    for o in ops or []:
+        if not isinstance(o, dict):
+            continue
+        oid, to, back = str(o.get("id", "<no id>")), o.get("deferred_to"), o.get("returned_to")
+        if back and (back not in earlier or o.get("blocks") is not True):
+            out.append(gate_result.issue(
+                "VAL-OP-RETURN", f"{oid}: returned_to names an earlier stage of this project ({', '.join(earlier) or 'none'})"
+                " and needs blocks: true", oid))
+        elif earlier and o.get("blocks") is True and "returned_to" not in o:
+            out.append(gate_result.issue(
+                "VAL-OP-RETURN", f"{oid}: a blocking open point needs returned_to: the earlier stage whose workproduct "
+                f"must change ({', '.join(earlier)}), or null when only a person can decide (the inputs must change)", oid))
+        elif to in order and stage in order and o.get("blocks") is False and order.index(to) <= order.index(stage):
+            out.append(gate_result.issue(
+                "VAL-OP-RETURN", f"{oid}: {to} is not after {stage}, so it cannot be deferred there; if that stage must "
+                "settle it, use blocks: true with returned_to, otherwise decide it here or ask a person", oid))
+    return out
+
+
 def validate_file(root: Path, path: Path, *, stage: str | None = None, write: bool = True) -> dict:
     root = Path(root)
     _, common = _common(root)
@@ -50,6 +76,9 @@ def validate_file(root: Path, path: Path, *, stage: str | None = None, write: bo
         _, issues = validate_doc(doc)
         if stage and isinstance(doc, dict) and doc.get("stage") not in (None, stage):
             issues.append(gate_result.issue("VAL-STAGE", f"workproduct stage {doc.get('stage')} is not {stage}"))
+        st = stage or (doc.get("stage") if isinstance(doc, dict) else None)
+        if st in stages() and isinstance(doc, dict):
+            issues += check_returns(_common(root)[0], st, doc.get("open_points"))
         res = gate_result.result("validate", issues, evidence=[path], **common)
         stage = stage or (doc.get("stage") if isinstance(doc, dict) else None)
     if write and stage in stages():

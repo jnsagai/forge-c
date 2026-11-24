@@ -122,3 +122,6 @@
   feasible together; raised by full-V attempt 3 pass 17 (system requirements, OP-SYS-017). Fictional, by Claude.
 - **Thirty-first round:** `CON-SUP-182..183` (release tolerance, independence of the limits, application workload). Raised by full-V attempt 3 pass 18
   (system requirements, OP-SYS-018). Fictional, by Claude.
+- **Full-V attempt 3, pass 19:** first pass to reach software design. It blocked on a conflict inside the accepted
+  architecture (OP-SWU-006: an interface limited to thread context cannot meet the 50 ms answer limit). No decision and
+  no relaxation: the point goes back to the software architecture through `returned_to`, added to the package for this.

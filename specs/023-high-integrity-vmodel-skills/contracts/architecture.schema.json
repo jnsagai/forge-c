@@ -256,6 +256,26 @@
               "sys-qual"
             ],
             "description": "Non-blocking open point: the later stage that owns the detail and must close it."
+          },
+          "returned_to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "sys-req",
+              "sys-arch",
+              "sw-req",
+              "sw-arch",
+              "sw-design",
+              "unit-verif",
+              "sw-integ",
+              "sw-qual",
+              "sys-integ",
+              "sys-qual",
+              null
+            ],
+            "description": "Blocking open point after the first stage: the earlier stage whose workproduct must change to settle it, or null when only a person can decide."
           }
         }
       }

@@ -57,6 +57,12 @@ skill are unchanged. `--fresh` re-authors from scratch.
    NOT_RUN, or a major finding is still open; both still block the review package) or `BLOCKED` (a gate failed, a
    blocking finding or blocking open point remains, a role wrote outside its scope, or a harness failed).
 
+**Back up the V.** A stage that finds an earlier workproduct wrong or impossible to meet raises a blocking open point
+with `returned_to: <earlier stage>`. When the stage then ends BLOCKED, the run goes back to that stage (if it is in the
+run, at most `rework_limit` times): its author settles the points, its inspector checks that, and the stages after it
+follow. A point is offered once per wording; raised again unchanged, it waits for a person. `returned_to: null` always
+waits for a person.
+
 Accepting a stage records the trace baseline, so a later change to an upstream item makes its links **suspect**.
 
 ## Harnesses and models per role
