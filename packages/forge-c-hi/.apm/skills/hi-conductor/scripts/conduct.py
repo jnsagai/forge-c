@@ -471,6 +471,33 @@ class Conductor:
         files[st["inspector_skill"]] = SKILLS / st["inspector_skill"] / "SKILL.md"
         return {k: sha256_file(v) for k, v in sorted(files.items()) if v.is_file()}
 
+    def fingerprint(self, stage: str) -> dict[str, str]:
+        """Everything an accepted stage was judged on: its own files, the inputs, every earlier stage's outputs, the
+        linked snapshots, the project settings and the judging basis."""
+        order = gates.trace.checked_stages(self.project, None)
+        own = scope.write_scope("author", stage)
+        skip = (f"hi/{stage}/gates/", f"hi/{stage}/inspection/")
+        files = {f for f in scope.snapshot(self.root)
+                 if not scope.violations([f], own) and not f.startswith(skip)}
+        for s in order[: order.index(stage)]:
+            files |= {o for o in stages()[s]["outputs"] if (self.root / o).is_file()}
+        files |= {i["path"] for i in self.project["inputs"] if (self.root / i["path"]).is_file()}
+        files |= {rel(self.root, f) for f in (self.root / ".hi" / "linked").rglob("*") if f.is_file()}
+        files.add(".hi/project.json")
+        return {**{f: sha256_file(self.root / f) for f in sorted(files)},
+                **{f"basis:{k}": v for k, v in self.judging_basis(stage).items()}}
+
+    def still_accepted(self, stage: str) -> dict | None:
+        """The recorded acceptance when nothing it was judged on changed and every gate passes again, else None.
+        Only a full ACCEPTED is kept (owner factory rule: validated artifacts are kept unless a dependency changed);
+        judging an unchanged stage again would only sample the inspector a second time."""
+        p = self.root / gates.STATE
+        st = (read_json(p).get("stages", {}) if p.is_file() else {}).get(stage, {})
+        if st.get("outcome") != "ACCEPTED" or st.get("fingerprint") != self.fingerprint(stage):
+            return None
+        summ = gates.gate_stage(self.root, stage, scope_doc=self.scope_doc())
+        return summ if summ["verdict"] == "PASS" else None
+
     def input_hashes(self) -> dict[str, str]:
         return {i["path"]: sha256_file(self.root / i["path"]) for i in self.project["inputs"]
                 if i.get("kind") != "reference_document" and (self.root / i["path"]).is_file()}
@@ -720,6 +747,10 @@ class Conductor:
         self.scope_issues = []
         self.event(stage=stage, step="stage-start", profile=self.rigor["profile"], level=self.rigor["level"],
                    rework_limit=self.limit)
+        kept = None if self.fresh or self.dry_run else self.still_accepted(stage)
+        if kept:
+            self.event(stage=stage, step="stage-end", outcome="ACCEPTED", kept=True, gates=kept["gates"])
+            return {"stage": stage, "outcome": "ACCEPTED", "gates": kept["gates"], "carried": 0, "kept": True}
         all_findings: list[dict] = []
         judged: dict[str, str] = {}
         base_item = base_set = 0
@@ -881,7 +912,8 @@ class Conductor:
         if state == "accepted":
             trace.rebaseline(self.root, stage)
         self.set_state(stage, state, outcome=outcome, reason=reason.strip()[:300], gates=summ["gates"],
-                       wp_sha256=sha256_file(self.workproduct(stage)))
+                       wp_sha256=sha256_file(self.workproduct(stage)),
+                       **({"fingerprint": self.fingerprint(stage)} if outcome == "ACCEPTED" else {}))
         self.event(stage=stage, step="stage-end", outcome=outcome, gates=summ["gates"],
                    findings_open=sum(1 for f in all_findings if f["status"] in ("open", "carried")))
         return {"stage": stage, "outcome": outcome, "gates": summ["gates"],

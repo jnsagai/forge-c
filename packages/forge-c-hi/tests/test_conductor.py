@@ -279,7 +279,41 @@ def test_rerun_without_changes_keeps_inspected_items(tmp_path):
     (root.parent / "p-calls.jsonl").unlink()
     code, out, calls = conduct(root, sc, "--stage", "sys-req")
     assert code == 0, out
-    assert seq(calls) == [("inspector", "set", 2, ())]       # no author call, no item re-judge
+    assert seq(calls) == []                 # an accepted stage with nothing changed is kept, no model is called
+    assert out["stages"][0]["outcome"] == "ACCEPTED" and out["stages"][0]["kept"] is True
+
+
+def test_an_accepted_stage_is_kept_only_while_nothing_it_was_judged_on_changed(tmp_path):
+    def edit(rel_path, fn):
+        def go(root):
+            f = root / rel_path
+            f.write_text(fn(f.read_text()))
+        return go
+
+    def touched(text):
+        d = json.loads(text)
+        d["items"][0]["attributes"] = {**d["items"][0].get("attributes", {}), "rationale": "edited by hand"}
+        return json.dumps(d)
+
+    def gapped(text):
+        d = json.loads(text)
+        d["stages"]["sys-req"]["outcome"] = "ACCEPTED_WITH_GAPS"
+        return json.dumps(d)
+
+    cases = {"input": edit("needs/stakeholder-needs.md", lambda t: t + "\nA clarification.\n"),
+             "workproduct": edit("hi/sys-req/requirements.json", touched),
+             "settings": edit(".hi/project.json", lambda t: t + "\n"),
+             "gaps": edit(".hi/state.json", gapped)}
+    for name, change in cases.items():
+        root = tmp_path / name
+        root.mkdir()
+        sc = setup(root, clean_scenario())
+        assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+        (root.parent / f"{name}-calls.jsonl").unlink()
+        change(root)
+        code, out, calls = conduct(root, sc, "--stage", "sys-req")
+        assert not out["stages"][0].get("kept"), name
+        assert "set" in [c["phase"] for c in calls], name
 
 
 def test_input_change_updates_and_rejudges_only_changed_items(tmp_path):
@@ -582,7 +616,7 @@ def test_governance_is_updated_only_when_inputs_change(tmp_path):
     log.unlink()
     code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
     assert code == 0 and "governance" not in [c["phase"] for c in calls]
-    log.unlink()
+    log.unlink(missing_ok=True)
     with open(root / "needs/stakeholder-needs.md", "a") as fh:
         fh.write("\nA clarification by the product owner.\n")
     code, out, calls = conduct(root, sc, "--stage", "sys-req", gov=True)
@@ -602,10 +636,14 @@ def test_a_changed_checklist_or_inspector_skill_invalidates_earlier_judgements(t
     log = root.parent / f"{root.name}-calls.jsonl"
     log.unlink()
     _, out, calls = conduct(root, sc, "--stage", "sys-req")
-    assert [c["phase"] for c in calls if c["role"] == "inspector"] == ["set"]   # nothing changed: judgements kept
+    assert [c for c in calls if c["role"] == "inspector"] == []                 # nothing changed: judgements kept
     rec["basis"]["checklists/requirements-item.json"] = "0" * 64              # as if the checklist had changed
     jp.write_text(json.dumps(rec))
-    log.unlink()
+    sp = root / ".hi/state.json"
+    state = json.loads(sp.read_text())
+    state["stages"]["sys-req"]["fingerprint"]["basis:checklists/requirements-item.json"] = "0" * 64
+    sp.write_text(json.dumps(state))
+    log.unlink(missing_ok=True)
     code, out, calls = conduct(root, sc, "--stage", "sys-req")
     assert code == 0, out
     assert [tuple(c["items"]) for c in calls if c["phase"] == "item"] == [("SYS-SUP-001", "SYS-SUP-002")]

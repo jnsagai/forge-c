@@ -51,6 +51,8 @@ skill are unchanged. `--fresh` re-authors from scratch.
    keep falling, up to `rework_max` (default 10). Two rounds with the same open findings (same item, criterion and
    cited ids, and nearly the same text) stop the loop at once (`rework-stuck`). What is still open is **carried** into the set phase.
 6. **Set inspection** with the carried findings, then set rework under the same rule.
+   A stage that is already `ACCEPTED` is kept without any model call while its files, the inputs, the earlier stages'
+   outputs, the project settings, the checklists and the inspector skill are unchanged and every gate passes again.
 7. **Final gates** for the profile and level. The stage ends `ACCEPTED`, `ACCEPTED_WITH_GAPS` (a required gate is
    NOT_RUN, or a major finding is still open; both still block the review package) or `BLOCKED` (a gate failed, a
    blocking finding or blocking open point remains, a role wrote outside its scope, or a harness failed).
