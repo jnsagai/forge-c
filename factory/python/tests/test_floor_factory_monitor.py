@@ -110,6 +110,26 @@ def test_running_driver_and_repair_issue_are_distinct_observations(tmp_path, mon
     assert "DO_NOT_EXPOSE" not in json.dumps(result)
 
 
+def test_fresh_supervisor_does_not_hide_a_recorded_driver_stall(tmp_path, monkeypatch):
+    setup(tmp_path, monkeypatch)
+    supervisor = feed(1000)
+    supervisor["issues"] = [{"wo": "WO-F014-SWE1-TIM", "phase": "SWE.1", "status": "OPEN",
+                             "error_code": "STAGE_STALL", "updated_at": M.iso(997)}]
+    orders = [
+        {"wo": "WO-F014-SWE1-TIM", "at": "SWE.1", "state": "RUNNING", "last_progress_at": 720},
+        {"wo": "WO-F014-SWE1-GPIO", "at": "SWE.1", "state": "RUNNING", "last_progress_at": 992},
+    ]
+    result = M.snapshot(supervisor, orders, {}, None, now=1000)
+    assert result["conductor"]["heartbeat"]["fresh"] is True
+    stalled, current = result["work"]["drivers"]
+    assert stalled["progress"] == {"state": "STALL_REPORTED", "last_evidence_at": M.iso(720), "age_s": 280}
+    assert current["progress"]["state"] == "RECENT_EVIDENCE"
+
+    supervisor["issues"][0]["updated_at"] = M.iso(720)
+    result = M.snapshot(supervisor, orders, {}, None, now=1000)
+    assert result["work"]["drivers"][0]["progress"]["state"] == "NO_RECENT_EVIDENCE"
+
+
 def test_failed_swap_target_and_legacy_record_are_not_current_loaded_model(tmp_path, monkeypatch):
     from forge_factory.lrtx import floor_api as F
 

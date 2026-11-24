@@ -187,11 +187,15 @@ def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | No
 
 def native(stages: dict | None, now: float) -> dict:
     """Per phase: model work of the Fabro nodes (output tokens, inference seconds, model-node visits); the node at work."""
-    out: dict = {"phases": {}, "node": None}
+    out: dict = {"phases": {}, "node": None, "last_progress_at": None}
     for sid, st in (stages or {}).items():
         node = sid.split("@")[0]
         ph = f"SWE.{node[3]}" if node.startswith("swe") and node[3:4].isdigit() else None
         tokens = ((st.get("usage") or {}).get("tokens") or {}).get("output") or 0
+        timestamps = [_ts(st.get(field)) for field in ("started_at", "finished_at", "completed_at")]
+        observed = [at for at in timestamps if at is not None and 0 < at <= now]
+        if observed:
+            out["last_progress_at"] = max(*observed, out["last_progress_at"] or 0)
         inf_ms = (st.get("timing") or {}).get("inference_time_ms") or st.get("live_inference_ms") or 0
         if ph:
             p = out["phases"].setdefault(ph, {"calls": 0, "out_tokens": 0, "model_s": 0})
@@ -690,9 +694,12 @@ def order(ws: Path, now: float | None = None) -> dict:
     detail = {ph: tool_detail(ws, ph) for ph in TOOLS if ph in phases}
     newest_task = max([_ts((_load(Path(f)) or {}).get("at")) or 0
                        for f in glob.glob(str(ws / ".forge-run/lrtx" / at / "packets/*.json"))] + [0])
+    last_progress = max([p["last"] or 0 for p in phases.values()]
+                        + [newest_task, nat.get("last_progress_at") or 0])
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
             "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node, "wp": wp,
             "tools": tools, "progress": tool_prog, "tool_detail": detail, "newest_task": newest_task,
+            "last_progress_at": last_progress or None,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 
 

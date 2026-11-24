@@ -808,6 +808,11 @@ function renderRuntime(d) {
     readiness === "ACTING" ? "Conductor manages admission; product acceptance stays independent." : "No current admission-readiness claim.";
   const measurement = speed.tok_s == null ? "UNKNOWN" : `${speed.tok_s} tok/s`;
   const codes = (m.recovery || {}).issues || [];
+  const progressLabel = {
+    "RECENT_EVIDENCE": "Recent progress evidence",
+    "NO_RECENT_EVIDENCE": "No recent progress evidence",
+    "STALL_REPORTED": "Stall reported"
+  };
   target.innerHTML = `<div class="floor-head"><h2>Factory runtime</h2><span class="note">Observed service and execution state · read only</span></div>
     <div class="kpis">${tile("Connection", connection, `Conductor feed ${age(c.feed_age_s)}`, "runtime-connection")}
       ${tile("Operations intent", ops.desired, ops.epoch == null ? "Intent is not observed." : `Desired state · epoch ${ops.epoch}`)}
@@ -817,7 +822,11 @@ function renderRuntime(d) {
       ${tile("Recent throughput", measurement, speed.model ? `${speed.model} · completed-call measurement · ${age(speed.age_s)}` : "No recent completed-call measurement; not zero.")}
       ${tile("Driver activity", work.driver_activity === "OBSERVED" ? `${current.length} observed` : work.driver_activity === "NO_CURRENT_DRIVER_OBSERVED" ? "No current driver observed" : "UNKNOWN", "Operations RUNNING does not imply a running job.")}
       ${tile("Healthy model calls", conductor.model_calls_healthy, "Conductor monitoring; no model calls are made for health.")}</div>
-    <div>${current.map((j) => `<div><b>${esc(j.work_order || "UNKNOWN")}</b> · ${esc(j.phase || "UNKNOWN")} · ${esc(j.agent || "agent UNKNOWN")} · ${esc(j.observed_model || "actual model UNKNOWN")} · ${Number(j.reworks || 0)} recorded reworks</div>`).join("")}</div>
+    <div>${current.map((j) => {
+      const progress = j.progress || {};
+      const detail = progress.last_evidence_at ? ` · last evidence ${age(progress.age_s)}` : "";
+      return `<div><b>${esc(j.work_order || "UNKNOWN")}</b> · ${esc(j.phase || "UNKNOWN")} · ${esc(j.agent || "agent UNKNOWN")} · ${esc(j.observed_model || "actual model UNKNOWN")} · ${Number(j.reworks || 0)} recorded reworks · ${esc((progressLabel[progress.state] || "Progress UNKNOWN") + detail)}</div>`;
+    }).join("")}</div>
     <div class="runtime-jobs"><div class="label">Durable product / repair jobs · ${jobs.available ? "observed records" : "UNKNOWN: queue not observed"}</div>
       ${(jobs.items || []).length ? `<table><thead><tr><th>Job / phase</th><th>Role / requested model</th><th>Task outcome</th><th>Native liveness / lease</th></tr></thead><tbody>${jobs.items.map((j) =>
         `<tr><td>${esc(j.work_order || j.job_id || "UNKNOWN")}<br>${esc(j.phase || "phase UNKNOWN")}</td><td>${esc(j.role || "PRODUCT")}<br>${esc(j.requested_model || "UNKNOWN")}</td><td>${esc(j.task_outcome || "UNKNOWN")}</td><td>${esc(j.execution_liveness || "UNKNOWN")} / ${esc(j.resource_lease || "UNKNOWN")}<br>${j.execution_fresh ? "fresh observation" : "last record; current liveness UNKNOWN"}</td></tr>`).join("")}</tbody></table>` : `<div class="note">${jobs.available ? "No durable job record in this observation." : "Missing observations never mean zero active executions."}</div>`}

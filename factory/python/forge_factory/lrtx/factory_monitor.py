@@ -124,6 +124,23 @@ def _jobs(root, now):
         return {"available": False, "reason": "QUEUE_OBSERVATION_UNKNOWN", "items": []}
 
 
+def _driver_progress(order, issues, now):
+    last = order.get("last_progress_at")
+    known = _number(last) and 0 < last <= now
+    stalled = any(i.get("wo") == order.get("wo") and i.get("phase") == order.get("at")
+                  and i.get("status") in ("OPEN", "ESCALATED", "RECOVERING")
+                  and i.get("error_code") == "STAGE_STALL"
+                  and _fresh(at := _epoch(i.get("updated_at")), now) and (not known or at >= last)
+                  for i in issues)
+    value = "UNKNOWN"
+    if stalled:
+        value = "STALL_REPORTED"
+    elif known:
+        value = "RECENT_EVIDENCE" if _fresh(last, now) else "NO_RECENT_EVIDENCE"
+    return {"state": value, "last_evidence_at": iso(last) if known else None,
+            "age_s": round(now - last) if known else None}
+
+
 def snapshot(supervisor, orders, station, speed, *, now=None):
     now = time.time() if now is None else now
     root = Path(os.environ.get("FORGE_STATE_DIR") or "state")
@@ -152,6 +169,7 @@ def snapshot(supervisor, orders, station, speed, *, now=None):
         if mode in ("STOPPED", "PAUSED", "DRAINING"):
             ready = mode
     drivers = []
+    current_issues = (supervisor.get("issues") or []) if feed_fresh else []
     for order in orders:
         if order.get("state") != "RUNNING":
             continue
@@ -159,6 +177,7 @@ def snapshot(supervisor, orders, station, speed, *, now=None):
         drivers.append({"work_order": _text(order.get("wo")), "phase": _text(order.get("at")),
                         "agent": _text(node.get("cell")), "node": _text(node.get("node")),
                         "observed_model": _text(node.get("model")),
+                        "progress": _driver_progress(order, current_issues, now),
                         "reworks": sum(p.get("reworks", 0) for p in order.get("phases", {}).values())})
     issues = [{k: _text(i.get(k)) for k in ("issue_id", "status", "class", "phase", "error_code")}
               for i in supervisor.get("issues") or [] if i.get("status") != "RESOLVED"]
