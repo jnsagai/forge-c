@@ -57,6 +57,33 @@ def _run(cmd: list[str], cwd: Path, timeout: int = 600) -> subprocess.CompletedP
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
 
 
+# standard C library functions a unit may call without defining them
+LIBC = {"memcpy", "memset", "memcmp", "memmove", "strlen", "strcmp", "strncmp", "strncpy", "strcpy", "strchr", "strnlen",
+        "abs", "labs", "abort"}
+
+
+def undefined_functions(root: Path, objects: list[Path]) -> list[str]:
+    """Symbols the sources use and none of them defines, without the standard library, linker symbols (leading
+    underscore) and the functions a design decision says come from outside (`external`, `provided_by`)."""
+    nm = shutil.which(os.environ.get("NM", "nm"))
+    if nm is None or not objects:
+        return []
+    defined, used = set(), set()
+    for line in _run([nm, "-P", *map(str, objects)], root).stdout.splitlines():
+        f = line.split()
+        if len(f) >= 2 and not f[0].endswith(":"):
+            (used if f[1] in "UwV" else defined if f[1].isupper() else set()).add(f[0])
+    rigor_project = load_project(root)
+    links = {ln.get("project_path") for ln in rigor_project.get("links", [])}
+    outside: set[str] = set()
+    wp = root / stages()["sw-design"]["outputs"][0]
+    for d in (read_json(wp).get("decisions", []) if wp.is_file() else []):
+        if isinstance(d, dict) and (d.get("provided_by") in links or
+                                    re.match(r"^CON-[A-Z0-9_]+-\d{3}$", str(d.get("provided_by", "")))):
+            outside |= set(d.get("external") or [])
+    return sorted(u for u in used - defined - outside - LIBC if not u.startswith("_"))
+
+
 def build(root: Path, *, write: bool = True) -> dict:
     root = Path(root)
     _, common = _common(root)
@@ -75,6 +102,12 @@ def build(root: Path, *, write: bool = True) -> dict:
                 if r.returncode != 0:
                     first = next((l for l in r.stderr.splitlines() if "error" in l), r.stderr.strip()[:200])
                     issues.append(gate_result.issue("BUILD-ERROR", first[:280], src.relative_to(root).as_posix()))
+            if not issues:
+                missing = undefined_functions(root, sorted(Path(tmp).glob("*.o")))
+                issues += [gate_result.issue(
+                    "BUILD-UNDEFINED", f"{u} is used and no file in src/ defines it; write it, or name it in a decision's "
+                    "`external` with `provided_by` a linked project or the CON id that says who provides it", u)
+                    for u in missing]
             mains = [s for s in srcs if re.search(r"\bint\s+main\s*\(", s.read_text(errors="replace"))]
             issues += [gate_result.issue("BUILD-MAIN-IN-SRC", "src/ must not define main(); tests provide it",
                                          s.relative_to(root).as_posix()) for s in mains]
@@ -123,12 +156,32 @@ def run_unit_tests(root: Path, *, coverage: bool, programs: list[Path] | None = 
     issues: list[dict] = []
     bdir = Path(tempfile.mkdtemp(prefix="hi-unit-"))
     extra = ["--coverage", "-O0", "-g"] if coverage else []
+    # the sources go into a library, so that a program which defines every function of a driver (a fake) links without
+    # the real one, while the other units and the drivers under test are the real ones
+    objs, broken = [], []
+    for n, s in enumerate(sources(root)):
+        obj = bdir / f"{n:03d}-{s.stem}.o"
+        r = _run([compiler, *CFLAGS, *extra, "-Iinclude", "-c", s.relative_to(root).as_posix(), "-o", str(obj)], root)
+        if r.returncode == 0:
+            objs.append(str(obj))
+        else:
+            broken.append(s)
+            issues.append(gate_result.issue("UT-BUILD", f"{s.relative_to(root).as_posix()}: {r.stderr.strip()[:240]}",
+                                            s.relative_to(root).as_posix()))
+    lib = bdir / "libsrc.a"
+    if broken:
+        return out, issues, bdir
+    if objs:
+        ar = _run([shutil.which("ar") or "ar", "rcs", str(lib), *objs], root)
+        if ar.returncode != 0:
+            issues.append(gate_result.issue("UT-BUILD", f"ar: {ar.stderr.strip()[:240]}"))
+            return out, issues, bdir
     for t in (test_programs(root) if programs is None else programs):
         exe = bdir / t.stem
         rel = t.relative_to(root).as_posix()
         r = _run([compiler, *CFLAGS, *extra, "-Iinclude", "-Itests",
                   *[f"-I{i}" for i in include or []], rel,
-                  *[s.relative_to(root).as_posix() for s in sources(root)], "-o", str(exe)], root)
+                  *([str(lib)] if objs else []), "-o", str(exe)], root)
         if r.returncode != 0:
             issues.append(gate_result.issue("UT-BUILD", f"{rel}: {r.stderr.strip()[:240]}", rel))
             continue

@@ -89,9 +89,10 @@ Copy the provenance fields from the `hi-task` block (assisted mode: `"harness": 
 
 The unit-test gate builds and runs them with this convention; follow it exactly:
 
-- Each `tests/**/test_*.c` is a separate program with its own `main()`. It is compiled together with **all**
-  `src/**/*.c` and `-Iinclude` (C11), so every HAL function any unit calls must be defined once in each program:
-  put fakes in headers under `tests/fakes/` and include them once per test program.
+- Each `tests/**/test_*.c` is a separate program with its own `main()`. It is linked with a library of **all**
+  `src/**/*.c` and compiled with `-Iinclude` (C11). To replace a driver or another unit, the program defines **every**
+  function and variable of that source file (defining only some gives duplicate symbols); put fakes in headers under
+  `tests/fakes/` and include them once per test program. What the program does not define is the real code.
 - For every test case, print exactly one line to stdout: `HI-TEST <UTC-id> PASS` or
   `HI-TEST <UTC-id> FAIL <short reason>` (for example `HI-TEST UTC-SUP-001 FAIL rc=0 expected 2`). Print nothing else
   that starts with `HI-TEST`.

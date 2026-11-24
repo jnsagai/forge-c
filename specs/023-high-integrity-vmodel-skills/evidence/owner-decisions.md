@@ -127,3 +127,8 @@
   no relaxation: the point goes back to the software architecture through `returned_to`, added to the package for this.
 - **Full-V attempt 3, pass 20:** sw-design returned OP-SWU-006 and OP-SWU-007 to sw-arch, which reached its rework limit
   with four findings the author can fix. No decision. The next pass gives the stage a new set of rework rounds.
+- **Thirty-second round:** `CON-SUP-184` (an integrity check that cannot be completed counts as failed). Raised by full-V
+  attempt 3 (software design, OP-SWU-005). No relaxation. Fictional, by Claude.
+- **After pass 20 (package, no decision):** the design had written headers only for the seven driver components of the
+  architecture and deferred their code to a test stage. The design skill and the build gate (`BUILD-UNDEFINED`) now
+  require that code in `src/`; host tests link the sources as a library.

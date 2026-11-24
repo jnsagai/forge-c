@@ -240,3 +240,9 @@ contradictions between earlier decisions.
 |---|---|
 | CON-SUP-182 | In normal operation each release instant of CON-SUP-181 is at most 100 µs early and at most 500 µs late, measured from the start of its control cycle; the start of a control cycle is at most 500 µs from 10 ms after the previous one. While a fault or a service request is handled these tolerances do not apply. Start and execution limits are measured from the actual release and the actual start. The limits of CON-SUP-103 and the end-of-cycle flow check of CON-SUP-104 apply independently: a 10 ms task that is within its start and execution limits but has not completed at the end of its control cycle is a flow fault. |
 | CON-SUP-183 | **Workload of the application (assumption for budgets, not a requirement on the supervisor).** In normal operation each 10 ms task needs at most 1 ms of processor time per cycle and T_DIAG at most 5 ms per 100 ms. The limits of CON-SUP-103 stay as they are. |
+
+**Thirty-second round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-184 | **Integrity check that cannot be completed.** An integrity check whose memory cannot be read inside its stated range, or whose CRC computation cannot be carried out, counts as a failed check: code 5 or 6 at start-up, code 7 at run time, with the reaction of that code. The instant the fault becomes detectable (CON-SUP-105) is when the read or the computation is refused. The CRC unit is used by the supervisor only, and its uses never overlap. |

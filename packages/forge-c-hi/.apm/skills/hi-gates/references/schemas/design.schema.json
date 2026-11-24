@@ -226,6 +226,17 @@
           },
           "rationale": {
             "type": "string"
+          },
+          "external": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Functions used by the units that come from outside this project's sources."
+          },
+          "provided_by": {
+            "type": "string",
+            "description": "Who provides the external functions: the project_path of a linked project, or the CON id that says so."
           }
         }
       }

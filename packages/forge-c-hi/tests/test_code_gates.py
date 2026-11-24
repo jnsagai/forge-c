@@ -186,3 +186,60 @@ def test_verification_gate_runs_simulator_programs_with_the_project_command(tmp_
     assert configure("exit 3\n") == ("FAIL", ["VT-SIM", "VT-NOT-RUN"])
     assert configure("true\n") == ("FAIL", ["VT-NOT-RUN"])
     assert configure("sleep 30\n") == ("FAIL", ["VT-TIMEOUT", "VT-NOT-RUN"])
+
+
+USER = '#include "clamp.h"\n#include "hal_pin.h"\n\nint clamp(int v, int lo, int hi)\n{\n    hal_pin_set(v);\n' \
+       '    return (v < lo) ? lo : ((v > hi) ? hi : v);\n}\n'
+PIN_H = "#ifndef HAL_PIN_H\n#define HAL_PIN_H\nvoid hal_pin_set(int v);\nint hal_pin_get(void);\n#endif\n"
+PIN_C = ('#include "hal_pin.h"\n\nstatic int held = 0;\n\nvoid hal_pin_set(int v)\n{\n    held = v;\n}\n\n'
+         'int hal_pin_get(void)\n{\n    return held;\n}\n')
+
+
+def design(decisions):
+    return {"schema": "forge-c-hi/design@1", "items": [], "decisions": decisions, "open_points": []}
+
+
+@pytest.mark.skipif(not HAVE_CC, reason="gcc not installed")
+def test_a_function_nobody_defines_fails_the_build_gate(tmp_project):
+    # full-V attempt 3: design wrote only headers for seven drivers and deferred their code to a test stage
+    c_project(tmp_project, src=USER)
+    write(tmp_project / "include/hal_pin.h", PIN_H)
+    res = code_gates.build(tmp_project)
+    assert [(i["code"], i["target_id"]) for i in res["issues"]] == [("BUILD-UNDEFINED", "hal_pin_set")]
+    dp = tmp_project / "hi/sw-design/design.json"
+    outside = {"id": "DEC-1", "text": "x", "external": ["hal_pin_set"]}
+    write(dp, design([outside]))                                         # nobody is named: still an issue
+    assert code_gates.build(tmp_project)["verdict"] == "FAIL"
+    write(dp, design([{**outside, "provided_by": "a later stage"}]))
+    assert code_gates.build(tmp_project)["verdict"] == "FAIL"
+    write(dp, design([{**outside, "provided_by": "CON-SUP-001"}]))
+    assert code_gates.build(tmp_project)["verdict"] == "PASS"
+    write(dp, design([]))
+    write(tmp_project / "src/hal_pin.c", PIN_C)
+    assert code_gates.build(tmp_project)["verdict"] == "PASS"
+
+
+@pytest.mark.skipif(not HAVE_CC, reason="gcc not installed")
+def test_a_program_may_replace_a_driver_or_use_the_real_one(tmp_project):
+    fake = TEST_ALL.replace("int main(void)", "static int last = 0;\nvoid hal_pin_set(int v);\nint hal_pin_get(void);\n"
+                            "void hal_pin_set(int v)\n{\n    last = v + 100;\n}\nint hal_pin_get(void)\n{\n"
+                            "    return last;\n}\n\nint main(void)").replace(
+        'clamp(50, 0, 10) == 10', 'clamp(50, 0, 10) == 10 && hal_pin_get() == 150')
+    real = ('#include <stdio.h>\n#include "hal_pin.h"\n\nint main(void)\n{\n    hal_pin_set(7);\n'
+            '    printf("HI-TEST UTC-PIN-001 %s\\n", hal_pin_get() == 7 ? "PASS" : "FAIL");\n    return 0;\n}\n')
+    c_project(tmp_project, src=USER, test=fake, ids=("UTC-CLAMP-001", "UTC-CLAMP-002", "UTC-CLAMP-003", "UTC-PIN-001"))
+    write(tmp_project / "include/hal_pin.h", PIN_H)
+    write(tmp_project / "src/hal_pin.c", PIN_C)
+    write(tmp_project / "tests/test_pin.c", real)
+    res, _ = code_gates.unit_test(tmp_project)
+    assert res["verdict"] == "PASS", res["issues"]
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_a_source_no_test_links_counts_as_not_covered(tmp_project):
+    c_project(tmp_project)
+    write(tmp_project / "include/hal_pin.h", PIN_H)
+    write(tmp_project / "src/hal_pin.c", PIN_C)
+    res = code_gates.coverage(tmp_project)
+    cov = json.loads((tmp_project / "hi/unit-verif/coverage.json").read_text())
+    assert cov["measured"]["statement"] < 100 and res["verdict"] == "FAIL", (cov, res)
