@@ -151,12 +151,19 @@ contradictions between earlier decisions.
 
 | ID | Decision |
 |---|---|
-| CON-SUP-160 | **Replaces the wrong-CRC rule of CON-SUP-151.** The retained data is kept in two copies, each with its own CRC-32 and an update number; an update writes one copy completely before the other. After a reset other than power-on, start-up uses the valid copy with the newer update number. If neither copy is valid after a reset other than power-on, the system starts with the safe state latched, the counts and the history empty, and reports no additional fault for it. After a power-on reset both copies are set to their power-on values. |
+| CON-SUP-160 | Withdrawn; replaced by CON-SUP-164. It prescribed a storage mechanism, which is a design matter. |
 | CON-SUP-161 | The history entry, the fault count and the per-code detection count of a fault are updated together, in one update of the retained data, completed within 1 ms of the detection. After a reset during that update the fault is either completely present (entry and both counts) or completely absent; both are acceptable. |
 
 **Nineteenth round.**
 
 | ID | Decision |
 |---|---|
-| CON-SUP-162 | The update number of CON-SUP-160 is an unsigned 32-bit number. Its power-on value is 0 in both copies, and every update increases it by 1; both copies of one update carry the same number. The larger number is the newer one. It does not wrap: at 4294967295 no further update is made and the system latches the safe state until a power-on reset. |
-| CON-SUP-163 | Two valid copies with the same update number hold the same data. If start-up finds two valid copies with the same number and different data, it treats both as not valid (CON-SUP-160). |
+| CON-SUP-162 | Withdrawn; replaced by CON-SUP-164. It prescribed a storage mechanism, which is a design matter. |
+| CON-SUP-163 | Withdrawn; replaced by CON-SUP-164. It prescribed a storage mechanism, which is a design matter. |
+
+**Twentieth round.** Withdraws CON-SUP-160, 162 and 163.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-164 | After a reset other than power-on, the retained data of CON-SUP-151 is either the data before or the data after the update the reset interrupted, never a mixture; a reset never clears the safe-state latch by interrupting an update. This replaces the wrong-CRC rule of CON-SUP-151: if no intact retained data is found after a reset other than power-on, the system starts with the safe state latched, the counts and the history empty, and reports no additional fault for it. After a power-on reset the retained data has its power-on values. The storage mechanism is chosen in the design; there is no limit on the number of updates. |
+| CON-SUP-165 | **Deviation from STK-SUP-015, accepted for this demo.** The need is met only in part: fault injection of every class runs on the host with the hardware interface replaced by fakes, and on the partial models of CON-SUP-157. Window-watchdog timing, expiry and reset, and the combined action of the complete controller, are not demonstrated on a simulator. Requirements on them keep their verification method, and their cases stay not run and open for the offline review. |

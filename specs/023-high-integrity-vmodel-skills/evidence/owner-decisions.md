@@ -89,3 +89,7 @@
 - **Seventeenth round:** `CON-SUP-159` (reports pending at a reset), raised by full-V attempt 3. Fictional, by Claude.
 - **Eighteenth round:** `CON-SUP-160..161`. 160 replaces an unsafe rule in CON-SUP-151 (Claude): an update interrupted by a reset would have cleared the safe-state latch. Raised by full-V attempt 3. Fictional, by Claude.
 - **Nineteenth round:** `CON-SUP-162..163` (update number and equal copies), raised by full-V attempt 3. Fictional, by Claude.
+- **Twentieth round:** withdraws `CON-SUP-160, 162, 163` (design detail that Claude had put at system level and that
+  contradicted CON-SUP-150/159) in favour of `CON-SUP-164`. `CON-SUP-165` is a **deviation from the stakeholder need
+  STK-SUP-015**, accepted by Claude under the owner's /goal of 2026-11-24 for the fictional demo and not confirmed by the
+  owner. Raised by full-V attempt 3.

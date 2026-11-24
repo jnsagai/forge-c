@@ -1,0 +1,22 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T053029Z-c7a58c/events.jsonl",
+  "run_id": "r20261124T053029Z-c7a58c",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-req-set-r28-001', 'F-sys-req-set-r28-002', 'F-sys-req-set-r28-003', 'F-sys-req-set-r28-004', 'F-sys-req-set-r28-005'] blocking open points ['OP-SYS-011', 'OP-SYS-012']",
+      "stage": "sys-req"
+    }
+  ],
+  "status": "BLOCKED"
+}
