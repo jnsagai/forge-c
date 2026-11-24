@@ -246,3 +246,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-184 | **Integrity check that cannot be completed.** An integrity check whose memory cannot be read inside its stated range, or whose CRC computation cannot be carried out, counts as a failed check: code 5 or 6 at start-up, code 7 at run time, with the reaction of that code. The instant the fault becomes detectable (CON-SUP-105) is when the read or the computation is refused. The CRC unit is used by the supervisor only, and its uses never overlap. |
+
+**Thirty-third round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-185 | **Replaces the last sentence of CON-SUP-184.** From the instant the boot code starts the supervisor (CON-SUP-178) only the supervisor uses the CRC unit, and its uses never overlap; that the application tasks and test software leave the unit alone is an assumption on the integrator. What the boot code does with the unit before that instant is outside this product; the supervisor sets the unit up itself before its first use. |

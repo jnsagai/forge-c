@@ -132,3 +132,5 @@
 - **After pass 20 (package, no decision):** the design had written headers only for the seven driver components of the
   architecture and deferred their code to a test stage. The design skill and the build gate (`BUILD-UNDEFINED`) now
   require that code in `src/`; host tests link the sources as a library.
+- **Thirty-third round:** `CON-SUP-185` narrows the last sentence of CON-SUP-184, which forgot the boot code. Raised by
+  full-V attempt 3 pass 21 (sw-req returned OP-SWR-031 to sys-req, which needs a person: OP-SYS-020). Fictional, by Claude.
