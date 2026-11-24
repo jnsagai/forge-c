@@ -832,3 +832,20 @@ def test_coverage_matrix_is_for_requirement_stages_only(tmp_path, monkeypatch):
     assert "coverage" not in t["reply_contract"] and "coverage matrix" not in c.prompt(t)
     t = c.task("inspector", "sys-req", "set")
     assert "coverage" in t["reply_contract"] and "coverage matrix" in c.prompt(t)
+
+
+def test_different_set_findings_on_the_same_item_are_not_stuck(tmp_path):
+    # full-V attempt 3 pass 11: one item contradicted one requirement, then (after the rework) another one
+    root = tmp_path / "p"
+    root.mkdir()
+
+    def sq(other):
+        return dict(F("SQ-05", "blocking", desc=f"SYS-SUP-001 contradicts {other}."), target_id="SYS-SUP-001")
+
+    sc = setup(root, {"author": {"items": SYS_ITEMS, "rework_touch": True},
+                      "inspector": {"item_rounds": [{}],
+                                    "set_rounds": [[sq("SYS-SUP-002")], [sq("CON-SUP-003")], []]}})
+    code, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert not [e for e in events(root, out) if e.get("step") == "rework-stuck"]
+    assert len([c for c in calls if c["phase"] == "rework-set"]) == 2
+    assert code == 0 and out["stages"][0]["outcome"] == "ACCEPTED", out

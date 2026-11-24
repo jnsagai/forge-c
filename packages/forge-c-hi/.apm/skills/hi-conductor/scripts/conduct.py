@@ -633,10 +633,11 @@ class Conductor:
     def finding_key(f: dict) -> tuple:
         """Identity of a finding across rounds. Item findings: item and criterion. Set-level findings (target SET)
         share both, so the ids they cite tell different defects apart (run 4 pass 7: three different SQ-01 set
-        findings looked like one repeated finding)."""
-        if f.get("target_id") == "SET":
+        findings looked like one repeated finding). The same holds for a set-phase finding on one item: full-V attempt
+        3 pass 11 stopped when SYS-SUP-081 contradicted first one, then, after that was fixed, another requirement."""
+        if f.get("target_id") == "SET" or f.get("phase") == "set":
             ids = frozenset(re.findall(r"\b[A-Z]{2,5}-[A-Z0-9_]+-\d{3}\b", str(f.get("description", ""))))
-            return ("SET", f.get("checklist_item"), ids)
+            return (f.get("target_id"), f.get("checklist_item"), ids)
         return (f.get("target_id"), f.get("checklist_item"))
 
     def keep_going(self, stage: str, phase: str, rounds: int, keys: set, prev: set | None) -> bool:
