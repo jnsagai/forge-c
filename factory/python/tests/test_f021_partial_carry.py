@@ -3,17 +3,73 @@ are published to the store when its per-requirement inspection ends; a rerun who
 this machine still finds the earlier run that validated the same inputs (same governance inventory) through the
 store; a different inventory finds nothing (INPUT_CHANGED stays the rule). Scripted answers only."""
 import json
+import shutil
 
+import pytest
 from f020_fixtures import ser_spec
-from f020_swe1 import prepared
-from test_f020_carry import SRC, pair  # noqa: F401 - the two-run fixture (source passed IQ, rerun prepared)
+from f020_swe1 import MODEL, prepared
+from test_f020_carry import SRC, _author_dst, pair  # noqa: F401 - the two-run fixture
+from test_f020_two_phase import judge
+
+
+@pytest.mark.parametrize("legacy_workspace", [False, True])
+def test_retry_keeps_inspected_requirements_after_interrupted_author_rework(pair, monkeypatch, legacy_workspace):  # noqa: F811
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import structured as S
+    from forge_factory.lrtx import swe1_carry as C
+    from forge_factory.lrtx import swe1_quality as Q
+    from forge_factory.lrtx import visit as V
+
+    src, dst = pair
+    if legacy_workspace:
+        Store(src).freeze("SWE.1", "swe1-author")
+        shutil.rmtree(src / C.SNAPSHOTS)
+    task = "requirements:g_blocking_transfer"
+    checkpoint = V._ckpt(src, "SWE.1", task)
+    before = json.loads(checkpoint.read_text())
+    draft = {**before, "doc": {**before["doc"], "requirements": before["doc"]["requirements"][:1]}}
+    checkpoint.write_text(json.dumps(draft))
+
+    reply, _ = _author_dst(dst, monkeypatch)
+    assert reply["status"] == "PASS", reply
+    target = json.loads(V._ckpt(dst, "SWE.1", task).read_text())
+    assert "receive_blocking" in target["carry_merge"]["restored"]
+    seen = []
+    monkeypatch.setattr(S, "call", judge({}, seen))
+    assert Q.iq_inspect(dst, MODEL)["status"] == "PASS"
+    assert "receive_blocking" not in {packet["task"].split(":")[3] for packet in seen}
+    verdict = next(v for v in Q.verdicts(dst).values() if v["key"] == "receive_blocking")
+    assert verdict["passed"] and verdict["carried_from"]["source_work_order"] == SRC
+
+
+def test_rework_does_not_accept_a_draft_that_conflicts_with_unreleased_requirements(pair, monkeypatch):  # noqa: F811
+    from forge_factory.lrtx import swe1_carry as C
+    from forge_factory.lrtx import swe1_functional as F
+    from forge_factory.lrtx import visit as V
+
+    _, dst = pair
+    reply, _ = _author_dst(dst, monkeypatch)
+    assert reply["status"] == "PASS"
+    task = next(task for task in F.plan(dst) if task["id"] == "requirements:g_blocking_transfer")
+    checkpoint = V._ckpt(dst, "SWE.1", task["id"])
+    rec = json.loads(checkpoint.read_text())
+    finding = "SWE1-02: SWR-006 [tx_complete_callback] names the wrong callback"
+    C.release(dst, task["id"], [finding])
+    kept = json.loads(C._keep_path(dst, task["id"]).read_text())
+    assert kept["release_findings"]["tx_complete_callback"] == [finding]
+    assert "receive_blocking" in kept["kept"]
+    draft = {**rec, "doc": {**rec["doc"], "requirements": rec["doc"]["requirements"][:1]}}
+    monkeypatch.setattr(F, "validate_task", lambda *_: ["conflicting draft and preserved requirement"])
+    merged = C.merge_kept(dst, task, draft, F.context(dst))
+    assert merged["status"] == "INVALID"
+    assert merged["errors"] == ["conflicting draft and preserved requirement"]
 
 
 def test_the_inspection_publishes_its_pass_requirements(pair):  # noqa: F811
+    from forge_factory.common import sha256_file
     from forge_factory.governance import inventory as GI
     from forge_factory.lrtx import carry_store as CS
     from forge_factory.lrtx import swe1_quality as Q
-    from forge_factory.common import sha256_file
 
     src, _dst = pair
     passed = {k: v for k, v in Q.verdicts(src).items() if v.get("passed") is True}

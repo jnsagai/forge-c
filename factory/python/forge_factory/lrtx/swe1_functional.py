@@ -839,13 +839,17 @@ def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None,
 
 def _run(ws, task, model, budget, ctx, findings=None) -> dict:
     from . import swe1_carry as C
+    from .carry_store import CarryRefused
 
     def build(fi, pr):
         return task_packet(ws, task, model, fi, pr, ctx)
 
     if C.wanted(ws):  # D36 owner rule: validated requirements of a predecessor run are kept
         if findings is None:
-            C.seed_task(ws, task, build(None, None)["input_hash"], ctx)
+            try:
+                C.seed_task(ws, task, build(None, None)["input_hash"], ctx)
+            except CarryRefused as exc:
+                return {"status": "INVALID", "errors": [str(exc)]}
         else:
             C.release(ws, task["id"], findings)
     rec = V.run_task(ws, PHASE, task["id"], build, lambda d: validate_task(ws, d, task, ctx), budget, findings)

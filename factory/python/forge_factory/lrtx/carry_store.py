@@ -63,3 +63,19 @@ class Store:
         with closing(sqlite3.connect(self.path)) as c:
             return [r[0] for r in c.execute("SELECT source_order, max(at) m FROM validated_items WHERE phase=? AND "
                                             "dep_sha=? GROUP BY source_order ORDER BY m DESC", (phase, dep_sha))]
+
+    def latest_task_record(self, phase: str, task: str, *, dep_sha: str, source_order: str, root: Path) -> Path | None:
+        """Return the latest published task snapshot, ignoring older rows pointing to working checkpoints."""
+        with closing(sqlite3.connect(self.path)) as c:
+            row = c.execute(
+                "SELECT record, record_sha FROM validated_items WHERE phase=? AND dep_sha=? AND source_order=? "
+                "AND instr(item_key, ?)=1 AND instr(record, ?)=1 ORDER BY at DESC LIMIT 1",
+                (phase, dep_sha, source_order, task + "|", str(root.resolve()) + "/"),
+            ).fetchone()
+        if row is None:
+            return None
+        record, sha = Path(row[0]), row[1]
+        if (record.parent != root.resolve() or record.name != f"{sha}.json" or record.is_symlink()
+                or not record.is_file() or sha256_file(record) != sha):
+            raise CarryRefused(f"SOURCE_RECORD_CHANGED:{source_order}:{task}")
+        return record

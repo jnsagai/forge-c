@@ -20,14 +20,19 @@ Every carried record names its source (work order, record sha) so the evidence c
 from __future__ import annotations
 
 import json
+import os
 import re
+from collections import defaultdict
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 from ..common import canonical_json, pretty_json, sha256_bytes, sha256_file, utc_now
 from ..governance import inventory as GI
 from . import visit as V
 
 PHASE = "SWE.1"
+SNAPSHOTS = ".forge-run/lrtx/SWE.1/phase1/validated"
+SNAPSHOT_SCHEMA = "forge-c/swe1-validated-task/1"
 SOURCE_KEY = "swe1_carry_from"
 CARRY_NOTE = ("[carried] the requirements not named in the findings above were already inspected and validated in an "
               "earlier run of this order: return them unchanged, with the same key; change only the requirements the "
@@ -128,15 +133,48 @@ def publish(ws: Path) -> int:
     if not inv.is_file() or not wo:
         return 0
     dep, store, n = sha256_file(inv), CS.Store(), 0
-    for (tk, sha), v in Q.verdicts(ws).items():
-        task = tk.split("|", 1)[0]
-        ck = V._ckpt(ws, PHASE, task)
-        if v.get("passed") is not True or not ck.is_file():
+    verdicts = Q.verdicts(ws)
+    by_task = defaultdict(list)
+    for ref in Q.requirements(ws):
+        by_task[ref["task"]].append(ref)
+    for task, requirements in by_task.items():
+        record, raw = _record(ws, PHASE, task)
+        if record is None:
             continue
-        store.put(PHASE, tk, content_sha=sha, dep_sha=dep, record=ck, source_order=wo,
-                  verdicts={"IQ": "PASS", "swr": v.get("swr"), "round": v.get("round")})
-        n += 1
+        passed = [(Q._tk(r), r["sha"], verdicts.get((Q._tk(r), r["sha"]))) for r in requirements]
+        passed = [(key, sha, v) for key, sha, v in passed if v and v.get("passed") is True]
+        if not passed:
+            continue
+        snapshot = {"schema": SNAPSHOT_SCHEMA, "task": task, "status": "VALID", "doc": record["doc"],
+                    "inventory_sha256": dep,
+                    "source_work_order": wo, "source_record_sha256": sha256_bytes(raw),
+                    "criteria_sha256": sha256_bytes(canonical_json(Q.quality_checklist()))}
+        path = _write_snapshot(ws, snapshot)
+        for key, sha, v in passed:
+            store.put(PHASE, key, content_sha=sha, dep_sha=dep, record=path, source_order=wo,
+                      verdicts={"IQ": "PASS", "swr": v.get("swr"), "round": v.get("round")})
+            n += 1
     return n
+
+
+def _write_snapshot(ws: Path, snapshot: dict) -> Path:
+    raw = canonical_json(snapshot)
+    sha = sha256_bytes(raw)
+    path = ws / SNAPSHOTS / f"{sha}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.is_file():
+        with NamedTemporaryFile(dir=path.parent, delete=False) as handle:
+            staged = Path(handle.name)
+            handle.write(raw)
+        try:
+            os.replace(staged, path)
+        finally:
+            staged.unlink(missing_ok=True)
+    if path.is_symlink() or sha256_file(path) != sha:
+        from .carry_store import CarryRefused
+
+        raise CarryRefused(f"SOURCE_RECORD_CHANGED:{snapshot['source_work_order']}:{snapshot['task']}")
+    return path
 
 
 def _record(src: Path, phase: str, task: str) -> tuple[dict | None, bytes | None]:
@@ -151,6 +189,68 @@ def _record(src: Path, phase: str, task: str) -> tuple[dict | None, bytes | None
     if rec.get("task") != task or rec.get("status") != "VALID" or rec.get("doc") is None:
         return None, None
     return rec, raw
+
+
+def _frozen_task(src: Path, task: str, verdicts: dict) -> tuple[dict | None, bytes | None]:
+    """Recover pre-snapshot data only when frozen attributes and exact IQ evidence agree."""
+    from . import swe1_functional as F
+
+    attrs = src / F.ATTRS
+    try:
+        if attrs.is_symlink() or not attrs.resolve().is_relative_to(src.resolve()):
+            return None, None
+        raw = attrs.read_bytes()
+        attrs_sha = sha256_bytes(raw)
+        frozen = (src / "configuration/baselines" / PHASE).glob("BL-SWE.1-*.json")
+        if not any(not p.is_symlink() and p.resolve().is_relative_to(src.resolve())
+                   and json.loads(p.read_text()).get("files", {}).get(F.ATTRS) == attrs_sha for p in frozen):
+            return None, None
+        data = json.loads(raw)
+        template = F.template(src)
+        if (data["work_order"] != _manifest(src).get("work_order")
+                or data["template"] != template["template_id"] or data["schema"] != F.ATTR_SCHEMA):
+            return None, None
+        fields = template["attributes"]
+        requirements = []
+        for row in data["requirements"]:
+            if row["task"] != task:
+                continue
+            obj = {k: row[k] for k in fields}
+            key = f"{task}|{obj['key']}"
+            if (key, sha256_bytes(canonical_json(obj))) not in verdicts:
+                # Assembly expands key references into SWR IDs. Accept the reverse only on an exact verdict hash.
+                for field in ("statement", "precondition"):
+                    obj[field] = F.REF.sub(r"[\1]", obj[field])
+                for link in obj["links"]:
+                    if link.get("rationale"):
+                        link["rationale"] = F.REF.sub(r"[\1]", link["rationale"])
+                if (key, sha256_bytes(canonical_json(obj))) not in verdicts:
+                    return None, None
+            requirements.append(obj)
+        if requirements and any(verdicts[(f"{task}|{r['key']}", sha256_bytes(canonical_json(r)))]["passed"]
+                                for r in requirements):
+            return {"doc": {"requirements": requirements}}, raw
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return None, None
+
+
+def _inspected_task(src: Path, task: str, meta: dict, verdicts: dict):
+    from .carry_store import CarryRefused, Store
+
+    root = src / SNAPSHOTS
+    if root.is_dir():
+        path = Store().latest_task_record(PHASE, task, dep_sha=meta["inventory_sha256"],
+                                          source_order=meta["source_work_order"], root=root)
+        if path:
+            raw = path.read_bytes()
+            rec = json.loads(raw)
+            if (path.stem != sha256_bytes(raw) or rec.get("schema") != SNAPSHOT_SCHEMA
+                    or rec.get("task") != task or rec.get("source_work_order") != meta["source_work_order"]
+                    or rec.get("inventory_sha256") != meta["inventory_sha256"]):
+                raise CarryRefused(f"SOURCE_RECORD_CHANGED:{meta['source_work_order']}:{task}")
+            return rec, raw
+    return _frozen_task(src, task, verdicts)
 
 
 def migrate(r: dict, task: dict, ctx: dict) -> dict:
@@ -191,14 +291,19 @@ def _kept(ws: Path, task: str) -> dict:
 
 def release(ws: Path, task: str, findings: list[str] | None) -> None:
     """A later finding that names a kept requirement releases it: a dependency now requires the change."""
-    named = _named_keys(findings or [])
     kept = _kept(ws, task)
-    if not named or not (named & set(kept)):
+    relevant = {}
+    for finding in findings or []:
+        named = _named_keys([finding]) | set(re.findall(r"\bSWR-\d+ \[([a-z][a-z0-9_]*)\]", finding))
+        for key in kept.keys() & named:
+            relevant.setdefault(key, []).append(finding)
+    if not relevant:
         return
     p = _keep_path(ws, task)
     rec = json.loads(p.read_text())
-    rec["kept"] = {k: v for k, v in kept.items() if k not in named}
-    rec.setdefault("released", []).extend(sorted(named & set(kept)))
+    rec["kept"] = {k: v for k, v in kept.items() if k not in relevant}
+    rec.setdefault("released", []).extend(sorted(relevant))
+    rec.setdefault("release_findings", {}).update(relevant)
     p.write_text(pretty_json(rec))
 
 
@@ -208,13 +313,18 @@ def seed_task(ws: Path, task: dict, base_hash: str, ctx: dict) -> tuple[str, lis
     findings as its errors - the author's run_task repairs exactly that; `kept` = key -> requirement to keep unchanged,
     persisted for later node executions), or NONE."""
     from . import swe1_functional as F
+    from . import swe1_quality as Q
 
     if V._ckpt(ws, PHASE, task["id"]).is_file():
         return "NONE", [], {}
     src, meta = source(ws)
     if src is None:
         return "NONE", [], {}
-    old, raw = _record(src, PHASE, task["id"])
+    working, working_raw = _record(src, PHASE, task["id"])
+    old, raw = _inspected_task(src, task["id"], meta, Q.verdicts(src))
+    inspected = old is not None
+    if not inspected:
+        old, raw = working, working_raw
     if old is None:
         return "NONE", [], {}
     reqs = [migrate(r, task, ctx) for r in old["doc"].get("requirements") or []]
@@ -231,17 +341,19 @@ def seed_task(ws: Path, task: dict, base_hash: str, ctx: dict) -> tuple[str, lis
     ck = V._ckpt(ws, PHASE, task["id"])
     ck.parent.mkdir(parents=True, exist_ok=True)
     ck.write_text(pretty_json(rec))
-    if not errs:
+    if not errs and not inspected:
         return "CARRIED", [], kept
     kp = _keep_path(ws, task["id"])
     kp.parent.mkdir(parents=True, exist_ok=True)
     kp.write_text(pretty_json({"task": task["id"], "carried_from": prov, "kept": kept, "at": utc_now()}))
+    if not errs:
+        return "CARRIED", [], kept
     return "REWORK", errs + [CARRY_NOTE], kept
 
 
 def merge_kept(ws: Path, task: dict, rec: dict, ctx: dict) -> dict:
     """After the rework answer: every kept requirement back byte-identical, the reworked and new ones from the answer.
-    Written only when the merged answer still validates (else the answer stays and the refusal is recorded)."""
+    A merge that fails current validation is blocked and returned as a finding."""
     from . import swe1_functional as F
 
     kept = _kept(ws, task["id"])
@@ -257,7 +369,7 @@ def merge_kept(ws: Path, task: dict, rec: dict, ctx: dict) -> dict:
     errs = F.validate_task(ws, doc, task, ctx)
     ck = V._ckpt(ws, PHASE, task["id"])
     if errs:
-        out = {**rec, "carry_merge": {"refused": errs[:10]}}
+        out = {**rec, "doc": doc, "status": "INVALID", "errors": errs, "carry_merge": {"refused": errs[:10]}}
     else:
         out = {**rec, "doc": doc, "carry_merge": {"restored": sorted(k for k in kept if
                                                                      kept[k] not in ans)}}
@@ -297,15 +409,22 @@ def verdict_carrier(ws: Path):
         return None
     old_verdicts = Q.verdicts(src)
     docs: dict[str, dict] = {}
+    criteria_sha = sha256_bytes(canonical_json(Q.quality_checklist()))
 
     def carry(ref: dict) -> dict | None:
         task = tasks.get(ref["task"])
         if task is None:
             return None
         if ref["task"] not in docs:
-            old, _raw = _record(src, PHASE, ref["task"])
-            docs[ref["task"]] = {r.get("key"): r for r in ((old or {}).get("doc") or {}).get("requirements") or []}
-        obj = docs[ref["task"]].get(ref["key"])
+            old, raw = _inspected_task(src, ref["task"], meta, old_verdicts)
+            if old is None:
+                old, raw = _record(src, PHASE, ref["task"])
+            docs[ref["task"]] = ({r.get("key"): r for r in ((old or {}).get("doc") or {}).get("requirements") or []},
+                                sha256_bytes(raw) if raw else None, (old or {}).get("criteria_sha256"))
+        items, record_sha, criteria = docs[ref["task"]]
+        if criteria and criteria != criteria_sha:
+            return None
+        obj = items.get(ref["key"])
         if obj is None or migrate(obj, task, ctx) != ref["obj"]:
             return None  # changed since the source run: judged again
         old_sha = sha256_bytes(canonical_json(obj))
@@ -313,5 +432,6 @@ def verdict_carrier(ws: Path):
         if not v or v.get("passed") is not True:
             return None
         return {**v, "sha": ref["sha"], "swr": ref["swr"], "at": utc_now(),
-                "carried_from": {**meta, "source_sha": old_sha, "source_swr": v.get("swr")}}
+                "carried_from": {**meta, "source_sha": old_sha, "source_swr": v.get("swr"),
+                                 "record_sha256": record_sha}}
     return carry

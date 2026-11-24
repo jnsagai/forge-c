@@ -367,6 +367,8 @@ def _inherited_verdict(ws: Path, ref: dict, task: str, build, check) -> dict | N
 
 def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float | None = None) -> dict:
     """Judge every requirement whose current content has no verdict yet (one structured call each)."""
+    from .carry_store import CarryRefused
+
     ws = Path(ws)
     if not _author_passed(ws):
         return reply(ws, "iq-inspect", "PASS", ["PHASE1_SKIPPED: the SWE.1 author reply is not PASS"])
@@ -414,6 +416,9 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
     except V.Continue as c:
         _save_state(ws, st)
         return reply(ws, "iq-inspect", "CONTINUE", [f"time box used; the next node execution resumes at {c}"])
+    except CarryRefused as exc:
+        _save_state(ws, st)
+        return reply(ws, "iq-inspect", "FAILED", [str(exc)])
     _save_state(ws, st)
     V.close_visit(budget)
     summary(ws)
