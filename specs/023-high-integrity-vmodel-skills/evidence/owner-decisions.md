@@ -106,3 +106,5 @@
 - **Twenty-fifth round:** `CON-SUP-173` states one rule for faults not yet recorded at a reset (present or absent, both
   accepted, as CON-SUP-161 already allowed during an update; it now also covers a reset before the update begins).
   Raised by full-V attempt 3 pass 9 (system requirements). Fictional, by Claude.
+- **Twenty-sixth round:** `CON-SUP-174` (history size 8, saturating fault and detection counts). Raised by full-V
+  attempt 3 pass 10 (system requirements, OP-SYS-014). Fictional, by Claude.

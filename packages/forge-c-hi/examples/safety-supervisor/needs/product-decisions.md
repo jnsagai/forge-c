@@ -200,3 +200,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-173 | **Recorded fault.** A fault is recorded when the update of the retained data that contains it has completed. Every rule that a fault is in the fault count, in the fault history or in its detection count (CON-SUP-125, CON-SUP-140, CON-SUP-150, CON-SUP-159, CON-SUP-161, CON-SUP-170), also for a dropped report, applies to recorded faults and to the retained data as it is until the next power-on reset or the next start-up without intact retained data (CON-SUP-164). A fault that is detected but not yet recorded when a reset occurs, whether or not its update has begun, is after a reset other than power-on either completely present or completely absent; both are accepted. Requirements state this rule once and refer to "a recorded fault" instead of listing the resets as exceptions. |
+
+**Twenty-sixth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-174 | The fault history holds the entries of the 8 most recently recorded faults (the ones `GET FAULTS` returns, CON-SUP-113); recording a further fault replaces the oldest entry. The fault count is an unsigned 32-bit number, reported in decimal, that stays at 4294967295 when it reaches it. A detection count stays at 3 when it reaches it (the latch value of CON-SUP-117). Replacing an entry and staying at a maximum are part of the update that records the fault and are not a loss of a recorded fault. |
