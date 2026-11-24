@@ -153,7 +153,9 @@ architecture. Never fill it with a plausible value.
 - `fix-gates`: fix the listed gate issues (`TR-UNCOVERED`, `TR-DANGLING`, schema errors).
 - `rework`: change **only** the item named in `items`; you may split it (keep its id for the first part, new ids
   for the rest). Changes to other existing items are discarded.
-- `rework-set`: resolve the listed set-level findings with the smallest change.
+- `rework-set`: resolve the listed set-level findings. Search the whole workproduct for every other statement of the
+  limit, value or rule you change and make all of them agree; replace outdated text, do not add a correction next to
+  it. Item text says what holds now: no finding ids, no history. Change nothing else.
 
 If you disagree with a finding, keep the item and add a short `attributes.rationale`; the inspector judges it again.
 

@@ -1057,3 +1057,19 @@ def test_many_changed_code_items_are_updated_in_batches(tmp_path, monkeypatch):
     calls.clear()
     c.author_with_gates("sys-req", "update", **kw)     # text stages are updated in one call as before
     assert calls == [(["a.md"], list("ABCDE"))]
+
+
+def test_set_rework_makes_every_statement_of_a_rule_agree(tmp_path):
+    # full-V attempt 3 pass 24: "changing as little as possible" fixed one statement of a limit per set round and left
+    # its copies in other items contradicting it, until the rework limit
+    root = tmp_path / "p"
+    root.mkdir()
+    set_f = dict(F("SQ-05"), target_id="SYS-SUP-001")
+    sc = setup(root, {"author": {"items": SYS_ITEMS}, "inspector": {"item_rounds": [{}], "set_rounds": [[set_f], []]}},
+               raw=True)
+    conduct(root, sc, "--stage", "sys-req")
+    prompts = [e for p in (root / ".hi/runs").rglob("events.jsonl") for e in map(json.loads, p.read_text().splitlines())
+               if e.get("step") == "role" and "prompt" in e]
+    reworks = [e["prompt"] for e in prompts if e["phase"] == "rework-set"]
+    assert reworks and all("every other statement" in t and "as little as possible" not in t for t in reworks)
+    assert all("every other statement" not in e["prompt"] for e in prompts if e["role"] == "inspector")

@@ -140,3 +140,10 @@
 - **Thirty-fifth round:** `CON-SUP-188` (boundary to boot code, vector table and linker script). Raised by full-V attempt 3
   pass 23 (software design, OP-SWU-008). No limit is relaxed. Fictional, by Claude. The simulator's vector table got the two
   spare interrupts (self-test `test_levels.c`).
+- **Full-V attempt 3, pass 24:** software design passed every gate for the first time (25 source files, drivers included)
+  and was inspected in full; it returned OP-SWU-021 and 023 (stack and data budgets) to the software architecture, which
+  reached its rework limit with two findings the author can fix. Package: set rework now has to make every statement of
+  a changed rule agree (the architecture author had fixed one copy of a limit per round).
+- **Thirty-sixth round:** `CON-SUP-189..192` (core facts, dispatch, `__asm__` deviation, watchdog limits). Raised by pass 24
+  (software design, OP-SWU-014, 017, 020). **191 relaxes** the C11 rule and **192 relaxes** the exact 100 ms to 99.5 to
+  100.5 ms. Fictional, by Claude.

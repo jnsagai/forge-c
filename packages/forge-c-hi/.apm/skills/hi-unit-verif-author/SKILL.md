@@ -133,7 +133,9 @@ can be stated. `blocks: true` when it prevents verifying a unit. Never take the 
   code, keep the test and report it (see below).
 - `rework`: change **only** the case named in `items` (and its lines in the test program); you may split it.
   Changes to other existing cases are discarded.
-- `rework-set`: resolve the listed set-level findings with the smallest change.
+- `rework-set`: resolve the listed set-level findings. Search the whole workproduct for every other statement of the
+  limit, value or rule you change and make all of them agree; replace outdated text, do not add a correction next to
+  it. Item text says what holds now: no finding ids, no history. Change nothing else.
 
 ## Rules
 

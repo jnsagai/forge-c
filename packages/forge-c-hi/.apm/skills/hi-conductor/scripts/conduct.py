@@ -50,6 +50,13 @@ from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
 FIX_BATCH = 10   # gate issues per fix-gates call
+# Full-V attempt 3 pass 24: each set round fixed one statement of a limit and left its copies in other items
+# contradicting it, so the next set inspection found the same defect elsewhere until the rework limit.
+CONSISTENT = ("Before you change a limit, value, order or rule, search the whole workproduct for every other statement "
+              "of it, in items, decisions and open points, and make all of them agree in this call; change nothing "
+              "else. Replace the outdated text, do not add a correction next to it, and where you can, state a value "
+              "in one item only and cite that item's id elsewhere. Item text says what holds now: no finding ids, "
+              "no history of earlier versions.")
 SUSPECT_BATCH = 3  # changed-upstream items per update call in a stage that writes code or tests
 SAME_TEXT = 0.5  # word-sequence similarity above which two findings under one key are the same defect
 # gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
@@ -201,7 +208,8 @@ class Conductor:
                          "change that still meets every input and earlier workproduct; never relax or drop what they "
                          "require. If the conflict comes from an earlier stage, record a blocking open point with "
                          "`returned_to` that stage; if only a person can decide, one with `returned_to: null`. If the "
-                         "point is mistaken, change nothing and say why in the `rationale` of the item it names."),
+                         "point is mistaken, change nothing and say why in the `rationale` of the item it names.")
+                      + " " + CONSISTENT,
             "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct"
                          + (" (issues of the `governance` gate may instead need a change in `governance`)"
                             if t.get("governance") else "")
@@ -223,7 +231,7 @@ class Conductor:
                               "governance package, changing as little as possible.",
             "rework": f"Rework ONLY item {', '.join(t.get('items', []))} to resolve the findings listed. Do not change "
                       "any other existing item. You may add new items only to split this one.",
-            "rework-set": "Resolve the set-level findings listed, changing as little as possible.",
+            "rework-set": "Resolve the set-level findings listed. " + CONSISTENT,
             "item": f"Judge ONLY these items, each on its own, against the item checklist: {', '.join(t.get('items', []))}.",
             "set": "Judge the whole set against the set checklist. Re-assess the carried findings listed."
                    + ("" if not t.get("returned") else " A later stage returned the points in `returned`: check that "

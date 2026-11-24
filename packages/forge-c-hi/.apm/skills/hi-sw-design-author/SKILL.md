@@ -152,7 +152,9 @@ gap with a plausible value or a register guess.
   from `static-analysis`).
 - `rework`: change **only** the unit named in `items` and only the files it lists; you may split it (keep its id
   for the first part). Changes to other existing units are discarded.
-- `rework-set`: resolve the listed set-level findings with the smallest change.
+- `rework-set`: resolve the listed set-level findings. Search the whole workproduct for every other statement of the
+  limit, value or rule you change and make all of them agree; replace outdated text, do not add a correction next to
+  it. Item text says what holds now: no finding ids, no history. Change nothing else.
 
 If you disagree with a finding, keep the unit and add a short `attributes.rationale`; the inspector judges it again.
 

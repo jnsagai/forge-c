@@ -51,7 +51,8 @@ skill are unchanged. `--fresh` re-authors from scratch.
    findings. Steps 4 and 5 repeat for the profile's `rework_limit` rounds, and beyond it only while the open findings
    keep falling, up to `rework_max` (default 10). Two rounds with the same open findings (same item, criterion and
    cited ids, and nearly the same text) stop the loop at once (`rework-stuck`). What is still open is **carried** into the set phase.
-6. **Set inspection** with the carried findings, then set rework under the same rule.
+6. **Set inspection** with the carried findings, then set rework under the same rule. Set rework changes every statement of the
+   limit, value or rule concerned, in all items, and replaces outdated text.
    A stage that is already `ACCEPTED` is kept without any model call while its files, the inputs, the earlier stages'
    outputs, the project settings, the checklists and the inspector skill are unchanged and every gate passes again.
 7. **Final gates** for the profile and level. The stage ends `ACCEPTED`, `ACCEPTED_WITH_GAPS` (a required gate is

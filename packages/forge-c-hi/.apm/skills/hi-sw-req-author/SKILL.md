@@ -110,7 +110,7 @@ decide it, raise it again here as your own open point and say why.
 ## Rework
 
 Same phases as the system-requirements author: `fix-gates`, `rework` (only the named item, splits allowed),
-`rework-set`.
+`rework-set` (make every statement of a changed limit, value or rule agree; replace outdated text).
 
 ## Rules
 
