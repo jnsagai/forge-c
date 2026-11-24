@@ -1,0 +1,2 @@
+# microseconds after the previous line, then the text
+10000 GET STATUS

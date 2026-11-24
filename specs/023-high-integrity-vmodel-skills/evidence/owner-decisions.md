@@ -115,3 +115,6 @@
   committed or redistributed; architecture and design cite section and page only.
 - **Twenty-eighth round:** `CON-SUP-176` (permitted task configurations). Raised by full-V attempt 3 pass 15 (system
   requirements, OP-SYS-016). Fictional, by Claude.
+- **Twenty-ninth round:** `CON-SUP-177` (a request at the very end of an answer: either outcome, a **relaxation** of
+  CON-SUP-139 in a 1 ms window), raised by full-V attempt 3 pass 16; `CON-SUP-178..180` (platform allocation, dispatch,
+  memory limits, task table) answer open points deferred to the design. Fictional, by Claude.

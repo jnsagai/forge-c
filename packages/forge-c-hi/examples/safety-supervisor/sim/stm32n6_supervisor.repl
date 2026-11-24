@@ -26,9 +26,11 @@ wwdg: Timers.HiWwdg @ sysbus 0x50002C00
 tim2: Timers.STM32_Timer @ sysbus 0x50000000
     frequency: 200000000
     initialLimit: 0xFFFFFFFF
+    -> nvic@116   // RM0486 section 24.1.2
 
 usart1: UART.STM32F7_USART @ sysbus 0x52001000
     frequency: 200000000
+    IRQ -> nvic@159   // RM0486 section 24.1.2
 
 gpioa: GPIOPort.STM32_GPIOPort @ sysbus <0x56020000, +0x400>
 
