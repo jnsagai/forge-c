@@ -113,3 +113,5 @@
 - **Full-V attempt 3, pass 14:** software architecture blocked on missing USART facts (OP-SWC-016). No decision: the
   reference manual RM0486 is declared as a local reference document of the project (as in the driver demo). It is never
   committed or redistributed; architecture and design cite section and page only.
+- **Twenty-eighth round:** `CON-SUP-176` (permitted task configurations). Raised by full-V attempt 3 pass 15 (system
+  requirements, OP-SYS-016). Fictional, by Claude.

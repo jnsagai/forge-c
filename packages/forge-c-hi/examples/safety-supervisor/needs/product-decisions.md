@@ -212,3 +212,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-175 | A commanded or controlled shutdown is out of scope: the product has no shutdown command and no low-power mode. Power is removed without notice. The software has no function for it; the output levels while unpowered belong to the board project (CON-SUP-153), the retained data is lost (CON-SUP-110), and the next start is a power-on reset. |
+
+**Twenty-eighth round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-176 | **Permitted configurations (STK-SUP-004).** The application tasks are the four tasks of CON-SUP-101: T_IN, T_CTRL and T_OUT with a period of 10 ms and T_DIAG with a period of 100 ms. A configuration sets, for each of them, whether it is supervised and its timing limits, and it sets the release order of the 10 ms tasks. At least one 10 ms task is supervised. The periods are 10 ms and 100 ms as given (CON-SUP-006); any other period, an unknown task, a task listed twice, a missing task or no supervised 10 ms task is a configuration fault (code 9, CON-SUP-115). All four tasks are released whether supervised or not. Program flow supervision (CON-SUP-104, CON-SUP-149) covers the supervised 10 ms tasks in their configured order; checkpoints of an unsupervised task are ignored and it raises no fault. |
