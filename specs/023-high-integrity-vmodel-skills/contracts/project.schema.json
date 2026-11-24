@@ -296,6 +296,33 @@
           "description": "Upper-case names a functional-level statement may use (public API constants)."
         }
       }
+    },
+    "simulator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command"
+      ],
+      "description": "How the verification gate runs a simulator program (hi/<stage>/sim/test_*.c): the command is run in the project root with {program} replaced and prints HI-TEST lines.",
+      "properties": {
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     }
   }
 }

@@ -59,5 +59,13 @@
   "trace_capture": {
     "raw_prompts": false,
     "events": "standard"
+  },
+  "simulator": {
+    "command": [
+      "sh",
+      "sim/run_sim.sh",
+      "{program}"
+    ],
+    "timeout_s": 600
   }
 }

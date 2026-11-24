@@ -138,7 +138,7 @@ contradictions between earlier decisions.
 | CON-SUP-154 | On a framing, noise or overrun error on the diagnostic line, the characters received since the last line feed are discarded up to and including the next line feed, without an answer and without a fault report. |
 | CON-SUP-155 | The window watchdog is enabled at the end of the first control cycle after the start-up integrity checks have passed, and refreshed once per control cycle from then on. During the start-up checks only the independent watchdog runs; it is serviced after every 64 KiB checked. |
 | CON-SUP-156 | There is no memory protection between the supervisor and the application tasks on the shared core. The application tasks are developed to the same integrity level as the supervisor, and freedom from interference is not claimed. |
-| CON-SUP-157 | **Verification environment (fact).** The available simulator models cover IWDG, GPIO, USART, TIM, CRC and RCC, each on its own partial STM32N6 platform. There is no window-watchdog model and no model of the complete controller. Software behaviour is verified on the host with the hardware interface replaced by fakes; what only the target can show is stated as a limit and stays unverified here. |
+| CON-SUP-157 | Withdrawn; replaced by CON-SUP-166: the missing models were built. |
 | CON-SUP-158 | **Measurement (fact).** A table-driven CRC-32/MPEG-2 loop compiled with arm-none-eabi-gcc 10.3.1 (`-mcpu=cortex-m55 -O2`) has 6 instructions per byte, about 6150 for a 1 KiB segment. The 0.5 ms limit at 200 MHz is 100 000 core cycles. Cycles per instruction and memory wait states were not measured. Execution-time evidence on the target is not available in this project and stays an identified gap for the offline review; it does not block the architecture. |
 
 **Seventeenth round.**
@@ -166,4 +166,10 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-164 | After a reset other than power-on, the retained data of CON-SUP-151 is either the data before or the data after the update the reset interrupted, never a mixture; a reset never clears the safe-state latch by interrupting an update. This replaces the wrong-CRC rule of CON-SUP-151: if no intact retained data is found after a reset other than power-on, the system starts with the safe state latched, the counts and the history empty, and reports no additional fault for it. After a power-on reset the retained data has its power-on values. The storage mechanism is chosen in the design; there is no limit on the number of updates. |
-| CON-SUP-165 | **Deviation from STK-SUP-015, accepted for this demo.** The need is met only in part: fault injection of every class runs on the host with the hardware interface replaced by fakes, and on the partial models of CON-SUP-157. Window-watchdog timing, expiry and reset, and the combined action of the complete controller, are not demonstrated on a simulator. Requirements on them keep their verification method, and their cases stay not run and open for the offline review. |
+| CON-SUP-165 | Withdrawn; the deviation from STK-SUP-015 is no longer needed (CON-SUP-166). |
+
+**Twenty-first round.** Withdraws CON-SUP-157 and CON-SUP-165.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-166 | **Verification environment (fact).** Host tests with the hardware interface replaced by fakes, and one combined simulator platform (`sim/`, Renode, Cortex-M55) with time-driven IWDG, WWDG, reset flags, USART1, GPIOA, TIM2, CRC and retained RAM, on which every fault class can be injected and its complete reaction observed. The watchdog reset times measured on it are 100.0 ms (IWDG) and 10.49 ms (WWDG). Its limits are listed in `sim/README.md`; in particular it is not cycle accurate, so execution time and processor load cannot be verified on it. |

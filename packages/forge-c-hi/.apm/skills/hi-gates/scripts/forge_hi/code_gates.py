@@ -229,11 +229,38 @@ def coverage(root: Path, *, write: bool = True) -> dict:
     return res
 
 
+def _run_simulator(root: Path, stage: str, simulator: dict) -> tuple[dict[str, dict], list[dict]]:
+    out: dict[str, dict] = {}
+    issues: list[dict] = []
+    limit = int(simulator.get("timeout_s", 600))
+    for t in sorted((root / "hi" / stage / "sim").glob("test_*.c")):
+        rel = t.relative_to(root).as_posix()
+        argv = [a.replace("{program}", rel) for a in simulator["command"]]
+        try:
+            r = subprocess.run(argv, cwd=root, capture_output=True, text=True, errors="replace", timeout=limit,
+                               env=dict(os.environ, **{k: str(v) for k, v in (simulator.get("env") or {}).items()}))
+        except subprocess.TimeoutExpired:
+            issues.append(gate_result.issue("VT-TIMEOUT", f"{rel} did not finish in {limit} s", rel))
+            continue
+        except OSError as exc:
+            issues.append(gate_result.issue("VT-SIM", f"{rel}: the simulator command cannot run: {exc}"[:280], rel))
+            continue
+        if r.returncode != 0:
+            issues.append(gate_result.issue("VT-SIM", f"{rel}: exit {r.returncode}: {r.stderr.strip()[-240:]}", rel))
+            continue
+        for cid, verdict, why in HI_TEST.findall(r.stdout.replace("\r", "")):
+            if out.get(cid, {}).get("verdict") != "FAIL":   # a later PASS never hides a FAIL of the same case
+                out[cid] = {"test_id": cid, "verdict": verdict, "message": (why or rel)[:300],
+                            "evidence": [{"path": rel, "sha256": sha256_file(t)}]}
+    return out, issues
+
+
 def verification(root: Path, stage: str, *, write: bool = True) -> dict:
     """The `verification` gate of sw-integ, sw-qual, sys-integ and sys-qual (T068): the host programs
-    ``hi/<stage>/host/test_*.c`` are compiled with the real sources and run. A simulator or manual case has no runner
-    in this package: it is NOT_RUN, so the gate is NOT_RUN at best and the package cannot be sealed READY on tests that
-    were only specified."""
+    ``hi/<stage>/host/test_*.c`` are compiled with the real sources and run. The simulator programs
+    ``hi/<stage>/sim/test_*.c`` are run with the project's `simulator.command`, which prints the same HI-TEST lines.
+    A manual case, or a simulator case without that command, is NOT_RUN, so the gate is NOT_RUN at best and the
+    package cannot be sealed READY on tests that were only specified."""
     root = Path(root)
     _, common = _common(root)
     spec_file = root / stages()[stage]["outputs"][0]
@@ -250,11 +277,22 @@ def verification(root: Path, stage: str, *, write: bool = True) -> dict:
                                            include=[f"hi/{stage}/host"])
     if bdir is not None:
         shutil.rmtree(bdir, ignore_errors=True)
+    for cid in sorted(set(results) - host):
+        issues.append(gate_result.issue("VT-UNSPECIFIED", f"{cid} is not a host-unit case in the specification", cid))
+    simulator = load_project(root).get("simulator") or {}
+    if simulator.get("command"):
+        sim = {c["id"] for c in cases if (c.get("automation") or {}).get("kind") == "simulator"}
+        got, sim_issues = _run_simulator(root, stage, simulator)
+        issues += sim_issues
+        for cid in sorted(set(got) - sim):
+            issues.append(gate_result.issue("VT-UNSPECIFIED", f"{cid} is not a simulator case in the specification", cid))
+        for cid, r in got.items():
+            if cid not in results:
+                results[cid] = r
+        host = host | sim            # an executable case that prints no result is an issue, not a gap
     for cid, r in sorted(results.items()):
         if r["verdict"] == "FAIL":
             issues.append(gate_result.issue("VT-FAIL", f"{cid}: {r['message']}", cid))
-        if cid not in host:
-            issues.append(gate_result.issue("VT-UNSPECIFIED", f"{cid} is not a host-unit case in the specification", cid))
     not_run = []
     for c in cases:
         if c["id"] in results:

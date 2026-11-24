@@ -21,8 +21,12 @@ stage's workproduct, inside that stage's write scope (the conductor names one of
 
 You never write results: the `verification` gate
 compiles and runs your `host-unit` programs (`hi/<stage>/host/test_*.c`, linked with all of `src/`) and records the
-verdicts. Simulator and manual cases have no runner in this package; they stay NOT_RUN, which is a gap. So prefer
-`host-unit` wherever the objective can honestly be shown on the host, and never dress up a host case as target evidence.
+verdicts. When the project configures a `simulator`, the
+gate also runs each target program `hi/<stage>/sim/test_*.c` with it; such a program links all of `src/`, uses the
+hardware port in the same folder, and prints the same `HI-TEST <id> PASS|FAIL` lines on the diagnostic USART. Name that
+file in `automation.file` of a `simulator` case (this replaces `.robot` or `.resc` files). Read the project's `sim/`
+folder first for the platform's models and limits. Manual cases stay NOT_RUN, which is a gap. Never dress up a host or
+simulator case as hardware evidence.
 
 ## Inputs
 

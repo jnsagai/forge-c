@@ -1,0 +1,36 @@
+// Combined Cortex-M55 platform for the Safety Supervisor demo. NOT a full STM32N6 model: Renode's own F7/F2 models
+// stand in for USART, GPIO, TIM and CRC at the STM32N6 secure addresses; the watchdogs and reset flags are HiStm32n6Watchdogs.cs.
+cpu: CPU.CortexM @ sysbus
+    cpuType: "cortex-m55"
+    nvic: nvic
+
+nvic: IRQControllers.NVIC @ sysbus 0xE000E000
+    priorityMask: 0xF0
+    systickFrequency: 200000000
+    -> cpu@0
+
+axisram: Memory.MappedMemory @ sysbus 0x34000000
+    size: 0x200000
+
+rcc: Timers.HiRcc @ sysbus 0x56028000
+
+iwdg: Timers.HiIwdg @ sysbus 0x56004800
+    rcc: rcc
+    frequency: 32000
+
+wwdg: Timers.HiWwdg @ sysbus 0x50002C00
+    rcc: rcc
+    frequency: 50000000
+
+tim2: Timers.STM32_Timer @ sysbus 0x50000000
+    frequency: 200000000
+    initialLimit: 0xFFFFFFFF
+
+usart1: UART.STM32F7_USART @ sysbus 0x52001000
+    frequency: 200000000
+
+gpioa: GPIOPort.STM32_GPIOPort @ sysbus <0x56020000, +0x400>
+
+crc: CRC.STM32_CRC @ sysbus 0x56024C00
+    series: STM32Series.F0
+    configurablePoly: true

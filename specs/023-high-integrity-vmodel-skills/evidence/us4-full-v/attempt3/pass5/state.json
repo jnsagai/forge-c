@@ -1,0 +1,37 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-req": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261123T050738Z-f2eb81",
+      "state": "accepted",
+      "utc": "2026-11-23T05:25:47Z",
+      "wp_sha256": "eb3ce24abcdfba06f331fa4902601da5d59ef160736abc8b8de2e891896eb64f"
+    },
+    "sys-req": {
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-req-set-r31-001']",
+      "run_id": "r20261124T054342Z-156aa2",
+      "state": "blocked",
+      "utc": "2026-11-24T05:52:13Z",
+      "wp_sha256": "831a095cbcfc4d047f565844ac1519b8888a28b4c86f85b025b4223ec2609522"
+    }
+  }
+}

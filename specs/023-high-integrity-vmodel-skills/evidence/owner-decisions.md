@@ -93,3 +93,6 @@
   contradicted CON-SUP-150/159) in favour of `CON-SUP-164`. `CON-SUP-165` is a **deviation from the stakeholder need
   STK-SUP-015**, accepted by Claude under the owner's /goal of 2026-11-24 for the fictional demo and not confirmed by the
   owner. Raised by full-V attempt 3.
+- **Twenty-first round:** the independent inspector did not accept the deviation `CON-SUP-165`, so the missing
+  simulator models were built (`examples/safety-supervisor/sim`). `CON-SUP-157` and `CON-SUP-165` are withdrawn;
+  `CON-SUP-166` states the environment and its limits as facts.

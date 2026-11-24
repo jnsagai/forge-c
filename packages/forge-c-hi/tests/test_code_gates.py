@@ -160,3 +160,29 @@ def test_verification_gate_runs_host_cases_and_never_passes_unexecuted_ones(tmp_
     spec()
     (root / "hi/sw-integ/host/test_a.c").unlink()
     assert code_gates.verification(root, "sw-integ")["verdict"] == "NOT_RUN"    # no cases is not a pass
+
+
+def test_verification_gate_runs_simulator_programs_with_the_project_command(tmp_path):
+    import json
+    from forge_hi import code_gates
+    from hi_helpers import make_project, write
+    root = tmp_path / "p"
+    make_project(root, stages=("sys-req", "sw-req", "sys-qual"))
+    write(root / "hi/sys-qual/test-spec.json", {"items": [
+        {"id": "SQT-SUP-001", "automation": {"kind": "simulator", "file": "hi/sys-qual/sim/test_a.c"}}]})
+    write(root / "hi/sys-qual/sim/test_a.c", "int x;\n")
+    assert code_gates.verification(root, "sys-qual")["verdict"] == "NOT_RUN"       # no simulator configured
+
+    def configure(script):
+        write(root / "sim.sh", script)
+        p = json.loads((root / ".hi/project.json").read_text())
+        p["simulator"] = {"command": ["sh", "sim.sh", "{program}"], "timeout_s": 5}
+        write(root / ".hi/project.json", p)
+        res = code_gates.verification(root, "sys-qual")
+        return res["verdict"], [i["code"] for i in res["issues"]]
+
+    assert configure('echo "HI-TEST SQT-SUP-001 PASS"\n') == ("PASS", [])
+    assert configure('echo "HI-TEST SQT-SUP-001 FAIL late"; echo "HI-TEST SQT-SUP-001 PASS"\n') == ("FAIL", ["VT-FAIL"])
+    assert configure("exit 3\n") == ("FAIL", ["VT-SIM", "VT-NOT-RUN"])
+    assert configure("true\n") == ("FAIL", ["VT-NOT-RUN"])
+    assert configure("sleep 30\n") == ("FAIL", ["VT-TIMEOUT", "VT-NOT-RUN"])

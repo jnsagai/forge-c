@@ -1,0 +1,13 @@
+using sysbus
+mach create "supervisor"
+i $cs
+machine LoadPlatformDescription $repl
+sysbus LoadELF $elf
+cpu VectorTableOffset 0x34000000
+macro reset """
+    cpu VectorTableOffset 0x34000000
+"""
+usart1 CreateFileBackend $uart true
+emulation SetGlobalQuantum "0.00001"
+emulation RunFor $seconds
+quit
