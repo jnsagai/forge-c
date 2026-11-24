@@ -118,3 +118,5 @@
 - **Twenty-ninth round:** `CON-SUP-177` (a request at the very end of an answer: either outcome, a **relaxation** of
   CON-SUP-139 in a 1 ms window), raised by full-V attempt 3 pass 16; `CON-SUP-178..180` (platform allocation, dispatch,
   memory limits, task table) answer open points deferred to the design. Fictional, by Claude.
+- **Thirtieth round:** `CON-SUP-181` (release instants 0, 3, 6 and 9 ms). Claude's CON-SUP-101, 103 and 179 were not
+  feasible together; raised by full-V attempt 3 pass 17 (system requirements, OP-SYS-017). Fictional, by Claude.
