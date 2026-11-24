@@ -206,3 +206,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-174 | The fault history holds the entries of the 8 most recently recorded faults (the ones `GET FAULTS` returns, CON-SUP-113); recording a further fault replaces the oldest entry. The fault count is an unsigned 32-bit number, reported in decimal, that stays at 4294967295 when it reaches it. A detection count stays at 3 when it reaches it (the latch value of CON-SUP-117). Replacing an entry and staying at a maximum are part of the update that records the fault and are not a loss of a recorded fault. |
+
+**Twenty-seventh round.**
+
+| ID | Decision |
+|---|---|
+| CON-SUP-175 | A commanded or controlled shutdown is out of scope: the product has no shutdown command and no low-power mode. Power is removed without notice. The software has no function for it; the output levels while unpowered belong to the board project (CON-SUP-153), the retained data is lost (CON-SUP-110), and the next start is a power-on reset. |

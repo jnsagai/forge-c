@@ -1,0 +1,22 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T084124Z-fa0f56/events.jsonl",
+  "run_id": "r20261124T084124Z-fa0f56",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "blocking open points ['OP-SYS-015']",
+      "stage": "sys-req"
+    }
+  ],
+  "status": "BLOCKED"
+}

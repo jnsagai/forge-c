@@ -108,3 +108,5 @@
   Raised by full-V attempt 3 pass 9 (system requirements). Fictional, by Claude.
 - **Twenty-sixth round:** `CON-SUP-174` (history size 8, saturating fault and detection counts). Raised by full-V
   attempt 3 pass 10 (system requirements, OP-SYS-014). Fictional, by Claude.
+- **Twenty-seventh round:** `CON-SUP-175` (controlled shutdown out of scope). Raised by full-V attempt 3 pass 12 (system
+  requirements, OP-SYS-015). Fictional, by Claude.
