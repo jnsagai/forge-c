@@ -1,0 +1,109 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/cycle_task.c, cyc_timer_handler consumes later limit events without calling tsup_on_compare after the first fault or when already SAFE or LATCHED. SWC-SUP-006 and DEC-SWC-017 require each due limit event to be decided, including its detection count and pending report; only the safe-state reaction is to be omitted after the first detection.",
+      "id": "F-sw-design-item-r2-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:55:56Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Decide every due limit event and preserve its required detection and reporting while avoiding repeated safe-state reactions.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-CYC-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/fault_manager.c, fm_cycle_update accumulates differences between ts_ms readings. As OP-SWU-007 records, these differences can over-count an update by up to 1 ms, contrary to SWR-LAT-006's prohibition on over-counting and its 100 µs per-update under-count limit.",
+      "id": "F-sw-design-item-r2-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:55:56Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Use an elapsed-time accounting method that meets SWR-LAT-006, including retained sub-millisecond remainder and the transition into OPERATIONAL.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-FLT-001"
+    },
+    {
+      "checklist_item": "SDD-02",
+      "description": "SWU-TIM-001 specifies that ts_elapsed_u in src/time_service.c never over-counts real elapsed time. Subtracting two quantized timer readings can over-count: readings immediately before and after a counter increment differ by 10 µs even when less real time has elapsed. The specified guarantee therefore does not follow from the implementation.",
+      "id": "F-sw-design-item-r2-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:55:56Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify and implement an elapsed-time method whose quantization error satisfies the no-over-count and per-update limits of SWR-LAT-006, including its initialization and remainder handling.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-TIM-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/startup_manager.c, su_wait_reports stops after 100000 iterations even if the report remains incomplete and the watchdog has not reset. SWC-SUP-002 requires the report-completion barrier to continue until completion, failure notification or watchdog reset; returning HI_E_STATE delegates subsequent behavior to unspecified caller code.",
+      "id": "F-sw-design-item-r2-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:55:56Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define and implement a bounded barrier and subsequent behavior that preserve the architecture's completion-or-reset requirement when the iteration limit is reached.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-STU-001"
+    }
+  ],
+  "judged": [
+    "SWU-CFG-001",
+    "SWU-CYC-001",
+    "SWU-DIA-001",
+    "SWU-FLT-001",
+    "SWU-FLW-001",
+    "SWU-SCH-001",
+    "SWU-STU-001",
+    "SWU-TIM-001",
+    "SWU-TST-001",
+    "SWU-FLT-002"
+  ],
+  "phase": "item",
+  "round": 2,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-design"
+}

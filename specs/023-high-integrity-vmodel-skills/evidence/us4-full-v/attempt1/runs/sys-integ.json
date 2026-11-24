@@ -1,0 +1,1 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T074306Z-3d840d/events.jsonl","run_id":"r20261123T074306Z-3d840d","stages":[{"gates":{},"outcome":"BLOCKED","reason":"author harness failed (exit 1) in sys-integ create","stage":"sys-integ"}],"status":"BLOCKED"}

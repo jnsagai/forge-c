@@ -1,0 +1,3 @@
+{"level": "HI-2", "profile": "generic", "rework_limit": 3, "run_id": "r20261123T074302Z-ccc08b", "stage": "sw-integ", "step": "stage-start", "ts": "2026-11-23T07:43:02Z"}
+{"changed": [], "duration_s": 2.29, "exit_code": 1, "harness": "claude-code", "items": [], "model": "sonnet", "model_family": "claude", "phase": "create", "role": "author", "round": 0, "run_id": "r20261123T074302Z-ccc08b", "scope_violations": [], "stage": "sw-integ", "status": "error", "stderr_tail": "", "step": "role", "ts": "2026-11-23T07:43:04Z"}
+{"outcome": "BLOCKED", "reason": "author harness failed (exit 1) in sw-integ create", "run_id": "r20261123T074302Z-ccc08b", "stage": "sw-integ", "step": "stage-end", "ts": "2026-11-23T07:43:04Z"}

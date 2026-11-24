@@ -1,0 +1,38 @@
+{
+  "ids": {
+    "OP-SYE-001": {
+      "retired": false,
+      "text": "The inputs do not name the storage that retains the safe-state latch, detection counts and fault history across software and watchdog resets (SYS-SUP-033); no reset-retentive hardware element is in CON-SUP-003, so none can be allocated or its reset and power-loss behaviour stated. Choosing the storage element (and its power-loss behaviour) is a hardware decision a person must make; the interface S"
+    },
+    "OP-SYE-002": {
+      "retired": false,
+      "text": "Whether the CRC peripheral can be configured for CRC-32/MPEG-2 as required by SYS-SUP-016 is a hardware fact not stated in the inputs; the use of the peripheral or a software computation is left to the software architecture."
+    },
+    "OP-SYE-003": {
+      "retired": false,
+      "text": "The pin assignment of the two control outputs and the status signal is not given in the inputs; it is needed for the GPIO configuration and the simulator platform description."
+    },
+    "OP-SYE-004": {
+      "retired": false,
+      "text": "Blocking: whether the environment offers these observations and stimuli is a fact the architecture needs to claim verifiability (SYS-SUP-054) and the inputs do not state it. CON-SUP-005 names Renode with STM32N6 platform descriptions and host unit tests but does not state that the environment can observe GPIO output levels, capture the USART diagnostic line, read or inject the RCC reset flags (nee"
+    },
+    "OP-SYE-005": {
+      "retired": false,
+      "text": "SYS-SUP-012 states a reset for a refresh that arrives too early or too late; the inputs do not state whether the window watchdog also resets when no refresh arrives at all, nor the time by which it would. The reset path (SYE-SUP-057) therefore relies only on the independent watchdog timeout (SYS-SUP-011) for the no-refresh case; the window watchdog hardware behaviour is to be confirmed by the soft"
+    },
+    "OP-SYE-006": {
+      "retired": false,
+      "text": "Start-up watchdog handling (SYS-SUP-015; upstream OP-SYS-002): the inputs do not state when the window watchdog is activated, its first-refresh deadline relative to reset release, or the duration of the start-up integrity checks, so a start-up sequence that keeps both watchdogs from resetting a fault-free start-up while the CRC checks run cannot be shown to meet the 100 ms IWDG timeout and the 6 m"
+    },
+    "OP-SYE-007": {
+      "retired": false,
+      "text": "Processor budget feasibility (SYS-SUP-022, SYS-SUP-052, SYS-SUP-058): no measurement or datum of the software CRC throughput or of the per-cycle cost of the other supervisor elements on the STM32N657X0 is in the inputs, so it is not shown that the 1 KiB segment CRC fits 0.5 ms per cycle, that a 1 MiB pass fits 11 s, or that all supervision fits 10 % over any 1 s window (DEC-SYE-006). Platform meas"
+    },
+    "OP-SYE-008": {
+      "retired": false,
+      "text": "Enforcement of isolation between the supervisor and the application tasks on the shared core (F-sys-arch-set-r3-004). DEC-SYE-008 requires, as a system-level protection, that application tasks cannot write the watchdog peripherals, the control and status pins, the timer time base or the supervisor data; an interface declaration alone does not give this. The inputs name no memory-protection or priv"
+    }
+  },
+  "run_id": "r20261123T053209Z-54bca2",
+  "schema": "forge-c-hi/open-point-history@1"
+}

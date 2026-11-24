@@ -1,0 +1,124 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/startup_manager.c, su_run returns when su_submit_rst fails without notifying code 8 for a watchdog reset. SWC-SUP-002 requires a code 8 report after each watchdog reset, including when handling an earlier fault was interrupted.",
+      "id": "F-sw-design-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T07:04:48Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define and implement a bounded failure path that preserves the required code 8 notification and RST-before-code-8 ordering.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-STU-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/startup_manager.c, su_wait_reports requests a reset after 100000 iterations even if transmission is progressing. SWC-SUP-002 permits the barrier to end on report completion, report failure or a watchdog reset after transmission stops progressing; no elapsed-time or progress bound shows that the iteration limit cannot interrupt a healthy transmission.",
+      "id": "F-sw-design-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T07:04:48Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Bound the barrier using a demonstrated time and progress criterion that allows healthy transmissions to complete and conforms to SWC-SUP-002.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-STU-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/fault_manager.c, fm_submit discards a report when its 36-entry pending queue is full. SWC-SUP-008 requires each detection to be submitted for reporting within 10 ms, but SWU-FLT-001 neither bounds all possible arrivals and queue drain time nor guarantees submission before the deadline.",
+      "id": "F-sw-design-item-r4-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T07:04:48Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Provide and justify bounded admission and transmission behavior that preserves every required report and its submission deadline under the architecture's permitted fault arrivals.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-FLT-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/time_service.c, ts_init sets the millisecond count to zero only after earlier start-up work and records the current counter as its origin. Consequently ts_ms excludes time between reset and that initialization, although SWC-SUP-012 and SWR-DIA-003 require milliseconds since the latest reset.",
+      "id": "F-sw-design-item-r4-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T07:04:48Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define and implement a reset-referenced time origin, including the interval before time-service initialization, consistent with the timer HAL and the required timestamp.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-TIM-001"
+    },
+    {
+      "checklist_item": "SDD-02",
+      "description": "SWU-TIM-001 specifies ts_arm for every 32-bit instant, but ts_diff in src/time_service.c interprets the modular difference as a signed 32-bit distance. Instants at least 2^31 units away are indistinguishable from past instants, so the stated past-event and ordering behavior cannot hold for the specified range.",
+      "id": "F-sw-design-item-r4-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T07:04:48Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify and enforce an unambiguous maximum scheduling horizon and overdue interval, or use a representation that supports the stated full instant range.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-TIM-001"
+    }
+  ],
+  "judged": [
+    "SWU-FLT-001",
+    "SWU-STU-001",
+    "SWU-TIM-001"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-design"
+}

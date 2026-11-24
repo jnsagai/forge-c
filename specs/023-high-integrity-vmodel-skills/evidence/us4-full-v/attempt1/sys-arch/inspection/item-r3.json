@@ -1,0 +1,126 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SYA-08",
+      "description": "SYE-SUP-004 states that software produces the CRC value and the peripheral is unused until capability is established, but its listed interface SYE-SUP-052 unconditionally identifies the CRC peripheral as the hardware endpoint producing that value. CON-SUP-003 establishes peripheral availability, not CRC-32/MPEG-2 capability.",
+      "id": "F-sys-arch-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:39:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Make the element and interface consistently represent the supported software computation and any conditional peripheral use, with hardware capability supported by evidence.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYE-SUP-004"
+    },
+    {
+      "checklist_item": "SYA-08",
+      "description": "SYE-SUP-020 starts alive supervision only after both integrity checks pass and the safe-state latch is clear. SYS-SUP-009 requires alive supervision to start when the checks pass and does not make that action conditional on the latch.",
+      "id": "F-sys-arch-item-r3-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:39:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the start of alive supervision with SYS-SUP-009, or resolve the conflicting conditions in the upstream requirements.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYE-SUP-020"
+    },
+    {
+      "checklist_item": "SYA-08",
+      "description": "SYE-SUP-028 describes GET FAULTS as returning the last eight reports but omits SYS-SUP-081's requirement to fix the answer to reports made before request reception. A report arriving during transmission could otherwise change the answer contents.",
+      "id": "F-sys-arch-item-r3-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:39:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that the answer contains the qualifying history as of request reception and excludes reports made afterward.",
+      "round": 3,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYE-SUP-028"
+    },
+    {
+      "checklist_item": "SYA-08",
+      "description": "SYE-SUP-057 asserts that withholding refresh causes a window watchdog reset by the 12 ms limit. SYS-SUP-012 specifies reset when a refresh arrives too early or too late; it does not establish a reset on absence of a refresh or its deadline.",
+      "id": "F-sys-arch-item-r3-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:39:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Support the no-refresh reset behavior and deadline with an applicable source, or record the unresolved hardware behavior as an open point and remove the unsupported assertion.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYE-SUP-057"
+    },
+    {
+      "checklist_item": "SYA-03",
+      "description": "The STS field range refers to SYS-SUP-045 and SYS-SUP-049, which specify the GET STATUS answer and ERR behavior, respectively, rather than the state values and fault-count meaning. The interface therefore does not identify those fields' ranges or valid definitions.",
+      "id": "F-sys-arch-item-r3-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:39:17Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the STS state values and fault-count meaning using the applicable requirements, including SYS-SUP-046 through SYS-SUP-047 and SYS-SUP-067 through SYS-SUP-069.",
+      "round": 3,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYE-SUP-058"
+    }
+  ],
+  "judged": [
+    "SYE-SUP-004",
+    "SYE-SUP-020",
+    "SYE-SUP-028",
+    "SYE-SUP-057",
+    "SYE-SUP-058"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-arch"
+}

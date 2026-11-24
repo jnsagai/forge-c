@@ -1,0 +1,1 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T074302Z-ccc08b/events.jsonl","run_id":"r20261123T074302Z-ccc08b","stages":[{"gates":{},"outcome":"BLOCKED","reason":"author harness failed (exit 1) in sw-integ create","stage":"sw-integ"}],"status":"BLOCKED"}

@@ -1,0 +1,80 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SWA-09",
+      "description": "SWR-TIM-001 and SWR-TIM-002 require detection no later than 100 µs after the configured limit expires. The component arms its compare at the limit plus one 100 µs unit, then permits a further 100 µs entry-plus-decision latency. That permits detection 200 µs after the configured limit.",
+      "id": "F-sw-arch-item-r4-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:10:31Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define the compare and decision timing so the worst-case detection time satisfies the 100 µs bound while preserving the equality rule.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-006"
+    },
+    {
+      "checklist_item": "SWA-09",
+      "description": "SWR-LAT-012 counts a code 8 report when it is made, and SWR-LAT-004 latches on the third counted detection. The component increments the code 8 count even when transmission is interrupted and no report is made; a later completed report can therefore latch after fewer than three reports have been made.",
+      "id": "F-sw-arch-item-r4-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:10:31Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align code 8 counting and latch behavior for interrupted reports with SWR-LAT-004 and SWR-LAT-012.",
+      "round": 4,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-008"
+    },
+    {
+      "checklist_item": "SWA-04",
+      "description": "The task queues the code 8 report and services transmission between CRC chunks, but does not require report completion before checking the latch and permitting normal start-up. If checks finish before transmission completes, supervised tasks could be released before the third code 8 report sets the latch.",
+      "id": "F-sw-arch-item-r4-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:10:31Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the completion ordering and bounded error path needed to ensure the code 8 latch decision is made before permitting supervised task release.",
+      "round": 4,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-060"
+    }
+  ],
+  "judged": [
+    "SWC-SUP-006",
+    "SWC-SUP-008",
+    "SWC-SUP-060"
+  ],
+  "phase": "item",
+  "round": 4,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-arch"
+}

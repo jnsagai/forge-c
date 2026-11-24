@@ -1,0 +1,147 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/fault_manager.c, fm_notify calls ws_inhibit and oc_safe_state for every path A detection. SWC-SUP-006 and DEC-SWC-017 require the safe-state reaction only on the first detection in a coincident-event pass; their 5 us allocation for subsequent decisions depends on that omission.",
+      "id": "F-sw-design-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify and implement the first-reaction-only behavior while retaining each detection count and report, and reconcile the handler timing allocation.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-FLT-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/fault_manager.c, fm_cycle_update accumulates ts_elapsed_u results, each reduced by one 10 us unit. At a 10 ms update interval this loses 60 ms over 60 s, exceeding the 10 ms per-reset under-count limit in SWR-LAT-006 and SWC-SUP-008. The SWU-FLT-001 specification incorrectly claims less than 10 us accumulated lag.",
+      "id": "F-sw-design-item-r3-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Revise the elapsed-time accounting and its specification to meet both the per-update and per-reset under-count bounds without over-counting.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-FLT-001"
+    },
+    {
+      "checklist_item": "SDD-02",
+      "description": "SWU-TIM-001 describes ts_elapsed_u as under-counting by less than 10 us per call, but its function specification and src/time_service.c subtract one unit and allow an error approaching 20 us. Its description also says nothing is lost between updates, although the subtraction is repeated each call.",
+      "id": "F-sw-design-item-r3-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Make the unit description and function contract consistent with the implemented quantization and the cumulative accuracy required by SWR-LAT-006.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-TIM-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/fault_manager.c, fm_submit overwrites an existing BUSY pending cell when another report from the same source arrives. The earlier detection then has no report, contrary to SWC-SUP-006 and DEC-SWC-017, which require each coincident detection to be counted and reported.",
+      "id": "F-sw-design-item-r3-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Provide bounded pending-report handling that preserves every report required for the supported detection workload, and specify its capacity and overflow behavior.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-FLT-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/startup_manager.c, su_run proceeds to the configuration CRC after su_check_region detects an application CRC fault. SWC-SUP-002 states that a code 1 to 7 fault detected during the checks stops the sequence.",
+      "id": "F-sw-design-item-r3-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Stop the start-up check sequence after the first such fault and update SWU-STU-001 to specify the resulting path.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-STU-001"
+    },
+    {
+      "checklist_item": "SDD-01",
+      "description": "In src/startup_manager.c, su_run still notifies code 8 when su_submit_rst fails. A code 8 line can therefore be submitted without the preceding RST message required by SWC-SUP-002 and SWU-STU-001.",
+      "id": "F-sw-design-item-r3-006",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:59:45Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T063232Z-97cb10",
+        "skill": "hi-sw-design-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Handle failed RST submission before notifying code 8 so that the required message order is preserved, and specify the failure path.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWU-STU-001"
+    }
+  ],
+  "judged": [
+    "SWU-CYC-001",
+    "SWU-FLT-001",
+    "SWU-STU-001",
+    "SWU-TIM-001"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-design"
+}

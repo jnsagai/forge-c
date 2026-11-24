@@ -1,0 +1,80 @@
+{
+  "evidence": [
+    {
+      "path": "src/config_defaults.c",
+      "sha256": "35b252927dc69a931ca8818dd88ff0fc4ab243e109c7a7c5f49182c8bc815e7f"
+    },
+    {
+      "path": "src/config_manager.c",
+      "sha256": "8053855ed1fb8820f67e75b65342d2d83f372bcfbd0245ebafd83774074505fc"
+    },
+    {
+      "path": "src/crc32.c",
+      "sha256": "fac378199f413c56dc7c44dab8f1b52bf8b27d009dbf01e3b66d20dfdbde07c8"
+    },
+    {
+      "path": "src/cycle_task.c",
+      "sha256": "35f08c5367e25e795913c23634dddaaf06b4d40dc2f81f84b2b18424cf34e98b"
+    },
+    {
+      "path": "src/diag_comm.c",
+      "sha256": "a4f2293f85ddbb85ce78d64e48b303aaa81834dd280cc884ca269f773cbce6a5"
+    },
+    {
+      "path": "src/fault_inject.c",
+      "sha256": "fe4ae1bd92efa7d2cdbba4841e67c5951eacfd7af11ed1ed72c8f77494fbea77"
+    },
+    {
+      "path": "src/fault_manager.c",
+      "sha256": "b83387a93fbf29451d872177dbb65806bac75aa2bba66ed0c86c8a3b2d6534cb"
+    },
+    {
+      "path": "src/flow_supervisor.c",
+      "sha256": "0491a1889317fc2cafd4fcf9bb97037e3daff615cddcc25e8c9726abb24244cb"
+    },
+    {
+      "path": "src/output_control.c",
+      "sha256": "a6db223c4c1cca07a0b943161e224130f0c86b72c716e0f2b666cf8a6ae6042c"
+    },
+    {
+      "path": "src/rt_checker.c",
+      "sha256": "7dfce21ec95ff016a373ebdd15bde28571f1493a1cebe60bdac4e7f64d9b0fb4"
+    },
+    {
+      "path": "src/scheduler.c",
+      "sha256": "00e287991e70e50d4a1e8e7b731fd68f937fcb96cb3aa4748ba859e26b113474"
+    },
+    {
+      "path": "src/startup_manager.c",
+      "sha256": "6cf5c9c74104b154cc43a3fd5dd74f8384295b27cb7b9be814813cf1b5a8b93d"
+    },
+    {
+      "path": "src/time_service.c",
+      "sha256": "78cd404bcdfd95a29c4980e4c038c14c054b36c688dd9635cd5af5770cfeeba1"
+    },
+    {
+      "path": "src/timing_supervisor.c",
+      "sha256": "760d411da027b92d9b68bd1b9d3fc3de0a21a508a77d36bc9280c613c34f0b0f"
+    },
+    {
+      "path": "src/wdg_service.c",
+      "sha256": "f728850f56912974b9c845b8846f6a19d9d00abb028229aa5a6c4039eff51c90"
+    }
+  ],
+  "exit_code": 1,
+  "gate": "build",
+  "integrity_level": "HI-2",
+  "issues": [
+    {
+      "code": "BUILD-ERROR",
+      "message": "src/crc32.c:29:18: error: ‘NULL’ undeclared (first use in this function)",
+      "target_id": "src/crc32.c"
+    }
+  ],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi build (gcc)",
+    "version": "0.1.0"
+  },
+  "verdict": "FAIL"
+}

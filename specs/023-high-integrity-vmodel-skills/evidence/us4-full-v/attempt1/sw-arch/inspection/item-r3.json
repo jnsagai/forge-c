@@ -1,0 +1,81 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SWA-04",
+      "description": "The component states that it detects an alive fault after two consecutive periods without a completed execution, but identifies no periodic invocation or timer event that evaluates the alive counter. Its described compare events cover start and execution limits only.",
+      "id": "F-sw-arch-item-r3-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:08:36Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify when and in which context alive supervision is evaluated, including how elapsed periods and completions produce the code 1 notification.",
+      "round": 3,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-006"
+    },
+    {
+      "checklist_item": "SWA-09",
+      "description": "The code 8 path sets the latch at the third detection and explicitly updates the latch at detection, before report completion. SWR-LAT-004 requires the latch when the code 8 report is made at start-up; the architecture defines a report as made only on the completion notification. These events can differ, including when reset interrupts transmission.",
+      "id": "F-sw-arch-item-r3-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:08:36Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Align the code 8 latch transition with SWR-LAT-004 and define its handling when the report does not complete.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-008"
+    },
+    {
+      "checklist_item": "SWA-09",
+      "description": "The stated start-up order begins with reset-cause classification, although SWR-SAF-003 requires configuring the control outputs and status signal low before any other start-up step. The task also enters idle when any fault was detected, although SWR-LAT-011 requires start-up to continue after a code 8 report.",
+      "id": "F-sw-arch-item-r3-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:08:36Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify output configuration as the first start-up action and distinguish the code 8 continuation path from faults that prevent normal start-up.",
+      "round": 3,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-060"
+    }
+  ],
+  "judged": [
+    "SWC-SUP-006",
+    "SWC-SUP-008",
+    "SWC-SUP-060",
+    "SWC-SUP-061"
+  ],
+  "phase": "item",
+  "round": 3,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-arch"
+}

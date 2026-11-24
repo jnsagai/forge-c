@@ -1,0 +1,14 @@
+{
+  "evidence": [],
+  "exit_code": null,
+  "gate": "coverage",
+  "integrity_level": "HI-2",
+  "issues": [],
+  "not_run_reason": "an input is not readable: Expecting value: line 160 column 1 (char 87048)",
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "NOT_RUN"
+}

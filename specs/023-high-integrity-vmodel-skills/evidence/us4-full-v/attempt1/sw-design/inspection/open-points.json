@@ -1,0 +1,50 @@
+{
+  "ids": {
+    "OP-SWU-001": {
+      "retired": false,
+      "text": "After a non-power-on reset with invalid retained content, SWC-SUP-026 asks that entries which still pass an individual check stay readable for diagnosis. The retained-storage HAL here returns only a validity flag for the whole content, so the per-entry check, and the code used to record the loss (code 9 entity CONFIG chosen in DEC-SWU-004), are not decided."
+    },
+    "OP-SWU-002": {
+      "retired": false,
+      "text": "The inputs do not give how several reset flags set at once map to one cause, nor how the target's reset flags map to the abstract bits of hal_rcc.h; the port and the reference manual section and page (CON-SUP-002 names none) are needed. The priority IWDG, WWDG, POR, SW is a design choice (DEC-SWU-004)."
+    },
+    "OP-SWU-003": {
+      "retired": false,
+      "text": "When start-up ends with a set latch or a fault, su_run returns HI_E_STATE and the idle behaviour of the start-up task (whether it services the independent watchdog while the diagnostic task runs, or lets the watchdog reset) is not stated by the architecture and is not coded in the units."
+    },
+    "OP-SWU-004": {
+      "retired": false,
+      "text": "OP-SWC-006 (reference manual section and page for GPIO access, atomicity of a pin write, pin state from reset to initialisation) is carried to the port: the units reach the pins only through hal_gpio.h and rely on neither property."
+    },
+    "OP-SWU-005": {
+      "retired": false,
+      "text": "Whether the execution time measured for the overrun decision includes preemption by higher-priority work (OP-SWC-016) is a requirement-level choice; the units measure wall-clock start to completion (DEC-SWU-006)."
+    },
+    "OP-SWU-009": {
+      "retired": false,
+      "text": "A further detection of a coincident pass still performs the count, one hal_store_write and the report submission in fm_notify; the 5 us allocation of DEC-SWC-017 for a further decision depends on the execution time of hal_store_write and dc_submit_fault on the target, which the inputs do not give. The design omits the watchdog inhibit and the output safe-state call after the first detection; the m"
+    },
+    "OP-SWU-010": {
+      "retired": false,
+      "text": "OP-SWC-011 (upstream, blocking) is unresolved: T_DIAG has a 20 ms execution limit but is released in a 10 ms control cycle, and the inputs do not say whether a T_DIAG checkpoint not yet reported at that cycle end is a flow fault or is evaluated when its limit expires. The flow check currently evaluates the tasks released in the cycle at the cycle end (CON-SUP-104 read literally) and can report a t"
+    },
+    "OP-SWU-011": {
+      "retired": false,
+      "text": "OP-SWC-012 (upstream, blocking) is unresolved: the core clock, the CRC throughput and the execution times are not given, so the execution-time, processor-time and simulator-integration assumptions (including DEC-SWU-003 chunk size and the 80 ms and 200 ms start-up wait figures) are not substantiated at design level."
+    },
+    "OP-SWU-012": {
+      "retired": false,
+      "text": "OP-SWC-013 (upstream, blocking) is unresolved: whether coincident detections with a report line in progress may exceed the 10 ms report deadline, or a started line may be abandoned, is a requirement-level choice. The 36-entry pending queue and its arrival argument (SWU-FLT-001) hold only within that choice; the lost-report counter records any report that does not fit."
+    },
+    "OP-SWU-013": {
+      "retired": false,
+      "text": "The linker script that places the read-only data of src/config_defaults.c inside __cfg_start..__cfg_end, and the build step that computes __cfg_crc over the block, are outside src/ and outside the inputs of this stage; the placement and the CRC value are to be confirmed at integration."
+    },
+    "OP-SWU-014": {
+      "retired": false,
+      "text": "Whether the target timer counter runs from the latest reset (value 0) and hal_timer_start leaves it running is a port fact not given by the inputs (OP-SWC-014 concerns the unit); ts_init relies on that contract (DEC-SWU-011). The reset-relative timestamp of SWC-SUP-012 and SWR-DIA-003 cannot be stated correctly without this fact, so it blocks."
+    }
+  },
+  "run_id": "r20261123T063232Z-97cb10",
+  "schema": "forge-c-hi/open-point-history@1"
+}

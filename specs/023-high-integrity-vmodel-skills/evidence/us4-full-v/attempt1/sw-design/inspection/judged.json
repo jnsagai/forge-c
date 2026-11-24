@@ -1,0 +1,31 @@
+{
+  "basis": {
+    "checklists/sw-design.json": "f8a5180f9b5dedffb2d2b627c9e068bc233331c4dcc6ace0d2a21c2fe48815ea",
+    "hi-sw-design-inspector": "760328e1b40990770589aeb93e6a3851655ecf0cc33e2289fb18cd1816dfefb5"
+  },
+  "inputs": {
+    "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+    "needs/product-decisions.md": "a7c5194710fd10e70e30fcb7696fe9f2ecd87ae3fb008df6612a78f2c615cd8d",
+    "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+  },
+  "items": {
+    "SWU-CFG-001": "8f31e17873145c2af1b6baae8162d52470c0fa58e1a263a48a1e3b0784ee0660",
+    "SWU-COM-001": "89522962e2e34d2bfb1c2c2b3b099f85c79ad274d9c945d8840c12ceeac52824",
+    "SWU-CRC-001": "4c84aa9bb1e3b10479de4eb811c2e8d2612fd2274ff51758edbc8e8217f1f2ba",
+    "SWU-CYC-001": "fa8b5335f3c03eb1411d368d079fe02499aed7a4b2afc90b71ccffbd3b7a88b0",
+    "SWU-DIA-001": "27d6dd2c8d88e6a0ed62bc70e9cf6e7a88a105458c9263201393fefc47eba621",
+    "SWU-FLT-001": "8bcf3d0fa9bf992bd6227ba8b988912716c87cdd8af6369490eeccf5822d6a37",
+    "SWU-FLT-002": "94ca62c4405af2e5a328d07afdcd7d07037172d0033f57b375094607affbfc84",
+    "SWU-FLW-001": "f7609a9f90af967983638e085f65edba65e1234800b5fe54067fb06e612824c6",
+    "SWU-HAL-001": "033591f5b9c37d24470b053ceae9e81792fa23a6ca3098880e158cc1cd665d19",
+    "SWU-OUT-001": "085d4c74eb54efd1c11e8ba612cab5a2fdefe9ac0cf1ab39124ab50d9fdf484a",
+    "SWU-RTC-001": "0a9f57993fe282d2924547e385e0116af941373ee1d3d6e657a24a948748ea85",
+    "SWU-SCH-001": "d60e59f105d4412fde05349dab2f2533c82baa27b0f22c3f845050fab6423b41",
+    "SWU-STU-001": "c838557217c27a904190b874e826c92123eb57863b2048b5c66396c2eed8f862",
+    "SWU-TIM-001": "0c309c77d7e014340a4a8f74042eee0a0733001bc9225c30b7eceef381d33aa9",
+    "SWU-TMS-001": "dc07eff576f761002ea4fe48a4ad9660c713a43afc57455ef1020a9cde6808ff",
+    "SWU-TST-001": "661ca271d3df55259cbf90f7551add78ff4934e43c159f07b42f6ab9e78abf58",
+    "SWU-WDG-001": "1dfb3bb0c286185fb8ffaedc8d1e8944d7fd8e6c11017a3f9dd1671d5fb1d627"
+  },
+  "schema": "forge-c-hi/judged@1"
+}

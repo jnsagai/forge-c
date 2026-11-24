@@ -1,0 +1,176 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SWA-09",
+      "description": "SWR-TIM-001 and SWR-TIM-002 require detection no later than 100 µs after the limit expires. The element schedules decisive event B at limit + 100 µs, then allows a further 100 µs of handler latency, permitting detection 200 µs after expiry.",
+      "id": "F-sw-arch-item-r2-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify a detection mechanism and latency bound that meet the 100 µs deadline while preserving the equality rule.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-006"
+    },
+    {
+      "checklist_item": "SWA-07",
+      "description": "The element says a start or completion event cancels pending compare events and event B raises nothing if the task has since started or completed. A start or completion after the configured limit but before event B is processed can therefore escape detection, despite SWR-TIM-001 through SWR-TIM-004.",
+      "id": "F-sw-arch-item-r2-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Define how the stored event instants are compared with the limits and how a late start or completion is reported even if it occurs before the compare handler runs.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-006"
+    },
+    {
+      "checklist_item": "SWA-09",
+      "description": "The description says a detection count returns to zero only after 60 seconds of fault-free operation and never at power-on, but later says power-on clears the counts. SWR-LAT-009 requires the counts to be cleared at power-on.",
+      "id": "F-sw-arch-item-r2-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the contradictory power-on behavior and specify clearing the detection counts as required by SWR-LAT-009.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-008"
+    },
+    {
+      "blocked_by": "OP-SWC-009",
+      "checklist_item": "SWA-09",
+      "description": "SWR-DIA-001 requires each applicable fault report within 10 ms. This interface explicitly allows later reports in a larger burst to miss that deadline; OP-SWC-009 defers the burst limit to verification, which cannot establish the missing architecture-level guarantee.",
+      "id": "F-sw-arch-item-r2-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Provide a supported transmission and admission design that meets the deadline for all required reports, or raise a blocking decision on the conflicting burst and timing requirements.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SWC-SUP-039"
+    },
+    {
+      "checklist_item": "SWA-04",
+      "description": "The cycle-end compare is required to occur within each 10 ms cycle after the execution-limit expiry of every released task, including T_DIAG. CON-SUP-103 gives T_DIAG a 20 ms execution limit, so its expiry cannot precede the end of its release cycle.",
+      "id": "F-sw-arch-item-r2-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Resolve the cycle-end scheduling and supervision interaction against the configured T_DIAG limit and the end-of-cycle flow-check requirement.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-061"
+    },
+    {
+      "checklist_item": "SWA-08",
+      "description": "The start-up task cites OP-SWC-001 for execution time but states no task stack or other memory budget, and that open point addresses execution budgets rather than memory.",
+      "id": "F-sw-arch-item-r2-006",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Allocate a justified memory budget to the start-up task or record the missing budget as an open point.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-060"
+    },
+    {
+      "checklist_item": "SWA-08",
+      "description": "The control-cycle task cites OP-SWC-001 for execution time but states no task stack or other memory budget, and that open point addresses execution budgets rather than memory.",
+      "id": "F-sw-arch-item-r2-007",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T06:05:34Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T055412Z-eefac3",
+        "skill": "hi-sw-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Allocate a justified memory budget to the control-cycle task or record the missing budget as an open point.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SWC-SUP-061"
+    }
+  ],
+  "judged": [
+    "SWC-SUP-002",
+    "SWC-SUP-005",
+    "SWC-SUP-006",
+    "SWC-SUP-008",
+    "SWC-SUP-009",
+    "SWC-SUP-010",
+    "SWC-SUP-026",
+    "SWC-SUP-039",
+    "SWC-SUP-060",
+    "SWC-SUP-061"
+  ],
+  "phase": "item",
+  "round": 2,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sw-arch"
+}

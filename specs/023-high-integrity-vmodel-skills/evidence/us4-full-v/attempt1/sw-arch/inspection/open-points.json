@@ -1,0 +1,58 @@
+{
+  "ids": {
+    "OP-SWC-002": {
+      "retired": false,
+      "text": "The phase offset inside the 10 ms control cycle at which the flow check and the watchdog cycle service run, and the numeric priority scheme, are not given by the inputs. The architecture fixes only that the refresh instants are one control period apart and after the flow check; the value is a design parameter."
+    },
+    "OP-SWC-003": {
+      "retired": false,
+      "text": "The inputs name no storage that survives software and watchdog resets but is cleared at a power-on reset (CON-SUP-003 lists none); follows OP-SYE-001. The architecture states the retained fault state SWC-SUP-054 and its driver interface SWC-SUP-026 independent of the medium."
+    },
+    "OP-SWC-004": {
+      "retired": false,
+      "text": "The CRC throughput at the configured core clock is not stated, so the chunk size that keeps each independent watchdog service interval well below 100 ms (DEC-SWC-004) cannot be fixed here; the margin and chunk size are design values."
+    },
+    "OP-SWC-005": {
+      "retired": false,
+      "text": "Handling of a non-integral period is closed at architecture level by DEC-SWC-015 (rejected as configuration fault 9 at start-up). What remains is only the numeric upper bound of a period, which is the width of the scheduler's per-entry tick counter and the period encoding of the configuration format; whatever width the design picks, validation uses it, so no accepted value is mistimed."
+    },
+    "OP-SWC-006": {
+      "retired": false,
+      "text": "CON-SUP-002 names RM0486 without a section or page, so no controlled hardware reference supports the GPIO access and reset properties (whether a single pin write is atomic, and the pin state from reset until configuration). SWC-SUP-009 does not rely on either: ordering is by critical section and the init call drives the pins low. The section and page, and any reliance on external pull-downs for th"
+    },
+    "OP-SWC-007": {
+      "retired": false,
+      "text": "The number of characters the USART driver interface SWC-SUP-024 accepts per transmit call (its buffer depth) is not given. The deadline analysis of SWC-SUP-039 assumes a full report line of at most 40 characters is accepted per call or drained without waiting; the depth is a driver design value that must meet this."
+    },
+    "OP-SWC-008": {
+      "retired": false,
+      "text": "The maximum length of a task name used as entity in a fault report is not given. The 40 character report line limit of SWC-SUP-039 requires the configuration to limit the name length; the limit is a configuration design value."
+    },
+    "OP-SWC-010": {
+      "retired": false,
+      "text": "The inputs give no RAM, flash or stack limit (CON-SUP-004 only forbids dynamic allocation and recursion) and no device memory size, so no numeric stack or other memory budget can be allocated to the start-up task SWC-SUP-060 or to the other tasks. Architecture-level bounds that hold without a number: no dynamic allocation and no recursion (CON-SUP-004), so stack use is statically bounded by the ca"
+    },
+    "OP-SWC-011": {
+      "retired": false,
+      "text": "T_DIAG has a default execution limit of 20 ms (CON-SUP-103) but is released in a 10 ms control cycle, and SWR-FLW-001 requires the program flow check at the end of each control cycle for the tasks released in that cycle. A T_DIAG within its limit can therefore not have reported its checkpoint at that cycle end. The inputs do not say whether a not-yet-reported T_DIAG is a flow fault at that cycle e"
+    },
+    "OP-SWC-012": {
+      "retired": false,
+      "text": "The core clock is not given (SWR-RES-001 is measured at the configured core clock). The execution allocations of DEC-SWC-013 are time targets; turning them into instruction counts and the CRC chunk size needs the clock, a configuration value the design and simulator setup close. The architecture-level allocation holds only under the condition of DEC-SWC-016 (1024 x c <= 500 x f for the CRC segment"
+    },
+    "OP-SWC-013": {
+      "retired": false,
+      "text": "SWR-DIA-001 requires every fault report within 10 ms of detection, and a line already started is completed first. If four reports are detected at one instant while an answer line is in progress, the fourth cannot complete within 10 ms (up to 12.9 ms, DEC-SWC-014). Whether such a coincidence is accepted, whether a started answer line may be abandoned, or SWR-DIA-001 is relaxed for it is a requireme"
+    },
+    "OP-SWC-014": {
+      "retired": false,
+      "text": "The timer clock and prescaler are not given, so it is not established that the time base can run at the 10 us unit DEC-SWC-012 needs for the 100 us detection bound; the design confirms the unit at the configured clock or a finer unit is used."
+    },
+    "OP-SWC-016": {
+      "retired": false,
+      "text": "Preemption of an application task by the diagnostic task (while a report or answer is transmitted) and by the control-cycle part B lengthens the wall-clock time from start to completion of that task. The inputs do not say whether the execution time measured for SWR-TIM-002 includes such preemption or only the task's own processing. The architecture measures start to completion instants (SWC-SUP-00"
+    }
+  },
+  "run_id": "r20261123T055412Z-eefac3",
+  "schema": "forge-c-hi/open-point-history@1"
+}

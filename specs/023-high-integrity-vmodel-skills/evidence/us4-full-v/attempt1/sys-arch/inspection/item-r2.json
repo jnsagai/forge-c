@@ -1,0 +1,127 @@
+{
+  "dropped": 0,
+  "findings": [
+    {
+      "checklist_item": "SYA-08",
+      "description": "The element says CRC-32/MPEG-2 is computed in software and the peripheral is not relied upon, but interface SYE-SUP-052 describes the CRC peripheral as producing that value for the checks. CON-SUP-003 establishes the peripheral's availability, not that capability.",
+      "id": "F-sys-arch-item-r2-001",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:37:28Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Make the CRC allocation and interface consistent with the supported software computation, and make any peripheral acceleration conditional on evidence of its capability.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYE-SUP-004"
+    },
+    {
+      "checklist_item": "SYA-08",
+      "description": "The start-up sequence drives the status signal high after the checks pass and the latch is clear, without requiring that no fault has been detected since reset. SYS-SUP-028 includes that condition.",
+      "id": "F-sys-arch-item-r2-002",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:37:28Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Include the no-fault-since-reset condition in the start-up transition to operational status.",
+      "round": 2,
+      "severity": "blocking",
+      "status": "open",
+      "target_id": "SYE-SUP-020"
+    },
+    {
+      "checklist_item": "SYA-08",
+      "description": "The diagnostic element says a fault report never interrupts an answer line, but does not require it to be sent before subsequent answer lines. SYS-SUP-074 requires that ordering.",
+      "id": "F-sys-arch-item-r2-003",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:37:28Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify that a fault report due during an answer line follows that line's line feed and precedes any further line of the answer.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYE-SUP-028"
+    },
+    {
+      "checklist_item": "SYA-03",
+      "description": "The reset interface covers watchdog timeouts but gives only the software-reset request timing. SYS-SUP-011 and SYS-SUP-012 define the independent watchdog timeout and window watchdog timing needed to characterize the watchdog reset paths.",
+      "id": "F-sys-arch-item-r2-004",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:37:28Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "State the applicable watchdog timeout and refresh-window timing for the reset paths, with their conditions.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYE-SUP-057"
+    },
+    {
+      "checklist_item": "SYA-03",
+      "description": "The diagnostic interface names RST and FLT fields but does not specify their value ranges or the start-up RST deadline. SYS-SUP-037 defines the reset-cause values and 10 ms deadline; SYS-SUP-040 and SYS-SUP-042 define fault-code and timestamp values.",
+      "id": "F-sys-arch-item-r2-005",
+      "phase": "item",
+      "raised_by": {
+        "created_utc": "2026-11-23T05:37:28Z",
+        "harness": "codex",
+        "input_hashes": {},
+        "model": "gpt-6.1-terra",
+        "model_family": "gpt",
+        "role": "inspector",
+        "run_id": "r20261123T053209Z-54bca2",
+        "skill": "hi-sys-arch-inspector",
+        "skill_version": "0.1.0"
+      },
+      "requested_change": "Specify the message field values and timestamp range, and the start-up RST transmission deadline relative to reset-cause classification.",
+      "round": 2,
+      "severity": "major",
+      "status": "open",
+      "target_id": "SYE-SUP-058"
+    }
+  ],
+  "judged": [
+    "SYE-SUP-004",
+    "SYE-SUP-020",
+    "SYE-SUP-028",
+    "SYE-SUP-044",
+    "SYE-SUP-057",
+    "SYE-SUP-058"
+  ],
+  "phase": "item",
+  "round": 2,
+  "schema": "forge-c-hi/findings@1",
+  "stage": "sys-arch"
+}

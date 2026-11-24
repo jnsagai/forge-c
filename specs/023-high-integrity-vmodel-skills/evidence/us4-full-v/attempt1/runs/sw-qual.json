@@ -1,0 +1,1 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T074304Z-4bbf1d/events.jsonl","run_id":"r20261123T074304Z-4bbf1d","stages":[{"gates":{},"outcome":"BLOCKED","reason":"author harness failed (exit 1) in sw-qual create","stage":"sw-qual"}],"status":"BLOCKED"}

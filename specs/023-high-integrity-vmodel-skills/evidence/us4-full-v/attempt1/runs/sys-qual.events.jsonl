@@ -1,0 +1,3 @@
+{"level": "HI-2", "profile": "generic", "rework_limit": 3, "run_id": "r20261123T074308Z-4001d1", "stage": "sys-qual", "step": "stage-start", "ts": "2026-11-23T07:43:08Z"}
+{"changed": [], "duration_s": 1.55, "exit_code": 1, "harness": "claude-code", "items": [], "model": "sonnet", "model_family": "claude", "phase": "create", "role": "author", "round": 0, "run_id": "r20261123T074308Z-4001d1", "scope_violations": [], "stage": "sys-qual", "status": "error", "stderr_tail": "", "step": "role", "ts": "2026-11-23T07:43:10Z"}
+{"outcome": "BLOCKED", "reason": "author harness failed (exit 1) in sys-qual create", "run_id": "r20261123T074308Z-4001d1", "stage": "sys-qual", "step": "stage-end", "ts": "2026-11-23T07:43:10Z"}

@@ -1,0 +1,1850 @@
+{
+  "adjusted": [
+    "STK-SUP-001: removed requirement ids that are not in the set",
+    "STK-SUP-001: covered by no requirement taken as gap",
+    "STK-SUP-001: gap tracked by no finding or open point; raised F-sw-arch-set-r4-006",
+    "STK-SUP-002: removed requirement ids that are not in the set",
+    "STK-SUP-002: partial tracked by no finding or open point; raised F-sw-arch-set-r4-007",
+    "STK-SUP-003: removed requirement ids that are not in the set",
+    "STK-SUP-003: partial tracked by no finding or open point; raised F-sw-arch-set-r4-008",
+    "STK-SUP-004: removed requirement ids that are not in the set",
+    "STK-SUP-004: covered by no requirement taken as gap",
+    "STK-SUP-004: gap tracked by no finding or open point; raised F-sw-arch-set-r4-009",
+    "STK-SUP-005: removed requirement ids that are not in the set",
+    "STK-SUP-005: covered by no requirement taken as gap",
+    "STK-SUP-005: gap tracked by no finding or open point; raised F-sw-arch-set-r4-010",
+    "STK-SUP-006: removed requirement ids that are not in the set",
+    "STK-SUP-006: covered by no requirement taken as gap",
+    "STK-SUP-006: gap tracked by no finding or open point; raised F-sw-arch-set-r4-011",
+    "STK-SUP-007: removed requirement ids that are not in the set",
+    "STK-SUP-007: covered by no requirement taken as gap",
+    "STK-SUP-007: gap tracked by no finding or open point; raised F-sw-arch-set-r4-012",
+    "STK-SUP-008: removed requirement ids that are not in the set",
+    "STK-SUP-008: partial tracked by no finding or open point; raised F-sw-arch-set-r4-013",
+    "STK-SUP-009: removed requirement ids that are not in the set",
+    "STK-SUP-009: partial tracked by no finding or open point; raised F-sw-arch-set-r4-014",
+    "STK-SUP-010: removed requirement ids that are not in the set",
+    "STK-SUP-010: covered by no requirement taken as gap",
+    "STK-SUP-010: gap tracked by no finding or open point; raised F-sw-arch-set-r4-015",
+    "STK-SUP-011: removed requirement ids that are not in the set",
+    "STK-SUP-011: covered by no requirement taken as gap",
+    "STK-SUP-011: gap tracked by no finding or open point; raised F-sw-arch-set-r4-016",
+    "STK-SUP-012: removed requirement ids that are not in the set",
+    "STK-SUP-012: partial tracked by no finding or open point; raised F-sw-arch-set-r4-017",
+    "STK-SUP-013: removed requirement ids that are not in the set",
+    "STK-SUP-013: partial tracked by no finding or open point; raised F-sw-arch-set-r4-018",
+    "STK-SUP-014: removed requirement ids that are not in the set",
+    "STK-SUP-014: partial tracked by no finding or open point; raised F-sw-arch-set-r4-019",
+    "STK-SUP-015: removed requirement ids that are not in the set",
+    "STK-SUP-015: covered by no requirement taken as gap",
+    "STK-SUP-015: gap tracked by no finding or open point; raised F-sw-arch-set-r4-020",
+    "SYS-SUP-001: removed requirement ids that are not in the set",
+    "SYS-SUP-001: covered by no requirement taken as gap",
+    "SYS-SUP-001: gap tracked by no finding or open point; raised F-sw-arch-set-r4-021",
+    "SYS-SUP-002: removed requirement ids that are not in the set",
+    "SYS-SUP-002: partial tracked by no finding or open point; raised F-sw-arch-set-r4-022",
+    "SYS-SUP-003: removed requirement ids that are not in the set",
+    "SYS-SUP-003: partial tracked by no finding or open point; raised F-sw-arch-set-r4-023",
+    "SYS-SUP-004: removed requirement ids that are not in the set",
+    "SYS-SUP-004: partial tracked by no finding or open point; raised F-sw-arch-set-r4-024",
+    "SYS-SUP-005: removed requirement ids that are not in the set",
+    "SYS-SUP-005: covered by no requirement taken as gap",
+    "SYS-SUP-005: gap tracked by no finding or open point; raised F-sw-arch-set-r4-025",
+    "SYS-SUP-006: removed requirement ids that are not in the set",
+    "SYS-SUP-006: covered by no requirement taken as gap",
+    "SYS-SUP-006: gap tracked by no finding or open point; raised F-sw-arch-set-r4-026",
+    "SYS-SUP-007: removed requirement ids that are not in the set",
+    "SYS-SUP-007: covered by no requirement taken as gap",
+    "SYS-SUP-007: gap tracked by no finding or open point; raised F-sw-arch-set-r4-027",
+    "SYS-SUP-008: removed requirement ids that are not in the set",
+    "SYS-SUP-008: covered by no requirement taken as gap",
+    "SYS-SUP-008: gap tracked by no finding or open point; raised F-sw-arch-set-r4-028",
+    "SYS-SUP-009: removed requirement ids that are not in the set",
+    "SYS-SUP-009: covered by no requirement taken as gap",
+    "SYS-SUP-009: gap tracked by no finding or open point; raised F-sw-arch-set-r4-029",
+    "SYS-SUP-010: removed requirement ids that are not in the set",
+    "SYS-SUP-010: covered by no requirement taken as gap",
+    "SYS-SUP-010: gap tracked by no finding or open point; raised F-sw-arch-set-r4-030",
+    "SYS-SUP-011: removed requirement ids that are not in the set",
+    "SYS-SUP-011: covered by no requirement taken as gap",
+    "SYS-SUP-011: gap tracked by no finding or open point; raised F-sw-arch-set-r4-031",
+    "SYS-SUP-012: removed requirement ids that are not in the set",
+    "SYS-SUP-012: covered by no requirement taken as gap",
+    "SYS-SUP-012: gap tracked by no finding or open point; raised F-sw-arch-set-r4-032",
+    "SYS-SUP-013: removed requirement ids that are not in the set",
+    "SYS-SUP-013: covered by no requirement taken as gap",
+    "SYS-SUP-013: gap tracked by no finding or open point; raised F-sw-arch-set-r4-033",
+    "SYS-SUP-014: removed requirement ids that are not in the set",
+    "SYS-SUP-014: covered by no requirement taken as gap",
+    "SYS-SUP-014: gap tracked by no finding or open point; raised F-sw-arch-set-r4-034",
+    "SYS-SUP-015: removed requirement ids that are not in the set",
+    "SYS-SUP-015: covered by no requirement taken as gap",
+    "SYS-SUP-016: removed requirement ids that are not in the set",
+    "SYS-SUP-016: covered by no requirement taken as gap",
+    "SYS-SUP-016: gap tracked by no finding or open point; raised F-sw-arch-set-r4-035",
+    "SYS-SUP-017: removed requirement ids that are not in the set",
+    "SYS-SUP-017: covered by no requirement taken as gap",
+    "SYS-SUP-017: gap tracked by no finding or open point; raised F-sw-arch-set-r4-036",
+    "SYS-SUP-018: removed requirement ids that are not in the set",
+    "SYS-SUP-018: covered by no requirement taken as gap",
+    "SYS-SUP-018: gap tracked by no finding or open point; raised F-sw-arch-set-r4-037",
+    "SYS-SUP-019: removed requirement ids that are not in the set",
+    "SYS-SUP-019: covered by no requirement taken as gap",
+    "SYS-SUP-019: gap tracked by no finding or open point; raised F-sw-arch-set-r4-038",
+    "SYS-SUP-020: removed requirement ids that are not in the set",
+    "SYS-SUP-020: covered by no requirement taken as gap",
+    "SYS-SUP-020: gap tracked by no finding or open point; raised F-sw-arch-set-r4-039",
+    "SYS-SUP-021: removed requirement ids that are not in the set",
+    "SYS-SUP-021: covered by no requirement taken as gap",
+    "SYS-SUP-021: gap tracked by no finding or open point; raised F-sw-arch-set-r4-040",
+    "SYS-SUP-022: removed requirement ids that are not in the set",
+    "SYS-SUP-022: partial tracked by no finding or open point; raised F-sw-arch-set-r4-041",
+    "SYS-SUP-023: removed requirement ids that are not in the set"
+  ],
+  "provided": true,
+  "round": 4,
+  "rows": [
+    {
+      "reason": "Alive supervision and activation are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-001",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-006"
+    },
+    {
+      "reason": "Coincident-event timing feasibility remains open; see SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "STK-SUP-002",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-007"
+    },
+    {
+      "reason": "T_DIAG flow timing remains unresolved; see SWA-04 for SWC-SUP-061.",
+      "requirements": [],
+      "source": "STK-SUP-003",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-008"
+    },
+    {
+      "reason": "Configuration, validation and fault reaction are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-004",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-009"
+    },
+    {
+      "reason": "Watchdog service and inhibition are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-005",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-010"
+    },
+    {
+      "reason": "Both watchdog interfaces are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-006",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-011"
+    },
+    {
+      "reason": "Both start-up checks and the release barrier are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-007",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-012"
+    },
+    {
+      "reason": "Execution feasibility is open; see SWA-08 for SET.",
+      "requirements": [],
+      "source": "STK-SUP-008",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-013"
+    },
+    {
+      "reason": "Timing detection feasibility remains open; see SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "STK-SUP-009",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-014"
+    },
+    {
+      "reason": "Reset, retention and latch behaviour are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-010",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-015"
+    },
+    {
+      "reason": "Reset classification and reporting are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-011",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-016"
+    },
+    {
+      "reason": "The report deadline has an unresolved burst case; see SWA-09 for SWC-SUP-039.",
+      "requirements": [],
+      "source": "STK-SUP-012",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-017"
+    },
+    {
+      "reason": "Diagnostic response interference is not fully bounded; see SWA-06 for SWC-SUP-063.",
+      "requirements": [],
+      "source": "STK-SUP-013",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-018"
+    },
+    {
+      "reason": "Execution feasibility is open; see SWA-08 for SET.",
+      "requirements": [],
+      "source": "STK-SUP-014",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-019"
+    },
+    {
+      "reason": "Test hooks and driver substitution are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-015",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-020"
+    },
+    {
+      "reason": "Alive supervision is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-001",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-021"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "SYS-SUP-002",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-022"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "SYS-SUP-003",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-023"
+    },
+    {
+      "reason": "See SWA-04 for SWC-SUP-061.",
+      "requirements": [],
+      "source": "SYS-SUP-004",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-024"
+    },
+    {
+      "reason": "Start-limit equality is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-005",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-025"
+    },
+    {
+      "reason": "Default tasks are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-006",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-026"
+    },
+    {
+      "reason": "Configured scheduling is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-007",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-027"
+    },
+    {
+      "reason": "Invalid configuration detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-008",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-028"
+    },
+    {
+      "reason": "Supervision activation is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-009",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-029"
+    },
+    {
+      "reason": "Watchdog inhibition is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-010",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-030"
+    },
+    {
+      "reason": "Software watchdog interface is allocated; hardware behaviour belongs to the system.",
+      "requirements": [],
+      "source": "SYS-SUP-011",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-031"
+    },
+    {
+      "reason": "Software window-watchdog behaviour is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-012",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-032"
+    },
+    {
+      "reason": "Cycle servicing is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-013",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-033"
+    },
+    {
+      "reason": "Watchdog service ownership is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-014",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-034"
+    },
+    {
+      "reason": "Start-up watchdog behaviour is allocated; chunk sizing is OP-SWC-004.",
+      "requirements": [],
+      "source": "SYS-SUP-015",
+      "status": "gap",
+      "tracked_by": "OP-SWC-004"
+    },
+    {
+      "reason": "Start-up code CRC is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-016",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-035"
+    },
+    {
+      "reason": "Code CRC fault detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-017",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-036"
+    },
+    {
+      "reason": "Configuration CRC is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-018",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-037"
+    },
+    {
+      "reason": "Configuration CRC fault detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-019",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-038"
+    },
+    {
+      "reason": "Release gating is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-020",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-039"
+    },
+    {
+      "reason": "Runtime checking sequence is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-021",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-040"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [],
+      "source": "SYS-SUP-022",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-041"
+    },
+    {
+      "reason": "Runtime CRC fault detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-023",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-042"
+    },
+    {
+      "reason": "Software output reaction is allocated; board response is a system responsibility.",
+      "requirements": [],
+      "source": "SYS-SUP-024",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-043"
+    },
+    {
+      "reason": "Software safe-state reaction is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-025",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-044"
+    },
+    {
+      "reason": "Software initialization is allocated; pre-initialization pin holding is a hardware responsibility.",
+      "requirements": [],
+      "source": "SYS-SUP-026",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-045"
+    },
+    {
+      "reason": "Output initialization is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-027",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-046"
+    },
+    {
+      "reason": "Status-high gating is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-028",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-047"
+    },
+    {
+      "reason": "Reset reaction is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-029",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-048"
+    },
+    {
+      "reason": "Latch reaction is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-030",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-049"
+    },
+    {
+      "reason": "Per-code counts are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-031",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-050"
+    },
+    {
+      "reason": "Fault-free time counting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-032",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-051"
+    },
+    {
+      "reason": "Retained state is allocated; storage medium is OP-SWC-003.",
+      "requirements": [],
+      "source": "SYS-SUP-033",
+      "status": "gap",
+      "tracked_by": "OP-SWC-003"
+    },
+    {
+      "reason": "Watchdog reset reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-034",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-052"
+    },
+    {
+      "reason": "Code 8 counting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-035",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-053"
+    },
+    {
+      "reason": "Reset classification is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-036",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-054"
+    },
+    {
+      "reason": "Start-up reset message is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-037",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-055"
+    },
+    {
+      "reason": "GET RESET is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-038",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-056"
+    },
+    {
+      "reason": "See SWA-09 for SWC-SUP-039 and SWA-06 for SWC-SUP-063.",
+      "requirements": [],
+      "source": "SYS-SUP-039",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-057"
+    },
+    {
+      "reason": "Fault codes and entities are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-040",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-058"
+    },
+    {
+      "reason": "Flow entity selection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-041",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-059"
+    },
+    {
+      "reason": "Detection timestamps are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-042",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-060"
+    },
+    {
+      "reason": "Report priority is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-043",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-061"
+    },
+    {
+      "reason": "Serial configuration is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-044",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-062"
+    },
+    {
+      "reason": "GET STATUS is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-045",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-063"
+    },
+    {
+      "reason": "Start-up state reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-046",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-064"
+    },
+    {
+      "reason": "Fault count reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-047",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-065"
+    },
+    {
+      "reason": "GET FAULTS is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-048",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-066"
+    },
+    {
+      "reason": "Invalid request handling is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-049",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-067"
+    },
+    {
+      "reason": "Concurrent request handling is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-050",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-068"
+    },
+    {
+      "reason": "Request receipt is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-051",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-069"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [],
+      "source": "SYS-SUP-052",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-070"
+    },
+    {
+      "reason": "Fault injection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-053",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-071"
+    },
+    {
+      "reason": "Driver substitution is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-054",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-072"
+    },
+    {
+      "reason": "Test-build interfaces are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-055",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-073"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "SYS-SUP-056",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-074"
+    },
+    {
+      "reason": "Invalid configuration latching is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-057",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-075"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [],
+      "source": "SYS-SUP-058",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-076"
+    },
+    {
+      "reason": "Fault-free clearing is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-059",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-077"
+    },
+    {
+      "reason": "Power-on clearing is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-060",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-078"
+    },
+    {
+      "reason": "Code 8 output behaviour is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-061",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-079"
+    },
+    {
+      "reason": "Start-up continuation is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-062",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-080"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-063.",
+      "requirements": [],
+      "source": "SYS-SUP-063",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-081"
+    },
+    {
+      "reason": "Third-detection reset inhibition is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-064",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-082"
+    },
+    {
+      "reason": "Code 8 latch counting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-065",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-083"
+    },
+    {
+      "reason": "Whole-image CRC context is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-066",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-084"
+    },
+    {
+      "reason": "Operational-state reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-067",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-085"
+    },
+    {
+      "reason": "Safe-state reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-068",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-086"
+    },
+    {
+      "reason": "Latched-state reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-069",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-087"
+    },
+    {
+      "reason": "Latched output behaviour is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-070",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-088"
+    },
+    {
+      "reason": "Latch prevents task release.",
+      "requirements": [],
+      "source": "SYS-SUP-071",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-089"
+    },
+    {
+      "reason": "Allocated to board hardware, not software.",
+      "requirements": [],
+      "source": "SYS-SUP-072",
+      "status": "n/a"
+    },
+    {
+      "reason": "Software pin initialization is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-073",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-090"
+    },
+    {
+      "reason": "Report ordering behind an answer line is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-074",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-091"
+    },
+    {
+      "reason": "Answer line length is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-075",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-092"
+    },
+    {
+      "reason": "Default release order is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-076",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-093"
+    },
+    {
+      "reason": "Diagnostic task release order is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-077",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-094"
+    },
+    {
+      "reason": "Start limits are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-078",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-095"
+    },
+    {
+      "reason": "Execution limits are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-079",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-096"
+    },
+    {
+      "reason": "Diagnostic execution limit is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-080",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-097"
+    },
+    {
+      "reason": "History snapshotting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-081",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-098"
+    },
+    {
+      "reason": "History replacement is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-082",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-099"
+    },
+    {
+      "reason": "Target is recorded.",
+      "requirements": [],
+      "source": "SYS-SUP-083",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-100"
+    },
+    {
+      "reason": "C11 is recorded.",
+      "requirements": [],
+      "source": "SYS-SUP-084",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-101"
+    },
+    {
+      "reason": "Timer resolution feasibility is open; see SWA-06 for SWC-SUP-062 and OP-SWC-014.",
+      "requirements": [],
+      "source": "SYS-SUP-085",
+      "status": "partial",
+      "tracked_by": "OP-SWC-014"
+    },
+    {
+      "reason": "Allocated to the board output stage, not software.",
+      "requirements": [],
+      "source": "SYS-SUP-086",
+      "status": "n/a"
+    },
+    {
+      "reason": "Allocation constraint is recorded.",
+      "requirements": [],
+      "source": "SYS-SUP-087",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-102"
+    },
+    {
+      "reason": "Recursion constraint is recorded.",
+      "requirements": [],
+      "source": "SYS-SUP-088",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-103"
+    },
+    {
+      "reason": "Image limit is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-089",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-104"
+    },
+    {
+      "reason": "Start-up message ordering is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-090",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-105"
+    },
+    {
+      "reason": "Timer resolution feasibility is open; see SWA-06 for SWC-SUP-062 and OP-SWC-014.",
+      "requirements": [],
+      "source": "SYS-SUP-091",
+      "status": "partial",
+      "tracked_by": "OP-SWC-014"
+    },
+    {
+      "reason": "Execution-limit equality is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-092",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-106"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [],
+      "source": "SYS-SUP-093",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-107"
+    },
+    {
+      "reason": "Alive evaluation and state are allocated.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-051"
+      ],
+      "source": "SWR-ALV-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Activation is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-006"
+      ],
+      "source": "SWR-ALV-002",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-062"
+      ],
+      "source": "SWR-TIM-001",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-108"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-062"
+      ],
+      "source": "SWR-TIM-002",
+      "status": "partial",
+      "tracked_by": "OP-SWC-016"
+    },
+    {
+      "reason": "Equality rule is allocated.",
+      "requirements": [
+        "SWC-SUP-006"
+      ],
+      "source": "SWR-TIM-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Equality rule is allocated.",
+      "requirements": [
+        "SWC-SUP-006"
+      ],
+      "source": "SWR-TIM-004",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062 and OP-SWC-014.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-012"
+      ],
+      "source": "SWR-TIM-005",
+      "status": "partial",
+      "tracked_by": "OP-SWC-014"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-062 and OP-SWC-014.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-012"
+      ],
+      "source": "SWR-TIM-006",
+      "status": "partial",
+      "tracked_by": "OP-SWC-014"
+    },
+    {
+      "reason": "See SWA-04 for SWC-SUP-061.",
+      "requirements": [
+        "SWC-SUP-007",
+        "SWC-SUP-061"
+      ],
+      "source": "SWR-FLW-001",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-002"
+    },
+    {
+      "reason": "Flow fault entity is allocated.",
+      "requirements": [
+        "SWC-SUP-007"
+      ],
+      "source": "SWR-FLW-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Default task set is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-050"
+      ],
+      "source": "SWR-CFG-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Release order is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-005"
+      ],
+      "source": "SWR-CFG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "T_DIAG release is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-005"
+      ],
+      "source": "SWR-CFG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Start limits are allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-050"
+      ],
+      "source": "SWR-CFG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Execution limits are allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-050"
+      ],
+      "source": "SWR-CFG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "T_DIAG execution limit is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-050"
+      ],
+      "source": "SWR-CFG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration-driven scheduling is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-005"
+      ],
+      "source": "SWR-CFG-007",
+      "status": "covered"
+    },
+    {
+      "reason": "Invalid configuration detection is allocated.",
+      "requirements": [
+        "SWC-SUP-001"
+      ],
+      "source": "SWR-CFG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration fault latching is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-CFG-009",
+      "status": "covered"
+    },
+    {
+      "reason": "Watchdog inhibition is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Independent watchdog use is allocated.",
+      "requirements": [
+        "SWC-SUP-010",
+        "SWC-SUP-021"
+      ],
+      "source": "SWR-WDG-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Window watchdog use is allocated.",
+      "requirements": [
+        "SWC-SUP-010",
+        "SWC-SUP-022"
+      ],
+      "source": "SWR-WDG-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Cycle servicing is allocated.",
+      "requirements": [
+        "SWC-SUP-010",
+        "SWC-SUP-061"
+      ],
+      "source": "SWR-WDG-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Independent watchdog servicing is allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Chunked start-up servicing is allocated; sizing is OP-SWC-004.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up window watchdog behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-007",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up window watchdog behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-008",
+      "status": "covered"
+    },
+    {
+      "reason": "Window enable and first refresh are allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-009",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up window watchdog behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-010",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up window watchdog behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-011",
+      "status": "covered"
+    },
+    {
+      "reason": "Window enable and first refresh are allocated.",
+      "requirements": [
+        "SWC-SUP-010"
+      ],
+      "source": "SWR-WDG-012",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up code CRC is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-003"
+      ],
+      "source": "SWR-CHK-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up code fault detection is allocated.",
+      "requirements": [
+        "SWC-SUP-002"
+      ],
+      "source": "SWR-CHK-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration CRC is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-003"
+      ],
+      "source": "SWR-CHK-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration CRC fault detection is allocated.",
+      "requirements": [
+        "SWC-SUP-002"
+      ],
+      "source": "SWR-CHK-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Release barrier is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-005"
+      ],
+      "source": "SWR-CHK-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Segment sequence is allocated.",
+      "requirements": [
+        "SWC-SUP-004",
+        "SWC-SUP-053"
+      ],
+      "source": "SWR-CHK-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Whole-image CRC context is allocated.",
+      "requirements": [
+        "SWC-SUP-003",
+        "SWC-SUP-004"
+      ],
+      "source": "SWR-CHK-007",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [
+        "SWC-SUP-004",
+        "SWC-SUP-061"
+      ],
+      "source": "SWR-CHK-008",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-109"
+    },
+    {
+      "reason": "Runtime CRC fault detection is allocated.",
+      "requirements": [
+        "SWC-SUP-004"
+      ],
+      "source": "SWR-CHK-009",
+      "status": "covered"
+    },
+    {
+      "reason": "Image bound is allocated.",
+      "requirements": [
+        "SWC-SUP-004",
+        "SWC-SUP-037"
+      ],
+      "source": "SWR-CHK-010",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [
+        "SWC-SUP-004"
+      ],
+      "source": "SWR-CHK-011",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-110"
+    },
+    {
+      "reason": "Software safe-state reaction is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up output state is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Output initialization is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Operational status gating is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Latched outputs are allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Latched release inhibition is allocated.",
+      "requirements": [
+        "SWC-SUP-005",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-SAF-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Pre-configuration pin behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-009"
+      ],
+      "source": "SWR-SAF-007",
+      "status": "covered"
+    },
+    {
+      "reason": "Reset sequencing is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-038"
+      ],
+      "source": "SWR-LAT-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Third-detection latch is allocated.",
+      "requirements": [
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-LAT-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Third-detection reset inhibition is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-038"
+      ],
+      "source": "SWR-LAT-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Code 8 latch is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-LAT-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Per-code counts are allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-054"
+      ],
+      "source": "SWR-LAT-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Fault-free time accounting is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-012"
+      ],
+      "source": "SWR-LAT-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Latch retention is allocated; medium is OP-SWC-003.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-026"
+      ],
+      "source": "SWR-LAT-007",
+      "status": "covered"
+    },
+    {
+      "reason": "Count clearing is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-012"
+      ],
+      "source": "SWR-LAT-008",
+      "status": "covered"
+    },
+    {
+      "reason": "Power-on clearing is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-026"
+      ],
+      "source": "SWR-LAT-009",
+      "status": "covered"
+    },
+    {
+      "reason": "Code 8 output behaviour is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-LAT-010",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up continuation is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-LAT-011",
+      "status": "covered"
+    },
+    {
+      "reason": "Code 8 counting is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-008"
+      ],
+      "source": "SWR-LAT-012",
+      "status": "covered"
+    },
+    {
+      "reason": "Count retention is allocated; medium is OP-SWC-003.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-026"
+      ],
+      "source": "SWR-LAT-013",
+      "status": "covered"
+    },
+    {
+      "reason": "History retention is allocated; medium is OP-SWC-003.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-026"
+      ],
+      "source": "SWR-LAT-014",
+      "status": "covered"
+    },
+    {
+      "reason": "Reset classification is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-025"
+      ],
+      "source": "SWR-RST-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up reset message is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011",
+        "SWC-SUP-060"
+      ],
+      "source": "SWR-RST-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Code 8 start-up message is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011",
+        "SWC-SUP-060"
+      ],
+      "source": "SWR-RST-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up message ordering is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011",
+        "SWC-SUP-039"
+      ],
+      "source": "SWR-RST-004",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-09 for SWC-SUP-039 and SWA-06 for SWC-SUP-063.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-039",
+        "SWC-SUP-063"
+      ],
+      "source": "SWR-DIA-001",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-001"
+    },
+    {
+      "reason": "Alive report entity is allocated.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Detection timestamp is allocated.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-012"
+      ],
+      "source": "SWR-DIA-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Report priority before an answer is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Report ordering after the current answer line is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-005",
+      "status": "covered"
+    },
+    {
+      "reason": "Answer line length is allocated.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-056"
+      ],
+      "source": "SWR-DIA-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Serial format is allocated.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-024"
+      ],
+      "source": "SWR-DIA-007",
+      "status": "covered"
+    },
+    {
+      "reason": "Late-start report entity is allocated.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-008",
+      "status": "covered"
+    },
+    {
+      "reason": "Overrun report entity is allocated.",
+      "requirements": [
+        "SWC-SUP-006",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-009",
+      "status": "covered"
+    },
+    {
+      "reason": "Flow fault code is allocated.",
+      "requirements": [
+        "SWC-SUP-007",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-010",
+      "status": "covered"
+    },
+    {
+      "reason": "Start-up code fault entity is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-011",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration integrity fault entity is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-012",
+      "status": "covered"
+    },
+    {
+      "reason": "Runtime code fault entity is allocated.",
+      "requirements": [
+        "SWC-SUP-004",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-013",
+      "status": "covered"
+    },
+    {
+      "reason": "Watchdog report code is allocated.",
+      "requirements": [
+        "SWC-SUP-002",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-014",
+      "status": "covered"
+    },
+    {
+      "reason": "Configuration fault entity is allocated.",
+      "requirements": [
+        "SWC-SUP-001",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-DIA-015",
+      "status": "covered"
+    },
+    {
+      "reason": "GET RESET is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-001",
+      "status": "covered"
+    },
+    {
+      "reason": "GET STATUS is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-002",
+      "status": "covered"
+    },
+    {
+      "reason": "STARTUP state is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-003",
+      "status": "covered"
+    },
+    {
+      "reason": "OPERATIONAL state is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-004",
+      "status": "covered"
+    },
+    {
+      "reason": "SAFE state is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-005",
+      "status": "covered"
+    },
+    {
+      "reason": "LATCHED state is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-006",
+      "status": "covered"
+    },
+    {
+      "reason": "Fault count is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-007",
+      "status": "covered"
+    },
+    {
+      "reason": "GET FAULTS is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-008",
+      "status": "covered"
+    },
+    {
+      "reason": "History snapshot is allocated.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-056"
+      ],
+      "source": "SWR-SVC-009",
+      "status": "covered"
+    },
+    {
+      "reason": "History replacement is allocated.",
+      "requirements": [
+        "SWC-SUP-008",
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-010",
+      "status": "covered"
+    },
+    {
+      "reason": "Invalid request response is allocated.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-056"
+      ],
+      "source": "SWR-SVC-011",
+      "status": "covered"
+    },
+    {
+      "reason": "Concurrent request handling is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-012",
+      "status": "covered"
+    },
+    {
+      "reason": "Request receipt is allocated.",
+      "requirements": [
+        "SWC-SUP-011"
+      ],
+      "source": "SWR-SVC-013",
+      "status": "covered"
+    },
+    {
+      "reason": "See SWA-06 for SWC-SUP-063.",
+      "requirements": [
+        "SWC-SUP-011",
+        "SWC-SUP-063"
+      ],
+      "source": "SWR-SVC-014",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-111"
+    },
+    {
+      "reason": "See SWA-08 for SET.",
+      "requirements": [
+        "SWC-SUP-061"
+      ],
+      "source": "SWR-RES-001",
+      "status": "partial",
+      "tracked_by": "OP-SWC-012"
+    },
+    {
+      "reason": "Fault injection is allocated.",
+      "requirements": [
+        "SWC-SUP-013",
+        "SWC-SUP-040"
+      ],
+      "source": "SWR-TST-001",
+      "status": "covered"
+    },
+    {
+      "reason": "Driver substitution and simulator use are allocated.",
+      "requirements": [
+        "SWC-SUP-013",
+        "SWC-SUP-020",
+        "SWC-SUP-023"
+      ],
+      "source": "SWR-TST-002",
+      "status": "covered"
+    },
+    {
+      "reason": "Test-only hooks are allocated.",
+      "requirements": [
+        "SWC-SUP-013",
+        "SWC-SUP-040"
+      ],
+      "source": "SWR-TST-003",
+      "status": "covered"
+    },
+    {
+      "reason": "Target is recorded.",
+      "requirements": [
+        "SWC-SUP-020"
+      ],
+      "source": "SWR-PLT-001",
+      "status": "covered"
+    },
+    {
+      "reason": "C11 is recorded.",
+      "requirements": [
+        "SWC-SUP-003"
+      ],
+      "source": "SWR-PLT-002",
+      "status": "covered"
+    },
+    {
+      "reason": "No dynamic allocation is recorded.",
+      "requirements": [
+        "SWC-SUP-003"
+      ],
+      "source": "SWR-PLT-003",
+      "status": "covered"
+    },
+    {
+      "reason": "No recursion is recorded.",
+      "requirements": [
+        "SWC-SUP-003"
+      ],
+      "source": "SWR-PLT-004",
+      "status": "covered"
+    },
+    {
+      "reason": "Platform, language, verification and serial constraints are represented; detailed hardware references are OP-SWC-006.",
+      "requirements": [],
+      "source": "needs/constraints.md",
+      "status": "gap",
+      "tracked_by": "OP-SWC-006"
+    },
+    {
+      "reason": "Flow timing, diagnostic deadlines and execution feasibility remain open; see SWA-04, SWA-06, SWA-08 and SWA-09 findings.",
+      "requirements": [],
+      "source": "needs/product-decisions.md",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-112"
+    },
+    {
+      "reason": "Checks, reset reporting and release barrier are allocated.",
+      "requirements": [],
+      "source": "scenario: start-up",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-113"
+    },
+    {
+      "reason": "Flow timing and execution feasibility remain open; see SWA-04 for SWC-SUP-061 and SWA-08 for SET.",
+      "requirements": [],
+      "source": "scenario: normal operation",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-114"
+    },
+    {
+      "reason": "Invalid configuration and requests have allocated reactions.",
+      "requirements": [],
+      "source": "scenario: invalid input",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-115"
+    },
+    {
+      "reason": "Detection and report timing remain open; see SWA-06 for SWC-SUP-062 and SWA-09 for SWC-SUP-039.",
+      "requirements": [],
+      "source": "scenario: fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-116"
+    },
+    {
+      "reason": "Reset, latch and power-on recovery are allocated.",
+      "requirements": [],
+      "source": "scenario: recovery",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-117"
+    },
+    {
+      "reason": "Fault shutdown drives outputs low, inhibits servicing and resets or remains latched.",
+      "requirements": [],
+      "source": "scenario: shutdown",
+      "status": "gap",
+      "tracked_by": "F-sw-arch-set-r4-118"
+    },
+    {
+      "reason": "Timing and processor feasibility remain open; see SWA-06 for SWC-SUP-062 and SWA-08 for SET.",
+      "requirements": [],
+      "source": "scenario: limits",
+      "status": "partial",
+      "tracked_by": "F-sw-arch-set-r4-119"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-arch"
+}

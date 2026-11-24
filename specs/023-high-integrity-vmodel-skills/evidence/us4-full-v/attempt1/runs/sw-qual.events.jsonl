@@ -1,0 +1,3 @@
+{"level": "HI-2", "profile": "generic", "rework_limit": 3, "run_id": "r20261123T074304Z-4bbf1d", "stage": "sw-qual", "step": "stage-start", "ts": "2026-11-23T07:43:04Z"}
+{"changed": [], "duration_s": 1.6, "exit_code": 1, "harness": "claude-code", "items": [], "model": "sonnet", "model_family": "claude", "phase": "create", "role": "author", "round": 0, "run_id": "r20261123T074304Z-4bbf1d", "scope_violations": [], "stage": "sw-qual", "status": "error", "stderr_tail": "", "step": "role", "ts": "2026-11-23T07:43:06Z"}
+{"outcome": "BLOCKED", "reason": "author harness failed (exit 1) in sw-qual create", "run_id": "r20261123T074304Z-4bbf1d", "stage": "sw-qual", "step": "stage-end", "ts": "2026-11-23T07:43:06Z"}

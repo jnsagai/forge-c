@@ -1,0 +1,1 @@
+{"cmd":"conduct","events":".hi/runs/r20261123T071921Z-3031fb/events.jsonl","run_id":"r20261123T071921Z-3031fb","stages":[{"gates":{"coverage":"NOT_RUN","independence":"PASS","scope":"PASS","trace":"NOT_RUN","unit-test":"NOT_RUN","validate":"FAIL"},"outcome":"BLOCKED","reason":"author harness failed (exit 1) in unit-verif create","stage":"unit-verif"}],"status":"BLOCKED"}

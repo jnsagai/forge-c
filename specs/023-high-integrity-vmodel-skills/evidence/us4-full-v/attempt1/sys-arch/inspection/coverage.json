@@ -1,0 +1,1026 @@
+{
+  "adjusted": [
+    "STK-SUP-001: removed requirement ids that are not in the set",
+    "STK-SUP-001: covered by no requirement taken as gap",
+    "STK-SUP-001: gap tracked by no finding or open point; raised F-sys-arch-set-r4-007",
+    "STK-SUP-002: removed requirement ids that are not in the set",
+    "STK-SUP-002: covered by no requirement taken as gap",
+    "STK-SUP-002: gap tracked by no finding or open point; raised F-sys-arch-set-r4-008",
+    "STK-SUP-003: removed requirement ids that are not in the set",
+    "STK-SUP-003: covered by no requirement taken as gap",
+    "STK-SUP-003: gap tracked by no finding or open point; raised F-sys-arch-set-r4-009",
+    "STK-SUP-004: removed requirement ids that are not in the set",
+    "STK-SUP-004: covered by no requirement taken as gap",
+    "STK-SUP-004: gap tracked by no finding or open point; raised F-sys-arch-set-r4-010",
+    "STK-SUP-005: removed requirement ids that are not in the set",
+    "STK-SUP-006: removed requirement ids that are not in the set",
+    "STK-SUP-006: covered by no requirement taken as gap",
+    "STK-SUP-006: gap tracked by no finding or open point; raised F-sys-arch-set-r4-011",
+    "STK-SUP-007: removed requirement ids that are not in the set",
+    "STK-SUP-008: removed requirement ids that are not in the set",
+    "STK-SUP-009: removed requirement ids that are not in the set",
+    "STK-SUP-010: removed requirement ids that are not in the set",
+    "STK-SUP-011: removed requirement ids that are not in the set",
+    "STK-SUP-011: covered by no requirement taken as gap",
+    "STK-SUP-011: gap tracked by no finding or open point; raised F-sys-arch-set-r4-012",
+    "STK-SUP-012: removed requirement ids that are not in the set",
+    "STK-SUP-012: covered by no requirement taken as gap",
+    "STK-SUP-012: gap tracked by no finding or open point; raised F-sys-arch-set-r4-013",
+    "STK-SUP-013: removed requirement ids that are not in the set",
+    "STK-SUP-014: removed requirement ids that are not in the set",
+    "STK-SUP-015: removed requirement ids that are not in the set",
+    "SYS-SUP-001: removed requirement ids that are not in the set",
+    "SYS-SUP-001: covered by no requirement taken as gap",
+    "SYS-SUP-001: gap tracked by no finding or open point; raised F-sys-arch-set-r4-014",
+    "SYS-SUP-002: removed requirement ids that are not in the set",
+    "SYS-SUP-002: covered by no requirement taken as gap",
+    "SYS-SUP-002: gap tracked by no finding or open point; raised F-sys-arch-set-r4-015",
+    "SYS-SUP-003: removed requirement ids that are not in the set",
+    "SYS-SUP-003: covered by no requirement taken as gap",
+    "SYS-SUP-003: gap tracked by no finding or open point; raised F-sys-arch-set-r4-016",
+    "SYS-SUP-004: removed requirement ids that are not in the set",
+    "SYS-SUP-004: covered by no requirement taken as gap",
+    "SYS-SUP-004: gap tracked by no finding or open point; raised F-sys-arch-set-r4-017",
+    "SYS-SUP-005: removed requirement ids that are not in the set",
+    "SYS-SUP-005: covered by no requirement taken as gap",
+    "SYS-SUP-005: gap tracked by no finding or open point; raised F-sys-arch-set-r4-018",
+    "SYS-SUP-006: removed requirement ids that are not in the set",
+    "SYS-SUP-006: covered by no requirement taken as gap",
+    "SYS-SUP-006: gap tracked by no finding or open point; raised F-sys-arch-set-r4-019",
+    "SYS-SUP-007: removed requirement ids that are not in the set",
+    "SYS-SUP-007: covered by no requirement taken as gap",
+    "SYS-SUP-007: gap tracked by no finding or open point; raised F-sys-arch-set-r4-020",
+    "SYS-SUP-008: removed requirement ids that are not in the set",
+    "SYS-SUP-008: covered by no requirement taken as gap",
+    "SYS-SUP-008: gap tracked by no finding or open point; raised F-sys-arch-set-r4-021",
+    "SYS-SUP-009: removed requirement ids that are not in the set",
+    "SYS-SUP-009: covered by no requirement taken as gap",
+    "SYS-SUP-009: gap tracked by no finding or open point; raised F-sys-arch-set-r4-022",
+    "SYS-SUP-010: removed requirement ids that are not in the set",
+    "SYS-SUP-011: removed requirement ids that are not in the set",
+    "SYS-SUP-011: covered by no requirement taken as gap",
+    "SYS-SUP-012: removed requirement ids that are not in the set",
+    "SYS-SUP-012: covered by no requirement taken as gap",
+    "SYS-SUP-013: removed requirement ids that are not in the set",
+    "SYS-SUP-013: covered by no requirement taken as gap",
+    "SYS-SUP-013: gap tracked by no finding or open point; raised F-sys-arch-set-r4-023",
+    "SYS-SUP-014: removed requirement ids that are not in the set",
+    "SYS-SUP-014: covered by no requirement taken as gap",
+    "SYS-SUP-014: gap tracked by no finding or open point; raised F-sys-arch-set-r4-024",
+    "SYS-SUP-015: removed requirement ids that are not in the set",
+    "SYS-SUP-016: removed requirement ids that are not in the set",
+    "SYS-SUP-016: covered by no requirement taken as gap",
+    "SYS-SUP-017: removed requirement ids that are not in the set",
+    "SYS-SUP-017: covered by no requirement taken as gap",
+    "SYS-SUP-017: gap tracked by no finding or open point; raised F-sys-arch-set-r4-025",
+    "SYS-SUP-018: removed requirement ids that are not in the set",
+    "SYS-SUP-018: covered by no requirement taken as gap",
+    "SYS-SUP-018: gap tracked by no finding or open point; raised F-sys-arch-set-r4-026",
+    "SYS-SUP-019: removed requirement ids that are not in the set",
+    "SYS-SUP-019: covered by no requirement taken as gap",
+    "SYS-SUP-019: gap tracked by no finding or open point; raised F-sys-arch-set-r4-027",
+    "SYS-SUP-020: removed requirement ids that are not in the set",
+    "SYS-SUP-020: covered by no requirement taken as gap",
+    "SYS-SUP-020: gap tracked by no finding or open point; raised F-sys-arch-set-r4-028",
+    "SYS-SUP-021: removed requirement ids that are not in the set",
+    "SYS-SUP-021: covered by no requirement taken as gap",
+    "SYS-SUP-021: gap tracked by no finding or open point; raised F-sys-arch-set-r4-029",
+    "SYS-SUP-022: removed requirement ids that are not in the set",
+    "SYS-SUP-023: removed requirement ids that are not in the set",
+    "SYS-SUP-023: covered by no requirement taken as gap",
+    "SYS-SUP-023: gap tracked by no finding or open point; raised F-sys-arch-set-r4-030",
+    "SYS-SUP-024: removed requirement ids that are not in the set",
+    "SYS-SUP-025: removed requirement ids that are not in the set",
+    "SYS-SUP-026: removed requirement ids that are not in the set",
+    "SYS-SUP-026: covered by no requirement taken as gap",
+    "SYS-SUP-026: gap tracked by no finding or open point; raised F-sys-arch-set-r4-031",
+    "SYS-SUP-027: removed requirement ids that are not in the set",
+    "SYS-SUP-027: covered by no requirement taken as gap",
+    "SYS-SUP-027: gap tracked by no finding or open point; raised F-sys-arch-set-r4-032",
+    "SYS-SUP-028: removed requirement ids that are not in the set",
+    "SYS-SUP-028: covered by no requirement taken as gap",
+    "SYS-SUP-028: gap tracked by no finding or open point; raised F-sys-arch-set-r4-033"
+  ],
+  "provided": true,
+  "round": 4,
+  "rows": [
+    {
+      "reason": "Alive detection and its start are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-001",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-007"
+    },
+    {
+      "reason": "Timing detection, resolution and equality are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-002",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-008"
+    },
+    {
+      "reason": "Flow detection and reporting are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-003",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-009"
+    },
+    {
+      "reason": "Configuration, scheduling and validation are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-004",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-010"
+    },
+    {
+      "reason": "Watchdog servicing is allocated; enforcement against interference is unresolved in OP-SYE-008.",
+      "requirements": [],
+      "source": "STK-SUP-005",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Both watchdogs and their specified timing are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-006",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-011"
+    },
+    {
+      "reason": "Start-up checks and task release are allocated; fault-free watchdog handling remains open in OP-SYE-006.",
+      "requirements": [],
+      "source": "STK-SUP-007",
+      "status": "partial",
+      "tracked_by": "OP-SYE-006"
+    },
+    {
+      "reason": "Run-time checking is allocated; timing feasibility remains open in OP-SYE-007.",
+      "requirements": [],
+      "source": "STK-SUP-008",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "Safe-state reaction is allocated; protection of its outputs and data from application interference remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "STK-SUP-009",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Recovery and latching are allocated; retained storage is unresolved in OP-SYE-001 and the retained-time interface is incomplete as identified by SYA-03 on SYE-SUP-067.",
+      "requirements": [],
+      "source": "STK-SUP-010",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Reset classification and reporting are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-011",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-012"
+    },
+    {
+      "reason": "Fault reporting, priority and the watchdog-interruption exception are allocated.",
+      "requirements": [],
+      "source": "STK-SUP-012",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-013"
+    },
+    {
+      "reason": "Diagnostic access is allocated; history storage is unresolved in OP-SYE-001 and retained report count is missing from SYE-SUP-067.",
+      "requirements": [],
+      "source": "STK-SUP-013",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "The processor budget is allocated but feasibility is unresolved in OP-SYE-007.",
+      "requirements": [],
+      "source": "STK-SUP-014",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "Test hooks and environments are identified; their required capabilities are unresolved in OP-SYE-004.",
+      "requirements": [],
+      "source": "STK-SUP-015",
+      "status": "partial",
+      "tracked_by": "OP-SYE-004"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-022.",
+      "requirements": [],
+      "source": "SYS-SUP-001",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-014"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-022.",
+      "requirements": [],
+      "source": "SYS-SUP-002",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-015"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-022.",
+      "requirements": [],
+      "source": "SYS-SUP-003",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-016"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-023.",
+      "requirements": [],
+      "source": "SYS-SUP-004",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-017"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-022.",
+      "requirements": [],
+      "source": "SYS-SUP-005",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-018"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-021.",
+      "requirements": [],
+      "source": "SYS-SUP-006",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-019"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-021 and SYE-SUP-061.",
+      "requirements": [],
+      "source": "SYS-SUP-007",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-020"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-021.",
+      "requirements": [],
+      "source": "SYS-SUP-008",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-021"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020.",
+      "requirements": [],
+      "source": "SYS-SUP-009",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-022"
+    },
+    {
+      "reason": "Withholding is allocated; enforcement against interference remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "SYS-SUP-010",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-002 and its refresh and reset interfaces.",
+      "requirements": [],
+      "source": "SYS-SUP-011",
+      "status": "gap",
+      "tracked_by": "OP-SYE-005"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-003 and its refresh and reset interfaces.",
+      "requirements": [],
+      "source": "SYS-SUP-012",
+      "status": "gap",
+      "tracked_by": "OP-SYE-005"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-027 and SYE-SUP-051.",
+      "requirements": [],
+      "source": "SYS-SUP-013",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-023"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-027 and SYE-SUP-050.",
+      "requirements": [],
+      "source": "SYS-SUP-014",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-024"
+    },
+    {
+      "reason": "Start-up servicing is allocated, but the sequence is unresolved in OP-SYE-006.",
+      "requirements": [],
+      "source": "SYS-SUP-015",
+      "status": "partial",
+      "tracked_by": "OP-SYE-006"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020, SYE-SUP-064 and SYE-SUP-065.",
+      "requirements": [],
+      "source": "SYS-SUP-016",
+      "status": "gap",
+      "tracked_by": "OP-SYE-002"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020 and SYE-SUP-025.",
+      "requirements": [],
+      "source": "SYS-SUP-017",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-025"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020, SYE-SUP-064 and SYE-SUP-065.",
+      "requirements": [],
+      "source": "SYS-SUP-018",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-026"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020 and SYE-SUP-025.",
+      "requirements": [],
+      "source": "SYS-SUP-019",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-027"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-020 and SYE-SUP-021.",
+      "requirements": [],
+      "source": "SYS-SUP-020",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-028"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-024 and SYE-SUP-065.",
+      "requirements": [],
+      "source": "SYS-SUP-021",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-029"
+    },
+    {
+      "reason": "Budget allocated to SYE-SUP-024 and SYE-SUP-065; feasibility remains open in OP-SYE-007.",
+      "requirements": [],
+      "source": "SYS-SUP-022",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "Allocated to SYE-SUP-024 and SYE-SUP-025.",
+      "requirements": [],
+      "source": "SYS-SUP-023",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-030"
+    },
+    {
+      "reason": "Reaction is allocated; protection from application interference remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "SYS-SUP-024",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "The 49 ms pin-change allocation is stated; protection from application interference remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "SYS-SUP-025",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Reset-time safe outputs are allocated to SYE-SUP-007, SYE-SUP-009 and software.",
+      "requirements": [],
+      "source": "SYS-SUP-026",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-031"
+    },
+    {
+      "reason": "First start-up GPIO configuration is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-027",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-032"
+    },
+    {
+      "reason": "Operational status output is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-028",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-033"
+    },
+    {
+      "reason": "Conditional software reset is allocated to SYE-SUP-025 and SYE-SUP-057.",
+      "requirements": [],
+      "source": "SYS-SUP-029",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-034"
+    },
+    {
+      "reason": "Latch behavior is allocated; reset-retentive storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-030",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Per-code counting is allocated; reset-retentive storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-031",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Time counting is allocated, but retained accumulated time is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-032",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Retained data is identified; its storage endpoint remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-033",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Watchdog reset reporting is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-034",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-035"
+    },
+    {
+      "reason": "Code 8 counting is allocated to SYE-SUP-025.",
+      "requirements": [],
+      "source": "SYS-SUP-035",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-036"
+    },
+    {
+      "reason": "Reset classification and flag access are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-036",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-037"
+    },
+    {
+      "reason": "Start-up message is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-037",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-038"
+    },
+    {
+      "reason": "GET RESET response is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-038",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-039"
+    },
+    {
+      "reason": "Fault reporting and the interruption exception are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-039",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-040"
+    },
+    {
+      "reason": "Codes and entities are allocated to diagnostic communication.",
+      "requirements": [],
+      "source": "SYS-SUP-040",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-041"
+    },
+    {
+      "reason": "Flow fault entity and reporting are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-041",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-042"
+    },
+    {
+      "reason": "Timestamp semantics and time base are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-042",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-043"
+    },
+    {
+      "reason": "Report priority before an answer is specified.",
+      "requirements": [],
+      "source": "SYS-SUP-043",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-044"
+    },
+    {
+      "reason": "Serial line settings are specified.",
+      "requirements": [],
+      "source": "SYS-SUP-044",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-045"
+    },
+    {
+      "reason": "Status response and interface are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-045",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-046"
+    },
+    {
+      "reason": "STARTUP state semantics are specified.",
+      "requirements": [],
+      "source": "SYS-SUP-046",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-047"
+    },
+    {
+      "reason": "Reporting is allocated, but retained report count is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-047",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "GET FAULTS response timing is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-048",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-048"
+    },
+    {
+      "reason": "Invalid requests are allocated to diagnostic communication.",
+      "requirements": [],
+      "source": "SYS-SUP-049",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-049"
+    },
+    {
+      "reason": "Requests during an answer are ignored.",
+      "requirements": [],
+      "source": "SYS-SUP-050",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-050"
+    },
+    {
+      "reason": "Request receipt is defined at the terminating line feed.",
+      "requirements": [],
+      "source": "SYS-SUP-051",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-051"
+    },
+    {
+      "reason": "The aggregate budget is allocated; feasibility remains open in OP-SYE-007.",
+      "requirements": [],
+      "source": "SYS-SUP-052",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "The test hook is allocated; environment injection capabilities remain open in OP-SYE-004.",
+      "requirements": [],
+      "source": "SYS-SUP-053",
+      "status": "partial",
+      "tracked_by": "OP-SYE-004"
+    },
+    {
+      "reason": "The environment is identified; its required capabilities remain open in OP-SYE-004.",
+      "requirements": [],
+      "source": "SYS-SUP-054",
+      "status": "partial",
+      "tracked_by": "OP-SYE-004"
+    },
+    {
+      "reason": "Test hooks are excluded from production builds.",
+      "requirements": [],
+      "source": "SYS-SUP-055",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-052"
+    },
+    {
+      "reason": "Start-delay detection is allocated to SYE-SUP-022.",
+      "requirements": [],
+      "source": "SYS-SUP-056",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-053"
+    },
+    {
+      "reason": "Code 9 latching is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-057",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-054"
+    },
+    {
+      "reason": "The full-pass bound is allocated; feasibility remains open in OP-SYE-007.",
+      "requirements": [],
+      "source": "SYS-SUP-058",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "Count clearing and the time base are allocated; retained accumulated time is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-059",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Power-on clearing is specified; the storage endpoint and its power-loss behavior remain open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-060",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Code 8 alone does not enter SAFE.",
+      "requirements": [],
+      "source": "SYS-SUP-061",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-055"
+    },
+    {
+      "reason": "Code 8 start-up continuation is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-062",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-056"
+    },
+    {
+      "reason": "Accepted-request completion is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-063",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-057"
+    },
+    {
+      "reason": "No software reset at the third detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-064",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-058"
+    },
+    {
+      "reason": "Code 8 latching is allocated; reset-retentive state storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-065",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Whole-image CRC state across segments is specified.",
+      "requirements": [],
+      "source": "SYS-SUP-066",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-059"
+    },
+    {
+      "reason": "OPERATIONAL state semantics are specified.",
+      "requirements": [],
+      "source": "SYS-SUP-067",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-060"
+    },
+    {
+      "reason": "SAFE state semantics are specified.",
+      "requirements": [],
+      "source": "SYS-SUP-068",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-061"
+    },
+    {
+      "reason": "LATCHED state priority is specified.",
+      "requirements": [],
+      "source": "SYS-SUP-069",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-062"
+    },
+    {
+      "reason": "Latched outputs are allocated; latch retention remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-070",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Release inhibition is allocated; latch retention remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-071",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Board pull-downs are identified.",
+      "requirements": [],
+      "source": "SYS-SUP-072",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-063"
+    },
+    {
+      "reason": "Reset pin configuration is identified.",
+      "requirements": [],
+      "source": "SYS-SUP-073",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-064"
+    },
+    {
+      "reason": "Report priority at answer-line boundaries is specified.",
+      "requirements": [],
+      "source": "SYS-SUP-074",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-065"
+    },
+    {
+      "reason": "Answer-line length is specified.",
+      "requirements": [],
+      "source": "SYS-SUP-075",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-066"
+    },
+    {
+      "reason": "Default 10 ms task release order is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-076",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-067"
+    },
+    {
+      "reason": "T_DIAG release ordering is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-077",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-068"
+    },
+    {
+      "reason": "Default start limits are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-078",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-069"
+    },
+    {
+      "reason": "Default 10 ms task execution limits are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-079",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-070"
+    },
+    {
+      "reason": "Default T_DIAG execution limit is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-080",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-071"
+    },
+    {
+      "reason": "History retrieval is allocated; retention of its history remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-081",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "History replacement is allocated; retention of the history remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "SYS-SUP-082",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Target microcontroller is identified.",
+      "requirements": [],
+      "source": "SYS-SUP-083",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-072"
+    },
+    {
+      "reason": "Implementation language is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-084",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-073"
+    },
+    {
+      "reason": "Start-delay measurement resolution is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-085",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-074"
+    },
+    {
+      "reason": "Board output-stage timing is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-086",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-075"
+    },
+    {
+      "reason": "The software aggregate states the allocation constraint.",
+      "requirements": [],
+      "source": "SYS-SUP-087",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-076"
+    },
+    {
+      "reason": "The software aggregate states the recursion constraint.",
+      "requirements": [],
+      "source": "SYS-SUP-088",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-077"
+    },
+    {
+      "reason": "Image size limit is identified.",
+      "requirements": [],
+      "source": "SYS-SUP-089",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-078"
+    },
+    {
+      "reason": "Start-up message and code 8 ordering are allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-090",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-079"
+    },
+    {
+      "reason": "Execution-time measurement resolution is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-091",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-080"
+    },
+    {
+      "reason": "Execution-limit equality is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-092",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-081"
+    },
+    {
+      "reason": "Execution-time violation detection is allocated.",
+      "requirements": [],
+      "source": "SYS-SUP-093",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-082"
+    },
+    {
+      "reason": "Platform, language and interfaces are identified; simulator capabilities remain open in OP-SYE-004 and protection enforcement in OP-SYE-008. CON-SUP-002 is a reference manual, not an additional behavioral requirement.",
+      "requirements": [],
+      "source": "needs/constraints.md: platform constraints",
+      "status": "partial",
+      "tracked_by": "OP-SYE-004"
+    },
+    {
+      "reason": "The decisions are allocated through system requirements; retained storage, start-up watchdog handling, resource feasibility, interference enforcement and verification capabilities remain open in OP-SYE-001 and OP-SYE-004 through OP-SYE-008.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: initial product-owner decisions, CON-SUP-101 through CON-SUP-116",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Latching and reporting are allocated; latch and count retention remain open in OP-SYE-001.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: second round, CON-SUP-117 through CON-SUP-120",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Watchdog withholding and flow reporting are allocated; interference enforcement remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: third round, CON-SUP-121 and CON-SUP-122",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Flow entity selection is allocated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: fourth round, CON-SUP-123",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-083"
+    },
+    {
+      "reason": "CRC, timing and diagnostic semantics are allocated; retained report count is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: fifth round, CON-SUP-124 through CON-SUP-128",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "CRC and state semantics are allocated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: sixth round, CON-SUP-129 and CON-SUP-130",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-084"
+    },
+    {
+      "reason": "Signal, diagnostic and operating-time semantics are allocated; retained accumulated time is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: seventh round, CON-SUP-131 through CON-SUP-135",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "The timing limits are stated, but accumulated time is missing from SYE-SUP-067 and storage remains open in OP-SYE-001.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: eighth round, CON-SUP-136",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Request and code 8 semantics are allocated; fault-free start-up watchdog handling remains open in OP-SYE-006.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: ninth round, CON-SUP-137 and CON-SUP-138",
+      "status": "partial",
+      "tracked_by": "OP-SYE-006"
+    },
+    {
+      "reason": "Request priority and per-code counts are allocated; count retention is unresolved in OP-SYE-001 and retained time is missing from SYE-SUP-067.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: tenth round, CON-SUP-139 and CON-SUP-140",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "Code 8 classification-time timestamp is allocated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: eleventh round, CON-SUP-141",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-085"
+    },
+    {
+      "reason": "Configuration CRC region, report ordering and timing are allocated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: twelfth round, CON-SUP-142 through CON-SUP-144",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-086"
+    },
+    {
+      "reason": "Start-up message and ordering are allocated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: thirteenth round, CON-SUP-145",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-087"
+    },
+    {
+      "reason": "Exclusive end addresses are stated.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: fourteenth round, CON-SUP-146",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-088"
+    },
+    {
+      "reason": "Equality behavior is allocated; its prescribed analysis method belongs to verification.",
+      "requirements": [],
+      "source": "needs/product-decisions.md: fifteenth round, CON-SUP-147",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-089"
+    },
+    {
+      "reason": "Ordering is specified; fault-free watchdog handling remains open in OP-SYE-006.",
+      "requirements": [],
+      "source": "scenario: start-up",
+      "status": "partial",
+      "tracked_by": "OP-SYE-006"
+    },
+    {
+      "reason": "Supervision and checking are allocated; resource feasibility remains open in OP-SYE-007.",
+      "requirements": [],
+      "source": "scenario: normal operation",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    },
+    {
+      "reason": "Invalid configuration and service requests have allocated reactions.",
+      "requirements": [],
+      "source": "scenario: invalid input",
+      "status": "gap",
+      "tracked_by": "F-sys-arch-set-r4-090"
+    },
+    {
+      "reason": "Detection and reactions are allocated; interference protection remains open in OP-SYE-008.",
+      "requirements": [],
+      "source": "scenario: fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "OP-SYE-008"
+    },
+    {
+      "reason": "Reset and latching are allocated; storage remains open in OP-SYE-001 and retained accumulated time is missing from SYE-SUP-067.",
+      "requirements": [],
+      "source": "scenario: recovery",
+      "status": "partial",
+      "tracked_by": "OP-SYE-001"
+    },
+    {
+      "reason": "The supplied needs and system requirements specify safe-state entry and reset, but no commanded shutdown operating mode.",
+      "requirements": [],
+      "source": "scenario: shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "Limits are allocated; processor and CRC feasibility remain open in OP-SYE-007.",
+      "requirements": [],
+      "source": "scenario: limits",
+      "status": "partial",
+      "tracked_by": "OP-SYE-007"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sys-arch"
+}

@@ -1,0 +1,214 @@
+{
+  "adjusted": [
+    "STK-SUP-001: removed requirement ids that are not in the set",
+    "STK-SUP-001: covered by no requirement taken as gap",
+    "STK-SUP-001: gap tracked by no finding or open point; raised F-sw-design-set-r4-006",
+    "STK-SUP-002: removed requirement ids that are not in the set",
+    "STK-SUP-002: covered by no requirement taken as gap",
+    "STK-SUP-002: gap tracked by no finding or open point; raised F-sw-design-set-r4-007",
+    "STK-SUP-003: removed requirement ids that are not in the set",
+    "STK-SUP-004: removed requirement ids that are not in the set",
+    "STK-SUP-004: covered by no requirement taken as gap",
+    "STK-SUP-004: gap tracked by no finding or open point; raised F-sw-design-set-r4-008",
+    "STK-SUP-005: removed requirement ids that are not in the set",
+    "STK-SUP-005: covered by no requirement taken as gap",
+    "STK-SUP-005: gap tracked by no finding or open point; raised F-sw-design-set-r4-009",
+    "STK-SUP-006: removed requirement ids that are not in the set",
+    "STK-SUP-006: covered by no requirement taken as gap",
+    "STK-SUP-006: gap tracked by no finding or open point; raised F-sw-design-set-r4-010",
+    "STK-SUP-007: removed requirement ids that are not in the set",
+    "STK-SUP-007: covered by no requirement taken as gap",
+    "STK-SUP-007: gap tracked by no finding or open point; raised F-sw-design-set-r4-011",
+    "STK-SUP-008: removed requirement ids that are not in the set",
+    "STK-SUP-009: removed requirement ids that are not in the set",
+    "STK-SUP-010: removed requirement ids that are not in the set",
+    "STK-SUP-010: partial tracked by no finding or open point; raised F-sw-design-set-r4-012",
+    "STK-SUP-011: removed requirement ids that are not in the set",
+    "STK-SUP-011: partial tracked by no finding or open point; raised F-sw-design-set-r4-013",
+    "STK-SUP-012: removed requirement ids that are not in the set",
+    "STK-SUP-012: partial tracked by no finding or open point; raised F-sw-design-set-r4-014",
+    "STK-SUP-013: removed requirement ids that are not in the set",
+    "STK-SUP-013: partial tracked by no finding or open point; raised F-sw-design-set-r4-015",
+    "STK-SUP-014: removed requirement ids that are not in the set",
+    "STK-SUP-015: removed requirement ids that are not in the set",
+    "STK-SUP-015: covered by no requirement taken as gap",
+    "STK-SUP-015: gap tracked by no finding or open point; raised F-sw-design-set-r4-016",
+    "SWC-SUP-002: removed requirement ids that are not in the set",
+    "SWC-SUP-002: partial tracked by no finding or open point; raised F-sw-design-set-r4-017",
+    "scenario: start-up: removed requirement ids that are not in the set",
+    "scenario: normal operation: removed requirement ids that are not in the set",
+    "scenario: invalid input: removed requirement ids that are not in the set",
+    "scenario: invalid input: partial tracked by no finding or open point; raised F-sw-design-set-r4-018",
+    "scenario: fault detection and reaction: removed requirement ids that are not in the set",
+    "scenario: fault detection and reaction: partial tracked by no finding or open point; raised F-sw-design-set-r4-019",
+    "scenario: recovery: removed requirement ids that are not in the set",
+    "scenario: recovery: partial tracked by no finding or open point; raised F-sw-design-set-r4-020",
+    "scenario: limits: removed requirement ids that are not in the set"
+  ],
+  "provided": true,
+  "round": 4,
+  "rows": [
+    {
+      "reason": "Alive supervision is allocated to SWU-TMS-001.",
+      "requirements": [],
+      "source": "STK-SUP-001",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-006"
+    },
+    {
+      "reason": "Timing supervision and measurement are specified by SWU-TMS-001 and SWU-TIM-001.",
+      "requirements": [],
+      "source": "STK-SUP-002",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-007"
+    },
+    {
+      "reason": "The T_DIAG checkpoint rule remains unresolved; see OP-SWU-010 and the SET SDD-01 finding.",
+      "requirements": [],
+      "source": "STK-SUP-003",
+      "status": "partial",
+      "tracked_by": "OP-SWU-010"
+    },
+    {
+      "reason": "Configuration and scheduler units specify the task set, timing and order.",
+      "requirements": [],
+      "source": "STK-SUP-004",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-008"
+    },
+    {
+      "reason": "Watchdog service and inhibit behavior are allocated to SWU-WDG-001.",
+      "requirements": [],
+      "source": "STK-SUP-005",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-009"
+    },
+    {
+      "reason": "Both watchdog services are specified through the HAL.",
+      "requirements": [],
+      "source": "STK-SUP-006",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-010"
+    },
+    {
+      "reason": "Start-up code and configuration checks precede task release.",
+      "requirements": [],
+      "source": "STK-SUP-007",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-011"
+    },
+    {
+      "reason": "The segmented check is specified, but its processor-time and execution assumptions remain unsubstantiated; see OP-SWU-011.",
+      "requirements": [],
+      "source": "STK-SUP-008",
+      "status": "partial",
+      "tracked_by": "OP-SWU-011"
+    },
+    {
+      "reason": "Safe-state commands are specified, but execution-time evidence for the reaction is missing; see OP-SWU-011.",
+      "requirements": [],
+      "source": "STK-SUP-009",
+      "status": "partial",
+      "tracked_by": "OP-SWU-011"
+    },
+    {
+      "reason": "A discarded report cannot trigger its completion-dependent reset; see the SWU-FLT-001 finding.",
+      "requirements": [],
+      "source": "STK-SUP-010",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-012"
+    },
+    {
+      "reason": "Reset classification is specified, but report delivery and timing remain subject to the queue and execution-time findings.",
+      "requirements": [],
+      "source": "STK-SUP-011",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-013"
+    },
+    {
+      "reason": "Reports can be discarded, the reset-relative timestamp origin is unestablished, and one failure path uses an inconsistent entity; see the SWU-FLT-001, SWU-TIM-001 and SWU-CYC-001 findings.",
+      "requirements": [],
+      "source": "STK-SUP-012",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-014"
+    },
+    {
+      "reason": "A discarded report cannot reach report-completion history; see the SWU-FLT-001 finding.",
+      "requirements": [],
+      "source": "STK-SUP-013",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-015"
+    },
+    {
+      "reason": "The normal-operation processor-time budget lacks execution-time evidence; see OP-SWU-011.",
+      "requirements": [],
+      "source": "STK-SUP-014",
+      "status": "partial",
+      "tracked_by": "OP-SWU-011"
+    },
+    {
+      "reason": "The design specifies host-testable HAL boundaries and test-only fault-injection hooks.",
+      "requirements": [],
+      "source": "STK-SUP-015",
+      "status": "gap",
+      "tracked_by": "F-sw-design-set-r4-016"
+    },
+    {
+      "reason": "Report timing and the reset-relative time origin remain subject to the SWU-FLT-001 and SWU-TIM-001 findings.",
+      "requirements": [],
+      "source": "SWC-SUP-002",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-017"
+    },
+    {
+      "reason": "The reset-relative timer origin and report timing remain open; see OP-SWU-014 and the SWU-FLT-001 finding.",
+      "requirements": [],
+      "source": "scenario: start-up",
+      "status": "partial",
+      "tracked_by": "OP-SWU-014"
+    },
+    {
+      "reason": "The T_DIAG flow rule and execution-time budgets remain unresolved; see OP-SWU-010 and OP-SWU-011.",
+      "requirements": [],
+      "source": "scenario: normal operation",
+      "status": "partial",
+      "tracked_by": "OP-SWU-010"
+    },
+    {
+      "reason": "Invalid configuration is detected, but a report may be discarded; see the SWU-FLT-001 finding.",
+      "requirements": [],
+      "source": "scenario: invalid input",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-018"
+    },
+    {
+      "reason": "Reporting capacity, reaction timing and a watchdog-enable failure entity remain unresolved; see the SWU-FLT-001, SET SDD-07 and SWU-CYC-001 findings.",
+      "requirements": [],
+      "source": "scenario: fault detection and reaction",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-019"
+    },
+    {
+      "reason": "A discarded report cannot trigger its completion-dependent reset; see the SWU-FLT-001 finding.",
+      "requirements": [],
+      "source": "scenario: recovery",
+      "status": "partial",
+      "tracked_by": "F-sw-design-set-r4-020"
+    },
+    {
+      "reason": "The supplied inputs define reset and latched safe-state behavior but no commanded shutdown scenario.",
+      "requirements": [],
+      "source": "scenario: shutdown",
+      "status": "n/a"
+    },
+    {
+      "reason": "Report capacity and execution budgets are unsubstantiated; see the SWU-FLT-001 finding and OP-SWU-011.",
+      "requirements": [],
+      "source": "scenario: limits",
+      "status": "partial",
+      "tracked_by": "OP-SWU-011"
+    }
+  ],
+  "schema": "forge-c-hi/coverage-matrix@1",
+  "stage": "sw-design"
+}

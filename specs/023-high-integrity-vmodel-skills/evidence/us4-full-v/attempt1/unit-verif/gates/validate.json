@@ -1,0 +1,23 @@
+{
+  "evidence": [
+    {
+      "path": "hi/unit-verif/test-spec.json",
+      "sha256": "c438eda524a6a045ff526f44b8c66dd916c9ba8c69833de5424b80f8d68f151c"
+    }
+  ],
+  "exit_code": 1,
+  "gate": "validate",
+  "integrity_level": "HI-2",
+  "issues": [
+    {
+      "code": "VAL-UNREADABLE",
+      "message": "hi/unit-verif/test-spec.json: test-spec.json: Expecting value: line 160 column 1 (char 87048)"
+    }
+  ],
+  "profile": "generic",
+  "tool": {
+    "name": "forge-c-hi",
+    "version": "0.1.0"
+  },
+  "verdict": "FAIL"
+}
