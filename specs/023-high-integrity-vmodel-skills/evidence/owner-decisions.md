@@ -125,3 +125,5 @@
 - **Full-V attempt 3, pass 19:** first pass to reach software design. It blocked on a conflict inside the accepted
   architecture (OP-SWU-006: an interface limited to thread context cannot meet the 50 ms answer limit). No decision and
   no relaxation: the point goes back to the software architecture through `returned_to`, added to the package for this.
+- **Full-V attempt 3, pass 20:** sw-design returned OP-SWU-006 and OP-SWU-007 to sw-arch, which reached its rework limit
+  with four findings the author can fix. No decision. The next pass gives the stage a new set of rework rounds.
