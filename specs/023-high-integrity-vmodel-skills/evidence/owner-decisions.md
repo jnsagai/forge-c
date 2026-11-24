@@ -137,3 +137,6 @@
 - **Thirty-fourth round:** `CON-SUP-186` (at most 16 faults in one update) and `CON-SUP-187` (**relaxes** the content of an
   answer to one instant within 1 ms of the line feed). Raised by full-V attempt 3 pass 22: the system architecture
   returned OP-SYE-008 and 009, the system requirements need a person (OP-SYS-021, 022). Fictional, by Claude.
+- **Thirty-fifth round:** `CON-SUP-188` (boundary to boot code, vector table and linker script). Raised by full-V attempt 3
+  pass 23 (software design, OP-SWU-008). No limit is relaxed. Fictional, by Claude. The simulator's vector table got the two
+  spare interrupts (self-test `test_levels.c`).

@@ -1,0 +1,73 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261124T142145Z-005004/events.jsonl",
+  "run_id": "r20261124T142145Z-005004",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-arch"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sw-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED_WITH_GAPS",
+      "reason": "open major findings ['F-sw-arch-set-r28-001']",
+      "stage": "sw-arch"
+    },
+    {
+      "gates": {
+        "build": "FAIL",
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "static-analysis": "PASS",
+        "trace": "FAIL",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "deterministic gate issues remain after 3 fix rounds (rework limit 3)",
+      "stage": "sw-design"
+    }
+  ],
+  "status": "BLOCKED"
+}

@@ -1006,3 +1006,54 @@ def test_who_settles_a_blocking_open_point_is_stated(tmp_path):
     assert bad("sw-design", blocks=False, deferred_to="sw-req")               # deferred upwards
     assert not bad("sw-design", blocks=False, deferred_to="sw-integ")
     assert not bad("sys-req", blocks=True)                                    # nothing earlier in the project
+
+
+def test_gate_fixes_are_batched_and_continue_only_while_issues_fall(tmp_path, monkeypatch):
+    # full-V attempt 3 pass 23: 33 missing functions in one call, three times, and none was written
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-design"))
+    write(root / "hi/sw-design/design.json", {"items": [], "open_points": []})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+
+    def go(counts):
+        c = cond.Conductor(root)
+        calls, left = [], iter(counts[1:])
+        monkeypatch.setattr(c, "run_role", lambda *a, **k: calls.append((k["round"], len(k["findings"]))))
+
+        def issues(n):
+            return [{"gate": "build", "code": "BUILD-UNDEFINED", "target_id": f"f{i}", "message": "x"} for i in range(n)]
+        monkeypatch.setattr(c, "det_issues", lambda s: (None, issues(next(left))))
+        try:
+            c.fix_gates("sw-design", issues(counts[0]), "authoring")
+        except cond.Blocked as exc:
+            return calls, str(exc)
+        return calls, None
+    limit = cond.Conductor(root).limit
+    assert go([23, 0]) == ([(1, 10), (1, 10), (1, 3)], None)
+    calls, err = go([9, 8, 7, 6, 5, 4, 0])          # falling: allowed past the limit
+    assert err is None and len(calls) == 6 > limit
+    calls, err = go([9] * 20)                       # not falling: stops at the limit
+    assert "rework limit" in err and len(calls) == limit
+
+
+def test_many_changed_code_items_are_updated_in_batches(tmp_path, monkeypatch):
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-design"))
+    for stage in ("sw-design", "sys-req"):
+        write(root / f"hi/{stage}" / ("design.json" if stage == "sw-design" else "requirements.json"),
+              {"items": [], "open_points": []})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    c = cond.Conductor(root)
+    calls = []
+    monkeypatch.setattr(c, "run_role", lambda r, s, p, **k: calls.append((k["changed_inputs"], k["suspect"])))
+    monkeypatch.setattr(c, "det_issues", lambda s: (None, []))
+    kw = {"changed_inputs": ["a.md"], "suspect": list("ABCDE"), "open_points": ["OP-1"], "returned": []}
+    c.author_with_gates("sw-design", "update", **kw)
+    assert calls == [(["a.md"], []), ([], list("ABC")), ([], list("DE"))]
+    calls.clear()
+    c.author_with_gates("sys-req", "update", **kw)     # text stages are updated in one call as before
+    assert calls == [(["a.md"], list("ABCDE"))]

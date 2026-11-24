@@ -10,13 +10,16 @@ WEAK void PendSV_Handler(void);
 WEAK void SysTick_Handler(void);
 WEAK void TIM2_IRQHandler(void);
 WEAK void USART1_IRQHandler(void);
+WEAK void SPARE0_IRQHandler(void);
+WEAK void SPARE1_IRQHandler(void);
 /* 16 exceptions and 195 interrupts; interrupt numbers: RM0486 section 24.1.2. Handlers not listed stop the program. */
 __attribute__((section(".isr_vector"), used, aligned(1024))) static const void *const vectors[16 + 195] = {
     [0] = &_estack, [1] = (const void *)sim_reset_handler, [2 ... 10] = (const void *)sim_default_handler,
     [11] = (const void *)SVC_Handler, [12 ... 13] = (const void *)sim_default_handler,
     [14] = (const void *)PendSV_Handler, [15] = (const void *)SysTick_Handler,
     [16 ... 16 + 115] = (const void *)sim_default_handler, [16 + 116] = (const void *)TIM2_IRQHandler,
-    [16 + 117 ... 16 + 158] = (const void *)sim_default_handler, [16 + 159] = (const void *)USART1_IRQHandler,
+    [16 + 117] = (const void *)SPARE0_IRQHandler, [16 + 118] = (const void *)SPARE1_IRQHandler,
+    [16 + 119 ... 16 + 158] = (const void *)sim_default_handler, [16 + 159] = (const void *)USART1_IRQHandler,
     [16 + 160 ... 16 + 194] = (const void *)sim_default_handler};
 void sim_default_handler(void) { for (;;) { } }
 void sim_reset_handler(void)

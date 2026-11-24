@@ -42,7 +42,8 @@ skill are unchanged. `--fresh` re-authors from scratch.
    the stage before any requirement is written. On a re-run the package is updated only when inputs changed.
 1. **Author** writes the workproduct, with `.hi/active-role.json` naming its write scope (the guard hook enforces
    it) and a file snapshot before and after (any out-of-scope write blocks the stage).
-2. **Gates** (`validate`, `quality`, `trace`, `governance`): issues go back to the author as `fix-gates` rounds.
+2. **Gates** (`validate`, `quality`, `trace`, `governance`): issues go back to the author as `fix-gates` rounds, at most
+   10 issues per call, for `rework_limit` rounds and beyond it (up to `rework_max`) only while their number falls.
 3. **Item inspection** of every item by the read-only inspector.
 4. **Rework** of each item with a blocking or major finding, **one item at a time**. Changes to other existing items
    are discarded; new items from a split are kept and judged.

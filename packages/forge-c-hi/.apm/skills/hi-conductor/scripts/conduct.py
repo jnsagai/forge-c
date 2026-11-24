@@ -49,6 +49,8 @@ from forge_hi.jsonschema_lite import validate  # noqa: E402
 from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
+FIX_BATCH = 10   # gate issues per fix-gates call
+SUSPECT_BATCH = 3  # changed-upstream items per update call in a stage that writes code or tests
 SAME_TEXT = 0.5  # word-sequence similarity above which two findings under one key are the same defect
 # gate issues the author gets back as fix-gates rounds; the code gates belong to the stages that write code or tests
 # (full-V run T068: sw-design ended with a build error and an out-of-bounds access the author was never shown)
@@ -485,8 +487,39 @@ class Conductor:
         self.event(stage=stage, step="gate", verdict=summ["verdict"], gates=summ["gates"], issues=len(summ["issues"]))
         return summ, issues
 
+    def writes_code(self, stage: str) -> bool:
+        return any(s.startswith(("src/", "tests/")) for s in scope.write_scope("author", stage))
+
+    def fix_gates(self, stage: str, issues: list[dict], after: str) -> None:
+        """fix-gates rounds until no issue is left. At most `rework_limit` rounds, and more (up to `rework_max`) only
+        while the number of issues falls. A round is split into calls of `FIX_BATCH` issues: full-V attempt 3 pass 23
+        gave 33 missing functions to one call, three times, and none was written."""
+        fixes, last = 0, None
+        while issues:
+            if fixes:
+                self.stop_if_returned(stage, issues)
+            falling = last is not None and len(issues) < last
+            if fixes >= self.limit and not (falling and fixes < self.max_rounds):
+                raise Blocked(f"deterministic gate issues remain after {after if not fixes else f'{fixes} fix rounds'} "
+                              f"(rework limit {self.limit})")
+            fixes, last = fixes + 1, len(issues)
+            todo = [{k: i[k] for k in ("gate", "code", "target_id", "message") if k in i} for i in issues]
+            for n in range(0, len(todo), FIX_BATCH):
+                self.run_role("author", stage, "fix-gates", round=fixes, findings=todo[n:n + FIX_BATCH])
+            if not self.workproduct(stage).is_file():
+                raise Blocked(f"the author did not write {rel(self.root, self.workproduct(stage))}")
+            _, issues = self.det_issues(stage)
+
     def author_with_gates(self, stage: str, phase: str, **kw) -> None:
-        self.run_role("author", stage, phase, **kw)
+        suspect = kw.get("suspect") or []
+        if phase == "update" and self.writes_code(stage) and len(suspect) > SUSPECT_BATCH:
+            # code for many changed items in one call came back nearly untouched (full-V attempt 3 pass 23)
+            self.run_role("author", stage, phase, **dict(kw, suspect=[]))
+            for n in range(0, len(suspect), SUSPECT_BATCH):
+                self.run_role("author", stage, phase, changed_inputs=[], open_points=[], returned=[],
+                              suspect=suspect[n:n + SUSPECT_BATCH])
+        else:
+            self.run_role("author", stage, phase, **kw)
         if self.dry_run:
             return
         wp = rel(self.root, self.workproduct(stage))
@@ -495,21 +528,10 @@ class Conductor:
             self.run_role("author", stage, phase, notice=(
                 f"the conductor found no `{wp}` after your reply. Write that JSON file directly with the file tools; "
                 "scripts and commands cannot run here. Remove any helper file you created."), **kw)
-        fixes = 0
-        while True:
-            if not self.workproduct(stage).is_file():
-                raise Blocked(f"the author did not write {wp}")
-            _, issues = self.det_issues(stage)
-            if not issues:
-                return
-            if fixes:
-                self.stop_if_returned(stage, issues)
-            if fixes >= self.limit:
-                raise Blocked(f"deterministic gate issues remain after {fixes} fix rounds (rework limit {self.limit})")
-            fixes += 1
-            self.run_role("author", stage, "fix-gates", round=fixes,
-                          findings=[{k: i[k] for k in ("gate", "code", "target_id", "message") if k in i}
-                                    for i in issues[:40]])
+        if not self.workproduct(stage).is_file():
+            raise Blocked(f"the author did not write {wp}")
+        _, issues = self.det_issues(stage)
+        self.fix_gates(stage, issues, "authoring")
 
     def item_hashes(self, stage: str) -> dict[str, str]:
         from forge_hi.io import sha256_bytes
@@ -993,17 +1015,7 @@ class Conductor:
                 **({"reason": reason.strip()[:300]} if reason.strip() else {})}
 
     def author_with_gates_fix_only(self, stage: str, issues: list[dict]) -> None:
-        fixes = 0
-        while issues:
-            if fixes:
-                self.stop_if_returned(stage, issues)
-            if fixes >= self.limit:
-                raise Blocked(f"deterministic gate issues remain after rework (rework limit {self.limit})")
-            fixes += 1
-            self.run_role("author", stage, "fix-gates", round=fixes,
-                          findings=[{k: i[k] for k in ("gate", "code", "target_id", "message") if k in i}
-                                    for i in issues[:40]])
-            _, issues = self.det_issues(stage)
+        self.fix_gates(stage, issues, "rework")
 
     def run(self, first: str, until: str | None) -> dict:
         order = gates.trace.checked_stages(self.project, None)

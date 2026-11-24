@@ -2,12 +2,13 @@
 
 A combined Cortex-M55 platform for Renode 1.17: `run_sim.sh <program.c>` builds one target program with the product
 sources and runs it. Self-tests: `selftest/test_platform.c` (watchdogs, reset flags), `test_interrupts.c` (TIM2 and
-USART1 interrupts, received characters), `test_image.c` (image layout and stored references).
+USART1 interrupts, received characters), `test_image.c` (image layout and stored
+references), `test_levels.c` (software-pended exceptions and their nesting).
 
 For the author of a test program:
-- `main()` is yours; `startup.c` gives the vector table. Define `TIM2_IRQHandler`, `USART1_IRQHandler`,
-  `SysTick_Handler`, `PendSV_Handler` or `SVC_Handler` to receive that exception (interrupt 116 and 159); any other
-  exception stops the program. A reset starts `main()` again with `.noinit` data kept, so one program can check the
+- `main()` is yours and stands for the boot code and the application (the product is all of `src/`); `startup.c` gives the vector table. Define `TIM2_IRQHandler`, `USART1_IRQHandler`,
+  `SysTick_Handler`, `PendSV_Handler`, `SVC_Handler`, `SPARE0_IRQHandler` or `SPARE1_IRQHandler` to receive that
+  exception (interrupts 116, 159, and 117 and 118, which only software pends; CON-SUP-188); any other exception stops the program. A reset starts `main()` again with `.noinit` data kept, so one program can check the
   boots before and after a reset.
 - Print `HI-TEST <case id> PASS` or `HI-TEST <case id> FAIL <reason>` on USART1. The run lasts `SIM_SECONDS` (default 5).
 - Optional `<program>.uart` next to the program: lines of `<microseconds> <text>`; after that much more simulated time
