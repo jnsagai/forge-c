@@ -154,3 +154,10 @@
 - **Thirty-seventh round:** `CON-SUP-193` (linker symbols for the retained data in `.noinit`). Raised by pass 25 (software
   design, OP-SWU-024). No relaxation: the author had asked for a compiler extension as one option, which is not needed.
   Fictional, by Claude. The simulator's linker script provides the symbols.
+- **Owner, 2026-11-25 ("go with your recommendation"):** cut-off for the full V-model cycle (T068) is 2026-12-01. If it is
+  not complete then, the submission uses the results so far and states plainly which stages did not finish.
+- **Thirty-eighth round:** `CON-SUP-194` (retained memory is AXISRAM3) and `CON-SUP-195` (what a reset leaves in the
+  retained memory). Raised by pass 26 (software architecture, OP-SWC-038 and 040). 194 relaxes nothing. **195 is an
+  assumption on the hardware accepted without evidence**, where the author had asked for reset-injection runs on the
+  target; nobody has confirmed it. Fictional, by Claude. The simulator's `.noinit` moved to AXISRAM3, because RM0486
+  shows the former address in an SRAM that is erased on reset.

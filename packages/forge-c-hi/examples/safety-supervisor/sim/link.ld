@@ -1,7 +1,7 @@
 ENTRY(sim_reset_handler)
 MEMORY { ROM (rx) : ORIGIN = 0x34000000, LENGTH = 0x100000
-         RAM (rw) : ORIGIN = 0x34100000, LENGTH = 0xF0000
-         RET (rw) : ORIGIN = 0x341F0000, LENGTH = 0x2000 }
+         RAM (rw) : ORIGIN = 0x34100000, LENGTH = 0x100000
+         RET (rw) : ORIGIN = 0x34200000, LENGTH = 0x2000 }
 SECTIONS {
   .text : { __app_start = .; KEEP(*(.isr_vector)) . = ALIGN(4); __task_table = .; KEEP(*(.task_table*)) *(.text*) *(.rodata*) . = ALIGN(4); __app_end = .; } > ROM
   .app_crc : { __app_crc = .; LONG(0) } > ROM

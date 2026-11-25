@@ -11,7 +11,7 @@ nvic: IRQControllers.NVIC @ sysbus 0xE000E000
     -> cpu@0
 
 axisram: Memory.MappedMemory @ sysbus 0x34000000
-    size: 0x200000
+    size: 0x270000   // up to the end of AXISRAM3; retention on the device is not modelled
 
 rcc: Timers.HiRcc @ sysbus 0x56028000
 

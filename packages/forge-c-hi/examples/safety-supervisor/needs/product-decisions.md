@@ -280,3 +280,10 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-193 | **Retained data in `.noinit`, completes CON-SUP-188.** The integrator's linker script reserves in the section `.noinit` 4096 bytes for the supervisor, aligned to 8 bytes, between the symbols `__noinit_start` and `__noinit_end`. The supervisor reaches its retained data through these symbols, as it reaches the configuration data through `__cfg_start`; no compiler extension is needed. When the boot code starts the supervisor this memory is clocked, readable and writable. |
+
+**Thirty-eighth round.** Answers the software architecture (OP-SWC-038, OP-SWC-040; OP-SWC-039 follows from CON-SUP-195).
+
+| ID | Decision |
+|---|---|
+| CON-SUP-194 | **Where `.noinit` lies, completes CON-SUP-193.** The integrator maps the 4096 bytes to AXISRAM3. Nothing but the supervisor uses them, and nobody erases them after the first start. |
+| CON-SUP-195 | **Assumption on the hardware, accepted for this product without evidence.** When a reset other than power-on interrupts the supervisor, (1) an aligned 32-bit store to the retained memory that was in progress leaves the old word, the new word or a bitwise mixture of the two in that word and changes no other word; (2) every store completed before a data synchronisation barrier that has completed is kept; (3) of the stores issued after the last completed barrier, each has either been made, been interrupted as in (1) or not been made. CON-SUP-164 and the limits on the fault-free operating time (CON-SUP-135, CON-SUP-140) are met and verified under this assumption. Confirming it on the device is a task of the integrator and not part of the verification of this product; it is recorded as an unconfirmed assumption. |

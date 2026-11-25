@@ -22,7 +22,7 @@ For the author of a test program:
 |---|---|---|
 | IWDG, WWDG, RCC reset flags (RCC_RSR) | `HiStm32n6Watchdogs.cs`, written for this demo from the register behaviour in the reference manual | 0x56004800, 0x50002C00, 0x56028000 |
 | USART1, GPIOA, TIM2, CRC | Renode's own STM32 F7/F0-family models, not STM32N6 models | 0x52001000, 0x56020000, 0x50000000, 0x56024C00 |
-| RAM | code 0x34000000, data 0x34100000, retained `.noinit` 0x341F0000 | |
+| RAM | code 0x34000000, data 0x34100000, retained `.noinit` 0x34200000 (AXISRAM3, CON-SUP-194) | |
 
 Limits, to be stated with every result:
 - It is not the silicon: no clock tree (fixed 200 MHz timer and USART clock, 50 MHz WWDG clock, 32 kHz IWDG clock), no
