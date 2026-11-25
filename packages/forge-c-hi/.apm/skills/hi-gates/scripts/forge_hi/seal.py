@@ -122,7 +122,7 @@ def package_files(root: Path, project: dict) -> list[Path]:
     """Relative paths copied into the package. Reference documents and their local indexes are never included."""
     root = Path(root)
     rels: set[str] = set()
-    for name in ("project.json", "inputs.lock.json", "state.json", "trace-baseline.json"):
+    for name in ("project.json", "inputs.lock.json", "state.json", "trace-baseline.json", "answers.json"):
         if (root / ".hi" / name).is_file():
             rels.add(f".hi/{name}")
     for inp in project.get("inputs", []):

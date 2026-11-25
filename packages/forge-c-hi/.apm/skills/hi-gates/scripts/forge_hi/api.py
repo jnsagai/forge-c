@@ -289,3 +289,11 @@ def not_available(cmd: str, task: str) -> tuple[int, dict]:
 def _stage_ok(stage: str) -> None:
     if stage not in stages():
         raise ValueError(f"unknown stage '{stage}' (known: {list(stages())})")
+
+
+def answer(root: Path, stage: str, open_point: str, by: str, text: str) -> tuple[int, dict]:
+    from . import answers
+    if stage not in stages():
+        raise ValueError(f"unknown stage {stage}")
+    rec = answers.add(root, stage, open_point, by=by, text=text)
+    return 0, {"cmd": "answer", "status": "DONE", "stage": stage, "open_point": open_point, "answered_by": rec["answered_by"]}

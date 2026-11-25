@@ -102,6 +102,13 @@ Copy the provenance fields from the `hi-task` block (assisted mode: `"harness": 
 9. **Sources.** Every case cites at least one upstream `SWC-*` id; no `derived` flag exists, so a case without one
    fails (`TR-ORPHAN`).
 
+10. **A case about an event "during" something observes that it was during it.** Elapsed time, or a change before and
+    after, does not exclude the gaps in between. On a target simulator, a test's interrupt wrapper can read the return
+    address that exception entry stacked and compare it with the code that only the activity in question runs (with
+    every other user of that code disabled and checked to be disabled), and inject only when it lies there.
+11. **Analyses a person performs** stay `manual` and NOT_RUN until a person has performed them; that is already a gap of
+    the package. Never write a result for one.
+
 ## Coverage obligations
 
 - **Every architecture element is verified** (`sw-arch` -> `sw-integ`, "verified by"): each `SWC-*` of every kind

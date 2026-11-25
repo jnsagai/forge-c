@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 33 ended BLOCKED.
+returned integration result as well. Every pass up to 34 ended BLOCKED.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -46,8 +46,9 @@ returned integration result as well. Every pass up to 33 ended BLOCKED.
 | 31 | software integration, 24 of 25 PASS; then software design BLOCKED | ITC-SIM-002 FAIL, caused by the simulator's timer model |
 | 32 | unit verification | the author account's usage limit (not a verdict) |
 | 33 | software integration, 35 of 36 PASS (the corrected simulator cases PASS); unit verification ACCEPTED_WITH_GAPS; then software design BLOCKED | ITC-BUD-001: deadline check 511 us of 260, dispatch 25.6 us of 16 (upper bounds with instrumentation). The design stage changed the code but could not run it |
+| 34 | software integration BLOCKED: 40 of 43 cases PASS, 3 NOT_RUN. SWE.1 to SWE.4 stages ACCEPTED | one test did not prove that its signal came during an activation; three analyses need a person |
 
-Software qualification, system integration and system qualification had no result up to pass 33.
+Software qualification, system integration and system qualification had no result up to pass 34.
 
 ### Limits a reader must know
 
@@ -68,6 +69,10 @@ Software qualification, system integration and system qualification had no resul
   passed in a scratch run, and in the package run of pass 33.
 - **Unit results up to pass 33 come from the instrumented run:** the coverage gate ran after the unit-test gate and
   overwrote its results and logs, so the hash in the unit-test verdict did not match. Fixed after pass 33.
+- **Three integration analyses are NOT_RUN** (ITC-BUD-004 to 006: single time allocations, worst-case interference,
+  worst-case stack). They need a person and nobody performs them here; exception entry and exit time is not judged by
+  any case. Claude answered the stage's question (`hi answer`) so that the run could go on; nothing was relaxed, and
+  both stay gaps.
 - **The package changed between passes.** Defects found by one pass were fixed in the package before the next, so the
   passes do not measure one fixed version.
 - No certification is claimed. READY would mean ready for human review.

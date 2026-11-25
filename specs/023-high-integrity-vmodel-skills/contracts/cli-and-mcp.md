@@ -20,6 +20,7 @@ All commands:
 | `hi scope --role R --stage S` | `hi_scope_check` | changed files ⊆ role write scope (diff or snapshot backstop) | gate result |
 | `hi gate <stage>` | `hi_gate` | run all of the profile's required gates for the stage at the configured level | `hi/<stage>/gates/*.json` |
 | `hi status` | `hi_status` | V-model position, verdicts, open findings | none |
+| `hi answer <stage> <OP-id> --by <who> --text <answer>` | - | A person answers a process question of one stage; held to the wording of the point, kept in `.hi/answers.json` and in the sealed package, never evidence. Product decisions go in the inputs | `.hi/answers.json` |
 | `hi seal` | `hi_seal_package` | READY or BLOCKED review package | `hi/packages/<run_id>/…` |
 | `hi role set <role> <stage>` | none (conductor/skills) | write `.hi/active-role.json` for the guard hook | `.hi/active-role.json` |
 

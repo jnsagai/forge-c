@@ -42,7 +42,7 @@ SKILLS = HERE.parents[2]
 sys.dont_write_bytecode = True  # never write __pycache__ into the installed skills (scope gate)
 sys.path.insert(0, str(SKILLS / "hi-gates" / "scripts"))
 
-from forge_hi import __version__, api, code_gates, gate_result, gates, governance, scope, trace  # noqa: E402
+from forge_hi import __version__, answers, api, code_gates, gate_result, gates, governance, scope, trace  # noqa: E402
 from forge_hi.api import compact  # noqa: E402
 from forge_hi.config import REFS, ConfigError, effective_rigor, find_root, load_profile, load_project, schema, stage_order, stages  # noqa: E402,E501
 from forge_hi.io import canonical, read_json, sha256_file, write_json, write_text  # noqa: E402
@@ -214,6 +214,10 @@ class Conductor:
                          "require. If the conflict comes from an earlier stage, record a blocking open point with "
                          "`returned_to` that stage; if only a person can decide, one with `returned_to: null`. If the "
                          "point is mistaken, change nothing and say why in the `rationale` of the item it names.")
+                      + ("" if not t.get("answers") else " A person answered the open points in `answers`. Do what the "
+                         "answer says within this stage's own work and remove or reclassify the point. An answer "
+                         "never changes a requirement, relaxes a limit, stands for evidence or turns NOT_RUN into a "
+                         "result; if it would, or conflicts with an input, keep the point and say why in its text.")
                       + " " + CONSISTENT,
             "fix-gates": "The deterministic gates reported the issues listed in `findings`. Fix them in the workproduct"
                          + (" (issues of the `governance` gate may instead need a change in `governance`)"
@@ -242,6 +246,8 @@ class Conductor:
                    + ("" if not t.get("returned") else " A later stage returned the points in `returned`: check that "
                       "the workproduct now settles each without breaking an input or earlier workproduct, or says why "
                       "the point is mistaken; otherwise raise a finding.")
+                   + ("" if not t.get("answers") else " A person gave the `answers` to open points of this stage: an "
+                      "answer says how to proceed and is no evidence. What was not verified is still not verified.")
                    + ("" if not self.has_coverage(t["stage"]) else " Also return "
                    "the coverage matrix (`coverage`): one row per upstream source (each need, upstream requirement "
                    "or in-scope document section this stage must cover) and per applicable scenario (start-up, "
@@ -679,7 +685,8 @@ class Conductor:
         suspect = self.suspect_items(stage)
         answered = [r["id"] for r in self.returned_by(stage) if r["handled"]]
         ops = [o.get("id") for o in wp.get("open_points", []) if isinstance(o, dict)] if changed or suspect else answered
-        return {"changed_inputs": changed, "suspect": suspect, "open_points": ops, "returned": self.returned_to(stage)}
+        return {"changed_inputs": changed, "suspect": suspect, "open_points": ops, "returned": self.returned_to(stage),
+                "answers": answers.current(self.root, stage)}
 
     def item_ids(self, stage: str) -> list[str]:
         return [i["id"] for i in read_json(self.workproduct(stage)).get("items", []) if isinstance(i, dict) and "id" in i]
@@ -690,6 +697,9 @@ class Conductor:
             kw["returned"] = self.returned
         if phase == "set":
             kw = self.with_retests(stage, kw)
+            given = [a for a in answers.recorded(self.root) if a["stage"] == stage]
+            if given:
+                kw["answers"] = [{k: a[k] for k in ("open_point", "question", "answer", "answered_by")} for a in given]
         if carried:
             kw["findings"] = [{k: f[k] for k in ("id", "checklist_item", "target_id", "severity", "description")}
                               for f in carried]
@@ -939,7 +949,8 @@ class Conductor:
                     judged = {}
                 changes = self.changes(stage)
                 self.returned = changes["returned"]
-                self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items() if k != "returned"},
+                self.event(stage=stage, step="resume", **{k: v[:20] for k, v in changes.items() if k not in ("returned", "answers")},
+                           answers=[a["open_point"] for a in changes["answers"]],
                            returned=[f"{r['from_stage']}:{r['id']}" for r in self.returned][:20])
                 if self.governed(stage):
                     self.governance_step(stage, changes["changed_inputs"])

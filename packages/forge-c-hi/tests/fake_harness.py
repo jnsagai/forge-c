@@ -48,7 +48,7 @@ def main() -> int:
         fh.write(json.dumps({
             "role": role, "phase": task["phase"], "round": task.get("round", 0), "items": task.get("items", []),
             "findings": len(task.get("findings", [])), "targets": [f.get("target_id") for f in task.get("findings", [])], "changed_inputs": task.get("changed_inputs"),
-            "stage": task["stage"], "returned": task.get("returned"), "open_points": task.get("open_points"),
+            "stage": task["stage"], "returned": task.get("returned"), "answers": task.get("answers"), "open_points": task.get("open_points"),
             "suspect": task.get("suspect"), "notice": task.get("notice"),
             "active_role": json.loads(active.read_text()) if active.exists() else None,
             "env_role": os.environ.get("HI_ROLE"),

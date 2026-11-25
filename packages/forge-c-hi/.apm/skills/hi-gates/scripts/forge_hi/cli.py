@@ -69,6 +69,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--snapshot")
     s = sub.add_parser("gate", help="all required gates for a stage")
     s.add_argument("stage")
+    s = sub.add_parser("answer", help="a person's answer to an open point of a stage (product decisions go in the inputs)")
+    s.add_argument("stage")
+    s.add_argument("open_point")
+    s.add_argument("--by", required=True, help="who answers")
+    s.add_argument("--text", required=True)
     sub.add_parser("status", help="V-model position and verdicts")
     sub.add_parser("seal", help="sealed review package")
     s = sub.add_parser("role", help="set or clear the active role for the guard hook")
@@ -105,6 +110,8 @@ def dispatch(args: argparse.Namespace, root: Path) -> tuple[int, dict]:
         return api.scope(root, args.role, args.stage, args.snapshot)
     if c == "gate":
         return api.gate(root, args.stage)
+    if c == "answer":
+        return api.answer(root, args.stage, args.open_point, args.by, args.text)
     if c == "status":
         return api.status(root)
     if c == "seal":

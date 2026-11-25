@@ -1158,3 +1158,64 @@ def test_a_returned_test_failure_is_run_again_on_the_changed_code(tmp_path, monk
     spec["open_points"] = []
     write(root / "hi/sw-integ/test-spec.json", spec)
     assert c.retests("sw-design") == []                                # nothing returned, nothing run
+
+
+def answer_project(tmp_path):
+    root = tmp_path / "p"
+    root.mkdir()
+    op = [{"id": "OP-SWR-001", "text": "Who performs the analysis?", "blocks": True, "returned_to": None},
+          {"id": "OP-SWR-002", "text": "SYS-SUP-002 is wrong.", "blocks": True, "returned_to": "sys-req"}]
+    sc = setup(root, clean_scenario(by_stage={
+        "sys-req": {}, "sw-req": {"items": SWR_ITEMS, "open_points": op[:1], "update": {"open_points": []}}}),
+        stages=("sys-req", "sw-req"))
+    return root, sc, op
+
+
+def test_an_answer_to_a_stage_reaches_that_stage_only(tmp_path):
+    # full-V attempt 3 pass 34: "who performs the analyses?" could only be answered in the inputs, which makes every
+    # earlier stage be judged again
+    root, sc, _ = answer_project(tmp_path)
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert [s["outcome"] for s in out["stages"]] == ["ACCEPTED", "BLOCKED"], out
+    n = len(calls)
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 1 and not [c for c in calls[n:] if c["phase"] == "update"]        # nothing answered: no update
+    n = len(calls)
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    cond.answers.add(root, "sw-req", "OP-SWR-001", by="product owner", text="Nobody; it stays a gap.")
+    code, out, calls = conduct(root, sc, "--stage", "sys-req", "--until", "sw-req")
+    assert code == 0, out
+    assert out["stages"][0]["kept"] and {c["stage"] for c in calls[n:]} == {"sw-req"}
+    upd, = [c for c in calls[n:] if c["phase"] == "update"]
+    assert upd["answers"] == [{"open_point": "OP-SWR-001", "answer": "Nobody; it stays a gap.",
+                               "answered_by": "product owner"}]
+    judged = [c for c in calls[n:] if c["role"] == "inspector" and c["phase"] == "set"]
+    assert judged and judged[0]["answers"][0]["question"] == "Who performs the analysis?"
+    assert cond.answers.current(root, "sw-req") == []                                # the point is gone
+
+
+def test_an_answer_holds_only_for_the_question_it_was_given_to(tmp_path):
+    root, sc, op = answer_project(tmp_path)
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    spec = {"items": SWR_ITEMS, "open_points": op}
+    write(root / "hi/sw-req/requirements.json", spec)
+    for bad in (("sw-req", "OP-SWR-009"), ("sw-req", "OP-SWR-002"), ("sys-qual", "OP-SWR-001")):
+        with pytest.raises(ValueError):                         # unknown point; another stage's to settle; no such stage
+            cond.answers.add(root, *bad, by="me", text="x")
+    with pytest.raises(ValueError):
+        cond.answers.add(root, "sw-req", "OP-SWR-001", by=" ", text="x")
+    r = subprocess.run([sys.executable, str(SKILLS / "hi-gates/scripts/hi.py"), "answer", "sw-req", "OP-SWR-001", "--by", "me", "--text", "a"],
+                       cwd=root, capture_output=True, text=True)
+    assert r.returncode == 0 and json.loads(r.stdout)["status"] == "DONE", r.stdout + r.stderr
+    assert [a["answer"] for a in cond.answers.current(root, "sw-req")] == ["a"]
+    cond.answers.add(root, "sw-req", "OP-SWR-001", by="me", text="b")                # a later answer replaces it
+    assert [a["answer"] for a in cond.answers.current(root, "sw-req")] == ["b"]
+    op[0]["text"] = "Who performs both analyses?"
+    write(root / "hi/sw-req/requirements.json", spec)
+    assert cond.answers.current(root, "sw-req") == []
+    from forge_hi import seal
+    assert Path(".hi/answers.json") in seal.package_files(root, cond.load_project(root))
+    text = cond.Conductor(root).prompt(cond.Conductor(root).task("author", "sw-req", "update", answers=[{"answer": "b"}]))
+    assert "turns NOT_RUN into a result" in text
