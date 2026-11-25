@@ -32,9 +32,11 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 ### How far each pass got
 
-"Furthest" is the last stage of the pass's `summary.json`. Every pass so far ended BLOCKED.
+The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
+list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
+returned integration result as well. Every pass up to 32 ended BLOCKED.
 
-| Passes | Furthest stage that gave a result | What stopped it |
+| Passes | Last stage in the summary | What stopped it |
 |---|---|---|
 | 1-6, 9-12, 15, 17, 18, 21, 22, 27, 28 | system requirements | mostly gaps or conflicts in the fictional product decisions |
 | 8, 13 | system architecture | deadline bound; counter arithmetic |
