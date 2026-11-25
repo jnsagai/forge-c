@@ -1,0 +1,58 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261125T221704Z-18be74/events.jsonl",
+  "run_id": "r20261125T221704Z-18be74",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-arch"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sw-req"
+    },
+    {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "FAIL",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "author harness failed (exit 1) in sw-arch update: the account's usage limit is reached; run again after it resets",
+      "stage": "sw-arch"
+    }
+  ],
+  "status": "BLOCKED"
+}
