@@ -2,7 +2,7 @@
 
 A combined Cortex-M55 platform for Renode 1.17: `run_sim.sh <program.c>` builds one target program with the product
 sources and runs it. Self-tests: `selftest/test_platform.c` (watchdogs, reset flags), `test_interrupts.c` (TIM2 and
-USART1 interrupts, received characters), `test_image.c` (image layout and stored
+USART1 interrupts, received characters), `test_rearm.c` (two TIM2 compare channels re-armed independently), `test_image.c` (image layout and stored
 references), `test_levels.c` (software-pended exceptions and their nesting).
 
 For the author of a test program:
@@ -20,8 +20,8 @@ For the author of a test program:
 
 | Part | Model | Secure base |
 |---|---|---|
-| IWDG, WWDG, RCC reset flags (RCC_RSR) | `HiStm32n6Watchdogs.cs`, written for this demo from the register behaviour in the reference manual | 0x56004800, 0x50002C00, 0x56028000 |
-| USART1, GPIOA, TIM2, CRC | Renode's own STM32 F7/F0-family models, not STM32N6 models | 0x52001000, 0x56020000, 0x50000000, 0x56024C00 |
+| IWDG, WWDG, RCC reset flags (RCC_RSR), TIM2 | `HiStm32n6Watchdogs.cs`, written for this demo from the register behaviour in the reference manual. TIM2 is a free-running counter with compare flags only | 0x56004800, 0x50002C00, 0x56028000, 0x50000000 |
+| USART1, GPIOA, CRC | Renode's own STM32 F7/F0-family models, not STM32N6 models | 0x52001000, 0x56020000, 0x56024C00 |
 | RAM | code 0x34000000, data 0x34100000, retained `.noinit` 0x34200000 (AXISRAM3, CON-SUP-194) | |
 
 Limits, to be stated with every result:

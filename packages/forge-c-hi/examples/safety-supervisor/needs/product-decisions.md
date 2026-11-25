@@ -306,3 +306,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-199 | Test builds define the macro `HI_TEST_BUILD`; product builds do not. The unit, integration, qualification and system tests run on test builds, so the fault-injection hooks of CON-SUP-116 are present there. A product build contains neither a hook nor a call to one. |
+
+**Forty-second round.** Answers the software design (OP-SWU-030) and software integration (OP-ITC-002) with an observation on the simulator.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-200 | The cause of the missing code 2 in ITC-SIM-002 was observed and is the simulator platform, not a unit. Observed: the deadline check ran 44 times and then never again, with TIMx_CNT far past TIMx_CCR2, CC2IE set and CC2IF clear; a program without product code shows the same loss after any write to TIMx_DIER, whatever its value. The platform's timer model was replaced and has a self-test for this (`sim/selftest/test_rearm.c`). On the corrected platform ITC-SIM-001 to ITC-SIM-004 pass with the product and the tests unchanged. No unit changes because of this point, and the expected result of ITC-SIM-002 stays. |

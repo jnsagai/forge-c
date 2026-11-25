@@ -192,3 +192,11 @@
   markers, the lines gcovr skips are braces and blank lines). It is BLOCKED on two major set findings: the gates kept only
   percentages and test-file hashes. The finding is right and was a package gap. Now kept: output logs, compiler, flags and
   the hash of every input, coverage per file and line. No decision was needed, and no round follows pass 30.
+- **Full-V attempt 3, pass 31:** the five left-side stages ACCEPTED (four kept unchanged), unit verification
+  ACCEPTED_WITH_GAPS (one major set finding: stale coverage notes), and the first software integration result: 24 of 25
+  cases PASS, 21 host and 3 simulator cases. ITC-SIM-002 failed and was returned to software design, which found no
+  defect by reading, refused to change the expected result and asked a person to observe it (OP-SWU-030).
+- **Forty-second round:** `CON-SUP-200`, an observation by Claude on the simulator, not a fictional decision: Renode's stock
+  STM32_Timer loses the pending compare match of one channel when TIMx_DIER is written for another. Claude's simulator
+  platform used it, and its self-tests had exercised one channel once. Replaced by a small model (`HiTimer`) with a
+  self-test that fails on the stock model. The unchanged product and test then pass.

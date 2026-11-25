@@ -158,4 +158,104 @@ namespace Antmicro.Renode.Peripherals.Timers
         private readonly long lsi;
         private readonly IMachine machine; private readonly HiRcc rcc; private readonly LimitTimer timer;
     }
+
+    // Free-running 32-bit up-counter with four compare channels (output-compare flags only: no capture, no outputs, no DMA,
+    // auto-reload fixed at 0xFFFFFFFF). Written because a write to DIER makes Renode's STM32_Timer lose the pending match
+    // of the other channels (selftest/test_rearm.c). Flags are set whatever DIER says; a compare value equal to the
+    // present count matches only after the counter has wrapped (the product must not rely on either outcome).
+    public class HiTimer : IDoubleWordPeripheral, IKnownSize
+    {
+        public HiTimer(IMachine machine, long frequency)
+        {
+            this.machine = machine;
+            IRQ = new GPIO();
+            raw = new LimitTimer(machine.ClockSource, (ulong)frequency, this, "count", 1ul << 62, Direction.Ascending, false,
+                                 WorkMode.Periodic, true, true);
+            match = new LimitTimer[Channels];
+            for(var i = 0; i < Channels; i++)
+            {
+                var n = i;
+                match[i] = new LimitTimer(machine.ClockSource, (ulong)frequency, this, "compare" + (i + 1), 1ul << 62,
+                                          Direction.Descending, false, WorkMode.OneShot, true, true);
+                match[i].LimitReached += () => Matched(n);
+            }
+            Reset();
+        }
+        public long Size => 0x400;
+        public GPIO IRQ { get; }
+        public void Reset()
+        {
+            cr1 = 0; dier = 0; sr = 0; psc = 0; pscActive = 0; start = 0;
+            Array.Clear(ccr, 0, Channels);
+            Array.Clear(other, 0, other.Length);
+            raw.Reset(); raw.Enabled = false;
+            foreach(var m in match) { m.Reset(); m.Enabled = false; }
+            IRQ.Set(false);
+        }
+        public uint ReadDoubleWord(long offset)
+        {
+            switch(offset)
+            {
+            case 0x00: return cr1;
+            case 0x0C: return dier;
+            case 0x10: return sr;
+            case 0x24: Sync(); return Count();
+            case 0x28: return psc;
+            case 0x2C: return 0xFFFFFFFF;
+            case 0x34: case 0x38: case 0x3C: case 0x40: return ccr[(offset - 0x34) / 4];
+            default: return other[offset / 4];
+            }
+        }
+        public void WriteDoubleWord(long offset, uint value)
+        {
+            Sync();
+            switch(offset)
+            {
+            case 0x00: cr1 = value; raw.Enabled = (value & 1) != 0; ScheduleAll(); break;
+            case 0x0C: dier = value; UpdateInterrupt(); break;
+            case 0x10: sr &= value; UpdateInterrupt(); break;                  // rc_w0
+            case 0x14:
+                if((value & 1) != 0) { pscActive = psc; SetCount(0); sr |= 1; UpdateInterrupt(); }
+                break;
+            case 0x24: SetCount(value); break;
+            case 0x28: psc = value & 0xFFFF; break;                            // taken over by the next update event
+            case 0x2C: if(value != 0xFFFFFFFF) { this.Log(LogLevel.Error, "auto-reload 0x{0:X} is not modelled", value); } break;
+            case 0x34: case 0x38: case 0x3C: case 0x40:
+                var n = (int)((offset - 0x34) / 4);
+                ccr[n] = value;
+                Schedule(n);
+                break;
+            default: other[offset / 4] = value; break;
+            }
+        }
+        private ulong Divider => (ulong)pscActive + 1;
+        private ulong Ticks => raw.Value;
+        private uint Count() { return (uint)(start + Ticks / Divider); }
+        private void SetCount(uint value) { raw.Value = 0; start = value; ScheduleAll(); }
+        private void ScheduleAll() { for(var i = 0; i < Channels; i++) { Schedule(i); } }
+        private void Schedule(int n)
+        {
+            var delta = (ulong)(uint)(ccr[n] - Count());
+            if(delta == 0) { delta = 1ul << 32; }
+            Load(n, (Ticks / Divider + delta) * Divider - Ticks);
+        }
+        private void Load(int n, ulong ticks)
+        {
+            match[n].Enabled = false;
+            match[n].Limit = ticks; match[n].Value = ticks;
+            match[n].Enabled = raw.Enabled;
+        }
+        private void Matched(int n)
+        {
+            sr |= 2u << n;
+            Load(n, (1ul << 32) * Divider);
+            UpdateInterrupt();
+        }
+        private void UpdateInterrupt() { IRQ.Set((sr & dier & 0x1F) != 0); }
+        private void Sync() { if(machine.SystemBus.TryGetCurrentCPU(out var cpu)) { cpu.SyncTime(); } }
+        private const int Channels = 4;
+        private uint cr1, dier, sr, psc, pscActive, start;
+        private readonly uint[] ccr = new uint[Channels], other = new uint[0x100];
+        private readonly IMachine machine; private readonly LimitTimer raw; private readonly LimitTimer[] match;
+    }
 }
