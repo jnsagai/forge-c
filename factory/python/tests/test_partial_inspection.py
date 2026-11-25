@@ -221,3 +221,11 @@ def test_floor_consumes_published_evidence_without_workflow_dependencies(campaig
     monkeypatch.setattr(partial, "basis", unreachable)
     assert partial.snapshot(c.ws)["status"] == "REVIEW_REQUIRED"
     assert partial.snapshot(c.ws)["evidence"]["total"] == 19
+
+
+def test_aspice_only_requires_explicit_out_of_context_evidence(campaign):
+    manifest = {**campaign.manifest, "purpose": "ASPICE_ONLY", "aspice_development": {"mode": "engineering-only"},
+                "target": {"safety_allocation": "NOT_ASSESSED: engineering only"}}
+    assert partial.in_scope(manifest)
+    assert not partial.in_scope({**manifest, "upstream": {"status": "NOT_PROVIDED"}})
+    assert not partial.in_scope({**manifest, "historical_safety_scope": {"scope": {"target_asil": "B"}}})

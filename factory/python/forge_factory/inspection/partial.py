@@ -32,12 +32,15 @@ def in_scope(manifest):
     target = manifest.get("target") or {}
     allocation = str(target.get("safety_allocation") or "")
     historical = (manifest.get("historical_safety_scope") or {}).get("scope") or {}
-    return (manifest.get("purpose") in {"QM", "DEVELOPMENT", "ASPICE_ONLY"}
+    purpose = manifest.get("purpose")
+    out_of_context = (manifest.get("upstream") or {}).get("status") == "OUT_OF_CONTEXT"
+    aspice_development = (purpose == "ASPICE_ONLY" and manifest.get("aspice_development")
+                          and allocation.startswith("NOT_ASSESSED:"))
+    return (purpose in {"QM", "DEVELOPMENT", "ASPICE_ONLY"}
             and manifest.get("safety_target") in (None, "QM")
             and historical.get("target_asil") in (None, "QM")
-            and ((allocation.startswith("OUT_OF_CONTEXT:") and
-                  (manifest.get("upstream") or {}).get("status") == "OUT_OF_CONTEXT") or
-                 (manifest.get("purpose") == "QM" and manifest.get("qm_development") and
+            and ((out_of_context and (allocation.startswith("OUT_OF_CONTEXT:") or aspice_development)) or
+                 (purpose == "QM" and manifest.get("qm_development") and
                   manifest.get("safety_target") == "QM"))
             and not (manifest.get("owner_safety_documents") or manifest.get("acp_inspectors"))
             and manifest.get("swe1_level") != "functional"
