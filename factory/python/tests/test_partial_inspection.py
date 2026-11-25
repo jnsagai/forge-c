@@ -75,6 +75,8 @@ def campaign(tmp_path, monkeypatch):
 def test_exact_evidence_owner_review_and_continuation(campaign, monkeypatch):
     c = campaign
     assert partial.assess(c.st)["status"] == "REVIEW_REQUIRED"
+    gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
+                                "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
     assert gate.partial_route(c.st, {"reason": "exhausted"})["decision"] == "PARTIAL_INSPECTION_REVIEW"
     token = partial.assess(c.st)["evidence_sha256"]
     with pytest.raises(partial.Conflict):
@@ -165,3 +167,12 @@ def test_only_render_the_pilot_path_for_compatible_graphs(campaign):
     assert not partial.in_scope({**campaign.manifest, "phase_scope": {"stop_after": "SWE.1"}})
     assert not partial.in_scope({**campaign.manifest, "purpose": "FORMAL_REVIEW"})
     assert not partial.in_scope({**campaign.manifest, "safety_target": "B"})
+
+
+def test_latest_author_rejection_blocks_the_old_inspection(campaign):
+    c = campaign
+    gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
+                                "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
+    gate._state(c.ws, "SWE.1", {"step": "author", "result": "REJECTED", "issues": ["UNBOUND_INPUT"]})
+    assert gate.partial_route(c.st, {"decision": "BLOCKED", "reason": "exhausted"})["decision"] == "BLOCKED"
+    assert not partial.has_continuation(c.ws)

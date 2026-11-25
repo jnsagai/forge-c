@@ -345,8 +345,7 @@ def propose(store, model, budget):
     if not settings(ws)["enabled"]:
         return
     evidence, inputs = basis(store)
-    if (not inputs or len(inputs) > MAX_FINDINGS or evidence["holds"]
-            or evidence["passed"] * 100 < settings(ws)["threshold"] * evidence["total"]):
+    if not inputs or len(inputs) > MAX_FINDINGS or evidence["holds"]:
         return
     basis_sha = digest(evidence)
     schema = {

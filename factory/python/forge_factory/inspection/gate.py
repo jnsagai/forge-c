@@ -720,8 +720,12 @@ def step_route(store: Store, phase: str) -> int:
 def partial_route(store, gate, *, stuck=None, refused=False):
     from . import defects
 
+    visits = (json.loads(line) for line in reversed(_epoch_lines(store.workspace, partial.PHASE, store.budget_start())))
+    latest = next((visit for visit in visits if visit.get("step") in ("author", "inspect")), {})
     report = partial.assess(store)
-    if (stuck or refused or defects.open_from(store.workspace, partial.PHASE)
+    if (latest.get("step") != "inspect" or not latest.get("agent_ok") or latest.get("agent_status") != "PASS"
+            or latest.get("gate", {}).get("reason") != "PARTIAL_INSPECTION_GAPS"
+            or stuck or refused or defects.open_from(store.workspace, partial.PHASE)
             or recovery_state(store.workspace, partial.PHASE)["state"] == "PENDING"
             or store.gate(partial.PHASE)["decision"] != "PASS"):
         partial.report_hold(store, {**report, "route_reason": gate["reason"]})
@@ -730,11 +734,10 @@ def partial_route(store, gate, *, stuck=None, refused=False):
 
 
 def _step_partial_advisory(store, phase, gate):
+    from ..lrtx.structured import record
     from . import defects
 
     # Publish the request before opening a bounded operator review window. No model runs here.
-    from ..lrtx.structured import record
-
     report = partial.assess(store)
     window_path = None
     if report["status"] == "REVIEW_REQUIRED":
@@ -754,9 +757,13 @@ def _step_partial_advisory(store, phase, gate):
         return 1
     since = store.budget_start()
     cycles = _count(store.workspace, phase, "route", since)
-    advisory_record(store, phase, since, gate, cycles, gate["max_rework_cycles"], None, None, report)
-    _state(store.workspace, phase, {"step": "partial", "decision": "CONTINUED_WITH_GAPS",
-                                    "evidence_sha256": report["evidence_sha256"]})
+    with partial.database(create=True) as con:
+        if partial.config(con, store.workspace.parent.name) != report["settings"]:
+            partial.report_hold(store, {**report, "status": "HOLD", "reason": "SETTINGS_CHANGED_DURING_DISPATCH"})
+            return 1
+        advisory_record(store, phase, since, gate, cycles, gate["max_rework_cycles"], None, None, report)
+        _state(store.workspace, phase, {"step": "partial", "decision": "CONTINUED_WITH_GAPS",
+                                        "evidence_sha256": report["evidence_sha256"]})
     return 0
 
 
@@ -876,8 +883,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
-    ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream", "triage",
-                                                      "return", "advisory", "partial-pilot-boundary", "demo-snapshot", "demo-repair"])
+    ap.add_argument("--step", required=True,
+                    choices=["author", "inspect", "route", "verify", "upstream", "triage", "return", "advisory",
+                             "partial-pilot-boundary", "demo-snapshot", "demo-repair"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
