@@ -1,0 +1,84 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-arch": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-arch-set-r47-001'] blocking open points ['OP-SWC-041']",
+      "run_id": "r20261125T093719Z-9083ac",
+      "state": "blocked",
+      "utc": "2026-11-25T10:08:55Z",
+      "wp_sha256": "d375a602d61393f5ce605bc770a2f2d06e912ea949bacccdfde021989f9386ee"
+    },
+    "sw-design": {
+      "reason": "author harness failed (exit 1) in sw-design rework-set",
+      "run_id": "r20261124T171812Z-456bda",
+      "state": "blocked",
+      "utc": "2026-11-24T18:31:52Z"
+    },
+    "sw-req": {
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-req-set-r29-001'] blocking open points ['OP-SWR-032']",
+      "run_id": "r20261125T093719Z-9083ac",
+      "state": "blocked",
+      "utc": "2026-11-25T10:15:37Z",
+      "wp_sha256": "deaef7608460002b181fc47cad61d96a28c083a07298c979eec5c14cb1ac43f4"
+    },
+    "sys-arch": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/sys-arch.json": "a7b66358d935c46898f6d39ae26eb53149a2d6a563926007380c41d88bdcefb1",
+        "basis:hi-sys-arch-inspector": "3aca44a2b14ceacc75431ede0237bf54922c1db9b2dbb9c0f928fc2b6c71b19e",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sys-arch/architecture.json": "a600dc57e58407866d78f41ebd1463354b24a557f6616deb64e233938f4c21fa",
+        "hi/sys-req/requirements.json": "9a4fe8ec0777a4cdcd3d1ef17d3e8920a577f34af73788b3943d8610444c4855",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "b3723e49a6bf0ddf5e142b65fa3f52ab6f939fabaacef4f18e8edd0744ef83da",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261125T093719Z-9083ac",
+      "state": "accepted",
+      "utc": "2026-11-25T09:49:52Z",
+      "wp_sha256": "a600dc57e58407866d78f41ebd1463354b24a557f6616deb64e233938f4c21fa"
+    },
+    "sys-req": {
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-req-set-r85-001'] blocking open points ['OP-SYS-023']",
+      "run_id": "r20261125T093719Z-9083ac",
+      "state": "blocked",
+      "utc": "2026-11-25T10:25:07Z",
+      "wp_sha256": "9dc470d73e20f8df8308cb0a6be1f386e7db2b29dcc04652337dc67d94987489"
+    }
+  }
+}

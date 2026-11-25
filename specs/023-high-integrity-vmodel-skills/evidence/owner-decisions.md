@@ -161,3 +161,13 @@
   assumption on the hardware accepted without evidence**, where the author had asked for reset-injection runs on the
   target; nobody has confirmed it. Fictional, by Claude. The simulator's `.noinit` moved to AXISRAM3, because RM0486
   shows the former address in an SRAM that is erased on reset.
+- **Owner, 2026-11-25 ("go with your recommendation"),** answering the report on pass 26, which asked for a look at
+  CON-SUP-195: taken as leave to continue with CON-SUP-195 as an assumption. It is not a confirmation that the hardware
+  behaves so; the assumption stays without evidence and stays listed.
+- **Full-V attempt 3, pass 27:** sys-req, sys-arch and sw-req ACCEPTED; then sw-arch returned OP-SWC-041 to sw-req, sw-req
+  returned OP-SWR-032 to sys-req, and sys-req needs a person (OP-SYS-023): Claude's CON-SUP-136, 171 and 173 cannot all
+  hold after a reset that loses a detection not yet recorded. The three decisions are in the inputs together since round
+  25 and no earlier pass raised it.
+- **Thirty-ninth round:** `CON-SUP-196` (**relaxes** CON-SUP-171: after such a reset the lost detection does not restart
+  the 60 s) and `CON-SUP-197` (clarifies CON-SUP-136; either value after an interrupted update). Raised by pass 27.
+  Fictional, by Claude.

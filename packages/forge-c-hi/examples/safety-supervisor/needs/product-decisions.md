@@ -287,3 +287,10 @@ contradictions between earlier decisions.
 |---|---|
 | CON-SUP-194 | **Where `.noinit` lies, completes CON-SUP-193.** The integrator maps the 4096 bytes to AXISRAM3. Nothing but the supervisor uses them, and nobody erases them after the first start. |
 | CON-SUP-195 | **Assumption on the hardware, accepted for this product without evidence.** When a reset other than power-on interrupts the supervisor, (1) an aligned 32-bit store to the retained memory that was in progress leaves the old word, the new word or a bitwise mixture of the two in that word and changes no other word; (2) every store completed before a data synchronisation barrier that has completed is kept; (3) of the stores issued after the last completed barrier, each has either been made, been interrupted as in (1) or not been made. CON-SUP-164 and the limits on the fault-free operating time (CON-SUP-135, CON-SUP-140) are met and verified under this assumption. Confirming it on the device is a task of the integrator and not part of the verification of this product; it is recorded as an unconfirmed assumption. |
+
+**Thirty-ninth round.** Answers the system requirements (OP-SYS-023) and the software architecture (OP-SWC-041).
+
+| ID | Decision |
+|---|---|
+| CON-SUP-196 | **Relaxes the last half sentence of CON-SUP-171.** After a reset other than power-on, a detection that is absent from the retained data (CON-SUP-173) is treated as if it had not happened, also for the fault-free operating time: the time goes on from its retained value, which may contain time from before that detection, and the limits of CON-SUP-136 apply to it. Until the reset, a recognised detection starts the 60 s anew whether or not it is recorded. After a reset, time from before a detection that is present in the retained data does not count. |
+| CON-SUP-197 | **Fault-free operating time at a reset, clarifies CON-SUP-136.** When a reset other than power-on interrupts an update of the fault-free operating time, the value afterwards is either the value before or the value after that update; both are accepted, and neither over-counts. |
