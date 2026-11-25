@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -1108,3 +1109,52 @@ def test_an_update_records_the_inputs_it_was_made_from(tmp_path):
     prov = json.loads((root / "hi/sys-req/requirements.json").read_text())["provenance"]
     assert prov["input_hashes"][path] == hashlib.sha256((root / path).read_bytes()).hexdigest()
     assert prov["run_id"] == out["run_id"] and prov["role"] == "author"
+
+
+@pytest.mark.skipif(not (shutil.which("gcc")), reason="gcc not installed")
+def test_a_returned_test_failure_is_run_again_on_the_changed_code(tmp_path, monkeypatch):
+    # full-V attempt 3 pass 33: two measured limits were fixed in the code, but the design stage cannot run anything,
+    # so its author asked a person for the run and the inspector kept the findings
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-req", "sw-design", "unit-verif", "sw-integ"),
+          raw=True)
+    write(root / "include/a.h", "int cost(void);\n")
+    write(root / "src/a.c", '#include "a.h"\nint cost(void) { return 511; }\n')
+    write(root / "hi/sw-integ/host/test_a.c", '#include <stdio.h>\n#include "a.h"\nint main(void) { int c = cost();\n'
+          ' printf("measured %d\\nHI-TEST ITC-SUP-001 %s\\n", c, c <= 260 ? "PASS" : "FAIL late");'
+          ' return c <= 260 ? 0 : 1; }\n')
+    write(root / "hi/sw-integ/results.json", {"kept": True})
+    spec = {"items": [{"id": "ITC-SUP-001", "automation": {"kind": "host-unit", "file": "x"}}], "open_points": [
+        {"id": "OP-ITC-001", "text": "cost is above its limit.", "blocks": True, "returned_to": "sw-design"}]}
+    write(root / "hi/sw-integ/test-spec.json", spec)
+    write(root / "hi/sw-design/design.json", {"items": [], "open_points": []})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    c = cond.Conductor(root)
+    asked = []
+    monkeypatch.setattr(c, "run_role", lambda r, s, p, **k: asked.append((r, p, k.get("retests"))) or {"findings": []})
+    monkeypatch.setattr(c, "det_issues", lambda s: (None, []))
+    c.author_with_gates("sw-design", "update", changed_inputs=[], suspect=[], open_points=[], returned=[])
+    (role, phase, got), = asked
+    assert (role, phase, got[0]["stage"], got[0]["verdict"]) == ("author", "update", "sw-integ", "FAIL")
+    assert got[0]["issues"][0]["code"] == "VT-FAIL"
+    write(root / "src/a.c", '#include "a.h"\nint cost(void) { return 232; }\n')
+    asked.clear()
+    c.inspect("sw-design", "set", 1, [], [])
+    (role, phase, got), = asked
+    assert (role, phase, got[0]["verdict"]) == ("inspector", "set", "PASS")
+    assert "measured 232" in (root / got[0]["logs"][0]).read_text()
+    # the later stage's own evidence is untouched, and an unchanged code base is not run twice
+    assert json.loads((root / "hi/sw-integ/results.json").read_text()) == {"kept": True}
+    assert not (root / "hi/sw-integ/gates").exists()
+    monkeypatch.setattr(cond.code_gates, "verification", lambda *a, **k: pytest.fail("run again without a change"))
+    assert c.retests("sw-design")[0]["verdict"] == "PASS"
+    assert c.retests("sys-req") == []                                  # a text stage has no code to run
+    # author and inspector are told what the run is evidence for
+    for role, phase in (("author", "update"), ("inspector", "set")):
+        text = c.prompt(c.task(role, "sw-design", phase, retests=c.retests("sw-design")))
+        assert "and for nothing else" in text and "retests" in text
+    spec["open_points"] = []
+    write(root / "hi/sw-integ/test-spec.json", spec)
+    assert c.retests("sw-design") == []                                # nothing returned, nothing run

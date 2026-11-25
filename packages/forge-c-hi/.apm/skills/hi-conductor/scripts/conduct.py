@@ -30,6 +30,7 @@ import difflib
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -41,7 +42,7 @@ SKILLS = HERE.parents[2]
 sys.dont_write_bytecode = True  # never write __pycache__ into the installed skills (scope gate)
 sys.path.insert(0, str(SKILLS / "hi-gates" / "scripts"))
 
-from forge_hi import __version__, api, gate_result, gates, governance, scope, trace  # noqa: E402
+from forge_hi import __version__, api, code_gates, gate_result, gates, governance, scope, trace  # noqa: E402
 from forge_hi.api import compact  # noqa: E402
 from forge_hi.config import REFS, ConfigError, effective_rigor, find_root, load_profile, load_project, schema, stage_order, stages  # noqa: E402,E501
 from forge_hi.io import canonical, read_json, sha256_file, write_json, write_text  # noqa: E402
@@ -122,6 +123,7 @@ class Conductor:
             raise ConfigError("the inspector binding must be read_only: true")
         self.scope_issues: list[dict] = []
         self.returned: list[dict] = []  # points later stages returned to the stage being run
+        self._retests: tuple[str, list[dict]] = ("", [])
         self.linked_files = self.snapshot_links()
 
     def snapshot_links(self) -> list[str]:
@@ -251,6 +253,16 @@ class Conductor:
         if t.get("governance") and t["role"] == "author" and t["phase"] in ("create", "update"):
             what += (" The governance package `governance` is written: name in `attributes.use_cases` of each "
                      "requirement the use cases it realises; every use case needs at least one requirement.")
+        if t.get("retests"):
+            what += (" The conductor ran the tests of the later stages in `retests` again, unchanged, on the code as it "
+                     "stands before this task: the verdict, the issues and the output logs with the measured values. "
+                     "They are evidence for the behaviour and the measurements those tests check, and for nothing "
+                     "else; a test that does not build because an interface changed says nothing. "
+                     + ("A returned failure that still occurs is settled in the code, or returned with the measured "
+                        "values. Do not ask a person for a run that is already there, and remove an open point that "
+                        "asks for it." if t["role"] == "author" else
+                        "A returned failure that the logs show to be gone needs no finding for that failure; one that "
+                        "still occurs does."))
         role_line = (f"You are the AUTHOR, run by the conductor. Write the workproduct `{t['workproduct']}` directly "
                      "with your file tools (write or edit the JSON file itself). Do not write or run scripts or shell "
                      "commands and do not call gate tools: the conductor runs every gate after you. Write only inside "
@@ -487,6 +499,40 @@ class Conductor:
         done.update({f"{r['from_stage']}:{r['id']}": r["text"] for r in points})
         write_json(p, {"schema": "forge-c-hi/returned-points@1", "run_id": self.run_id, "handled": done})
 
+    def retests(self, stage: str) -> list[dict]:
+        """The tests of every later stage that has returned a point to this code stage, run again on the code as it
+        stands. Nothing of the later stage's evidence changes. Full-V attempt 3 pass 33: the author had fixed two
+        measured time limits, could not run anything, and neither it nor the inspector could close the points."""
+        if not self.writes_code(stage) or self.dry_run:
+            return []
+        order = gates.trace.checked_stages(self.project, None)
+        later = [s for s in order[order.index(stage) + 1:] if "verification" in stages()[s]["gates"]
+                 and any(r["to_stage"] == stage for r in self.returned_by(s))]
+        files = [f for s in later for f in (self.root / "hi" / s).rglob("*.[ch]")]
+        files += [f for d in ("src", "include", "tests", "sim") for f in (self.root / d).rglob("*") if f.is_file()]
+        key = json.dumps([stage, later, *[(rel(self.root, f), sha256_file(f)) for f in sorted(set(files))]])
+        if self._retests[0] == key:
+            return self._retests[1]
+        out = []
+        for s in later:
+            d = self.root / "hi" / stage / "inspection" / "retest" / s
+            shutil.rmtree(d, ignore_errors=True)
+            d.mkdir(parents=True)
+            res = code_gates.verification(self.root, s, write=False, keep=d)
+            doc = {"stage": s, "verdict": res["verdict"], "issues": [
+                {k: i[k] for k in ("code", "target_id", "message") if k in i} for i in res.get("issues", [])[:20]],
+                "logs": [rel(self.root, f) for f in sorted(d.iterdir())]}
+            if res.get("not_run_reason"):
+                doc["not_run_reason"] = res["not_run_reason"]
+            out.append(doc)
+            self.event(stage=stage, step="retest", from_stage=s, verdict=res["verdict"], issues=len(doc["issues"]))
+        self._retests = (key, out)
+        return out
+
+    def with_retests(self, stage: str, kw: dict) -> dict:
+        found = self.retests(stage)
+        return {**kw, "retests": found} if found else kw
+
     def stop_if_returned(self, stage: str, issues: list[dict]) -> None:
         """Failing tests the author has returned to an earlier stage as a code defect: asking again would only press
         the author to change the tests."""
@@ -526,6 +572,8 @@ class Conductor:
             _, issues = self.det_issues(stage)
 
     def author_with_gates(self, stage: str, phase: str, **kw) -> None:
+        if phase == "update":
+            kw = self.with_retests(stage, kw)
         suspect = kw.get("suspect") or []
         if phase == "update" and self.writes_code(stage) and len(suspect) > SUSPECT_BATCH:
             # code for many changed items in one call came back nearly untouched (full-V attempt 3 pass 23)
@@ -640,6 +688,8 @@ class Conductor:
         kw = {"round": rnd, "items": items}
         if phase == "set" and self.returned:
             kw["returned"] = self.returned
+        if phase == "set":
+            kw = self.with_retests(stage, kw)
         if carried:
             kw["findings"] = [{k: f[k] for k in ("id", "checklist_item", "target_id", "severity", "description")}
                               for f in carried]
@@ -994,10 +1044,10 @@ class Conductor:
                 if not self.keep_going(stage, "set", srnd - base_set - 1, open_set, prev_set):
                     break
                 prev_set = open_set
-                self.run_role("author", stage, "rework-set", round=srnd,
-                              findings=[{k: f[k] for k in ("id", "checklist_item", "target_id", "severity",
-                                                           "description", "requested_change") if k in f}
-                                        for f in open_set])
+                self.run_role("author", stage, "rework-set", **self.with_retests(stage, {
+                    "round": srnd, "findings": [{k: f[k] for k in (
+                        "id", "checklist_item", "target_id", "severity", "description", "requested_change") if k in f}
+                        for f in open_set]}))
                 _, issues = self.det_issues(stage)
                 if issues:
                     self.author_with_gates_fix_only(stage, issues)

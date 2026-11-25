@@ -305,3 +305,28 @@ def test_unit_evidence_keeps_the_logs_the_build_and_the_coverage_per_file(tmp_pr
     assert f["path"] == "src/clamp.c" and f["sha256"] == sha256_file(tmp_project / "src/clamp.c")
     assert (f["statements_not_run"], f["branches_not_taken"], f["lines_not_run"]) == (0, 0, [])
     assert f["branches"] == 4 and f["decision_lines"] == [5, 8]
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_the_coverage_run_leaves_the_unit_test_evidence_as_the_verdict_recorded_it(tmp_project):
+    c_project(tmp_project)
+    code_gates.unit_test(tmp_project)
+    results = tmp_project / "hi/unit-verif/results.json"
+    log = tmp_project / "hi/unit-verif/gates/logs/test_clamp.log"
+    results.write_text(results.read_text() + "\n")            # a rewrite would lose the mark, even within one second
+    log.write_text(log.read_text() + "mark\n")
+    before = (sha256_file(results), sha256_file(log))
+    assert code_gates.coverage(tmp_project)["verdict"] == "PASS"
+    assert (sha256_file(results), sha256_file(log)) == before
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_coverage_of_a_run_that_fails_is_not_a_pass(tmp_project):
+    c_project(tmp_project)
+    t = tmp_project / "tests/test_clamp.c"
+    text = t.read_text()
+    assert text.count("clamp(50, 0, 10) == 10") == 1
+    t.write_text(text.replace("clamp(50, 0, 10) == 10", "clamp(50, 0, 10) == 11"))      # same lines run, wrong result
+    res = code_gates.coverage(tmp_project)
+    assert res["verdict"] == "FAIL" and [i["code"] for i in res["issues"]] == ["COV-UNIT-TEST"]
+    assert "UTC-CLAMP-002" in res["issues"][0]["message"]

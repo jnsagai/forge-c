@@ -284,7 +284,10 @@ def unit_test(root: Path, *, write: bool = True, coverage: bool = False) -> tupl
         if write:
             gate_result.write(root, "unit-verif", res)
         return res, None
-    results, issues, bdir = run_unit_tests(root, coverage=coverage, logs=_fresh_logs(root, "unit-verif"))
+    # only the gate's own run writes evidence: the instrumented run of the coverage gate must not replace the files
+    # whose hashes the unit-test verdict has recorded
+    results, issues, bdir = run_unit_tests(root, coverage=coverage,
+                                           logs=_fresh_logs(root, "unit-verif") if write else None)
     for cid, r in sorted(results.items()):
         if r["verdict"] == "FAIL":
             issues.append(gate_result.issue("UT-FAIL", f"{cid}: {r['message']}", cid))
@@ -299,8 +302,9 @@ def unit_test(root: Path, *, write: bool = True, coverage: bool = False) -> tupl
     vr = {"schema": "forge-c-hi/verification-result@1", "stage": "unit-verif", "tool": _tool("unit-test"),
           "results": [results[k] for k in sorted(results)], "build": _build_record(root, "tests"),
           "created_utc": utc_now()}
-    write_json(root / RESULTS, vr)
-    res = gate_result.result("unit-test", issues, evidence=[root / RESULTS] + test_programs(root),
+    if write:
+        write_json(root / RESULTS, vr)
+    res = gate_result.result("unit-test", issues, evidence=([root / RESULTS] if write else []) + test_programs(root),
                              tool=_tool(f"unit-test ({Path(cc()).name})"), **common)
     if write:
         gate_result.write(root, "unit-verif", res)
@@ -341,6 +345,10 @@ def coverage(root: Path, *, write: bool = True) -> dict:
                         issues.append(gate_result.issue(
                             f"COV-{kind.upper()}", f"{kind} coverage {measured[kind]}% is below the target {want}%"))
                 issues += uncovered(gaps) if issues else []
+                if ut["verdict"] != "PASS":
+                    issues.append(gate_result.issue(
+                        "COV-UNIT-TEST", "the unit tests do not pass in the run that measured the coverage: "
+                        + ", ".join(sorted({str(i.get("target_id") or i["code"]) for i in ut["issues"]}))[:200]))
                 cov_file = write_json(root / "hi" / "unit-verif" / "coverage.json",
                                       {"schema": "forge-c-hi/coverage@1", "measured": measured, "targets": targets,
                                        "files": coverage_by_file(root, gaps),
@@ -386,12 +394,13 @@ def _run_simulator(root: Path, stage: str, simulator: dict, logs: Path | None = 
     return out, issues
 
 
-def verification(root: Path, stage: str, *, write: bool = True) -> dict:
+def verification(root: Path, stage: str, *, write: bool = True, keep: Path | None = None) -> dict:
     """The `verification` gate of sw-integ, sw-qual, sys-integ and sys-qual (T068): the host programs
     ``hi/<stage>/host/test_*.c`` are compiled with the real sources and run. The simulator programs
     ``hi/<stage>/sim/test_*.c`` are run with the project's `simulator.command`, which prints the same HI-TEST lines.
     A manual case, or a simulator case without that command, is NOT_RUN, so the gate is NOT_RUN at best and the
-    package cannot be sealed READY on tests that were only specified."""
+    package cannot be sealed READY on tests that were only specified. With ``write=False`` nothing of the stage's
+    evidence changes; the output logs then go to the directory ``keep``, if given."""
     root = Path(root)
     _, common = _common(root)
     spec_file = root / stages()[stage]["outputs"][0]
@@ -404,7 +413,7 @@ def verification(root: Path, stage: str, *, write: bool = True) -> dict:
     cases = [i for i in read_json(spec_file).get("items", []) if isinstance(i, dict)]
     host = {c["id"] for c in cases if (c.get("automation") or {}).get("kind") == "host-unit"}
     hdir = root / "hi" / stage / "host"
-    logs = _fresh_logs(root, stage) if write else None
+    logs = _fresh_logs(root, stage) if write else keep
     results, issues, bdir = run_unit_tests(root, coverage=False, programs=sorted(hdir.glob("test_*.c")),
                                            include=[f"hi/{stage}/host"], logs=logs)
     if bdir is not None:
