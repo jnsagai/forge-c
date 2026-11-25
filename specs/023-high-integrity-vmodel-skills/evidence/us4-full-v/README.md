@@ -19,3 +19,50 @@
   Both come from Claude's fictional decisions, and both passed the requirement inspections of run 6.
 
 A first try at attempt 2 (software design onward) was stopped after a few minutes when the coverage defect was found.
+
+## Attempt 2: no result
+
+Attempt 2 is the stopped try named above. It has no evidence folder.
+
+## Attempt 3 (`attempt3/`): not finished
+
+Generic profile, HI-2. Author: Claude Sonnet. Inspector: GPT-6.1 Terra. One pass is one start of the conductor from
+system requirements. A stage that nothing changed keeps its result; a stage that gets changed input or a returned point
+gets new rework rounds. A stage accepted after many passes has therefore had many more rounds than one run allows.
+
+### How far each pass got
+
+"Furthest" is the last stage of the pass's `summary.json`. Every pass so far ended BLOCKED.
+
+| Passes | Furthest stage that gave a result | What stopped it |
+|---|---|---|
+| 1-6, 9-12, 15, 17, 18, 21, 22, 27, 28 | system requirements | mostly gaps or conflicts in the fictional product decisions |
+| 8, 13 | system architecture | deadline bound; counter arithmetic |
+| 7, 14, 16, 20, 24, 26 | software architecture | hardware facts, timing, rework limits |
+| 19, 23, 25 | software design | architecture conflict; missing drivers; usage limit (25) |
+| 29, 30 | unit verification | 29: coverage 99.9/97.1 of 100. 30: tests and coverage PASS, two major findings on kept evidence |
+| 31 | software integration, 24 of 25 PASS; then software design BLOCKED | ITC-SIM-002 FAIL, caused by the simulator's timer model |
+| 32 | unit verification | the author account's usage limit (not a verdict) |
+
+Software qualification, system integration and system qualification had no result up to pass 32.
+
+### Limits a reader must know
+
+- **The product is fictional.** Claude wrote the product decisions, so Claude answered the questions the stages raised.
+  Several blocks came from Claude's own earlier decisions: CON-SUP-151 was unsafe and was replaced, and the inspector
+  refused the deviation in CON-SUP-165.
+- **Eight decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192 and 198 (196 and 197 were withdrawn
+  by 198).
+- **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
+  not a confirmation of the hardware.
+- **CON-SUP-200 is an observation**, made by Claude on the simulator. It is not a product decision.
+- **Coverage is measured on the test build** (`HI_TEST_BUILD`), not on the product build.
+- **Simulation is not hardware.** Renode is not cycle accurate (50 MIPS assumed). Timing results say nothing about
+  the real device.
+- **Simulator defect (Claude's platform):** Renode's stock `STM32_Timer` drops the pending compare match of a channel
+  when the interrupt-enable register is written. ITC-SIM-002 failed because of it. `HiTimer` replaces the model, and
+  `sim/selftest/test_rearm.c` fails on the stock model. With product and tests unchanged, the four simulator cases
+  passed in a scratch run; a package run had not confirmed that at pass 32.
+- **The package changed between passes.** Defects found by one pass were fixed in the package before the next, so the
+  passes do not measure one fixed version.
+- No certification is claimed. READY would mean ready for human review.
