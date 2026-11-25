@@ -92,8 +92,6 @@ def configure(ws, body, operator):
     m = manifest_for(ws)
     if not m:
         raise ValueError("This order has no SWE.1 to SWE.2 partial-inspection route")
-    if has_continuation(ws):
-        raise Conflict("This order already continued to SWE.2. Its decision evidence is sealed.")
     wo = m["work_order"]
     threshold, enabled, automatic = (body.get(k) for k in ("threshold", "enabled", "automatic"))
     if type(threshold) is not int or not MINIMUM <= threshold <= 100:
@@ -101,6 +99,8 @@ def configure(ws, body, operator):
     if type(enabled) is not bool or type(automatic) is not bool or (automatic and not enabled):
         raise ValueError("Choose a valid continuation and review mode")
     with database(create=True) as con:
+        if has_continuation(ws):
+            raise Conflict("This order already continued to SWE.2. Its decision evidence is sealed.")
         old = config(con, wo)
         if type(body.get("revision")) is not int or old["revision"] != body["revision"]:
             raise Conflict("Settings changed. Reload and try again.")
@@ -160,10 +160,12 @@ def _finding(swr, f):
 
 def _tool_evidence(ws, key, item):
     refs = item.get("evidence_refs") or []
-    if item.get("source") != "deterministic" or len(refs) != 1:
+    if item.get("source") != "deterministic" or not refs:
         return False
     valid_path = rf"inspection/SWE\.1/deterministic/{re.escape(key)}-[0-9TZ.\-]+\.json"
-    return bool(re.fullmatch(valid_path, refs[0]) and read(ws / refs[0]).get("verdict") == "PASS")
+    report = ws / refs[0]
+    return bool(re.fullmatch(valid_path, refs[0]) and report.is_file()
+                and read(report).get("verdict") == "PASS")
 
 
 def _basis(store):

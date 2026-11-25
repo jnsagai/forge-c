@@ -47,7 +47,7 @@ def campaign(tmp_path, monkeypatch):
     write(ws / det, {"verdict": "PASS"})
     last = {"inspection_id": "INS-SWE.1-001", **bl, "checklist_sha256": "pinned", "verdict": "PASS",
             "inspector_role": "swe1-inspector", "findings": [],
-            "items": {"SWE1-07": {"verdict": "PASS", "source": "deterministic", "evidence_refs": [det]}}}
+            "items": {"SWE1-07": {"verdict": "PASS", "source": "deterministic", "evidence_refs": [det, "traceability/requirements_to_tests.csv"]}}}
     st = partial.Store(ws)
     monkeypatch.setattr(partial.Store, "latest_baseline", lambda *_: bl)
     monkeypatch.setattr(partial.Store, "stale_reason", lambda *_: None)
@@ -175,4 +175,25 @@ def test_latest_author_rejection_blocks_the_old_inspection(campaign):
                                 "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
     gate._state(c.ws, "SWE.1", {"step": "author", "result": "REJECTED", "issues": ["UNBOUND_INPUT"]})
     assert gate.partial_route(c.st, {"decision": "BLOCKED", "reason": "exhausted"})["decision"] == "BLOCKED"
+    assert not partial.has_continuation(c.ws)
+
+
+def test_impact_uses_independent_role_skill_and_records_only_proposal(campaign, monkeypatch):
+    from forge_factory.lrtx import review, visit
+
+    c = campaign
+    monkeypatch.setattr(review, "inspector_sampling", lambda *_: None)
+
+    def answer(_ws, phase, task, build_packet, _check, _budget, **_opts):
+        packet = build_packet(None, None)
+        assert phase == "SWE.1" and task.startswith("impact:")
+        assert packet["role"] == "swe1-inspector"
+        assert packet["skill"]["path"].endswith("SKILL.md")
+        assert packet["skill"]["sha256"]
+        assert packet["artifacts"] == []
+        return {"status": "VALID", "doc": c.proposal}
+
+    monkeypatch.setattr(visit, "run_task", answer)
+    partial.propose(c.st, "local-model", {})
+    assert partial.assess(c.st)["status"] == "REVIEW_REQUIRED"
     assert not partial.has_continuation(c.ws)
