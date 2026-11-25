@@ -64,7 +64,7 @@ One JSON object per `hi-gates/references/schemas/test-spec.schema.json` with `"s
      "steps": ["Stop task 1 at time t0 (fault injection).", "Record the safe-state output pin and the diagnostic line."],
      "expected": ["Safe-state output active at no later than t0 + 20 ms + 50 ms", "Diagnostic message names the stopped task"],
      "sources": [{"kind": "upstream", "id": "SYS-SUP-001"}],
-     "automation": {"kind": "simulator", "file": "hi/sys-qual/renode/stopped_task.robot"},
+     "automation": {"kind": "simulator", "file": "hi/sys-qual/sim/test_stopped_task.c"},
      "attributes": {"case_type": "failure", "fault_injection": true,
                     "environment_limits": "Simulated peripherals; real oscillator tolerance not represented."},
      "status": "proposed"}
@@ -96,12 +96,16 @@ Both stages:
 4. **Preconditions and environment.** State the system configuration and the environment in `preconditions`; state
    the limits of the environment versus the real operating environment in `attributes.environment_limits`.
 5. **Automation** (`automation.kind`):
-   - `simulator`: a scenario file under `hi/<stage>/renode/` (for example a Renode `.robot` or `.resc` file) running
-     the target build on the platform the constraints name; the usual choice at system level.
+   - `simulator`: a target program `hi/<stage>/sim/test_<name>.c` (several cases may share one), run on the platform the
+     project configures; it prints one line `HI-TEST <id> PASS` or `HI-TEST <id> FAIL <reason>` per case. The platform's
+     README says what a program can stimulate and observe from outside (sent text, pins, resets, received text).
    - `host-unit`: a host program under `hi/<stage>/host/` (`test_<name>.c`) linking all of `src/**/*.c` with
      `-Iinclude` and printing one line `HI-TEST <id> PASS` or `HI-TEST <id> FAIL <short reason>` per case, non-zero
      exit if any failed; use it only for what the host can really show at system level.
    - `manual`: steps a person follows on real equipment or by review, with the record to keep.
+     A case of method `test` is executed: it is manual only when the platform cannot stimulate or observe what it needs,
+     and `attributes.manual_reason` says what exactly is missing (the gate asks for it, `VT-MANUAL`). That no program
+     has been written, or that a program is long, is no reason.
 6. **Method** follows what is verified: `test` for executable behaviour; for a requirement whose
    `verification_method` is `analysis`, `inspection` or `demonstration`, that method with a manual case naming the
    evidence and the pass criterion.

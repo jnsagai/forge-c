@@ -1219,3 +1219,18 @@ def test_an_answer_holds_only_for_the_question_it_was_given_to(tmp_path):
     assert Path(".hi/answers.json") in seal.package_files(root, cond.load_project(root))
     text = cond.Conductor(root).prompt(cond.Conductor(root).task("author", "sw-req", "update", answers=[{"answer": "b"}]))
     assert "turns NOT_RUN into a result" in text
+
+
+def test_missing_test_programs_are_asked_for_in_small_batches(tmp_path, monkeypatch):
+    root = tmp_path / "p"
+    root.mkdir()
+    setup(root, {"author": {"items": SYS_ITEMS}}, stages=("sys-req", "sw-qual"))
+    write(root / "hi/sw-qual/test-spec.json", {"items": [], "open_points": []})
+    sys.path.insert(0, str(CONDUCT.parent))
+    import conduct as cond
+    c = cond.Conductor(root)
+    sizes = []
+    monkeypatch.setattr(c, "run_role", lambda *a, **k: sizes.append(len(k["findings"])))
+    monkeypatch.setattr(c, "det_issues", lambda s: (None, []))
+    c.fix_gates("sw-qual", [{"gate": "verification", "code": "VT-MANUAL", "message": str(n)} for n in range(9)], "x")
+    assert sizes == [4, 4, 1]

@@ -430,6 +430,12 @@ def verification(root: Path, stage: str, *, write: bool = True, keep: Path | Non
         for cid, r in got.items():
             if cid not in results:
                 results[cid] = r
+        for c in cases:     # full-V attempt 3 pass 35: 36 of 44 test cases were declared manual, with a platform at hand
+            if (c.get("method") == "test" and (c.get("automation") or {}).get("kind") not in ("host-unit", "simulator")
+                    and len(str((c.get("attributes") or {}).get("manual_reason") or "").strip()) < 20):
+                issues.append(gate_result.issue(
+                    "VT-MANUAL", f"{c['id']}: a case of method test is executed. Write its program, or state in "
+                    "attributes.manual_reason what the platform cannot stimulate or observe for it", c["id"]))
         host = host | sim            # an executable case that prints no result is an issue, not a gap
     for cid, r in sorted(results.items()):
         if r["verdict"] == "FAIL":

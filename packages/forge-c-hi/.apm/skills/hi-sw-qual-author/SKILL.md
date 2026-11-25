@@ -56,7 +56,7 @@ One JSON object per `hi-gates/references/schemas/test-spec.schema.json` with `"s
      "steps": ["Let all tasks check in for 100 ms.", "Suppress the check-ins of task 2 for 19 ms, then resume.", "Suppress the check-ins of task 2 for 20 ms."],
      "expected": ["No fault message during the 19 ms gap", "Fault message naming task 2 on the diagnostic line no later than 20 ms + 10 ms after the last check-in"],
      "sources": [{"kind": "upstream", "id": "SWR-SUP-001"}],
-     "automation": {"kind": "simulator", "file": "hi/sw-qual/renode/alive_supervision.robot"},
+     "automation": {"kind": "simulator", "file": "hi/sw-qual/sim/test_qual_alive.c"},
      "attributes": {"case_type": "boundary", "fault_injection": true, "environment_limits": "Simulated timer; no real clock drift."},
      "status": "proposed"}
   ],
@@ -90,10 +90,13 @@ Copy the provenance fields from the `hi-task` block (assisted mode: `"harness": 
    - `host-unit`: a host program under `hi/sw-qual/host/` (`test_qual_<name>.c`) that links all of `src/**/*.c` with
      `-Iinclude`, uses only public headers plus HAL fakes, and prints one line `HI-TEST <QTC-id> PASS` or
      `HI-TEST <QTC-id> FAIL <short reason>` per case, with a non-zero exit if any failed.
-   - `simulator`: a scenario file under `hi/sw-qual/renode/` (for example a Renode `.robot` or `.resc` file) running
-     the target build on the platform the constraints name; the verdict is observed at external outputs (diagnostic
-     line, pins, reset reason).
+   - `simulator`: a target program `hi/sw-qual/sim/test_<name>.c` (several cases may share one), run on the platform the
+     project configures; it prints one line `HI-TEST <id> PASS` or `HI-TEST <id> FAIL <reason>` per case. The platform's
+     README says what a program can stimulate and observe from outside (sent text, pins, resets, received text).
    - `manual`: steps a person follows and records.
+     A case of method `test` is executed: it is manual only when the platform cannot stimulate or observe what it needs,
+     and `attributes.manual_reason` says what exactly is missing (the gate asks for it, `VT-MANUAL`). That no program
+     has been written, or that a program is long, is no reason.
    State environment limits versus the real target in `attributes.environment_limits`.
 7. **Ids.** `QTC-<AREA>-<NNN>`, unique, never reused, stable across rework.
 8. **Sources.** Every case cites at least one upstream requirement id; no `derived` flag exists, so a case without one

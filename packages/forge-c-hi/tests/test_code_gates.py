@@ -330,3 +330,30 @@ def test_coverage_of_a_run_that_fails_is_not_a_pass(tmp_project):
     res = code_gates.coverage(tmp_project)
     assert res["verdict"] == "FAIL" and [i["code"] for i in res["issues"]] == ["COV-UNIT-TEST"]
     assert "UTC-CLAMP-002" in res["issues"][0]["message"]
+
+
+@pytest.mark.skipif(not HAVE_CC, reason="gcc not installed")
+def test_a_test_case_is_executed_when_a_platform_is_configured(tmp_path):
+    from hi_helpers import make_project
+    root = tmp_path / "p"
+    make_project(root, stages=("sys-req", "sw-req", "sw-qual"))
+    write(root / "src/a.c", "int a_unused(void);\nint a_unused(void) { return 0; }\n")
+
+    def spec(**attributes):
+        write(root / "hi/sw-qual/test-spec.json", {"items": [
+            {"id": "QTC-SUP-001", "method": "test", "automation": {"kind": "manual"}, "attributes": attributes},
+            {"id": "QTC-SUP-002", "method": "analysis", "automation": {"kind": "manual"}}]})
+
+    def codes():
+        res = code_gates.verification(root, "sw-qual")
+        return res["verdict"], [(i["code"], i["target_id"]) for i in res["issues"]]
+
+    spec()
+    assert codes() == ("NOT_RUN", [])                                              # no platform: a person is needed
+    proj = json.loads((root / ".hi/project.json").read_text())
+    write(root / ".hi/project.json", {**proj, "simulator": {"command": ["true", "{program}"]}})
+    assert codes() == ("FAIL", [("VT-MANUAL", "QTC-SUP-001")])
+    spec(manual_reason="no program")
+    assert codes() == ("FAIL", [("VT-MANUAL", "QTC-SUP-001")])
+    spec(manual_reason="The platform has no model of the supply voltage.")
+    assert codes() == ("NOT_RUN", [])                                              # still a gap, never a pass

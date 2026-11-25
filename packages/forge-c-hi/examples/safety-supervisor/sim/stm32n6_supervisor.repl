@@ -36,3 +36,11 @@ gpioa: GPIOPort.STM32_GPIOPort @ sysbus <0x56020000, +0x400>
 crc: CRC.STM32_CRC @ sysbus 0x56024C00
     series: STM32Series.F0
     configurablePoly: true
+
+// verification equipment at an address the device does not use: read by test programs only, never by the product
+monitor: Timers.HiMonitor @ sysbus 0x5FFF0000
+    rcc: rcc
+    uart: usart1
+
+gpioa:
+    [0-15] -> monitor@[0-15]

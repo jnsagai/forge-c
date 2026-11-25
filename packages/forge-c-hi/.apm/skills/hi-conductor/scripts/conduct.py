@@ -51,6 +51,7 @@ from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
 FIX_BATCH = 10   # gate issues per fix-gates call
+PROGRAM_BATCH = 4   # the same when each issue asks for a test program
 # A harness prints why the account refuses a call on standard output, which is not recorded (it may hold model text).
 # Full-V attempt 3 pass 25 stopped on a limit with an empty `stderr_tail`. Only the cause is kept, never the text.
 USAGE_LIMIT = re.compile(r"(?:hit|reached|exceeded) (?:your|the) [^\n]{0,40}limit|usage limit|rate limit|quota exceeded", re.I)
@@ -571,8 +572,9 @@ class Conductor:
                               f"(rework limit {self.limit})")
             fixes, last = fixes + 1, len(issues)
             todo = [{k: i[k] for k in ("gate", "code", "target_id", "message") if k in i} for i in issues]
-            for n in range(0, len(todo), FIX_BATCH):
-                self.run_role("author", stage, "fix-gates", round=fixes, findings=todo[n:n + FIX_BATCH])
+            size = PROGRAM_BATCH if any(i.get("code") == "VT-MANUAL" for i in todo) else FIX_BATCH
+            for n in range(0, len(todo), size):
+                self.run_role("author", stage, "fix-gates", round=fixes, findings=todo[n:n + size])
             if not self.workproduct(stage).is_file():
                 raise Blocked(f"the author did not write {rel(self.root, self.workproduct(stage))}")
             _, issues = self.det_issues(stage)

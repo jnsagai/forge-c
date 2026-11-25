@@ -3,7 +3,7 @@
 A combined Cortex-M55 platform for Renode 1.17: `run_sim.sh <program.c>` builds one target program with the product
 sources and runs it. Self-tests: `selftest/test_platform.c` (watchdogs, reset flags), `test_interrupts.c` (TIM2 and
 USART1 interrupts, received characters), `test_rearm.c` (two TIM2 compare channels re-armed independently), `test_image.c` (image layout and stored
-references), `test_levels.c` (software-pended exceptions and their nesting).
+references), `test_monitor.c` (the monitor below), `test_levels.c` (software-pended exceptions and their nesting).
 
 For the author of a test program:
 - `main()` is yours and stands for the boot code and the application (the product is all of `src/`); `startup.c` gives the vector table. Define `TIM2_IRQHandler`, `USART1_IRQHandler`,
@@ -13,6 +13,13 @@ For the author of a test program:
 - Print `HI-TEST <case id> PASS` or `HI-TEST <case id> FAIL <reason>` on USART1. The run lasts `SIM_SECONDS` (default 5).
 - Optional `<program>.uart` next to the program: lines of `<microseconds> <text>`; after that much more simulated time
   the text and a line feed are received by USART1 at 115200 baud.
+- The monitor at 0x5FFF0000 is verification equipment: what an observer outside the device would record, kept over
+  every reset, times in virtual microseconds since power-on (the product never reads it). `+00` time now. Characters
+  USART1 has sent: `+08` count, write an index to `+0C`, then `+10` character, `+14` time. Output level changes of GPIOA:
+  `+20` count, `+24` index, `+28` pin number, plus 0x100 for high, `+2C` time. Resets: `+30` count, `+34` index, `+38` the cause as its
+  RCC_RSR flag, `+3C` time. Write a character to `+40`: USART1 receives it now. An index out of range reads 0xFFFFFFFF.
+  So a program can check the text the supervisor sends, pin reactions and reset requests with their times, and act as
+  the service tool. The program's own `HI-TEST` text is in the list too: judge before printing, or note the count first.
 - Linker symbols: `__app_start`, `__app_end`, `__app_crc`, `__cfg_start`, `__cfg_end`, `__cfg_crc`, `__task_table`,
   `__noinit_start`, `__noinit_end` (4096 bytes for the supervisor's retained data, CON-SUP-193).
   Put configuration data in section `.cfg`, the task table in `.task_table`, a test's own retained data in `.noinit`. The stored

@@ -2,9 +2,11 @@
 // Register behaviour follows RM0486 rev 4 (RCC_RSR 14.10.8, IWDG chapter 59, WWDG chapter 60). Not a silicon model:
 // no clock tree, no oscillator tolerance, no security or privilege filtering, no early-wakeup interrupts.
 using System;
+using System.Collections.Generic;
 using Antmicro.Renode.Core;
 using Antmicro.Renode.Logging;
 using Antmicro.Renode.Peripherals.Bus;
+using Antmicro.Renode.Peripherals.UART;
 using Antmicro.Renode.Time;
 
 namespace Antmicro.Renode.Peripherals.Timers
@@ -15,10 +17,12 @@ namespace Antmicro.Renode.Peripherals.Timers
         public HiRcc(IMachine machine) { this.machine = machine; }
         public long Size => 0x2000;
         public void NoteReset(uint flag) { cause = flag; }
+        public event Action<uint> Resetting;
         public void Reset()
         {
             if(!started) { started = true; return; }
             flags |= cause == 0 ? SoftwareReset : cause;   // a reset no watchdog asked for is a software reset
+            Resetting?.Invoke(cause == 0 ? SoftwareReset : cause);
             cause = 0;
             Array.Clear(regs, 0, regs.Length);
         }
@@ -257,5 +261,63 @@ namespace Antmicro.Renode.Peripherals.Timers
         private uint cr1, dier, sr, psc, pscActive, start;
         private readonly uint[] ccr = new uint[Channels], other = new uint[0x100];
         private readonly IMachine machine; private readonly LimitTimer raw; private readonly LimitTimer[] match;
+    }
+
+    // Verification equipment, not a device: what an observer of the external interfaces would record, readable by a test
+    // program. Nothing it holds is changed by a reset of the machine. Times are virtual microseconds since power-on.
+    //   +00 time now
+    //   +08 characters USART1 has sent   +0C select one   +10 the character   +14 time of its transmit register write
+    //   +20 output level changes of GPIOA 0..15   +24 select one   +28 pin | level << 8   +2C its time
+    //   +30 resets   +34 select one   +38 its cause as an RCC_RSR flag   +3C its time
+    //   +40 write: USART1 receives this character now
+    public class HiMonitor : IDoubleWordPeripheral, IGPIOReceiver, IKnownSize
+    {
+        public HiMonitor(IMachine machine, HiRcc rcc, IUART uart)
+        {
+            this.machine = machine; this.uart = uart;
+            uart.CharReceived += c => sent.Add(Tuple.Create((uint)c, Now()));
+            rcc.Resetting += cause => resets.Add(Tuple.Create(cause, Now()));
+        }
+        public long Size => 0x400;
+        public void OnGPIO(int number, bool value) { pins.Add(Tuple.Create((uint)number | (value ? 0x100u : 0u), Now())); }
+        public void Reset() { }                                 // the observer is not reset with the machine
+        public uint ReadDoubleWord(long offset)
+        {
+            if(machine.SystemBus.TryGetCurrentCPU(out var cpu)) { cpu.SyncTime(); }
+            switch(offset)
+            {
+            case 0x00: return Now();
+            case 0x08: return (uint)sent.Count;
+            case 0x10: return At(sent, select[0]).Item1;
+            case 0x14: return At(sent, select[0]).Item2;
+            case 0x20: return (uint)pins.Count;
+            case 0x28: return At(pins, select[1]).Item1;
+            case 0x2C: return At(pins, select[1]).Item2;
+            case 0x30: return (uint)resets.Count;
+            case 0x38: return At(resets, select[2]).Item1;
+            case 0x3C: return At(resets, select[2]).Item2;
+            default: return 0;
+            }
+        }
+        public void WriteDoubleWord(long offset, uint value)
+        {
+            switch(offset)
+            {
+            case 0x0C: select[0] = value; break;
+            case 0x24: select[1] = value; break;
+            case 0x34: select[2] = value; break;
+            case 0x40: uart.WriteChar((byte)value); break;
+            default: this.Log(LogLevel.Error, "the monitor has no register 0x{0:X}", offset); break;
+            }
+        }
+        private static Tuple<uint, uint> At(List<Tuple<uint, uint>> list, uint n)
+        {
+            return n < list.Count ? list[(int)n] : Tuple.Create(0xFFFFFFFFu, 0xFFFFFFFFu);
+        }
+        private uint Now() { return (uint)(machine.ElapsedVirtualTime.TimeElapsed.TotalMicroseconds); }
+        private readonly List<Tuple<uint, uint>> sent = new List<Tuple<uint, uint>>(), pins = new List<Tuple<uint, uint>>(),
+                                                 resets = new List<Tuple<uint, uint>>();
+        private readonly uint[] select = new uint[3];
+        private readonly IMachine machine; private readonly IUART uart;
     }
 }

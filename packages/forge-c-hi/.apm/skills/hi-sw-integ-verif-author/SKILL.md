@@ -92,9 +92,10 @@ Copy the provenance fields from the `hi-task` block (assisted mode: `"harness": 
      units (all of `src/**/*.c`, `-Iinclude`) with fakes only for the HAL, and follows the unit-test output
      convention: one line `HI-TEST <ITC-id> PASS` or `HI-TEST <ITC-id> FAIL <short reason>` per case, non-zero exit
      if any failed.
-   - `simulator`: a scenario file under `hi/sw-integ/renode/` (for example a Renode `.robot` or `.resc` file) for
-     what needs the target build: interrupts, real peripheral models, timing. Name the platform from the
-     constraints in `preconditions`, and make the verdict observable (diagnostic line output, pin state, reset flag).
+   - `simulator`: a target program `hi/sw-integ/sim/test_<name>.c` (several cases may share one), run on the platform the
+     project configures; it prints one line `HI-TEST <id> PASS` or `HI-TEST <id> FAIL <reason>` per case. The platform's
+     README says what a program can stimulate and observe from outside (sent text, pins, resets, received text).
+     Use it for what needs the target build: interrupts, peripheral models, timing. Name the platform in `preconditions`.
    - `manual`: a review or measurement a person performs; `steps` say exactly what to do and record.
 7. **Environment limits.** State in `attributes.environment_limits` what the host or simulator does not show compared
    with the real target (timing accuracy, peripheral model fidelity).
