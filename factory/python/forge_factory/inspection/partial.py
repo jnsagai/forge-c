@@ -182,7 +182,12 @@ def _basis(store):
          "baseline_hash": bl["baseline_hash"], "inspection_id": last.get("inspection_id"),
          "inspection_sha256": digest(last), "manifest_sha256": digest(m), "scope_sha256": digest(pin),
          "passed": 0, "total": sum(len(pin[k]) for k in ("requirements", "phase_checks", "set")), "findings": []}
+    from . import defects
+
     holds = set()
+    if any(d.get("status") in defects.OPEN_STATES and (d.get("target_phase") == PHASE
+           or d.get("detected_phase") == PHASE) for d in defects.all_defects(ws)):
+        holds.add("OPEN_DEFECT_AFFECTS_SWE1")
     if plan != pin:
         holds.add("FROZEN_INSPECTION_SCOPE_CHANGED")
     if (store.stale_reason(PHASE, bl) or ARTIFACT not in bl["files"]

@@ -197,3 +197,14 @@ def test_impact_uses_independent_role_skill_and_records_only_proposal(campaign, 
     partial.propose(c.st, "local-model", {})
     assert partial.assess(c.st)["status"] == "REVIEW_REQUIRED"
     assert not partial.has_continuation(c.ws)
+
+
+def test_open_defect_against_swe1_blocks_the_score(campaign, monkeypatch):
+    from forge_factory.inspection import defects
+
+    monkeypatch.setattr(defects, "all_defects", lambda _ws: [
+        {"detected_phase": "SWE.2", "target_phase": "SWE.1", "status": "OPEN"}])
+    report = partial.assess(campaign.st)
+    assert report["percentage"] > 85
+    assert report["status"] == "HOLD"
+    assert "OPEN_DEFECT_AFFECTS_SWE1" in report["evidence"]["holds"]
