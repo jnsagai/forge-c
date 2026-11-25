@@ -200,3 +200,15 @@
   STM32_Timer loses the pending compare match of one channel when TIMx_DIER is written for another. Claude's simulator
   platform used it, and its self-tests had exercised one channel once. Replaced by a small model (`HiTimer`) with a
   self-test that fails on the stock model. The unchanged product and test then pass.
+
+## Round 43 (2026-11-25, by Claude, fictional product decision)
+
+CON-SUP-201 defines the alive window. Software qualification found that SWR-ALV-001 does not say from when the two
+periods count (OP-QTC-001); the software requirements then found that counting from the last completion needs a
+tolerance that no input gives (OP-SWR-036). The decision fixes the periods to the control cycles, as the architecture
+and code accepted in pass 34 already judge them. **It relaxes** the reading that counts from the last completion: nearly
+three periods may pass between two completions without a fault. It was chosen to keep the accepted design; a real
+product owner would have to confirm it against the hazard analysis. It is the ninth decision that relaxes something.
+
+`hi answer` (process answers by Claude, no product change, nothing accepted as verified): OP-ITC-008 (pass 34),
+OP-QTC-002, OP-QTC-003, OP-QTC-004 (pass 35). They are in `.hi/answers.json` of the run project.

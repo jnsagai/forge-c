@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 34 ended BLOCKED; pass 35 was stopped and has no summary.
+returned integration result as well. Every pass up to 36 ended BLOCKED, except pass 35, which was stopped and has no summary.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -48,16 +48,17 @@ returned integration result as well. Every pass up to 34 ended BLOCKED; pass 35 
 | 33 | software integration, 35 of 36 PASS (the corrected simulator cases PASS); unit verification ACCEPTED_WITH_GAPS; then software design BLOCKED | ITC-BUD-001: deadline check 511 us of 260, dispatch 25.6 us of 16 (upper bounds with instrumentation). The design stage changed the code but could not run it |
 | 34 | software integration BLOCKED: 40 of 43 cases PASS, 3 NOT_RUN. SWE.1 to SWE.4 stages ACCEPTED | one test did not prove that its signal came during an activation; three analyses need a person |
 | 35 | software integration ACCEPTED_WITH_GAPS (40 PASS, 3 NOT_RUN); software qualification written and first inspected | stopped by Claude: 46 of 52 cases were declared manual. The package now asks for a program or a reason, and the platform has a monitor for what an outside observer sees |
+| 36 | software requirements BLOCKED (OP-SWR-036) | software qualification found that the alive window was never defined; answered by CON-SUP-201 |
 
-System integration and system qualification had no result up to pass 35; software qualification had 7 executed cases.
+System integration and system qualification had no result up to pass 36; software qualification had 7 executed cases.
 
 ### Limits a reader must know
 
 - **The product is fictional.** Claude wrote the product decisions, so Claude answered the questions the stages raised.
   Several blocks came from Claude's own earlier decisions: CON-SUP-151 was unsafe and was replaced, and the inspector
   refused the deviation in CON-SUP-165.
-- **Eight decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192 and 198 (196 and 197 were withdrawn
-  by 198).
+- **Nine decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198 and 201 (196 and 197 were
+  withdrawn by 198).
 - **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
   not a confirmation of the hardware.
 - **CON-SUP-200 is an observation**, made by Claude on the simulator. It is not a product decision.
