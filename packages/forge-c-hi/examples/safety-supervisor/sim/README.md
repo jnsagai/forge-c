@@ -2,7 +2,7 @@
 
 A combined Cortex-M55 platform for Renode 1.17: `run_sim.sh <program.c>` builds one target program with the product
 sources and runs it. Self-tests: `selftest/test_platform.c` (watchdogs, reset flags), `test_interrupts.c` (TIM2 and
-USART1 interrupts, received characters), `test_rearm.c` (two TIM2 compare channels re-armed independently), `test_image.c` (image layout and stored
+USART1 interrupts, received characters), `test_rearm.c` (two TIM2 compare channels re-armed independently), `test_level.c` (a TIM2 flag left set or set during the handler enters it again), `test_image.c` (image layout and stored
 references), `test_monitor.c` (the monitor below), `test_levels.c` (software-pended exceptions and their nesting).
 
 For the author of a test program:

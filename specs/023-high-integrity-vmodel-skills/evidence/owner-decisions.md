@@ -212,3 +212,10 @@ product owner would have to confirm it against the hazard analysis. It is the ni
 
 `hi answer` (process answers by Claude, no product change, nothing accepted as verified): OP-ITC-008 (pass 34),
 OP-QTC-002, OP-QTC-003, OP-QTC-004 (pass 35). They are in `.hi/answers.json` of the run project.
+
+## Round 44 (2026-11-25, by Claude, hardware assumption without evidence)
+
+CON-SUP-202: an enabled TIM2 flag still set at handler return enters the handler again. Found: Microchip and TI documents
+describe this for level-sensitive interrupts of other Cortex-M cores; the Cortex-M55 text was not found, RM0486 does not
+state how the flags drive the request, and no hardware was used. Like CON-SUP-195 it is an unconfirmed assumption that
+the integrator has to confirm.

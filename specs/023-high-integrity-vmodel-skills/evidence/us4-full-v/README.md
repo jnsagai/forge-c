@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 36 ended BLOCKED, except pass 35, which was stopped and has no summary.
+returned integration result as well. Every pass up to 37 ended BLOCKED, except pass 35, which was stopped and has no summary.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -49,8 +49,9 @@ returned integration result as well. Every pass up to 36 ended BLOCKED, except p
 | 34 | software integration BLOCKED: 40 of 43 cases PASS, 3 NOT_RUN. SWE.1 to SWE.4 stages ACCEPTED | one test did not prove that its signal came during an activation; three analyses need a person |
 | 35 | software integration ACCEPTED_WITH_GAPS (40 PASS, 3 NOT_RUN); software qualification written and first inspected | stopped by Claude: 46 of 52 cases were declared manual. The package now asks for a program or a reason, and the platform has a monitor for what an outside observer sees |
 | 36 | software requirements BLOCKED (OP-SWR-036) | software qualification found that the alive window was never defined; answered by CON-SUP-201 |
+| 37 | software architecture BLOCKED (OP-SWC-044); the three stages above ACCEPTED again after CON-SUP-201 | a hardware fact on interrupt re-entry was missing; CON-SUP-202 |
 
-System integration and system qualification had no result up to pass 36; software qualification had 7 executed cases.
+System integration and system qualification had no result up to pass 37; software qualification had 7 executed cases.
 
 ### Limits a reader must know
 
@@ -61,6 +62,9 @@ System integration and system qualification had no result up to pass 36; softwar
   withdrawn by 198).
 - **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
   not a confirmation of the hardware.
+- **CON-SUP-202 is a second hardware assumption accepted without evidence:** an enabled TIM2 flag that is still set when
+  the handler returns enters the handler again. Vendor documents for other Cortex-M cores describe this for
+  level-sensitive interrupts; the Cortex-M55 text was not found and no hardware was used.
 - **CON-SUP-200 is an observation**, made by Claude on the simulator. It is not a product decision.
 - **Coverage is measured on the test build** (`HI_TEST_BUILD`), not on the product build.
 - **Simulation is not hardware.** Renode is not cycle accurate (50 MIPS assumed). Timing results say nothing about

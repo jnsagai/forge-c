@@ -1,0 +1,59 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261125T215335Z-276d01/events.jsonl",
+  "run_id": "r20261125T215335Z-276d01",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-arch"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sw-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sw-arch-set-r60-001'] blocking open points ['OP-SWC-044']",
+      "stage": "sw-arch"
+    }
+  ],
+  "status": "BLOCKED"
+}
