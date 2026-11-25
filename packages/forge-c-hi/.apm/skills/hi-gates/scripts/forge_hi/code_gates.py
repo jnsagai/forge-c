@@ -84,6 +84,30 @@ def undefined_functions(root: Path, objects: list[Path]) -> list[str]:
     return sorted(u for u in used - defined - outside - LIBC if not u.startswith("_"))
 
 
+def test_flags(root: Path) -> list[str]:
+    """-D flags of the project's test build (`test_defines`). The tests are built with them; the product is not."""
+    return [f"-D{d}" for d in load_project(root).get("test_defines") or []]
+
+
+def uncovered(files: list[dict]) -> list[dict]:
+    """One issue per source file with statements or branches no test takes, so that the author knows where to look."""
+    out = []
+    for f in files:
+        rows = [x for x in f.get("lines", []) if not x.get("gcovr/noncode")]
+        lines = [x["line_number"] for x in rows if x["count"] == 0]
+        # a line that is never reached is named once, not again for its branches
+        branches = [(x["line_number"], sum(b["count"] == 0 for b in x.get("branches", [])), len(x.get("branches", [])))
+                    for x in rows if x["count"] > 0]
+        parts = []
+        if lines:
+            parts.append("lines never run: " + ", ".join(map(str, lines)))
+        if any(n for _, n, _ in branches):
+            parts.append("branches never taken: " + ", ".join(f"line {ln} ({n} of {m})" for ln, n, m in branches if n))
+        if parts:
+            out.append(gate_result.issue("COV-GAP", f"{f['file']}: {'; '.join(parts)}"[:280], f["file"]))
+    return out
+
+
 def build(root: Path, *, write: bool = True) -> dict:
     root = Path(root)
     _, common = _common(root)
@@ -96,14 +120,18 @@ def build(root: Path, *, write: bool = True) -> dict:
     else:
         issues = []
         with tempfile.TemporaryDirectory() as tmp:
-            for n, src in enumerate(srcs):
-                r = _run([compiler, *CFLAGS, "-Iinclude", "-c", str(src.relative_to(root)), "-o",
-                          str(Path(tmp) / f"{n}.o")], root)
-                if r.returncode != 0:
-                    first = next((l for l in r.stderr.splitlines() if "error" in l), r.stderr.strip()[:200])
-                    issues.append(gate_result.issue("BUILD-ERROR", first[:280], src.relative_to(root).as_posix()))
-            if not issues:
-                missing = undefined_functions(root, sorted(Path(tmp).glob("*.o")))
+            # the product build, and the test build when the project has one
+            for variant in [[]] + ([test_flags(root)] if test_flags(root) else []):
+                if issues:
+                    break
+                for n, src in enumerate(srcs):
+                    r = _run([compiler, *CFLAGS, *variant, "-Iinclude", "-c", str(src.relative_to(root)), "-o",
+                              str(Path(tmp) / f"{n}.o")], root)
+                    if r.returncode != 0:
+                        first = next((l for l in r.stderr.splitlines() if "error" in l), r.stderr.strip()[:200])
+                        issues.append(gate_result.issue("BUILD-ERROR", " ".join([*variant, first])[:280],
+                                                        src.relative_to(root).as_posix()))
+                missing = [] if issues else undefined_functions(root, sorted(Path(tmp).glob("*.o")))
                 issues += [gate_result.issue(
                     "BUILD-UNDEFINED", f"{u} is used and no file in src/ defines it; write it, or name it in a decision's "
                     "`external` with `provided_by` a linked project or the CON id that says who provides it", u)
@@ -155,7 +183,7 @@ def run_unit_tests(root: Path, *, coverage: bool, programs: list[Path] | None = 
     out: dict[str, dict] = {}
     issues: list[dict] = []
     bdir = Path(tempfile.mkdtemp(prefix="hi-unit-"))
-    extra = ["--coverage", "-O0", "-g"] if coverage else []
+    extra = test_flags(root) + (["--coverage", "-O0", "-g"] if coverage else [])
     # the sources go into a library, so that a program which defines every function of a driver (a fake) links without
     # the real one, while the other units and the drivers under test are the real ones
     objs, broken = [], []
@@ -253,7 +281,8 @@ def coverage(root: Path, *, write: bool = True) -> dict:
             res = gate_result.result("coverage", [gate_result.issue("COV-NO-TESTS", "no unit tests to measure")], **common)
         else:
             r = _run([gcovr, "--root", str(root), "--filter", str(root / "src"), "--object-directory", str(bdir),
-                      "--json-summary", "-", str(bdir)], root)
+                      "--json-summary", "-", "--json", str(bdir / "lines.json"), str(bdir)], root)
+            gaps = json.loads((bdir / "lines.json").read_text())["files"] if (bdir / "lines.json").is_file() else []
             shutil.rmtree(bdir, ignore_errors=True)
             try:
                 summ = json.loads(r.stdout)
@@ -267,9 +296,11 @@ def coverage(root: Path, *, write: bool = True) -> dict:
                     if want is not None and (measured[kind] is None or measured[kind] + 1e-9 < want):
                         issues.append(gate_result.issue(
                             f"COV-{kind.upper()}", f"{kind} coverage {measured[kind]}% is below the target {want}%"))
+                issues += uncovered(gaps) if issues else []
                 cov_file = write_json(root / "hi" / "unit-verif" / "coverage.json",
                                       {"schema": "forge-c-hi/coverage@1", "measured": measured, "targets": targets,
-                                       "tool": "gcovr", "created_utc": utc_now()})
+                                       "tool": "gcovr", "test_defines": load_project(root).get("test_defines") or [],
+                                       "created_utc": utc_now()})
                 if targets.get("mcdc") is not None and not issues:
                     res = gate_result.result("coverage", [], not_run_reason=(
                         f"MC/DC {targets['mcdc']}% is required at this level and gcov/gcovr cannot measure it"), **common)
@@ -291,7 +322,8 @@ def _run_simulator(root: Path, stage: str, simulator: dict) -> tuple[dict[str, d
         argv = [a.replace("{program}", rel) for a in simulator["command"]]
         try:
             r = subprocess.run(argv, cwd=root, capture_output=True, text=True, errors="replace", timeout=limit,
-                               env=dict(os.environ, **{k: str(v) for k, v in (simulator.get("env") or {}).items()}))
+                               env=dict(os.environ, HI_TEST_CFLAGS=" ".join(test_flags(root)),
+                                        **{k: str(v) for k, v in (simulator.get("env") or {}).items()}))
         except subprocess.TimeoutExpired:
             issues.append(gate_result.issue("VT-TIMEOUT", f"{rel} did not finish in {limit} s", rel))
             continue

@@ -89,6 +89,8 @@ Copy the provenance fields from the `hi-task` block (assisted mode: `"harness": 
 
 The unit-test gate builds and runs them with this convention; follow it exactly:
 
+- The tests are compiled with the macros in `test_defines` of `.hi/project.json` (the test build); fault-injection seams
+  are reached that way. Only the product build compiles without them.
 - Each `tests/**/test_*.c` is a separate program with its own `main()`. It is linked with a library of **all**
   `src/**/*.c` and compiled with `-Iinclude` (C11). To replace a driver or another unit, the program defines **every**
   function and variable of that source file (defining only some gives duplicate symbols); put fakes in headers under
@@ -115,8 +117,11 @@ not edit). Only change a test when it contradicts the design, and say why in `at
 
 - **Every unit is verified** (`sw-design` -> `unit-verif`, "verified by"): each `SWU-*` is cited by at least one case
   (`TR-UNCOVERED` otherwise), and every function in the design is exercised.
-- Structural coverage of `src/` (gcov/gcovr) must reach the profile's targets for the level. Code that no test can
-  reach is justified in `decisions` with the reason; it is not hidden by excluding files.
+- Structural coverage of `src/` (gcov/gcovr) must reach the profile's targets for the level. A `COV-GAP`
+  issue names the file and the lines. Add a case for each one a test can reach. For code that no test can reach (a
+  bound that another condition already ensures, a statement that needs the real hardware), record one blocking open
+  point with `returned_to: "sw-design"` that names the lines: the design removes the code, restructures it, or says
+  how it is reached. It is never hidden by excluding files, and a `decisions` entry does not close it.
 
 ## Open points
 

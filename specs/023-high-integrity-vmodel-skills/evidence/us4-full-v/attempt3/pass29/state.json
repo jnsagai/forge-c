@@ -1,0 +1,139 @@
+{
+  "schema": "forge-c-hi/state@1",
+  "stages": {
+    "sw-arch": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/sw-arch.json": "5065c8d8310680665c98f9117239c66fe679a4a3cbc087d340a7069e06d57eff",
+        "basis:hi-sw-arch-inspector": "16cb83ec728d32d22a95f9db714aca1ef87dd6777889ac9441c9aac3332210b9",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sw-arch/architecture.json": "1349035f9cd3c8982684433b6c4483e234734fb5a923b602a5d7df175caa208d",
+        "hi/sw-req/requirements.json": "e8682b18b6bc3f912d624727bf0057ccdb4b37f0231e24ef43bf581bd83844c2",
+        "hi/sys-arch/architecture.json": "f507107892e43f029f5ff4def34b655a9b064614ec4773b0a0f4d63fa81095c5",
+        "hi/sys-req/requirements.json": "2c9e842234b08adb07672ed0f275c3a280bacf59dc989d50828b8452540e9cf5",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "6eab730739a669271e89dd2d2c5b44285d21927dda0d3aff5ea5e2b546ebf690",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "accepted",
+      "utc": "2026-11-25T11:27:15Z",
+      "wp_sha256": "1349035f9cd3c8982684433b6c4483e234734fb5a923b602a5d7df175caa208d"
+    },
+    "sw-design": {
+      "gates": {
+        "build": "PASS",
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "static-analysis": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED_WITH_GAPS",
+      "reason": "open major findings ['F-sw-design-set-r18-001']",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "accepted",
+      "utc": "2026-11-25T12:35:59Z",
+      "wp_sha256": "848e8fb5100a2d884be6839a339b9d307afd4e545d3d8920014204587b51c655"
+    },
+    "sw-req": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/requirements-item.json": "d03998b0a068342407c45ad9f1ecbd82a01000831ae97fbe3b6e9db541c0a25a",
+        "basis:checklists/requirements-set.json": "36a71b105f9cb0f75161ba80803249fb8ce3deabc3cba072e21d2947de9d561f",
+        "basis:hi-sw-req-inspector": "57d712f6501fc240b1d636d551ae178bd80d4bb850dc684cad543953418c667c",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sw-req/requirements.json": "e8682b18b6bc3f912d624727bf0057ccdb4b37f0231e24ef43bf581bd83844c2",
+        "hi/sys-arch/architecture.json": "f507107892e43f029f5ff4def34b655a9b064614ec4773b0a0f4d63fa81095c5",
+        "hi/sys-req/requirements.json": "2c9e842234b08adb07672ed0f275c3a280bacf59dc989d50828b8452540e9cf5",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "6eab730739a669271e89dd2d2c5b44285d21927dda0d3aff5ea5e2b546ebf690",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "accepted",
+      "utc": "2026-11-25T11:13:01Z",
+      "wp_sha256": "e8682b18b6bc3f912d624727bf0057ccdb4b37f0231e24ef43bf581bd83844c2"
+    },
+    "sys-arch": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/sys-arch.json": "a7b66358d935c46898f6d39ae26eb53149a2d6a563926007380c41d88bdcefb1",
+        "basis:hi-sys-arch-inspector": "3aca44a2b14ceacc75431ede0237bf54922c1db9b2dbb9c0f928fc2b6c71b19e",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sys-arch/architecture.json": "f507107892e43f029f5ff4def34b655a9b064614ec4773b0a0f4d63fa81095c5",
+        "hi/sys-req/requirements.json": "2c9e842234b08adb07672ed0f275c3a280bacf59dc989d50828b8452540e9cf5",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "6eab730739a669271e89dd2d2c5b44285d21927dda0d3aff5ea5e2b546ebf690",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "accepted",
+      "utc": "2026-11-25T11:03:57Z",
+      "wp_sha256": "f507107892e43f029f5ff4def34b655a9b064614ec4773b0a0f4d63fa81095c5"
+    },
+    "sys-req": {
+      "fingerprint": {
+        ".hi/project.json": "52d14d5e7cc281c06e524861f2ab3d7506624b80e64716d739b7a83ff41e4646",
+        "basis:checklists/requirements-item.json": "d03998b0a068342407c45ad9f1ecbd82a01000831ae97fbe3b6e9db541c0a25a",
+        "basis:checklists/requirements-set.json": "36a71b105f9cb0f75161ba80803249fb8ce3deabc3cba072e21d2947de9d561f",
+        "basis:hi-sys-req-inspector": "f4f771c86ce12451a4da74884fae2e6c795a384632b147e49a012c93027654ec",
+        "docs/rm0486.pdf": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+        "hi/sys-req/governance.json": "221a74d31cb4051d6892e34eff1dad5a36ea163d5779e42829f4ca598ff0a9e8",
+        "hi/sys-req/requirements.json": "2c9e842234b08adb07672ed0f275c3a280bacf59dc989d50828b8452540e9cf5",
+        "needs/constraints.md": "5e5f1b304bf001ff76ce780eefc996a109861c4425d7519af3427926846eb585",
+        "needs/product-decisions.md": "6eab730739a669271e89dd2d2c5b44285d21927dda0d3aff5ea5e2b546ebf690",
+        "needs/stakeholder-needs.md": "0a2790f4a8862a206e86c3d1f51360b29195e9db67474ea104f784617a83d3bd"
+      },
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "reason": "",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "accepted",
+      "utc": "2026-11-25T10:56:17Z",
+      "wp_sha256": "2c9e842234b08adb07672ed0f275c3a280bacf59dc989d50828b8452540e9cf5"
+    },
+    "unit-verif": {
+      "reason": "deterministic gate issues remain after 3 fix rounds (rework limit 3)",
+      "run_id": "r20261125T105243Z-860973",
+      "state": "blocked",
+      "utc": "2026-11-25T12:45:23Z"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 #!/bin/sh
 # run_sim.sh <program.c>: build one target program with the product sources and run it on the simulator platform.
-# Prints the text of the diagnostic USART (the HI-TEST lines). Environment: RENODE (path of renode), SIM_SECONDS.
+# Prints the text of the diagnostic USART (the HI-TEST lines). Environment: RENODE (path of renode), SIM_SECONDS,
+# HI_TEST_CFLAGS (flags of the test build, set by the verification gate).
 # Run from the project root. Files next to the program that are not test_*.c (the hardware port) are built in.
 set -eu
 prog=$1; here=$(dirname "$0"); root=$(pwd); dir=$(dirname "$prog"); out=$(mktemp -d)
@@ -8,7 +9,7 @@ trap 'rm -rf "$out"' EXIT
 RENODE=${RENODE:-renode}
 port=$(find "$dir" -maxdepth 1 -name '*.c' ! -name 'test_*.c' | sort)
 src=$(find src -name '*.c' 2>/dev/null | sort)
-arm-none-eabi-gcc -mcpu=cortex-m55 -mthumb -mfloat-abi=soft -std=c11 -O2 -Wall -Wextra -Werror -Iinclude -I"$dir" \
+arm-none-eabi-gcc -mcpu=cortex-m55 -mthumb -mfloat-abi=soft -std=c11 -O2 -Wall -Wextra -Werror ${HI_TEST_CFLAGS:-} -Iinclude -I"$dir" \
   -nostartfiles -specs=nano.specs -specs=nosys.specs -T "$here/link.ld" "$here/startup.c" "$prog" $port $src -o "$out/t.elf" >&2
 # store the CRC-32/MPEG-2 reference values of the program code and the configuration block (CON-SUP-124, CON-SUP-142)
 for s in text:app_crc cfg:cfg_crc; do

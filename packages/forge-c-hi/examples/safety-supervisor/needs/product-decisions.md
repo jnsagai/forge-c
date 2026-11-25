@@ -300,3 +300,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-198 | **The fault-free operating time is not retained. Replaces the under-count per reset of CON-SUP-136.** The fault-free operating time (CON-SUP-135) is zero at every start-up, whatever the reset and the retained data, and becomes zero again whenever the supervisor recognises a fault. So 60 s of fault-free operation are 60 s in `OPERATIONAL` since the latest start-up and the latest recognised fault, whichever is later. The under-count of at most 100 µs per update, the rule that it never over-counts, and CON-SUP-171 stay as they are, with no extension for resets. A reset makes the detection counts return to zero later, never earlier. |
+
+**Forty-first round.** Answers unit verification (OP-UTC-002).
+
+| ID | Decision |
+|---|---|
+| CON-SUP-199 | Test builds define the macro `HI_TEST_BUILD`; product builds do not. The unit, integration, qualification and system tests run on test builds, so the fault-injection hooks of CON-SUP-116 are present there. A product build contains neither a hook nor a call to one. |

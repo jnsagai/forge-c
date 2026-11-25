@@ -178,3 +178,11 @@
   is no longer relaxed. **198 relaxes the availability bound of CON-SUP-136** (up to 10 ms lost per reset): after a reset
   the counts may return to zero later, never earlier. Fictional, by Claude. The owner had let the run go on with
   CON-SUP-195 as it stood before; its other content is unchanged.
+- **Full-V attempt 3, pass 29:** the four stages above software design ACCEPTED, software design ACCEPTED_WITH_GAPS (one
+  open major set finding), and the first unit-verification result of the package: all host unit tests PASS, coverage FAIL
+  (99.9 % statement, 97.1 % branch, target 100 %). Two package causes: the gate did not say where the gaps are, and it
+  never built the tests with the fault-injection seams on. Both fixed with tests (`COV-GAP`, `test_defines`); the target is
+  unchanged. Code no test can reach now goes back to software design instead of being justified by the test author.
+  Coverage is measured on the test build, not on the product build.
+- **Forty-first round:** `CON-SUP-199` (test builds define `HI_TEST_BUILD`). Raised by pass 29 (unit verification,
+  OP-UTC-002). No relaxation. Fictional, by Claude. The project declares it as `test_defines`.

@@ -243,3 +243,42 @@ def test_a_source_no_test_links_counts_as_not_covered(tmp_project):
     res = code_gates.coverage(tmp_project)
     cov = json.loads((tmp_project / "hi/unit-verif/coverage.json").read_text())
     assert cov["measured"]["statement"] < 100 and res["verdict"] == "FAIL", (cov, res)
+
+
+SEAM = ('#include "clamp.h"\n#if defined(CLAMP_TEST)\nint clamp_inject;\nstatic int injected(void) { return clamp_inject; }\n'
+        '#else\nstatic int injected(void) { return 0; }\n#endif\n\nint clamp(int v, int lo, int hi)\n{\n'
+        '    (void)hi;\n    if ((v < lo) || injected()) {\n        return lo;\n    }\n    return v;\n}\n')
+SEAM_TEST = ('#include <stdio.h>\n#include "clamp.h"\n\n#if defined(CLAMP_TEST)\nextern int clamp_inject;\n#endif\n\n'
+             'int main(void)\n{\n    int ok = (clamp(-1, 0, 9) == 0) && (clamp(5, 0, 9) == 5);\n'
+             '#if defined(CLAMP_TEST)\n    clamp_inject = 1;\n    ok = ok && (clamp(5, 0, 9) == 0);\n#endif\n'
+             '    printf("HI-TEST UTC-CLAMP-001 %s\\n", ok ? "PASS" : "FAIL");\n    return ok ? 0 : 1;\n}\n')
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_a_coverage_gap_names_the_file_and_the_lines(tmp_project):
+    partial = TEST_ALL.replace('    check("UTC-CLAMP-002", clamp(50, 0, 10) == 10);\n', "")
+    c_project(tmp_project, test=partial, ids=("UTC-CLAMP-001", "UTC-CLAMP-003"))
+    gap = [i for i in code_gates.coverage(tmp_project)["issues"] if i["code"] == "COV-GAP"]
+    assert [i["target_id"] for i in gap] == ["src/clamp.c"]
+    assert "lines never run: 9" in gap[0]["message"] and "line 8 (1 of 2)" in gap[0]["message"]
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_tests_are_built_with_the_test_defines_and_the_product_without(tmp_project):
+    c_project(tmp_project, src=SEAM, test=SEAM_TEST, ids=("UTC-CLAMP-001",))
+    assert code_gates.unit_test(tmp_project)[0]["verdict"] == "PASS"
+    gap = [i for i in code_gates.coverage(tmp_project)["issues"] if i["code"] == "COV-GAP"]
+    assert "lines never run" not in gap[0]["message"] and "branches never taken" in gap[0]["message"]   # the seam
+    p = tmp_project / ".hi/project.json"
+    project = json.loads(p.read_text())
+    p.write_text(json.dumps({**project, "test_defines": ["CLAMP_TEST"]}))
+    res = code_gates.coverage(tmp_project)
+    assert res["verdict"] == "PASS", res["issues"]
+    assert json.loads((tmp_project / "hi/unit-verif/coverage.json").read_text())["test_defines"] == ["CLAMP_TEST"]
+    assert code_gates.build(tmp_project)["verdict"] == "PASS"
+    write(tmp_project / "src/clamp.c", SEAM.replace("int clamp_inject;", "int clamp_inject"))   # broken in the test build only
+    issue, = code_gates.build(tmp_project)["issues"]
+    assert issue["code"] == "BUILD-ERROR" and issue["message"].startswith("-DCLAMP_TEST")
+    write(tmp_project / "src/clamp.c", SEAM.replace("{ return 0; }", "{ return nobody(); }").replace(
+        "#else", "#else\nint nobody(void);"))                                                  # and in the product only
+    assert [i["code"] for i in code_gates.build(tmp_project)["issues"]] == ["BUILD-UNDEFINED"]

@@ -545,8 +545,21 @@ class Conductor:
                 "scripts and commands cannot run here. Remove any helper file you created."), **kw)
         if not self.workproduct(stage).is_file():
             raise Blocked(f"the author did not write {wp}")
+        self.stamp_provenance(stage)
         _, issues = self.det_issues(stage)
         self.fix_gates(stage, issues, "authoring")
+
+    def stamp_provenance(self, stage: str) -> None:
+        """Who wrote the workproduct, when and from which inputs: facts the conductor gives the author and knows
+        better. An update often left the hashes of an earlier input (full-V attempt 3 passes 25 to 28)."""
+        wp = self.workproduct(stage)
+        doc = read_json(wp)
+        if not isinstance(doc, dict):
+            return
+        t = self.task("author", stage, "update")
+        doc["provenance"] = {k: t[k] for k in ("role", "skill", "harness", "model", "model_family", "run_id",
+                                               "input_hashes", "created_utc")} | {"skill_version": __version__}
+        write_json(wp, doc)
 
     def item_hashes(self, stage: str) -> dict[str, str]:
         from forge_hi.io import sha256_bytes

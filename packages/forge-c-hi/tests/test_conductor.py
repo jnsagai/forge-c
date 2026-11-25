@@ -1,6 +1,7 @@
 """T028: the conductor with a fake harness (no model)."""
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -1091,3 +1092,19 @@ def test_usage_limit_on_stdout_is_named_without_recording_the_output(tmp_path, t
     role = [e for e in events(root, out) if e["step"] == "role"][-1]
     assert (role.get("cause") == "usage-limit") is limit
     assert "SECRETWORD" not in json.dumps(events(root, out))
+
+
+def test_an_update_records_the_inputs_it_was_made_from(tmp_path):
+    # full-V attempt 3 passes 25 to 28: after an update the workproduct kept the hash of an earlier input
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {"author": {"items": SYS_ITEMS}, "inspector": {"item_rounds": [{}], "set_rounds": [[]]}})
+    assert conduct(root, sc, "--stage", "sys-req")[0] == 0
+    proj = json.loads((root / ".hi/project.json").read_text())
+    path = proj["inputs"][0]["path"]
+    (root / path).write_text((root / path).read_text() + "\nA note that changes the file.\n")
+    _, out, calls = conduct(root, sc, "--stage", "sys-req")
+    assert "update" in [c["phase"] for c in calls if c["role"] == "author"]
+    prov = json.loads((root / "hi/sys-req/requirements.json").read_text())["provenance"]
+    assert prov["input_hashes"][path] == hashlib.sha256((root / path).read_bytes()).hexdigest()
+    assert prov["run_id"] == out["run_id"] and prov["role"] == "author"

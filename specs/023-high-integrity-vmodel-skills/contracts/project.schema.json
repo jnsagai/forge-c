@@ -323,6 +323,14 @@
           "minimum": 1
         }
       }
+    },
+    "test_defines": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*(=[A-Za-z0-9_]+)?$"
+      },
+      "description": "Macros of the test build. The unit-test, coverage and verification gates compile with them (a simulator command gets them in HI_TEST_CFLAGS); the product build does not. The build gate compiles both."
     }
   }
 }
