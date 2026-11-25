@@ -66,6 +66,7 @@ def database(*, create=False):
             con.execute("CREATE TABLE IF NOT EXISTS reviews (wo TEXT, evidence TEXT, reviewed_at TEXT, "
                         "operator TEXT, PRIMARY KEY (wo, evidence))")
             con.execute("CREATE TABLE IF NOT EXISTS scopes (wo TEXT PRIMARY KEY, checks TEXT NOT NULL)")
+            con.execute("CREATE TABLE IF NOT EXISTS receipts (wo TEXT PRIMARY KEY, content TEXT NOT NULL)")
             con.execute("CREATE TABLE IF NOT EXISTS actions (wo TEXT, revision INTEGER, at TEXT, operator TEXT, "
                         "config TEXT, PRIMARY KEY (wo, revision))")
             con.execute("BEGIN IMMEDIATE")
@@ -278,15 +279,43 @@ def validate_impact(analysis, inputs):
     return True
 
 
-def assess(store):
-    ws = store.workspace
-    if not manifest_for(ws):
+def _receipt(ws, wo, *, publish):
+    if not publish:
+        with database() as con:
+            if not con:
+                return {}
+            try:
+                row = con.execute("SELECT content FROM receipts WHERE wo = ?", (wo,)).fetchone()
+            except sqlite3.OperationalError as exc:
+                if "no such table: receipts" not in str(exc):
+                    raise
+                return {}
+        return json.loads(row[0]) if row else {}
+    evidence, inputs = basis(Store(ws))
+    try:
+        review = read(assessment_file(ws))
+    except (OSError, ValueError):
+        review = {}
+    if not isinstance(review, dict) or review.get("basis_sha256") != digest(evidence):
+        review = {}
+    result = {"evidence": evidence, "impact": review, "candidate_count": len(inputs),
+              "impact_validated": bool(inputs) and validate_impact(review.get("findings"), inputs)}
+    with database(create=True) as con:
+        con.execute("INSERT OR REPLACE INTO receipts VALUES (?, ?)", (wo, json.dumps(result)))
+    return result
+
+
+def _assess(ws, *, publish=False):
+    manifest = manifest_for(ws)
+    if not manifest:
         return {**CLEAN, "supported": False, "status": "UNAVAILABLE"}
+    wo = manifest["work_order"]
     opts = settings(ws)
     report = {**CLEAN, "supported": True, "settings": opts, "status": "DISABLED"}
     if not opts["enabled"]:
         return report
-    evidence, inputs = basis(store)
+    receipt = _receipt(ws, wo, publish=publish)
+    evidence = receipt.get("evidence")
     if not evidence:
         return {**report, "status": "WAITING_FOR_EVIDENCE"}
     token = digest([evidence, opts])
@@ -296,27 +325,29 @@ def assess(store):
         return {**report, "status": "HOLD", "reason": "HARD_CHECK_OR_SCORE"}
     if evidence["passed"] == evidence["total"] and not evidence["findings"]:
         return {**report, "status": "PASS"}
-    if not inputs or len(inputs) > MAX_FINDINGS:
+    if not 0 < receipt["candidate_count"] <= MAX_FINDINGS:
         return {**report, "status": "HOLD", "reason": "FINDING_IMPACT_UNCLEAR"}
-    try:
-        review = read(assessment_file(ws))
-    except (OSError, ValueError):
-        review = {}
-    if not isinstance(review, dict) or review.get("basis_sha256") != digest(evidence):
+    review = receipt["impact"]
+    if not review:
         return {**report, "status": "HOLD", "reason": "FINDING_IMPACT_NOT_AVAILABLE"}
-    if not validate_impact(review.get("findings"), inputs):
+    if not receipt["impact_validated"]:
         return {**report, "status": "HOLD", "reason": "IMPACT_REWORK_OR_REVIEW_REQUIRED", "impact": review}
     token = digest([evidence, opts, review])
     with database() as con:
         row = con.execute("SELECT reviewed_at, operator FROM reviews WHERE wo = ? AND evidence = ?",
-                          (evidence["order"], token)).fetchone() if con else None
+                          (wo, token)).fetchone() if con else None
     return {**report, "evidence_sha256": token, "impact": review,
             "review": dict(reviewed_at=row[0], operator=row[1]) if row else None,
             "status": "ELIGIBLE" if row or opts["automatic"] else "REVIEW_REQUIRED"}
 
 
+def assess(store):
+    """The workflow revalidates live evidence and publishes its decision inputs to Plant Floor."""
+    return _assess(store.workspace, publish=True)
+
+
 def approve(ws, evidence_sha256, operator):
-    current = assess(Store(ws))
+    current = _assess(ws)
     window = active_review(ws)
     if (not window or current["status"] != "REVIEW_REQUIRED"
             or evidence_sha256 != current["evidence_sha256"]):
@@ -326,11 +357,11 @@ def approve(ws, evidence_sha256, operator):
         if config(con, wo) != current["settings"]:
             raise Conflict("Settings changed. Review the updated evidence.")
         con.execute("INSERT OR IGNORE INTO reviews VALUES (?, ?, ?, ?)", (wo, evidence_sha256, utc_now(), operator))
-    return assess(Store(ws))
+    return _assess(ws)
 
 
 def snapshot(ws):
-    report = assess(Store(ws))
+    report = _assess(ws)
     history = records(ws) if report.get("supported") else []
     if history:
         entry = history[-1]

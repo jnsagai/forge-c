@@ -208,3 +208,16 @@ def test_open_defect_against_swe1_blocks_the_score(campaign, monkeypatch):
     assert report["percentage"] > 85
     assert report["status"] == "HOLD"
     assert "OPEN_DEFECT_AFFECTS_SWE1" in report["evidence"]["holds"]
+
+
+def test_floor_consumes_published_evidence_without_workflow_dependencies(campaign, monkeypatch):
+    c = campaign
+    assert partial.snapshot(c.ws)["status"] == "WAITING_FOR_EVIDENCE"
+    assert partial.assess(c.st)["status"] == "REVIEW_REQUIRED"
+
+    def unreachable(_):
+        raise AssertionError("the monitoring process must use the published receipt")
+
+    monkeypatch.setattr(partial, "basis", unreachable)
+    assert partial.snapshot(c.ws)["status"] == "REVIEW_REQUIRED"
+    assert partial.snapshot(c.ws)["evidence"]["total"] == 19
