@@ -7,6 +7,7 @@ import shutil
 import pytest
 
 from forge_hi import code_gates, gates
+from forge_hi.io import sha256_file
 from hi_helpers import PROV, make_project, write
 
 HAVE_CC = bool(shutil.which("gcc"))
@@ -282,3 +283,25 @@ def test_tests_are_built_with_the_test_defines_and_the_product_without(tmp_proje
     write(tmp_project / "src/clamp.c", SEAM.replace("{ return 0; }", "{ return nobody(); }").replace(
         "#else", "#else\nint nobody(void);"))                                                  # and in the product only
     assert [i["code"] for i in code_gates.build(tmp_project)["issues"]] == ["BUILD-UNDEFINED"]
+
+
+@pytest.mark.skipif(not (HAVE_CC and HAVE_GCOVR), reason="gcc or gcovr not installed")
+def test_unit_evidence_keeps_the_logs_the_build_and_the_coverage_per_file(tmp_project):
+    c_project(tmp_project)
+    write(tmp_project / "hi/unit-verif/gates/logs/test_gone.log", "HI-TEST UTC-OLD-001 PASS\n")
+    assert code_gates.coverage(tmp_project)["verdict"] == "PASS"
+    assert code_gates.unit_test(tmp_project)[0]["verdict"] == "PASS"
+    doc = json.loads((tmp_project / "hi/unit-verif/results.json").read_text())
+    assert [f["path"] for f in doc["build"]["files"]] == ["include/clamp.h", "src/clamp.c", "tests/test_clamp.c"]
+    assert "gcc" in doc["build"]["compiler"].lower() and "-std=c11" in doc["build"]["flags"]
+    logs = list((tmp_project / "hi/unit-verif/gates/logs").iterdir())
+    assert [p.name for p in logs] == ["test_clamp.log"]                 # nothing of an earlier run stays
+    assert "HI-TEST UTC-CLAMP-001 PASS" in logs[0].read_text() and logs[0].read_text().endswith("exit 0\n")
+    for r in doc["results"]:
+        for e in r["evidence"]:
+            assert sha256_file(tmp_project / e["path"]) == e["sha256"]
+        assert [e["path"] for e in r["evidence"]] == ["tests/test_clamp.c", "hi/unit-verif/gates/logs/test_clamp.log"]
+    f, = json.loads((tmp_project / "hi/unit-verif/coverage.json").read_text())["files"]
+    assert f["path"] == "src/clamp.c" and f["sha256"] == sha256_file(tmp_project / "src/clamp.c")
+    assert (f["statements_not_run"], f["branches_not_taken"], f["lines_not_run"]) == (0, 0, [])
+    assert f["branches"] == 4 and f["decision_lines"] == [5, 8]

@@ -49,6 +49,33 @@ def test_programs(root: Path) -> list[Path]:
     return sorted((Path(root) / "tests").rglob("test_*.c")) if (Path(root) / "tests").is_dir() else []
 
 
+def _identify(root: Path, paths) -> list[dict]:
+    return [{"path": p.relative_to(root).as_posix(), "sha256": sha256_file(p)} for p in sorted(set(paths)) if p.is_file()]
+
+
+def _fresh_logs(root: Path, stage: str) -> Path:
+    """Directory of the test programs' output, emptied: a log of an earlier run never stands beside new results."""
+    d = Path(root) / "hi" / stage / "gates" / "logs"       # the author cannot write there
+    shutil.rmtree(d, ignore_errors=True)
+    d.mkdir(parents=True)
+    return d
+
+
+def _log(root: Path, logs: Path | None, name: str, text: str) -> list[dict]:
+    if logs is None:
+        return []
+    (logs / f"{name}.log").write_text(text)
+    return _identify(root, [logs / f"{name}.log"])
+
+
+def _build_record(root: Path, *dirs: str, simulator: dict | None = None) -> dict:
+    """What the results were produced from: compiler, flags, and every source, header, fake and test file by hash."""
+    version = _run([cc(), "--version"], root).stdout.splitlines()
+    files = [p for d in ("src", "include", *dirs) for p in (root / d).rglob("*") if p.suffix != ".pyc"]
+    return {"compiler": version[0] if version else "unknown", "flags": [*CFLAGS, *test_flags(root)],
+            **({"simulator": simulator["command"]} if simulator else {}), "files": _identify(root, files)}
+
+
 def _tool(name: str) -> dict:
     return {"name": f"forge-c-hi {name}", "version": __version__}
 
@@ -105,6 +132,21 @@ def uncovered(files: list[dict]) -> list[dict]:
             parts.append("branches never taken: " + ", ".join(f"line {ln} ({n} of {m})" for ln, n, m in branches if n))
         if parts:
             out.append(gate_result.issue("COV-GAP", f"{f['file']}: {'; '.join(parts)}"[:280], f["file"]))
+    return out
+
+
+def coverage_by_file(root: Path, files: list[dict]) -> list[dict]:
+    """The measurement per source file: counts, and every line that has an untaken statement or branch."""
+    out = []
+    for f in files:
+        rows = [x for x in f.get("lines", []) if not x.get("gcovr/noncode")]
+        br = [(x["line_number"], b["count"]) for x in rows for b in x.get("branches", [])]
+        out.append({"path": f["file"], "sha256": sha256_file(root / f["file"]),
+                    "statements": len(rows), "statements_not_run": sum(x["count"] == 0 for x in rows),
+                    "branches": len(br), "branches_not_taken": sum(n == 0 for _, n in br),
+                    "lines_not_run": [x["line_number"] for x in rows if x["count"] == 0],
+                    "lines_with_branches_not_taken": sorted({ln for ln, n in br if n == 0}),
+                    "decision_lines": sorted({ln for ln, _ in br})})
     return out
 
 
@@ -176,7 +218,7 @@ def _spec_cases(root: Path) -> list[dict]:
 
 
 def run_unit_tests(root: Path, *, coverage: bool, programs: list[Path] | None = None,
-                   include: list[str] | None = None) -> tuple[dict[str, dict], list[dict], Path | None]:
+                   include: list[str] | None = None, logs: Path | None = None) -> tuple[dict[str, dict], list[dict], Path | None]:
     """Compile and run every test program. Returns per-case results, issues, and the build dir (coverage)."""
     root = Path(root)
     compiler = cc()
@@ -219,9 +261,10 @@ def run_unit_tests(root: Path, *, coverage: bool, programs: list[Path] | None = 
             issues.append(gate_result.issue("UT-TIMEOUT", f"{rel} did not finish in {RUN_TIMEOUT} s", rel))
             continue
         cases = HI_TEST.findall(run.stdout)
+        kept = _log(root, logs, t.stem, f"{run.stdout}{run.stderr}exit {run.returncode}\n")
         for cid, verdict, why in cases:
             out[cid] = {"test_id": cid, "verdict": verdict, "message": (why or rel)[:300],
-                        "evidence": [{"path": rel, "sha256": sha256_file(t)}]}
+                        "evidence": [{"path": rel, "sha256": sha256_file(t)}, *kept]}
         if run.returncode != 0 and not any(v == "FAIL" for _, v, _ in cases):
             issues.append(gate_result.issue("UT-EXIT", f"{rel} exited {run.returncode} without a FAIL line", rel))
     return out, issues, bdir
@@ -241,7 +284,7 @@ def unit_test(root: Path, *, write: bool = True, coverage: bool = False) -> tupl
         if write:
             gate_result.write(root, "unit-verif", res)
         return res, None
-    results, issues, bdir = run_unit_tests(root, coverage=coverage)
+    results, issues, bdir = run_unit_tests(root, coverage=coverage, logs=_fresh_logs(root, "unit-verif"))
     for cid, r in sorted(results.items()):
         if r["verdict"] == "FAIL":
             issues.append(gate_result.issue("UT-FAIL", f"{cid}: {r['message']}", cid))
@@ -254,7 +297,8 @@ def unit_test(root: Path, *, write: bool = True, coverage: bool = False) -> tupl
     issues += [gate_result.issue("UT-UNSPECIFIED", f"{u} is not a host-unit case in the test specification", u)
                for u in unknown]
     vr = {"schema": "forge-c-hi/verification-result@1", "stage": "unit-verif", "tool": _tool("unit-test"),
-          "results": [results[k] for k in sorted(results)], "created_utc": utc_now()}
+          "results": [results[k] for k in sorted(results)], "build": _build_record(root, "tests"),
+          "created_utc": utc_now()}
     write_json(root / RESULTS, vr)
     res = gate_result.result("unit-test", issues, evidence=[root / RESULTS] + test_programs(root),
                              tool=_tool(f"unit-test ({Path(cc()).name})"), **common)
@@ -299,6 +343,7 @@ def coverage(root: Path, *, write: bool = True) -> dict:
                 issues += uncovered(gaps) if issues else []
                 cov_file = write_json(root / "hi" / "unit-verif" / "coverage.json",
                                       {"schema": "forge-c-hi/coverage@1", "measured": measured, "targets": targets,
+                                       "files": coverage_by_file(root, gaps),
                                        "tool": "gcovr", "test_defines": load_project(root).get("test_defines") or [],
                                        "created_utc": utc_now()})
                 if targets.get("mcdc") is not None and not issues:
@@ -313,7 +358,7 @@ def coverage(root: Path, *, write: bool = True) -> dict:
     return res
 
 
-def _run_simulator(root: Path, stage: str, simulator: dict) -> tuple[dict[str, dict], list[dict]]:
+def _run_simulator(root: Path, stage: str, simulator: dict, logs: Path | None = None) -> tuple[dict[str, dict], list[dict]]:
     out: dict[str, dict] = {}
     issues: list[dict] = []
     limit = int(simulator.get("timeout_s", 600))
@@ -333,10 +378,11 @@ def _run_simulator(root: Path, stage: str, simulator: dict) -> tuple[dict[str, d
         if r.returncode != 0:
             issues.append(gate_result.issue("VT-SIM", f"{rel}: exit {r.returncode}: {r.stderr.strip()[-240:]}", rel))
             continue
+        kept = _log(root, logs, f"sim-{t.stem}", r.stdout.replace("\r", "") + "exit 0\n")
         for cid, verdict, why in HI_TEST.findall(r.stdout.replace("\r", "")):
             if out.get(cid, {}).get("verdict") != "FAIL":   # a later PASS never hides a FAIL of the same case
                 out[cid] = {"test_id": cid, "verdict": verdict, "message": (why or rel)[:300],
-                            "evidence": [{"path": rel, "sha256": sha256_file(t)}]}
+                            "evidence": [{"path": rel, "sha256": sha256_file(t)}, *kept]}
     return out, issues
 
 
@@ -358,8 +404,9 @@ def verification(root: Path, stage: str, *, write: bool = True) -> dict:
     cases = [i for i in read_json(spec_file).get("items", []) if isinstance(i, dict)]
     host = {c["id"] for c in cases if (c.get("automation") or {}).get("kind") == "host-unit"}
     hdir = root / "hi" / stage / "host"
+    logs = _fresh_logs(root, stage) if write else None
     results, issues, bdir = run_unit_tests(root, coverage=False, programs=sorted(hdir.glob("test_*.c")),
-                                           include=[f"hi/{stage}/host"])
+                                           include=[f"hi/{stage}/host"], logs=logs)
     if bdir is not None:
         shutil.rmtree(bdir, ignore_errors=True)
     for cid in sorted(set(results) - host):
@@ -367,7 +414,7 @@ def verification(root: Path, stage: str, *, write: bool = True) -> dict:
     simulator = load_project(root).get("simulator") or {}
     if simulator.get("command"):
         sim = {c["id"] for c in cases if (c.get("automation") or {}).get("kind") == "simulator"}
-        got, sim_issues = _run_simulator(root, stage, simulator)
+        got, sim_issues = _run_simulator(root, stage, simulator, logs)
         issues += sim_issues
         for cid in sorted(set(got) - sim):
             issues.append(gate_result.issue("VT-UNSPECIFIED", f"{cid} is not a simulator case in the specification", cid))
@@ -390,7 +437,10 @@ def verification(root: Path, stage: str, *, write: bool = True) -> dict:
         results[c["id"]] = {"test_id": c["id"], "verdict": "NOT_RUN", "message": f"not executed (automation: {kind})"}
     vr = write_json(root / "hi" / stage / "results.json", {
         "schema": "forge-c-hi/verification-result@1", "stage": stage, "tool": _tool("verification"),
-        "results": [results[k] for k in sorted(results)], "created_utc": utc_now()}) if write else None
+        "results": [results[k] for k in sorted(results)],
+        "build": _build_record(root, f"hi/{stage}/host", f"hi/{stage}/sim", "sim", simulator=simulator
+                               if simulator.get("command") else None),
+        "created_utc": utc_now()}) if write else None
     if not issues and (not_run or not cases):
         res = gate_result.result("verification", [], not_run_reason=(
             f"{len(not_run)} of {len(cases)} cases were not executed (no runner for simulator or manual cases): "

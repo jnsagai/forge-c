@@ -86,6 +86,51 @@
     },
     "created_utc": {
       "type": "string"
+    },
+    "build": {
+      "type": "object",
+      "description": "What the results were produced from.",
+      "additionalProperties": false,
+      "required": [
+        "compiler",
+        "flags",
+        "files"
+      ],
+      "properties": {
+        "compiler": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "simulator": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

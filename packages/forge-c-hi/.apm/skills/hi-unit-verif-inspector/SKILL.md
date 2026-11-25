@@ -55,7 +55,9 @@ Judge the whole unit verification against UVR-01..UVR-07:
   is justified; MC/DC, where required and not measured, is reported as not run.
 - **UVR-06 (also gate-checked):** every `SWU-*` is verified by at least one executed, passing case. A case the gate
   reports FAIL or NOT_RUN leaves its unit unverified.
-- **UVR-07:** results are reproducible from the recorded logs; failures are recorded, not removed.
+- **UVR-07:** results are reproducible from the recorded logs; failures are recorded, not removed. The gates
+  keep the logs in `hi/unit-verif/gates/logs/`, the compiler, flags and hashes of all inputs in `results.json` (`build`)
+  and the coverage per source file and line in `coverage.json` (`files`).
 
 You also receive **carried findings** (and earlier set findings). If one still holds, raise it again with the same
 `checklist_item` and `target_id`; if not, leave it out and it is closed.

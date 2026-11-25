@@ -123,6 +123,14 @@ not edit). Only change a test when it contradicts the design, and say why in `at
   point with `returned_to: "sw-design"` that names the lines: the design removes the code, restructures it, or says
   how it is reached. It is never hidden by excluding files, and a `decisions` entry does not close it.
 
+## Evidence the gates keep
+
+The gates write it; never describe it as missing without looking: `hi/unit-verif/results.json` (verdicts, and in `build`
+the compiler, the flags and the hash of every source, header, fake and test file), `hi/unit-verif/gates/logs/<program>.log`
+(the output of each test program) and `hi/unit-verif/coverage.json` (per source file: counts, lines not run, lines with
+branches not taken). A decision or fidelity note about code that no test reaches must agree with `coverage.json`: when the
+code is gone or a test now reaches it, remove the statement.
+
 ## Open points
 
 `OP-UTC-<NNN>` when the design does not say what a function must return or do for some input, so no expected result

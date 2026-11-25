@@ -186,3 +186,9 @@
   Coverage is measured on the test build, not on the product build.
 - **Forty-first round:** `CON-SUP-199` (test builds define `HI_TEST_BUILD`). Raised by pass 29 (unit verification,
   OP-UTC-002). No relaxation. Fictional, by Claude. The project declares it as `test_defines`.
+- **Full-V attempt 3, pass 30:** SWE.1, SWE.2 and SWE.3 (sw-req, sw-arch, sw-design) ACCEPTED with the two system stages in
+  one pass. Unit verification returned six points to software design inside the run and then passed every gate: 587 host
+  cases PASS, 100 % statement and branch coverage on the test build (checked again by Claude outside the run: no exclusion
+  markers, the lines gcovr skips are braces and blank lines). It is BLOCKED on two major set findings: the gates kept only
+  percentages and test-file hashes. The finding is right and was a package gap. Now kept: output logs, compiler, flags and
+  the hash of every input, coverage per file and line. No decision was needed, and no round follows pass 30.

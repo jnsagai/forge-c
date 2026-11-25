@@ -16,7 +16,8 @@ component in its integrated context, each interface between elements, shared res
 the propagation of faults across interfaces. Your counterpart is `sw-arch`; every architecture element must be
 verified by at least one of your cases. You never write results: the `verification` gate
 compiles and runs your `host-unit` programs (`hi/<stage>/host/test_*.c`, linked with all of `src/`) and records the
-verdicts. When the project configures a `simulator`, the
+verdicts in `results.json`, with the compiler, the flags and the hash of every input file (`build`); the output of each
+program is kept in `gates/logs/` of the stage. When the project configures a `simulator`, the
 gate also runs each target program `hi/<stage>/sim/test_*.c` with it; such a program links all of `src/`, the real
 drivers included, and prints the same `HI-TEST <id> PASS|FAIL` lines on the diagnostic USART. Name that
 file in `automation.file` of a `simulator` case (this replaces `.robot` or `.resc` files). Read the project's `sim/`
