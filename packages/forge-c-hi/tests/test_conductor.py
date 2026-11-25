@@ -1073,3 +1073,21 @@ def test_set_rework_makes_every_statement_of_a_rule_agree(tmp_path):
     reworks = [e["prompt"] for e in prompts if e["phase"] == "rework-set"]
     assert reworks and all("every other statement" in t and "as little as possible" not in t for t in reworks)
     assert all("every other statement" not in e["prompt"] for e in prompts if e["role"] == "inspector")
+
+
+@pytest.mark.parametrize("text,limit", [("You've hit your 5-hour limit, resets 7:30pm SECRETWORD", True),
+                                        ("segmentation fault SECRETWORD", False)])
+def test_usage_limit_on_stdout_is_named_without_recording_the_output(tmp_path, text, limit):
+    # full-V attempt 3 pass 25: the limit message is on stdout, the event held an empty stderr_tail
+    root = tmp_path / "p"
+    root.mkdir()
+    sc = setup(root, {})
+    proj = json.loads((root / ".hi/project.json").read_text())
+    proj["roles"]["author"]["command"] = [sys.executable, "-c", f"import sys; print({text!r}); sys.exit(1)"]
+    write(root / ".hi/project.json", proj)
+    code, out, _ = conduct(root, sc, "--stage", "sys-req")
+    assert code != 0 and out["stages"][0]["outcome"] == "BLOCKED"
+    assert ("usage limit" in out["stages"][0]["reason"]) is limit
+    role = [e for e in events(root, out) if e["step"] == "role"][-1]
+    assert (role.get("cause") == "usage-limit") is limit
+    assert "SECRETWORD" not in json.dumps(events(root, out))

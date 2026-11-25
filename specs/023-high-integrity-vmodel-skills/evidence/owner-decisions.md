@@ -151,3 +151,6 @@
   stopped in set rework because the Claude account reached its 5-hour usage limit (harness exit 1). Open then: OP-SWU-024
   (placing the retained data in `.noinit` needs a person's decision), OP-SWU-023 (still blocking in the design) and two
   blocking set findings without an open point (slot depth 10 against 16, long locked count step). No decision yet.
+- **Thirty-seventh round:** `CON-SUP-193` (linker symbols for the retained data in `.noinit`). Raised by pass 25 (software
+  design, OP-SWU-024). No relaxation: the author had asked for a compiler extension as one option, which is not needed.
+  Fictional, by Claude. The simulator's linker script provides the symbols.

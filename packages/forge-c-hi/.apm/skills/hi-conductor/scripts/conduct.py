@@ -50,6 +50,9 @@ from forge_hi.provenance import new_run_id, provenance, utc_now  # noqa: E402
 
 REWORK_SEVERITIES = ("blocking", "major")
 FIX_BATCH = 10   # gate issues per fix-gates call
+# A harness prints why the account refuses a call on standard output, which is not recorded (it may hold model text).
+# Full-V attempt 3 pass 25 stopped on a limit with an empty `stderr_tail`. Only the cause is kept, never the text.
+USAGE_LIMIT = re.compile(r"(?:hit|reached|exceeded) (?:your|the) [^\n]{0,40}limit|usage limit|rate limit|quota exceeded", re.I)
 # Full-V attempt 3 pass 24: each set round fixed one statement of a limit and left its copies in other items
 # contradicting it, so the next set inspection found the same defect elsewhere until the rework limit.
 CONSISTENT = ("Before you change a limit, value, order or rule, search the whole workproduct for every other statement "
@@ -316,11 +319,15 @@ class Conductor:
             rec["reply"] = out
         elif code != 0:
             rec["stderr_tail"] = (err or "")[-400:]
+        limit = code != 0 and bool(USAGE_LIMIT.search((out or "")[-400:] + "\n" + (err or "")[-400:]))
+        if limit:
+            rec["cause"] = "usage-limit"
         self.event(**rec)
         if bad:
             raise Blocked(f"{role} wrote outside its write scope: {bad[:5]}")
         if code != 0:
-            raise Blocked(f"{role} harness failed (exit {code}) in {stage} {phase}")
+            raise Blocked(f"{role} harness failed (exit {code}) in {stage} {phase}"
+                          + (": the account's usage limit is reached; run again after it resets" if limit else ""))
         if role == "author" and phase not in ("fix-gates",) + GOV_PHASES:
             self.repair_json(stage)
         return reply

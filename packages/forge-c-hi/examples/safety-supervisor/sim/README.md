@@ -13,8 +13,9 @@ For the author of a test program:
 - Print `HI-TEST <case id> PASS` or `HI-TEST <case id> FAIL <reason>` on USART1. The run lasts `SIM_SECONDS` (default 5).
 - Optional `<program>.uart` next to the program: lines of `<microseconds> <text>`; after that much more simulated time
   the text and a line feed are received by USART1 at 115200 baud.
-- Linker symbols: `__app_start`, `__app_end`, `__app_crc`, `__cfg_start`, `__cfg_end`, `__cfg_crc`, `__task_table`.
-  Put configuration data in section `.cfg`, the task table in `.task_table`, retained data in `.noinit`. The stored
+- Linker symbols: `__app_start`, `__app_end`, `__app_crc`, `__cfg_start`, `__cfg_end`, `__cfg_crc`, `__task_table`,
+  `__noinit_start`, `__noinit_end` (4096 bytes for the supervisor's retained data, CON-SUP-193).
+  Put configuration data in section `.cfg`, the task table in `.task_table`, a test's own retained data in `.noinit`. The stored
   references are filled in after linking (CRC-32/MPEG-2). Code and configuration are in RAM here, so a test can corrupt them.
 
 | Part | Model | Secure base |

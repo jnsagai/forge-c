@@ -274,3 +274,9 @@ contradictions between earlier decisions.
 | CON-SUP-190 | **Dispatch is supervisor code, clarifies CON-SUP-179.** The supervisor itself makes a released task run and preempts T_DIAG; the application supplies nothing for it but the table of CON-SUP-180. Interrupts 117 and 118 (CON-SUP-188) and PendSV may be used for it; which context runs what is a design matter. |
 | CON-SUP-191 | **Deviation from CON-SUP-004, relaxes it.** The compiler's `__asm__` form is permitted for single core instructions that C11 cannot express (special register access, barriers, wait for interrupt, exception return), only in target-only code under `#if defined(__arm__)` of the driver that gives access to the core. Everything else stays C11. |
 | CON-SUP-192 | **Independent watchdog, accepted limits; relaxes the exact 100 ms of CON-SUP-166 and of the timeout setting.** With its 32 kHz clock taken as exact, the reset comes 100 ms after the last service, accepted from 99.5 ms to 100.5 ms. Where a service interval must be shorter than the 100 ms timeout, it shall be shorter than 99.5 ms. The tolerance of the 32 kHz oscillator is an assumption on the integrator and is not part of the verification. Neither watchdog is running when the boot code starts the supervisor. |
+
+**Thirty-seventh round.** Answers the design stage (OP-SWU-024) and the deferred OP-SWC-035.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-193 | **Retained data in `.noinit`, completes CON-SUP-188.** The integrator's linker script reserves in the section `.noinit` 4096 bytes for the supervisor, aligned to 8 bytes, between the symbols `__noinit_start` and `__noinit_end`. The supervisor reaches its retained data through these symbols, as it reaches the configuration data through `__cfg_start`; no compiler extension is needed. When the boot code starts the supervisor this memory is clocked, readable and writable. |
