@@ -171,3 +171,10 @@
 - **Thirty-ninth round:** `CON-SUP-196` (**relaxes** CON-SUP-171: after such a reset the lost detection does not restart
   the 60 s) and `CON-SUP-197` (clarifies CON-SUP-136; either value after an interrupted update). Raised by pass 27.
   Fictional, by Claude.
+- **Full-V attempt 3, pass 28:** sys-req and sys-arch ACCEPTED; sw-req returned OP-SWR-033 to sys-req, which needs a person
+  (OP-SYS-024): round 39 did not say what holds without intact retained data.
+- **Fortieth round:** `CON-SUP-198` (the fault-free operating time is zero at every start-up) withdraws CON-SUP-196 and 197
+  and replaces the per-reset under-count of CON-SUP-136; the sentence of CON-SUP-195 on that time is removed. CON-SUP-171
+  is no longer relaxed. **198 relaxes the availability bound of CON-SUP-136** (up to 10 ms lost per reset): after a reset
+  the counts may return to zero later, never earlier. Fictional, by Claude. The owner had let the run go on with
+  CON-SUP-195 as it stood before; its other content is unchanged.
