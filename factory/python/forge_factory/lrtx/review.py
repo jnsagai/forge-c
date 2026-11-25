@@ -588,6 +588,10 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         bl, srcs = evidence(ws, phase)
     except (ValueError, S.PacketRefused) as exc:
         return _reply(ws, phase, "FAILED", [str(exc)])
+    if phase == "SWE.1":
+        from ..inspection import partial
+
+        partial.pin_scope(st)
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
@@ -656,6 +660,8 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         # instead of a REINSPECT/REWORK loop (30 cycles on L44E)
         return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_DENIED:{i}" for i in res.get("issues") or []]
                       or ["LRTX_INSPECTION_RECORD_DENIED"], budget)
+    if phase == "SWE.1" and res["status"] == "PASS":
+        partial.propose(st, model, budget)
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
     notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]

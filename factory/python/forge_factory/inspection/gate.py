@@ -20,12 +20,14 @@ import json
 import os
 import re
 import sys
+import time
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from ..common import pretty_json, utc_now
 from ..contracts.agent_output import parse
 from ..events.emit import emit
-from . import completeness, outage
+from . import completeness, outage, partial
 from .engine import InspectionError, Store
 
 
@@ -273,6 +275,11 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
         return fail_code(store.workspace, phase, "inspect")
     # CAPA-123: a visit that recorded no inspection never re-uses the baseline's earlier verdict as a failed cycle
     g = completeness.not_performed(store, phase, store.gate(phase))
+    if partial.enabled(store, phase):
+        report = partial.assess(store)
+        if g["decision"] == "PASS" and report["status"] not in ("PASS", "DISABLED"):
+            g = {**g, "decision": "REWORK", "reason": "PARTIAL_INSPECTION_GAPS",
+                 "partial_status": report["status"]}
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
     print(json.dumps(g))
@@ -409,10 +416,11 @@ def recovery_state(ws: Path, phase: str) -> dict:
     return {"state": "EXHAUSTED", **done} if done else {"state": "PENDING"}
 
 
-def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, budget: int, extension, stuck) -> Path:
+def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, budget: int, extension, stuck,
+                    partial_report: dict | None = None) -> Path:
     """The gap register entry: what stayed unresolved and every attempt the ladder made (a gap without its attempt
     record is not a gap). Appended per continuation to .forge-run/advisory/<phase>.jsonl."""
-    last = next((i for i in reversed(store.inspections(phase)) if i.get("verdict") != "PASS"
+    last = next((i for i in reversed(store.inspections(phase)) if (partial_report or i.get("verdict") != "PASS")
                  and i.get("recorded_at", "") >= since), None)
     rejected = [json.loads(x) for x in _epoch_lines(store.workspace, phase, since)
                 if '"step": "author"' in x and '"REJECTED"' in x]
@@ -439,6 +447,9 @@ def advisory_record(store: Store, phase: str, since: str, g: dict, cycles: int, 
         },
     }
     rec["attempts"]["ladder"] = _ladder(store, phase, cycles, budget, extension, stuck)
+    if partial_report:
+        rec["partial_inspection"] = partial_report
+        rec["unresolved_findings"] = partial_report["evidence"]["findings"]
     out = store.workspace / ".forge-run" / "advisory" / f"{phase}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("a", encoding="utf-8") as f:
@@ -598,6 +609,9 @@ def step_route(store: Store, phase: str) -> int:
         return 0 if over["decision"] == "REINSPECT" else 1
     from .. import development_execution as development
 
+    partial_mode = partial.enabled(store, phase)
+    if partial_mode and g["decision"] == "PASS" and partial.assess(store)["status"] not in ("PASS", "DISABLED"):
+        g = {**g, "decision": "REWORK", "reason": "PARTIAL_INSPECTION_GAPS"}
     if development.selected(store.workspace):
         if g["decision"] == "PASS":
             _state(store.workspace, phase, {"step": "route", "gate": g})
@@ -626,6 +640,8 @@ def step_route(store: Store, phase: str) -> int:
                   f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith(ITEM_STUCK)
                   else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
+        if partial_mode and not allowed:
+            result = partial_route(store, result, stuck=stuck, refused=refused)
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
         return 0 if allowed else 1
@@ -672,7 +688,9 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] != "PASS" and exhausted:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
-        if advisory_enabled(store.workspace) and store.latest_baseline(phase) and \
+        if partial_mode:
+            g = partial_route(store, g, stuck=stuck)
+        elif advisory_enabled(store.workspace) and store.latest_baseline(phase) and \
                 recovery_state(store.workspace, phase)["state"] != "PENDING":
             # the ladder is exhausted (budget, progress extensions, stall detection) and nothing is upstream: register
             # the gap with its attempt record and continue; a phase without a frozen baseline cannot feed the next one
@@ -699,11 +717,57 @@ def step_route(store: Store, phase: str) -> int:
     return 0
 
 
+def partial_route(store, gate, *, stuck=None, refused=False):
+    from . import defects
+
+    report = partial.assess(store)
+    if (stuck or refused or defects.open_from(store.workspace, partial.PHASE)
+            or recovery_state(store.workspace, partial.PHASE)["state"] == "PENDING"
+            or store.gate(partial.PHASE)["decision"] != "PASS"):
+        partial.report_hold(store, {**report, "route_reason": gate["reason"]})
+        return gate
+    return {**gate, "decision": "PARTIAL_INSPECTION_REVIEW", "partial_status": report["status"]}
+
+
+def _step_partial_advisory(store, phase, gate):
+    from . import defects
+
+    # Publish the request before opening a bounded operator review window. No model runs here.
+    from ..lrtx.structured import record
+
+    report = partial.assess(store)
+    window_path = None
+    if report["status"] == "REVIEW_REQUIRED":
+        window_path = record(store.workspace, "SWE.1/partial-review-window.json",
+                             {"expires_at": (datetime.now(UTC) + timedelta(seconds=300)).strftime("%Y-%m-%dT%H:%M:%SZ")})
+    deadline = time.monotonic() + 300
+    try:
+        while report["status"] == "REVIEW_REQUIRED" and time.monotonic() < deadline:
+            time.sleep(2)
+            report = partial.assess(store)
+    finally:
+        if window_path:
+            window_path.unlink(missing_ok=True)
+    if (report["status"] != "ELIGIBLE" or defects.open_from(store.workspace, phase)
+            or recovery_state(store.workspace, phase)["state"] == "PENDING"):
+        partial.report_hold(store, report)
+        return 1
+    since = store.budget_start()
+    cycles = _count(store.workspace, phase, "route", since)
+    advisory_record(store, phase, since, gate, cycles, gate["max_rework_cycles"], None, None, report)
+    _state(store.workspace, phase, {"step": "partial", "decision": "CONTINUED_WITH_GAPS",
+                                    "evidence_sha256": report["evidence_sha256"]})
+    return 0
+
+
 def step_advisory(store: Store, phase: str) -> int:
     """Advisory node on the route's failure path: exit 0 (continue to the next phase) only right after this phase's
     route recorded ADVISORY_CONTINUE; otherwise 1, the existing upstream/finalize chain."""
     routes = [json.loads(x) for x in _epoch_lines(store.workspace, phase, store.budget_start()) if '"step": "route"' in x]
-    return 0 if routes and routes[-1].get("gate", {}).get("decision") == "ADVISORY_CONTINUE" else 1
+    gate = routes[-1].get("gate", {}) if routes else {}
+    if phase == partial.PHASE and gate.get("decision") == "PARTIAL_INSPECTION_REVIEW":
+        return _step_partial_advisory(store, phase, gate)
+    return 0 if gate.get("decision") == "ADVISORY_CONTINUE" else 1
 
 
 def step_upstream(store: Store, target: str) -> int:
@@ -813,7 +877,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workspace", type=Path, default=Path("."))
     ap.add_argument("--phase", required=True, choices=[f"SWE.{i}" for i in range(1, 7)])
     ap.add_argument("--step", required=True, choices=["author", "inspect", "route", "verify", "upstream", "triage",
-                                                      "return", "advisory", "demo-snapshot", "demo-repair"])
+                                                      "return", "advisory", "partial-pilot-boundary", "demo-snapshot", "demo-repair"])
     ap.add_argument("--check", default="")
     a = ap.parse_args(argv)
     store = Store(a.workspace.resolve())
@@ -849,6 +913,8 @@ def _run_step(store: Store, a: argparse.Namespace) -> int:
             rc = step_upstream(store, a.phase)
         elif a.step == "advisory":
             rc = step_advisory(store, a.phase)
+        elif a.step == "partial-pilot-boundary":
+            rc = int(partial.has_continuation(store.workspace))
         elif a.step == "triage":
             rc = step_triage(store, a.phase)
         elif a.step == "return":

@@ -213,3 +213,8 @@ DF-T001..012 are tracked separately in
 DF-AT evidence from [the delivery specification](DELIVERY-FIRST-E2E.md).
 These do not renumber or close the 58 DA tasks below. A passing isolated
 fixture or external first-candidate simulation cannot close native DF-M1.
+
+## DA-FR-054 partial inspection pilot
+
+- [X] **DA-T054a [US11]** Implement the Plant Floor threshold, pinned evidence score, independent impact review, bounded operator review window and SWE.2 boundary. Model-free evidence: `factory/python/tests/test_partial_inspection.py`, legacy advisory and Floor relay regression tests, and Fabro workflow validation.
+- [ ] **DA-T054b [US11]** Qualify a compatible Omniverse driver order end to end with the local inspector and operator reviewing its exact findings. Record the offline package and the SWE.2 boundary outcome.

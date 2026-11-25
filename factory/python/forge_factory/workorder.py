@@ -1180,6 +1180,14 @@ def run(
                 (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.provided_early_code import enabled as early_provided_code_enabled
 
+    structured = local_profile_structured(local, manifest, model)
+    from .inspection.partial import MARKER, in_scope
+
+    if (structured and structured.get("two_phase_inspection") and not structured.get("demonstration")
+            and not (acp_inspectors or manifest.get("delivery_first")) and (not phases or phases[0] == "SWE.1") and in_scope(manifest)):
+        structured["partial_inspection"] = True
+        manifest[MARKER] = 1
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     graph, nodes = build(
         wo,
         goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
@@ -1199,7 +1207,7 @@ def run(
         execution_policy=manifest.get("development_execution"),
         assessment_manifest=manifest,
         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
-        structured=local_profile_structured(local, manifest, model),
+        structured=structured,
         recovery_plan=recovery_plan,
         stop_after=stop_after,
         **_provided_api_arg(ws),

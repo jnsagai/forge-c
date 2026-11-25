@@ -288,6 +288,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: N802 - http.server API
         u = urlparse(self.path)
         q = parse_qs(u.query)
+        if u.path == "/partial-inspection.js":
+            return self._send(FLOOR_PAGE.with_name("partial-inspection.js").read_bytes(), "text/javascript; charset=utf-8")
+        if u.path == "/partial-inspection.json":
+            from .partial_inspection_api import serve
+
+            return serve(self, q, floor_lines())
         if u.path in ("/", "/floor"):  # the factory floor page (feature 007 addendum), read-only
             return self._send(FLOOR_PAGE.read_bytes(), "text/html; charset=utf-8")
         if u.path == "/lines.json":
@@ -327,6 +333,10 @@ class Handler(BaseHTTPRequestHandler):
         """The floor's only control (owner 2026-11-02): the cloud line's Claude mode, `api` or `account`. A JSON body,
         the control header and (when the browser sends one) a same-host Origin; nothing else is writable."""
         u = urlparse(self.path)
+        if u.path == "/partial-inspection.json":
+            from .partial_inspection_api import serve
+
+            return serve(self, parse_qs(u.query), floor_lines())
         target = {"/claude-mode": "claude", "/inspector-mode": "inspector"}.get(u.path)
         if target is None:
             self.send_error(404)

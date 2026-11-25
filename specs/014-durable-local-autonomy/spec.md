@@ -330,3 +330,11 @@ specification without replacing historical obligations or strict release
 semantics. [Implementation and acceptance traceability](DELIVERY-FIRST-IMPLEMENTATION.md)
 records actual source, model-authorship and verification boundaries; it is not
 an assertion that DF-M1 or the original feature is qualified.
+
+### Partial SWE.1 inspection pilot (DA-FR-054 addendum)
+
+An operator can enable **Continue with gaps to SWE.2** on a compatible, locally structured development work order in Plant Floor. The per-order threshold defaults to 90% and accepts whole values from 85% through 100%. A SWE.1-only order, an order with a safety allocation, and a formal review order are outside the pilot. The authorized route remains the upper limit.
+
+The score counts PASS results across the pinned applicable phase checklist, set criteria and individual requirement assessments. A missing result or an open finding leaves its check unpassed. Native checks, upstream dependencies, evidence identity and bounded rework remain required. The independent SWE.1 inspector uses its existing role skill to propose a disposition for each finding. The pilot permits only spacing-only editorial gaps verified against the exact frozen requirement. A failed engineering check or unresolved impact holds the order. The first pilot needs an operator decision on the exact evidence during the bounded review window. Subsequent orders can explicitly enable automatic deferral within the same rule.
+
+Plant Floor shows the numerator, denominator, threshold, open findings and any recorded continuation. The gap record carries the owner, independent closure inspector, downstream impact and revalidation steps. The pilot stops after SWE.2 and delivers a BLOCKED offline package with its gap register. Forge-C uses this percentage for routing. Automotive SPICE PA 1.1 ratings are separate process assessment results.

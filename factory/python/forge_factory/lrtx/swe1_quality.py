@@ -21,6 +21,7 @@ unchanged byte for byte (the branch is taken only when the manifest says `swe1_l
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -372,6 +373,9 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
     ws = Path(ws)
     if not _author_passed(ws):
         return reply(ws, "iq-inspect", "PASS", ["PHASE1_SKIPPED: the SWE.1 author reply is not PASS"])
+    from ..inspection.partial import Store, pin_scope
+
+    pin_scope(Store(ws))
     st, refs, done = _state(ws), requirements(ws), verdicts(ws)
     srcs = _contexts(ws)
     budget = _budget(ws, INSPECT, resume, time_budget_s)
@@ -443,14 +447,23 @@ def pending_rework(ws: Path) -> list[dict]:
     ws = Path(ws)
     if not _author_passed(ws) or not (ws / ".forge-run/lrtx/SWE.1/assembly.json").is_file():
         return []
+    from ..inspection.partial import settings, spacing_finding
+
+    policy_on = settings(ws)["enabled"]
     st, done = _state(ws), verdicts(ws)
     rounds = int(quality_checklist()["phase1"]["rounds"])
     out = []
     for ref in requirements(ws):
         k = st["keys"].get(_tk(ref)) or {"reworks": 0, "stopped": None}
         v = _latest(ws, ref, done)
-        if v and not v["passed"] and not k["stopped"] and not ref["generated"] and k["reworks"] < rounds:
-            out.append({**ref, "verdict": v})
+        if not v or k["stopped"] or ref["generated"] or k["reworks"] >= rounds:
+            continue
+        if not v["passed"]:
+            out.append({**ref, "verdict": v, "fixes": [f for f in v["findings"] if needs_rework(f)]})
+        elif policy_on:
+            editorial = [f for f in v["findings"] if spacing_finding(f, ref["obj"]["statement"])]
+            if editorial:
+                out.append({**ref, "verdict": v, "fixes": editorial, "editorial": True})
     return out
 
 
@@ -470,11 +483,17 @@ def iq_rework(ws: Path, model: str, resume: bool = False, time_budget_s: float |
     try:
         for ref in todo:
             k = st["keys"].setdefault(_tk(ref), {"reworks": 0, "stopped": None})
-            fixes = [finding_text(f) for f in ref["verdict"]["findings"] if needs_rework(f)]
+            fixes = [finding_text(f) for f in ref["fixes"]]
             sources = srcs.get(ref["task"], [])
 
             def check(d, ref=ref):
-                errs, _state_ = author.splice(ws, ref["task"], ref["key"], (d or {}).get("requirement"))
+                replacement = (d or {}).get("requirement")
+                if ref.get("editorial"):
+                    original = ref["obj"]
+                    expected = {**original, "statement": re.sub(r" {2,}", " ", original["statement"])}
+                    if replacement != expected:
+                        return ["EDITORIAL_REWORK_REQUIRES_EXACT_SPACING_ONLY_CHANGE"]
+                errs, _state_ = author.splice(ws, ref["task"], ref["key"], replacement)
                 return errs
             rec = V.run_task(ws, REWORK, f"iqfix:{ref['task']}:{ref['key']}:{ref['sha'][:12]}",
                              lambda fi, pr, ref=ref, fixes=fixes, sources=sources:

@@ -155,6 +155,12 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
     checks["target_verification"] = any(ok(r) for r in tgt)
     checks["safety_gaps_declared"] = True  # known_limitations.md is always generated from facts below
     findings: list[dict] = []
+    from ..inspection import partial
+
+    if partial.has_continuation(ws) or partial.terminal_review(ws):
+        checks["swe1_inspection"] = False
+        findings.append({"id": "SWE.1:PARTIAL_INSPECTION_OFFLINE_REVIEW", "severity": "major",
+                         "detail": "SWE.1 inspection gaps require offline review."})
     from ..development_demonstration import selected as demonstration
 
     if demonstration(ws):
@@ -637,7 +643,11 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     from ..quality import stage_into as quality_into
 
     achieved = quality_into(ws, stage)  # owner rule 2026-11-03: quality achieved vs the order's target
-    all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
+    all_phases_pass = all(checks[f"swe{p[-1]}_inspection"] for p in PHASES)
+    from ..inspection.partial import terminal_review
+
+    if held := terminal_review(ws):
+        _w(stage, "quality/partial-inspection-review.json", pretty_json(held))
     advisory = advisory_register(ws)
     if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
         _w(stage, "quality/advisory-gaps.json", pretty_json({"schema": "forge-c/advisory-gap-register/1",

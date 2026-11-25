@@ -434,22 +434,33 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
                 f'  {ri} [shape=parallelogram, label="{phase} direct re-inspection check (valid, never-inspected '
                 f'baseline)", max_visits={MAX_VISITS}, script="{_q(chk)}"]',
                 f'  {ri} -> {ins} [condition="outcome=succeeded"]', f"  {ri} -> {target}"]) + dot[m.end():]
-    if structured.get("advisory"):
+    if structured.get("advisory") or structured.get("partial_inspection"):
         # owner decision 2026-10-26 ("Advisory + calibrate"): the route's failure edge passes an advisory node that
         # continues to the next phase (SWE.6: the Release Manager) only after the route gate recorded
         # ADVISORY_CONTINUE (ladder exhausted, gap registered); every other failure keeps the upstream/finalize chain
-        for phase in PHASES:
+        for phase in PHASES if structured.get("advisory") else ["SWE.1"]:
             n = phase[-1]
             rt, adv, ig = f"swe{n}_route", f"swe{n}_advisory", f"swe{n}_inspect_gate"
             nxt = re.search(rf'^  {ig} -> (\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
             edge = f"  {rt} -> upstream_swe1\n"
             if not nxt or edge not in dot:
                 continue  # a phase outside this graph (restart / partial runs)
+            timeout = ' timeout="330s",' if phase == "SWE.1" and structured.get("partial_inspection") else ""
             dot = dot.replace(edge, "\n".join([
                 f'  {rt} -> {adv}',
                 f'  {adv} [shape=parallelogram, label="{phase} advisory continue check (gap registered)", '
-                f'max_visits={MAX_VISITS}, script="{_q(gate_cmd(phase, "advisory"))}"]',
+                f'max_visits={MAX_VISITS},{timeout} script="{_q(gate_cmd(phase, "advisory"))}"]',
                 f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
+    if structured.get("partial_inspection"):
+        edge = re.search(r'^  swe2_inspect_gate -> (swe3_\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
+        if edge:
+            stop = gate_cmd("SWE.2", "partial-pilot-boundary")
+            dot = dot[:edge.start()] + "\n".join([
+                '  swe2_inspect_gate -> partial_pilot_boundary [condition="outcome=succeeded"]',
+                f'  partial_pilot_boundary [shape=parallelogram, label="SWE.2 pilot boundary", script="{_q(stop)}"]',
+                f'  partial_pilot_boundary -> {edge.group(1)} [condition="outcome=succeeded"]',
+                '  partial_pilot_boundary -> release_manager',
+            ]) + dot[edge.end():]
     if structured.get("author_model") or structured.get("inspector_model"):
         dot = serve_swaps(dot, structured, nodes)
     return dot

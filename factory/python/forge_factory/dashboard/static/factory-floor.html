@@ -355,6 +355,20 @@ tr:last-child td { border-bottom: 0; }
     <div class="lineup"><div class="halls" id="halls"></div></div>
   </section>
   <section class="hall-detail" id="hall-detail" aria-live="polite"></section>
+  <section class="hall-detail" id="partial-inspection" aria-labelledby="partial-inspection-title" hidden>
+    <h2 id="partial-inspection-title">SWE.1 inspection threshold</h2>
+    <p data-status></p>
+    <p data-score></p>
+    <form hidden>
+      <label>Minimum pass percentage <input name="threshold" type="number" min="85" max="100" step="1" required></label>
+      <label><input name="enabled" type="checkbox"> Continue with gaps to SWE.2</label>
+      <label><input name="automatic" type="checkbox"> Allow automatic editorial deferral after pilot review</label>
+      <button type="submit">Save settings</button>
+    </form>
+    <ul aria-label="Open inspection findings"></ul>
+    <button type="button" data-approve hidden>Approve these findings for SWE.2</button>
+    <p role="status" data-message></p>
+  </section>
   <section class="sup" id="sup" aria-labelledby="sup-title">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
       <h2 id="sup-title">Supervisor station</h2>
@@ -425,6 +439,7 @@ tr:last-child td { border-bottom: 0; }
   </section>
   <p class="note">Read-only view of the recorded runs: gate decisions, task packets and visit states, refreshed every 5 s. No model is called; model reasoning is never shown. Offline review candidates only, never a release.</p>
 </div>
+<script src="/partial-inspection.js"></script>
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
@@ -842,6 +857,7 @@ function disconnectedRuntime() {
 
 function render() {
   if (!DATA) return;
+  window.updatePartialInspection(DATA.focus?.wo, line);
   if (!selected) {
     const h = (location.hash || "").slice(1).toUpperCase().replace("-", ".");
     selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
