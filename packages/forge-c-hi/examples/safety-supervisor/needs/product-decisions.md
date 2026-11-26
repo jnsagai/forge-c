@@ -330,3 +330,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-203 | **Assumption on the hardware, accepted for this product without evidence. Replaces the sentence of CON-SUP-202 on the delay of a further entry.** Every entry into an exception handler of the supervisor, and every return from one, takes at most 1 µs of hardware time (200 core cycles at 200 MHz), whether the exception is taken from thread mode, preempts another handler or follows one directly: this includes the stacking and unstacking of registers and the fetch of the vector. Every time limit of this product includes this time: an analysis adds 1 µs for each entry and each return on the path it judges. The simulator counts no time for it, so a value measured there is short of it; a time judged on the simulator adds 1 µs for each entry and return in what it measured, or states that it does not. Confirming this bound on the device is a task of the integrator and not part of the verification of this product; it is recorded as an unconfirmed assumption. |
+
+**Forty-sixth round.** Answers the system architecture (OP-SYE-011).
+
+| ID | Decision |
+|---|---|
+| CON-SUP-204 | **Origin of the report time; relaxes "since the latest reset" of CON-SUP-126, CON-SUP-131 and CON-SUP-141.** `<ms since start>` counts from the instant the boot code calls the supervisor's start entry function (CON-SUP-188) after the latest reset of any kind, not from the reset itself. The time the boot code takes before that call is outside this product and is not counted, so the value is short of the time since the reset by that time; the integrator states it. Every other rule on the value stays: milliseconds, unsigned 32 bits, wrapping to 0 after 4294967295, taken at detection (code 8: when start-up classified the reset cause). |

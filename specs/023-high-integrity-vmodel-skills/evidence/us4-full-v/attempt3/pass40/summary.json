@@ -1,0 +1,34 @@
+{
+  "cmd": "conduct",
+  "events": ".hi/runs/r20261126T084758Z-116659/events.jsonl",
+  "run_id": "r20261126T084758Z-116659",
+  "stages": [
+    {
+      "carried": 0,
+      "gates": {
+        "governance": "PASS",
+        "independence": "PASS",
+        "quality": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "ACCEPTED",
+      "stage": "sys-req"
+    },
+    {
+      "carried": 0,
+      "gates": {
+        "doc-sources": "PASS",
+        "independence": "PASS",
+        "scope": "PASS",
+        "trace": "PASS",
+        "validate": "PASS"
+      },
+      "outcome": "BLOCKED",
+      "reason": "open blocking findings ['F-sys-arch-set-r40-001'] blocking open points ['OP-SYE-011']",
+      "stage": "sys-arch"
+    }
+  ],
+  "status": "BLOCKED"
+}

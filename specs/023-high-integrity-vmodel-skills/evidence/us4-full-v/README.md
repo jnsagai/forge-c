@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 39 ended BLOCKED, except pass 35, which was stopped and has no summary.
+returned integration result as well. Every pass up to 40 ended BLOCKED, except pass 35, which was stopped and has no summary.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -52,18 +52,19 @@ returned integration result as well. Every pass up to 39 ended BLOCKED, except p
 | 37 | software architecture BLOCKED (OP-SWC-044); the three stages above ACCEPTED again after CON-SUP-201 | a hardware fact on interrupt re-entry was missing; CON-SUP-202 |
 | 38 | software architecture | the author account's usage limit (not a verdict) |
 | 39 | software requirements BLOCKED (OP-SWR-039) | CON-SUP-202, Claude's, left the hardware time of an exception entry outside the limits; CON-SUP-203 |
+| 40 | system architecture BLOCKED (OP-SYE-011) | the report time had no defined origin (a gap since run 6); CON-SUP-204 |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
 
-System integration and system qualification had no result up to pass 39; software qualification had 7 executed cases.
+System integration and system qualification had no result up to pass 40; software qualification had 7 executed cases.
 
 ### Limits a reader must know
 
 - **The product is fictional.** Claude wrote the product decisions, so Claude answered the questions the stages raised.
   Several blocks came from Claude's own earlier decisions: CON-SUP-151 was unsafe and was replaced, and the inspector
   refused the deviation in CON-SUP-165.
-- **Nine decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198 and 201 (196 and 197 were
+- **Ten decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198, 201 and 204 (196 and 197 were
   withdrawn by 198).
 - **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
   not a confirmation of the hardware.
@@ -86,6 +87,8 @@ System integration and system qualification had no result up to pass 39; softwar
   worst-case stack). They need a person and nobody performs them here; exception entry and exit time is not judged by
   any case. Claude answered the stage's question (`hi answer`) so that the run could go on; nothing was relaxed, and
   both stay gaps.
+- **A changed input makes every stage be judged again,** and a fresh inspection then finds older gaps (pass 40 found
+  one present since run 6). Each decision costs a pass over the left side.
 - **The package changed between passes.** Defects found by one pass were fixed in the package before the next, so the
   passes do not measure one fixed version.
 - No certification is claimed. READY would mean ready for human review.

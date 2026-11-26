@@ -228,3 +228,9 @@ and so made the detection limits unprovable (OP-SWR-039). The 1 µs is a generou
 usually documented at about 12 cycles), not taken from a Cortex-M55 document; it is the third unconfirmed hardware
 assumption after CON-SUP-195 and 202. It also gives the exception entry and exit time that OP-ITC-008 found unjudged
 a stated value; the analyses ITC-BUD-004 to 006 are still NOT_RUN.
+
+## Round 46 (2026-11-26, by Claude, fictional product decision)
+
+CON-SUP-204: the report time counts from the supervisor's start, not from the reset; the boot code's time is not
+counted. **It relaxes** "since the latest reset" (CON-SUP-126, 131, 141). The gap existed since run 6 and was found
+only when the system architecture was judged again after round 45 (OP-SYE-011). It is the tenth relaxing decision.
