@@ -27,6 +27,11 @@ def read(path):
     return json.loads(path.read_text())
 
 
+def terminal_scope(manifest):
+    return (manifest.get("swe1_level") == "functional"
+            and (manifest.get("phase_scope") or {}).get("stop_after") == PHASE)
+
+
 def in_scope(manifest):
     """Only the existing locally structured, engineering-only development path."""
     target = manifest.get("target") or {}
@@ -43,8 +48,8 @@ def in_scope(manifest):
                  (purpose == "QM" and manifest.get("qm_development") and
                   manifest.get("safety_target") == "QM"))
             and not (manifest.get("owner_safety_documents") or manifest.get("acp_inspectors"))
-            and manifest.get("swe1_level") != "functional"
-            and (manifest.get("phase_scope") or {}).get("stop_after") != PHASE)
+            and (terminal_scope(manifest) or (manifest.get("swe1_level") != "functional"
+                 and (manifest.get("phase_scope") or {}).get("stop_after") != PHASE)))
 
 
 def manifest_for(ws):
@@ -95,7 +100,7 @@ def settings(ws):
 def configure(ws, body, operator):
     m = manifest_for(ws)
     if not m:
-        raise ValueError("This order has no SWE.1 to SWE.2 partial-inspection route")
+        raise ValueError("This order has no partial-inspection route")
     wo = m["work_order"]
     threshold, enabled, automatic = (body.get(k) for k in ("threshold", "enabled", "automatic"))
     if type(threshold) is not int or not MINIMUM <= threshold <= 100:
@@ -104,7 +109,7 @@ def configure(ws, body, operator):
         raise ValueError("Choose a valid continuation and review mode")
     with database(create=True) as con:
         if has_continuation(ws):
-            raise Conflict("This order already continued to SWE.2. Its decision evidence is sealed.")
+            raise Conflict("The order's inspection decision and evidence are sealed.")
         old = config(con, wo)
         if type(body.get("revision")) is not int or old["revision"] != body["revision"]:
             raise Conflict("Settings changed. Reload and try again.")
@@ -154,12 +159,12 @@ def spacing_finding(f, statement):
                                r"|\b(?:double|extra|repeated)\s+spacing\b", text, re.I)))
 
 
-def _finding(swr, f):
+def _finding(swr, f, *, terminal=False):
     return {"finding_id": digest([swr, f]), "requirement_id": swr, "artifact": ARTIFACT,
             "criterion": f["quality_id"], "severity": f["severity"], "evidence": f["evidence"],
             "required_action": f["required_action"], "input_uncertainty": f["input_uncertainty"],
             "owner": "swe1-author", "closure_inspector": "swe1-inspector",
-            "revalidation": ["SWE.1 independent reinspection", "SWE.2 dependency check"]}
+            "revalidation": ["SWE.1 independent reinspection"] + ([] if terminal else ["SWE.2 dependency check"])}
 
 
 def _tool_evidence(ws, key, item):
@@ -182,7 +187,8 @@ def _basis(store):
     inspections = store.inspections(PHASE)
     last = inspections[-1] if inspections else {}
     sq = read(ws / ".forge-run/lrtx/SWE.1/phase2/set-quality.json")
-    b = {**CLEAN, "order": m["work_order"], "baseline_id": bl["baseline_id"],
+    b = {**CLEAN, "next_phase": None if terminal_scope(m) else "SWE.2", "order": m["work_order"],
+         "baseline_id": bl["baseline_id"],
          "baseline_hash": bl["baseline_hash"], "inspection_id": last.get("inspection_id"),
          "inspection_sha256": digest(last), "manifest_sha256": digest(m), "scope_sha256": digest(pin),
          "passed": 0, "total": sum(len(pin[k]) for k in ("requirements", "phase_checks", "set")), "findings": []}
@@ -218,14 +224,28 @@ def _basis(store):
             holds.add("SET_QUALITY_FAILED_OR_UNINSPECTED")
     candidates = {}
     artifact = (ws / ARTIFACT).read_text()
+    terminal = terminal_scope(m)
+    authored_statements = {}
+    if terminal:
+        rows = re.findall(r"^- \*\*(SWR-[0-9]+)\*\* ([\s\S]*?)(?=\n  - Source:|\n- \*\*SWR-|\Z)", artifact, re.M)
+        authored_statements = {swr: text.strip() for swr, text in rows}
+        if len(rows) != len(authored_statements):
+            holds.add("DUPLICATE_REQUIREMENT_IDS")
     for swr, key in pin["requirements"].items():
         ref = refs.get(swr, {})
         record = verdicts.get((key, ref.get("sha")), {})
         # The published EARS row must be the same text as the judged assembly.
         statement = (ref.get("obj") or {}).get("statement")
-        if (not isinstance(statement, str) or not re.search(
+        if not isinstance(statement, str):
+            matches = False
+        elif terminal:
+            # Native carry binds a verdict to the stable task/key and content, even if its display ID was renumbered.
+            matches = authored_statements.get(swr) == statement.strip() and bool(record)
+        else:
+            matches = bool(re.search(
                 rf"^\s*(?:[-*]\s+)?(?:\*\*)?{re.escape(swr)}(?:\*\*)?[ \t]+{re.escape(statement.strip())}[ \t]*$",
-                artifact, re.M) or record.get("swr") != swr):
+                artifact, re.M)) and record.get("swr") == swr
+        if not matches:
             holds.add("REQUIREMENT_EVIDENCE_MISSING_OR_UNBOUND")
             continue
         fs = [f for f in record["findings"] if f.get("severity") != "N/A" or f.get("input_uncertainty")]
@@ -234,7 +254,7 @@ def _basis(store):
         elif not fs:
             holds.add("REQUIREMENT_VERDICT_FAILED")
         for f in fs:
-            gap = _finding(swr, f)
+            gap = _finding(swr, f, terminal=terminal)
             b["findings"].append(gap)
             if spacing_finding(f, statement) and not ref["generated"] and record.get("passed"):
                 candidates[gap["finding_id"]] = {"finding": gap, "statement": statement,
@@ -308,13 +328,31 @@ def _receipt(ws, wo, *, publish):
     return result
 
 
-def _assess(ws, *, publish=False):
+def latest_route_limit(ws):
+    log = ws / ".forge-run/gates/gate-log.jsonl"
+    if not log.is_file():
+        return {}
+    latest = {}
+    for line in log.read_text().splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if row.get("phase") == PHASE and row.get("step") in ("author", "inspect", "route"):
+            latest = row
+    return (latest.get("gate") or {}).get("partial_loop_limit") or {}
+
+
+def _assess(ws, *, publish=False, loop_limit=None):
     manifest = manifest_for(ws)
     if not manifest:
         return {**CLEAN, "supported": False, "status": "UNAVAILABLE"}
     wo = manifest["work_order"]
     opts = settings(ws)
-    report = {**CLEAN, "supported": True, "settings": opts, "status": "DISABLED"}
+    terminal = terminal_scope(manifest)
+    report = {**CLEAN, "next_phase": None if terminal else "SWE.2",
+              "mode": "SWE1_TERMINAL" if terminal else "SWE2_CONTINUATION",
+              "supported": True, "settings": opts, "status": "DISABLED"}
     if not opts["enabled"]:
         return report
     receipt = _receipt(ws, wo, publish=publish)
@@ -324,10 +362,18 @@ def _assess(ws, *, publish=False):
     token = digest([evidence, opts])
     report.update(evidence=evidence, evidence_sha256=token,
                   percentage=round(100 * evidence["passed"] / evidence["total"], 2) if evidence["total"] else 0)
-    if evidence["holds"] or evidence["passed"] * 100 < opts["threshold"] * evidence["total"]:
-        return {**report, "status": "HOLD", "reason": "HARD_CHECK_OR_SCORE"}
-    if evidence["passed"] == evidence["total"] and not evidence["findings"]:
+    if not evidence["holds"] and evidence["passed"] == evidence["total"] and not evidence["findings"]:
         return {**report, "status": "PASS"}
+    limit = latest_route_limit(ws) if loop_limit is None else loop_limit
+    if (not limit.get("inspection_sha256") or limit["inspection_sha256"] != evidence["inspection_sha256"]
+            or type(limit.get("completed")) is not int or type(limit.get("limit")) is not int
+            or limit["completed"] < limit["limit"] or limit["limit"] < 1):
+        return {**report, "status": "WAITING_FOR_LOOP_LIMIT"}
+    report["inspection_loop_limit"] = limit
+    if evidence["holds"]:
+        return {**report, "status": "HOLD", "reason": "REQUIRED_CHECK_OR_EVIDENCE"}
+    if evidence["passed"] * 100 <= opts["threshold"] * evidence["total"]:
+        return {**report, "status": "HOLD", "reason": "SCORE_MUST_EXCEED_THRESHOLD"}
     if not 0 < receipt["candidate_count"] <= MAX_FINDINGS:
         return {**report, "status": "HOLD", "reason": "FINDING_IMPACT_UNCLEAR"}
     review = receipt["impact"]
@@ -335,7 +381,7 @@ def _assess(ws, *, publish=False):
         return {**report, "status": "HOLD", "reason": "FINDING_IMPACT_NOT_AVAILABLE"}
     if not receipt["impact_validated"]:
         return {**report, "status": "HOLD", "reason": "IMPACT_REWORK_OR_REVIEW_REQUIRED", "impact": review}
-    token = digest([evidence, opts, review])
+    token = digest([evidence, opts, review, limit])
     with database() as con:
         row = con.execute("SELECT reviewed_at, operator FROM reviews WHERE wo = ? AND evidence = ?",
                           (wo, token)).fetchone() if con else None
@@ -344,9 +390,9 @@ def _assess(ws, *, publish=False):
             "status": "ELIGIBLE" if row or opts["automatic"] else "REVIEW_REQUIRED"}
 
 
-def assess(store):
+def assess(store, *, loop_limit=None):
     """The workflow revalidates live evidence and publishes its decision inputs to Plant Floor."""
-    return _assess(store.workspace, publish=True)
+    return _assess(store.workspace, publish=True, loop_limit=loop_limit)
 
 
 def approve(ws, evidence_sha256, operator):
@@ -368,7 +414,8 @@ def snapshot(ws):
     history = records(ws) if report.get("supported") else []
     if history:
         entry = history[-1]
-        report = {**entry, "supported": True, "status": "CONTINUED_WITH_GAPS",
+        status = "PASS_WITH_OPEN_FINDINGS" if entry.get("mode") == "SWE1_TERMINAL" else "CONTINUED_WITH_GAPS"
+        report = {**entry, "supported": True, "status": status,
                   "continued": {"evidence_sha256": entry["evidence_sha256"],
                                 "baseline_hash": entry["evidence"]["baseline_hash"]}}
     if report.get("supported"):
@@ -440,6 +487,26 @@ def records(ws):
 
 def has_continuation(ws):
     return bool(records(ws))
+
+
+def terminal_outcome(ws):
+    """A scoped inspection disposition, separate from the native gate and release readiness."""
+    manifest = manifest_for(ws)
+    if not terminal_scope(manifest):
+        return None
+    history = records(ws)
+    report = history[-1] if history else {}
+    evidence = report.get("evidence") or {}
+    limit = report.get("inspection_loop_limit") or {}
+    current = Store(ws).latest_baseline(PHASE) or {}
+    if (report.get("mode") != "SWE1_TERMINAL" or report.get("status") != "ELIGIBLE"
+            or not evidence.get("findings") or limit.get("inspection_sha256") != evidence.get("inspection_sha256")
+            or limit.get("completed", 0) < limit.get("limit", 1) or limit.get("limit", 0) < 1
+            or current.get("baseline_hash") != evidence.get("baseline_hash")
+            or not current or Store(ws).stale_reason(PHASE, current)):
+        return None
+    return {"phase": PHASE, "decision": "PASS_WITH_OPEN_FINDINGS", "baseline_id": evidence["baseline_id"],
+            "evidence_sha256": report["evidence_sha256"]}
 
 
 def terminal_review(ws):

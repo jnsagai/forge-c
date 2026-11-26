@@ -641,7 +641,8 @@ def step_route(store: Store, phase: str) -> int:
                   else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         if partial_mode and not allowed:
-            result = partial_route(store, result, stuck=stuck, refused=refused)
+            result = partial_route(store, result, limit=development.selected(store.workspace)["max_phase_repair_passes"] + 1,
+                                   stuck=stuck, refused=refused)
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
         return 0 if allowed else 1
@@ -689,7 +690,7 @@ def step_route(store: Store, phase: str) -> int:
         g = {**g, "decision": "BLOCKED", "reason": f"rework budget exhausted ({cycles} failed cycles)" if stuck is None
              else f"STUCK: identical deterministic rejection twice ({', '.join(stuck)[:120]}); stopped early"}
         if partial_mode:
-            g = partial_route(store, g, stuck=stuck)
+            g = partial_route(store, g, limit=cycles, stuck=stuck)
         elif advisory_enabled(store.workspace) and store.latest_baseline(phase) and \
                 recovery_state(store.workspace, phase)["state"] != "PENDING":
             # the ladder is exhausted (budget, progress extensions, stall detection) and nothing is upstream: register
@@ -711,26 +712,52 @@ def step_route(store: Store, phase: str) -> int:
     if g["decision"] == "BLOCKED":
         emit("workflow", "WARN", f"{phase} rework budget exhausted -> BLOCKED", phase=phase)
         return 1
-    if g["decision"] == "ADVISORY_CONTINUE":
-        emit("workflow", "WARN", f"{phase} ladder exhausted -> ADVISORY_CONTINUE (gap registered)", phase=phase)
-        return 1  # the failure path's advisory node continues the run
+    if g["decision"] in {"ADVISORY_CONTINUE", "PARTIAL_INSPECTION_REVIEW"}:
+        emit("workflow", "WARN", f"{phase} ladder exhausted -> {g['decision']}", phase=phase)
+        return 1  # the failure path's advisory node reviews the deviation
     return 0
 
 
-def partial_route(store, gate, *, stuck=None, refused=False):
+def completed_inspection_loops(visits):
+    """Count author/fix visits that actually produced a completed independent inspection."""
+    frozen, completed = False, 0
+    for visit in visits:
+        step = visit.get("step")
+        if step == "author":
+            frozen = str(visit.get("result", "")).startswith("FROZEN")
+        elif step == "inspect":
+            reason = str((visit.get("gate") or {}).get("reason", ""))
+            settled = reason.startswith("INS-SWE.1-") or reason == "PARTIAL_INSPECTION_GAPS"
+            if frozen and visit.get("agent_ok") and settled:
+                completed += 1
+                frozen = False
+    return completed
+
+
+def partial_route(store, gate, *, limit, stuck=None, refused=False):
     from . import defects
 
-    visits = (json.loads(line) for line in reversed(_epoch_lines(store.workspace, partial.PHASE, store.budget_start())))
-    latest = next((visit for visit in visits if visit.get("step") in ("author", "inspect")), {})
-    report = partial.assess(store)
+    ws = store.workspace
+    visits = [json.loads(line) for line in _epoch_lines(ws, partial.PHASE, store.budget_start())]
+    latest = next((visit for visit in reversed(visits) if visit.get("step") in ("author", "inspect")), {})
+    completed = completed_inspection_loops(visits)
+    terminal = partial.terminal_scope(partial.manifest_for(ws))
     if (latest.get("step") != "inspect" or not latest.get("agent_ok") or latest.get("agent_status") != "PASS"
             or latest.get("gate", {}).get("reason") != "PARTIAL_INSPECTION_GAPS"
-            or stuck or refused or defects.open_from(store.workspace, partial.PHASE)
-            or recovery_state(store.workspace, partial.PHASE)["state"] == "PENDING"
+            or stuck or refused or completed < limit or defects.open_from(ws, partial.PHASE)
+            or (not terminal and recovery_state(ws, partial.PHASE)["state"] == "PENDING")
             or store.gate(partial.PHASE)["decision"] != "PASS"):
-        partial.report_hold(store, {**report, "route_reason": gate["reason"]})
+        partial.report_hold(store, {**partial.assess(store, loop_limit={}), "route_reason": gate["reason"],
+                                    "inspection_loops_completed": completed})
         return gate
-    return {**gate, "decision": "PARTIAL_INSPECTION_REVIEW", "partial_status": report["status"]}
+    inspections = store.inspections(partial.PHASE)
+    loop_limit = {"completed": completed, "limit": limit, "inspection_sha256": partial.digest(inspections[-1])}
+    report = partial.assess(store, loop_limit=loop_limit)
+    if report["status"] not in ("ELIGIBLE", "REVIEW_REQUIRED"):
+        partial.report_hold(store, {**report, "route_reason": gate["reason"]})
+        return {**gate, "partial_loop_limit": loop_limit, "partial_status": report["status"]}
+    return {**gate, "decision": "PARTIAL_INSPECTION_REVIEW", "partial_status": report["status"],
+            "partial_loop_limit": loop_limit}
 
 
 def _step_partial_advisory(store, phase, gate):
@@ -752,7 +779,7 @@ def _step_partial_advisory(store, phase, gate):
         if window_path:
             window_path.unlink(missing_ok=True)
     if (report["status"] != "ELIGIBLE" or defects.open_from(store.workspace, phase)
-            or recovery_state(store.workspace, phase)["state"] == "PENDING"):
+            or (report.get("mode") != "SWE1_TERMINAL" and recovery_state(store.workspace, phase)["state"] == "PENDING")):
         partial.report_hold(store, report)
         return 1
     since = store.budget_start()
@@ -762,8 +789,8 @@ def _step_partial_advisory(store, phase, gate):
             partial.report_hold(store, {**report, "status": "HOLD", "reason": "SETTINGS_CHANGED_DURING_DISPATCH"})
             return 1
         advisory_record(store, phase, since, gate, cycles, gate["max_rework_cycles"], None, None, report)
-        _state(store.workspace, phase, {"step": "partial", "decision": "CONTINUED_WITH_GAPS",
-                                        "evidence_sha256": report["evidence_sha256"]})
+        outcome = "PASS_WITH_OPEN_FINDINGS" if report.get("mode") == "SWE1_TERMINAL" else "CONTINUED_WITH_GAPS"
+        _state(store.workspace, phase, {"step": "partial", "decision": outcome, "evidence_sha256": report["evidence_sha256"]})
     return 0
 
 

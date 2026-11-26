@@ -451,7 +451,7 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
                 f'  {adv} [shape=parallelogram, label="{phase} advisory continue check (gap registered)", '
                 f'max_visits={MAX_VISITS},{timeout} script="{_q(gate_cmd(phase, "advisory"))}"]',
                 f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
-    if structured.get("partial_inspection"):
+    if structured.get("partial_inspection") and not structured.get("partial_inspection_terminal"):
         edge = re.search(r'^  swe2_inspect_gate -> (swe3_\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
         if edge:
             stop = gate_cmd("SWE.2", "partial-pilot-boundary")

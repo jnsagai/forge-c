@@ -1181,11 +1181,13 @@ def run(
     from .inspection.provided_early_code import enabled as early_provided_code_enabled
 
     structured = local_profile_structured(local, manifest, model)
-    from .inspection.partial import MARKER, in_scope
+    from .inspection.partial import MARKER, in_scope, terminal_scope
 
     if (structured and structured.get("two_phase_inspection") and not structured.get("demonstration")
             and not (acp_inspectors or manifest.get("delivery_first")) and (not phases or phases[0] == "SWE.1") and in_scope(manifest)):
         structured["partial_inspection"] = True
+        if terminal_scope(manifest):
+            structured["partial_inspection_terminal"] = True
         manifest[MARKER] = 1
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     graph, nodes = build(

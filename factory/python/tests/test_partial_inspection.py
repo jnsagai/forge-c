@@ -68,6 +68,8 @@ def campaign(tmp_path, monkeypatch):
                       "downstream_impact": "editorial_only", "source": stmt, "replacement": stmt.replace("  ", " "),
                       "rationale": "Only ordinary redundant spacing changes."}}
     write(partial.assessment_file(ws), {"basis_sha256": partial.digest(evidence), "findings": proposal})
+    monkeypatch.setattr(partial, "latest_route_limit", lambda _ws: {
+        "completed": 3, "limit": 3, "inspection_sha256": partial.digest(last)})
     return SimpleNamespace(ws=ws, st=st, wo=wo, manifest=manifest, refs=refs, verdicts=verdicts, finding=finding,
                            last=last, evidence=evidence, proposal=proposal)
 
@@ -75,9 +77,11 @@ def campaign(tmp_path, monkeypatch):
 def test_exact_evidence_owner_review_and_continuation(campaign, monkeypatch):
     c = campaign
     assert partial.assess(c.st)["status"] == "REVIEW_REQUIRED"
-    gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
-                                "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
-    assert gate.partial_route(c.st, {"reason": "exhausted"})["decision"] == "PARTIAL_INSPECTION_REVIEW"
+    for _ in range(3):
+        gate._state(c.ws, "SWE.1", {"step": "author", "result": "FROZEN"})
+        gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
+                                    "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
+    assert gate.partial_route(c.st, {"reason": "exhausted"}, limit=3)["decision"] == "PARTIAL_INSPECTION_REVIEW"
     token = partial.assess(c.st)["evidence_sha256"]
     with pytest.raises(partial.Conflict):
         partial.approve(c.ws, token, "operator")
@@ -174,7 +178,7 @@ def test_latest_author_rejection_blocks_the_old_inspection(campaign):
     gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
                                 "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
     gate._state(c.ws, "SWE.1", {"step": "author", "result": "REJECTED", "issues": ["UNBOUND_INPUT"]})
-    assert gate.partial_route(c.st, {"decision": "BLOCKED", "reason": "exhausted"})["decision"] == "BLOCKED"
+    assert gate.partial_route(c.st, {"decision": "BLOCKED", "reason": "exhausted"}, limit=3)["decision"] == "BLOCKED"
     assert not partial.has_continuation(c.ws)
 
 
@@ -229,3 +233,65 @@ def test_aspice_only_requires_explicit_out_of_context_evidence(campaign):
     assert partial.in_scope(manifest)
     assert not partial.in_scope({**manifest, "upstream": {"status": "NOT_PROVIDED"}})
     assert not partial.in_scope({**manifest, "historical_safety_scope": {"scope": {"target_asil": "B"}}})
+
+
+def test_no_threshold_before_limit_or_without_matching_inspection(campaign, monkeypatch):
+    c = campaign
+    monkeypatch.setattr(partial, "latest_route_limit", lambda _ws: {})
+    assert partial.assess(c.st)["status"] == "WAITING_FOR_LOOP_LIMIT"
+    gate._state(c.ws, "SWE.1", {"step": "author", "result": "FROZEN"})
+    gate._state(c.ws, "SWE.1", {"step": "inspect", "agent_status": "PASS", "agent_ok": True,
+                                "gate": {"reason": "PARTIAL_INSPECTION_GAPS"}})
+    old = {"reason": "rework budget exhausted", "decision": "BLOCKED"}
+    assert gate.partial_route(c.st, old, limit=3) == old
+    assert partial.snapshot(c.ws)["status"] == "WAITING_FOR_LOOP_LIMIT"
+    monkeypatch.setattr(partial, "latest_route_limit", lambda _ws: {"inspection_sha256": "stale"})
+    assert partial.assess(c.st)["status"] == "WAITING_FOR_LOOP_LIMIT"
+
+
+def test_equal_threshold_requires_repair(campaign, monkeypatch):
+    c = campaign
+    opts = {"revision": 1, "threshold": 90, "enabled": True, "automatic": False}
+    partial.configure(c.ws, opts, "operator")
+    original = partial._receipt
+
+    def score(*args, **kwargs):
+        receipt = original(*args, **kwargs)
+        return {**receipt, "evidence": {**receipt["evidence"], "passed": 90, "total": 100}}
+
+    monkeypatch.setattr(partial, "_receipt", score)
+    report = partial.assess(c.st)
+    assert report["status"] == "HOLD"
+    assert report["reason"] == "SCORE_MUST_EXCEED_THRESHOLD"
+
+
+def test_terminal_functional_order_has_no_swe2_route(campaign):
+    manifest = {**campaign.manifest, "swe1_level": "functional", "phase_scope": {"stop_after": "SWE.1"}}
+    assert partial.in_scope(manifest)
+    assert partial.terminal_scope(manifest)
+    assert not partial.in_scope({**manifest, "phase_scope": {"stop_after": "SWE.2"}})
+    graph, _ = build(campaign.wo, assessment_manifest=manifest, stop_after="SWE.1",
+                     structured={"phases": ["SWE.1"], "inspect_phases": ["SWE.1"], "model": "qwen",
+                                 "two_phase_inspection": True, "partial_inspection": True, "partial_inspection_terminal": True})
+    assert 'swe1_advisory -> release_manager [condition="outcome=succeeded"]' in graph
+    assert "swe2_author [" not in graph
+
+
+def test_terminal_disposition_does_not_mark_a_native_pass(campaign, monkeypatch):
+    from forge_factory.afo.line_conductor import classify_order
+
+    c = campaign
+    write(c.ws / ".forge-run/manifest.json", {**c.manifest, "swe1_level": "functional",
+          "phase_scope": {"stop_after": "SWE.1"}})
+    basis, _ = partial.basis(c.st)
+    write(partial.assessment_file(c.ws), {"basis_sha256": partial.digest(basis), "findings": c.proposal})
+    token = partial.assess(c.st)["evidence_sha256"]
+    monkeypatch.setattr(gate.time, "sleep", lambda _: partial.approve(c.ws, token, "operator"))
+    assert gate._step_partial_advisory(c.st, "SWE.1", c.st.gate("SWE.1")) == 0
+    terminal = partial.terminal_outcome(c.ws)
+    assert terminal["decision"] == "PASS_WITH_OPEN_FINDINGS"
+    rec = {"phase": "SWE.1", "passed": set(), "ws": c.ws,
+           "package": {"package_status": "BLOCKED", "inspection_outcome": terminal}}
+    assert classify_order(rec, None, {}) is None
+    assert rec["passed"] == set()
+    assert partial.snapshot(c.ws)["status"] == "PASS_WITH_OPEN_FINDINGS"

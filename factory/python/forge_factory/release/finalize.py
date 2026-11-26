@@ -644,7 +644,7 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
 
     achieved = quality_into(ws, stage)  # owner rule 2026-11-03: quality achieved vs the order's target
     all_phases_pass = all(checks[f"swe{p[-1]}_inspection"] for p in PHASES)
-    from ..inspection.partial import terminal_review
+    from ..inspection.partial import terminal_outcome, terminal_review
 
     if held := terminal_review(ws):
         _w(stage, "quality/partial-inspection-review.json", pretty_json(held))
@@ -652,8 +652,10 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
         _w(stage, "quality/advisory-gaps.json", pretty_json({"schema": "forge-c/advisory-gap-register/1",
                                                             "entries": advisory}))
+    disposition = terminal_outcome(ws)
     quality = {
         "run_status": "COMPLETED" if all_phases_pass else "INCOMPLETE",
+        **({"inspection_outcome": disposition} if disposition else {}),
         "checks": checks,
         "open_findings": findings,
         "advisory_continued": sorted({e["phase"] for e in advisory}),
@@ -764,6 +766,7 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             "gap_count": res["gap_count"],
             "gaps": gaps,
             "quality_run_status": quality["run_status"],
+            **({"inspection_outcome": quality["inspection_outcome"]} if "inspection_outcome" in quality else {}),
             "scope": NOT_SAFETY,
             "work_order_purpose": quality.get("work_order_purpose", "LEGACY"),
             **({k: quality[k] for k in ("provided_code_modified", "provided_code_changes", "human_review_required")}

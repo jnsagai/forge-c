@@ -712,6 +712,12 @@ def classify_order(rec: dict, life: str | None, capa_of: dict, *, completed_run=
 
     if rec["phase"] in rec["passed"]:
         return None
+    scoped = (rec["package"] or {}).get("inspection_outcome") or {}
+    if rec["phase"] == "SWE.1" and scoped.get("decision") == "PASS_WITH_OPEN_FINDINGS":
+        from ..inspection.partial import terminal_outcome
+
+        if terminal_outcome(rec["ws"]) == scoped:
+            return None  # Settled scoped order; downstream dependencies still require a native PASS.
     if (rec["package"] or {}).get("package_status") == READY:
         return None  # packaged for offline review: a packaging-only (PKG) order's carried phases all passed
     kind = (life or "").split(":")[0]
