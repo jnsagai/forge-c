@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 37 ended BLOCKED, except pass 35, which was stopped and has no summary.
+returned integration result as well. Every pass up to 39 ended BLOCKED, except pass 35, which was stopped and has no summary.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -50,8 +50,13 @@ returned integration result as well. Every pass up to 37 ended BLOCKED, except p
 | 35 | software integration ACCEPTED_WITH_GAPS (40 PASS, 3 NOT_RUN); software qualification written and first inspected | stopped by Claude: 46 of 52 cases were declared manual. The package now asks for a program or a reason, and the platform has a monitor for what an outside observer sees |
 | 36 | software requirements BLOCKED (OP-SWR-036) | software qualification found that the alive window was never defined; answered by CON-SUP-201 |
 | 37 | software architecture BLOCKED (OP-SWC-044); the three stages above ACCEPTED again after CON-SUP-201 | a hardware fact on interrupt re-entry was missing; CON-SUP-202 |
+| 38 | software architecture | the author account's usage limit (not a verdict) |
+| 39 | software requirements BLOCKED (OP-SWR-039) | CON-SUP-202, Claude's, left the hardware time of an exception entry outside the limits; CON-SUP-203 |
 
-System integration and system qualification had no result up to pass 37; software qualification had 7 executed cases.
+Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
+errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
+
+System integration and system qualification had no result up to pass 39; software qualification had 7 executed cases.
 
 ### Limits a reader must know
 
@@ -65,6 +70,8 @@ System integration and system qualification had no result up to pass 37; softwar
 - **CON-SUP-202 is a second hardware assumption accepted without evidence:** an enabled TIM2 flag that is still set when
   the handler returns enters the handler again. Vendor documents for other Cortex-M cores describe this for
   level-sensitive interrupts; the Cortex-M55 text was not found and no hardware was used.
+- **CON-SUP-203 is a third hardware assumption accepted without evidence:** every exception entry and return takes at
+  most 1 µs, and every time limit includes it. The simulator counts no such time.
 - **CON-SUP-200 is an observation**, made by Claude on the simulator. It is not a product decision.
 - **Coverage is measured on the test build** (`HI_TEST_BUILD`), not on the product build.
 - **Simulation is not hardware.** Renode is not cycle accurate (50 MIPS assumed). Timing results say nothing about

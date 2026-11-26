@@ -219,3 +219,12 @@ CON-SUP-202: an enabled TIM2 flag still set at handler return enters the handler
 describe this for level-sensitive interrupts of other Cortex-M cores; the Cortex-M55 text was not found, RM0486 does not
 state how the flags drive the request, and no hardware was used. Like CON-SUP-195 it is an unconfirmed assumption that
 the integrator has to confirm.
+
+## Round 45 (2026-11-26, by Claude, hardware assumption without evidence)
+
+CON-SUP-203: every exception entry and return takes at most 1 µs of hardware time, and every time limit includes it.
+It replaces a sentence of CON-SUP-202, Claude's own, which left that time "not known and not part of the verification"
+and so made the detection limits unprovable (OP-SWR-039). The 1 µs is a generous assumption (Cortex-M cores are
+usually documented at about 12 cycles), not taken from a Cortex-M55 document; it is the third unconfirmed hardware
+assumption after CON-SUP-195 and 202. It also gives the exception entry and exit time that OP-ITC-008 found unjudged
+a stated value; the analyses ITC-BUD-004 to 006 are still NOT_RUN.
