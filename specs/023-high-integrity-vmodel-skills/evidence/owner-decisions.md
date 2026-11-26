@@ -240,3 +240,7 @@ only when the system architecture was judged again after round 45 (OP-SYE-011). 
 CON-SUP-205 gives CON-SUP-204 the tolerance it lacked: the count may start up to 100 µs after the call, so a value 1 ms
 less than the exact one is accepted. **It relaxes** CON-SUP-204. Claude's own omission caused one more pass (OP-SYE-012).
 Counted with 204 as one relaxed rule.
+
+`hi answer` OP-SWC-051 (pass 42, by Claude): the architecture's processor-time allowances are design targets and may be
+tightened so that the chain fits its limit; no limit changes; each tightened allowance is verified by measurement or
+analysis or stays an open gap. One simulator sample (ITC-BUD-002, pass 35 logs) is quoted as a sample, not a bound.

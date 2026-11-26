@@ -34,7 +34,7 @@ gets new rework rounds. A stage accepted after many passes has therefore had man
 
 The stage named is the last one in the pass's `summary.json`. A stage that returned a point upward drops out of that
 list when the upstream stage then blocks, so passes 20, 24, 27 and 28 had worked further than shown; row 31 names the
-returned integration result as well. Every pass up to 41 ended BLOCKED, except pass 35, which was stopped and has no summary.
+returned integration result as well. Every pass up to 42 ended BLOCKED, except pass 35, which was stopped and has no summary.
 
 | Passes | Last stage in the summary | What stopped it |
 |---|---|---|
@@ -54,11 +54,12 @@ returned integration result as well. Every pass up to 41 ended BLOCKED, except p
 | 39 | software requirements BLOCKED (OP-SWR-039) | CON-SUP-202, Claude's, left the hardware time of an exception entry outside the limits; CON-SUP-203 |
 | 40 | system architecture BLOCKED (OP-SYE-011) | the report time had no defined origin (a gap since run 6); CON-SUP-204 |
 | 41 | system architecture BLOCKED (OP-SYE-012) | CON-SUP-204, Claude's, gave no tolerance; CON-SUP-205 |
+| 42 | software architecture BLOCKED (OP-SWC-051), after two returned points were settled inside the pass | the allowances of a timing chain exceeded its limit once the exception time of CON-SUP-203 was counted; answered with `hi answer` (allowances may be tightened, limits stay) |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
 
-System integration and system qualification had no result up to pass 41; software qualification had 7 executed cases.
+System integration and system qualification had no result up to pass 42; software qualification had 7 executed cases.
 
 ### Limits a reader must know
 
