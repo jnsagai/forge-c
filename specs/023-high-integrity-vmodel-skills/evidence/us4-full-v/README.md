@@ -55,6 +55,8 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 40 | system architecture BLOCKED (OP-SYE-011) | the report time had no defined origin (a gap since run 6); CON-SUP-204 |
 | 41 | system architecture BLOCKED (OP-SYE-012) | CON-SUP-204, Claude's, gave no tolerance; CON-SUP-205 |
 | 42 | software architecture BLOCKED (OP-SWC-051), after two returned points were settled inside the pass | the allowances of a timing chain exceeded its limit once the exception time of CON-SUP-203 was counted; answered with `hi answer` (allowances may be tightened, limits stay) |
+| 43 | software architecture and detailed design ACCEPTED; unit verification returned one point (OP-UTC-501) to the design; stopped during the design rework by the author account's usage limit, not a verdict | the answer to OP-SWC-051 was accepted; the inspector found three blocking points in the retained-data unit (latch read for interrupts, latch written with the fault records, order of invalidating the two copies) |
+| 44 | detailed design and unit verification ACCEPTED; software integration ACCEPTED_WITH_GAPS; software qualification returned one point (OP-QTC-005) to the design; stopped by the author account's usage limit, not a verdict | first pass with SWE.1 to SWE.5 all accepted on the same code; system integration and qualification not yet reached |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
