@@ -336,3 +336,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-204 | **Origin of the report time; relaxes "since the latest reset" of CON-SUP-126, CON-SUP-131 and CON-SUP-141.** `<ms since start>` counts from the instant the boot code calls the supervisor's start entry function (CON-SUP-188) after the latest reset of any kind, not from the reset itself. The time the boot code takes before that call is outside this product and is not counted, so the value is short of the time since the reset by that time; the integrator states it. Every other rule on the value stays: milliseconds, unsigned 32 bits, wrapping to 0 after 4294967295, taken at detection (code 8: when start-up classified the reset cause). |
+
+**Forty-seventh round.** Answers the system architecture (OP-SYE-012).
+
+| ID | Decision |
+|---|---|
+| CON-SUP-205 | **Tolerance of the report time; completes CON-SUP-204 and relaxes it.** The count of `<ms since start>` may begin up to 100 µs after the boot code's call of the start entry function. A reported value is correct when it equals the whole milliseconds elapsed from the call to the detection, or is 1 ms less than that; both are accepted. A value greater than the whole milliseconds elapsed from the call is never correct. Everything else in CON-SUP-204 stays. |

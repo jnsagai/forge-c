@@ -234,3 +234,9 @@ a stated value; the analyses ITC-BUD-004 to 006 are still NOT_RUN.
 CON-SUP-204: the report time counts from the supervisor's start, not from the reset; the boot code's time is not
 counted. **It relaxes** "since the latest reset" (CON-SUP-126, 131, 141). The gap existed since run 6 and was found
 only when the system architecture was judged again after round 45 (OP-SYE-011). It is the tenth relaxing decision.
+
+## Round 47 (2026-11-26, by Claude, fictional product decision)
+
+CON-SUP-205 gives CON-SUP-204 the tolerance it lacked: the count may start up to 100 µs after the call, so a value 1 ms
+less than the exact one is accepted. **It relaxes** CON-SUP-204. Claude's own omission caused one more pass (OP-SYE-012).
+Counted with 204 as one relaxed rule.
