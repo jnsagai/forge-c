@@ -62,6 +62,7 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 47 | the architecture accepted OP-SWU-041 again; the design took OP-QTC-023 and returned OP-SWU-042 to the architecture; stopped at 04:31 during that rework because Claude Code killed the background pass when the host ran out of memory (another build used it), not a verdict | the partial state was committed as found and the pass was restarted as pass 48 once memory was free |
 | 48 | the architecture took OP-SWU-042, then ended BLOCKED with OP-SWC-059: a fault record that cannot be saved has no stated reaction | product decision CON-SUP-206 (round 48): such an update is a code 7 fault, not retried; the unrecorded faults are exempt from the 1 ms and 2 ms limits |
 | 49 | the left side accepted CON-SUP-206; the architecture ended BLOCKED with OP-SWC-061 | CON-SUP-206, Claude's, covered only the faults of the failed update and not those detected after it; CON-SUP-207 (round 49) |
+| 50 | the system requirements accepted CON-SUP-207, then the system architecture returned OP-SYE-014 and the system requirements ended BLOCKED with OP-SYS-025 | CON-SUP-206 required the data of the last completed update after the reset, which a failed start-up write can make impossible; CON-SUP-208 (round 50) defers to the existing reset rule CON-SUP-164 |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.

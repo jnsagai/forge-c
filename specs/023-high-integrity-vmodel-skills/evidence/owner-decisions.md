@@ -257,3 +257,8 @@ next reset is also not recorded, is exempt from the 1 ms and 2 ms limits, and is
 while no reset has occurred. Counted with 206 as one relaxed rule. CON-SUP-206 named the faults of the failed update
 only, not the interval after it; Claude's omission caused one more pass (OP-SWC-061). Lesson as for 204: a decision that
 opens an exception states the whole interval it covers.
+
+Round 50 (pass 50, by Claude): CON-SUP-208 replaces the "last completed update" words of CON-SUP-206 with the existing
+reset rule (CON-SUP-164): intact retained data found after the reset is used; none found (a refused check counts as
+none) gives the latched start with empty counts and history. It covers the failed start-up write of OP-SYS-025. It adds
+no new behaviour and is counted with 206 and 207 as one relaxed rule. Third pass caused by Claude's CON-SUP-206 wording.

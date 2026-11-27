@@ -354,3 +354,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-207 | **Completes CON-SUP-206.** A fault detected after the instant an update of the retained data could not be completed and before the next reset is treated like the faults that update was to record: it is not recorded, the 1 ms and 2 ms of CON-SUP-170 do not apply to it, and its absence from the fault history after the next reset is accepted. Its report on the diagnostic line follows the same rules as the report of any other fault detected in that interval: the fault report line within 10 ms of its detection, as long as the reset has not occurred. Everything else in CON-SUP-206 stays. |
+
+**Fiftieth round.** Answers the system requirements (OP-SYS-025, OP-SYE-014): what holds after the reset that follows an update that could not be completed.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-208 | **Replaces the words "after the next reset the retained data is that of the last completed update (CON-SUP-164)" of CON-SUP-206.** After the next reset other than power-on, start-up treats the retained data exactly as after any other reset (CON-SUP-164), whether the update that could not be completed was made at run time or at start-up, including the start-up write made because no intact retained data was found. When start-up finds intact retained data, it uses it. When it finds none, the system starts with the safe-state latch set and with empty fault counts and fault history. A check of the retained data whose read or CRC computation is refused counts as finding no intact retained data, even if the stored data may still be intact. Each of these outcomes is accepted, and in each the faults that were not recorded (CON-SUP-206, CON-SUP-207) may be absent. Everything else in CON-SUP-164, CON-SUP-206 and CON-SUP-207 stays. |
