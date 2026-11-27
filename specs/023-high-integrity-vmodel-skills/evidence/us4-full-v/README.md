@@ -63,6 +63,7 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 48 | the architecture took OP-SWU-042, then ended BLOCKED with OP-SWC-059: a fault record that cannot be saved has no stated reaction | product decision CON-SUP-206 (round 48): such an update is a code 7 fault, not retried; the unrecorded faults are exempt from the 1 ms and 2 ms limits |
 | 49 | the left side accepted CON-SUP-206; the architecture ended BLOCKED with OP-SWC-061 | CON-SUP-206, Claude's, covered only the faults of the failed update and not those detected after it; CON-SUP-207 (round 49) |
 | 50 | the system requirements accepted CON-SUP-207, then the system architecture returned OP-SYE-014 and the system requirements ended BLOCKED with OP-SYS-025 | CON-SUP-206 required the data of the last completed update after the reset, which a failed start-up write can make impossible; CON-SUP-208 (round 50) defers to the existing reset rule CON-SUP-164 |
+| 51 | the system requirements accepted CON-SUP-208; the system architecture ended BLOCKED with OP-SYE-013 | CON-SUP-206 named a refused write or read of the retained memory, which no device fact lets the software detect or a test cause; CON-SUP-209 (round 51) keeps only detectable failures, states the test means and adds a fourth hardware assumption |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
@@ -74,7 +75,7 @@ System integration and system qualification had no result up to pass 42; softwar
 - **The product is fictional.** Claude wrote the product decisions, so Claude answered the questions the stages raised.
   Several blocks came from Claude's own earlier decisions: CON-SUP-151 was unsafe and was replaced, and the inspector
   refused the deviation in CON-SUP-165.
-- **Eleven decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198, 201, 204 with 205, and 206 (196 and 197
+- **Eleven decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198, 201, 204 with 205, and 206 with 207, 208 and 209 (196 and 197
   were withdrawn by 198).
 - **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
   not a confirmation of the hardware.
@@ -83,6 +84,10 @@ System integration and system qualification had no result up to pass 42; softwar
   level-sensitive interrupts; the Cortex-M55 text was not found and no hardware was used.
 - **CON-SUP-203 is a third hardware assumption accepted without evidence:** every exception entry and return takes at
   most 1 µs, and every time limit includes it. The simulator counts no such time.
+- **CON-SUP-209 is a fourth hardware assumption accepted without evidence:** the retained memory never ends a write or
+  a read in a processor fault. No device indication of a refused access is cited, so the supervisor detects only a CRC
+  computation that cannot be carried out and a read-back that differs. Tests that cause these failures show the
+  supervisor's reaction only.
 - **CON-SUP-200 is an observation**, made by Claude on the simulator. It is not a product decision.
 - **Coverage is measured on the test build** (`HI_TEST_BUILD`), not on the product build.
 - **Simulation is not hardware.** Renode is not cycle accurate (50 MIPS assumed). Timing results say nothing about

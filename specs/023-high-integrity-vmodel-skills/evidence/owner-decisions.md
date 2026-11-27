@@ -262,3 +262,10 @@ Round 50 (pass 50, by Claude): CON-SUP-208 replaces the "last completed update" 
 reset rule (CON-SUP-164): intact retained data found after the reset is used; none found (a refused check counts as
 none) gives the latched start with empty counts and history. It covers the failed start-up write of OP-SYS-025. It adds
 no new behaviour and is counted with 206 and 207 as one relaxed rule. Third pass caused by Claude's CON-SUP-206 wording.
+
+Round 51 (pass 51, by Claude): CON-SUP-209 narrows CON-SUP-206 and CON-SUP-208 to failures the software can see (a CRC
+computation that cannot be carried out, a read-back that differs from what was written) and drops the refused write or
+read, for which no device indication is cited. That the retained memory never ends an access in a processor fault is a
+**fourth unconfirmed hardware assumption** on the integrator (with CON-SUP-195, 202, 203). Tests may produce the
+failures with a test build that replaces the driver result, or with the simulator's verification equipment; that
+evidence shows the supervisor's reaction only, not the device's. Fourth pass caused by Claude's CON-SUP-206 wording.
