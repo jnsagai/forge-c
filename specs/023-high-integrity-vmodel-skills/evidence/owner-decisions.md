@@ -251,3 +251,9 @@ servicing stopped), is not retried, and the faults it was to record are not reco
 apply to them and their absence from the fault history after the next reset is accepted. **It relaxes** CON-SUP-170 and
 CON-SUP-186 for that case (the eleventh relaxing decision). The failure instant is stated (CON-SUP-105), so the
 reaction stays measurable.
+
+Round 49 (pass 49, by Claude): CON-SUP-207 completes CON-SUP-206. A fault detected after the failed update and before the
+next reset is also not recorded, is exempt from the 1 ms and 2 ms limits, and is still reported on the line within 10 ms
+while no reset has occurred. Counted with 206 as one relaxed rule. CON-SUP-206 named the faults of the failed update
+only, not the interval after it; Claude's omission caused one more pass (OP-SWC-061). Lesson as for 204: a decision that
+opens an exception states the whole interval it covers.
