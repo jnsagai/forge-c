@@ -342,3 +342,9 @@ contradictions between earlier decisions.
 | ID | Decision |
 |---|---|
 | CON-SUP-205 | **Tolerance of the report time; completes CON-SUP-204 and relaxes it.** The count of `<ms since start>` may begin up to 100 µs after the boot code's call of the start entry function. A reported value is correct when it equals the whole milliseconds elapsed from the call to the detection, or is 1 ms less than that; both are accepted. A value greater than the whole milliseconds elapsed from the call is never correct. Everything else in CON-SUP-204 stays. |
+
+**Forty-eighth round.** Answers the software architecture (OP-SWC-059): an update of the retained data that cannot be completed.
+
+| ID | Decision |
+|---|---|
+| CON-SUP-206 | **Retained-data update that cannot be completed; relaxes CON-SUP-170 and CON-SUP-186 for that case.** An update of the retained data cannot be completed when its CRC computation cannot be carried out, or when the retained memory cannot be written or read back inside its stated range. Such an update counts as a code 7 fault with entity `CODE`, at run time and at start-up alike, with the reaction of code 7: safe state, the fault report line within 10 ms, and watchdog servicing stopped (CON-SUP-121). The instant the fault becomes detectable (CON-SUP-105) is when the computation, the write or the read is refused. The update is not retried and no later update is attempted until the next reset. The faults that update was to record, and this code 7 fault itself, are not recorded: the 1 ms and 2 ms of CON-SUP-170 do not apply to them, and after the next reset the retained data is that of the last completed update (CON-SUP-164); a report of them on the diagnostic line before that reset is required as for any fault, their absence from the fault history after it is accepted. Everything else in CON-SUP-170 and CON-SUP-186 stays. |

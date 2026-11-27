@@ -59,6 +59,8 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 44 | detailed design and unit verification ACCEPTED; software integration ACCEPTED_WITH_GAPS; software qualification returned one point (OP-QTC-005) to the design; stopped by the author account's usage limit, not a verdict | first pass with SWE.1 to SWE.5 all accepted on the same code; system integration and qualification not yet reached |
 | 45 | software qualification returned test failures to the design three times (OP-QTC-005, -021, -023); each was settled and integration accepted again with gaps; the run then had no returns left, so the design ended BLOCKED with OP-SWU-041 returned to the architecture | a release that arrives while the execution deadline of the earlier release is armed replaced that deadline, so an overrun went unreported (QTC-TIM-004); the architecture must decide how one armed deadline serves both cases |
 | 46 | the architecture took OP-SWU-041; its follow-on points went to the system architecture and software requirements, which accepted them; after three returns the architecture ended BLOCKED with OP-SWC-058 returned to software requirements | SWR-SCH-007 asked for more than its parent SYE-SUP-072 (an order for captures made before a return-path mark can take effect); the architecture asks software requirements to follow the parent |
+| 47 | the architecture accepted OP-SWU-041 again; the design took OP-QTC-023 and returned OP-SWU-042 to the architecture; stopped at 04:31 during that rework because Claude Code killed the background pass when the host ran out of memory (another build used it), not a verdict | the partial state was committed as found and the pass was restarted as pass 48 once memory was free |
+| 48 | the architecture took OP-SWU-042, then ended BLOCKED with OP-SWC-059: a fault record that cannot be saved has no stated reaction | product decision CON-SUP-206 (round 48): such an update is a code 7 fault, not retried; the unrecorded faults are exempt from the 1 ms and 2 ms limits |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
@@ -70,7 +72,7 @@ System integration and system qualification had no result up to pass 42; softwar
 - **The product is fictional.** Claude wrote the product decisions, so Claude answered the questions the stages raised.
   Several blocks came from Claude's own earlier decisions: CON-SUP-151 was unsafe and was replaced, and the inspector
   refused the deviation in CON-SUP-165.
-- **Ten decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198, 201 and 204 with 205 (196 and 197
+- **Eleven decisions relaxed something:** CON-SUP-170, 171, 172, 177, 187, 191, 192, 198, 201, 204 with 205, and 206 (196 and 197
   were withdrawn by 198).
 - **CON-SUP-195 is a hardware assumption accepted without evidence.** The owner let the work continue with it; that is
   not a confirmation of the hardware.

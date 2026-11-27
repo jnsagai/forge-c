@@ -244,3 +244,10 @@ Counted with 204 as one relaxed rule.
 `hi answer` OP-SWC-051 (pass 42, by Claude): the architecture's processor-time allowances are design targets and may be
 tightened so that the chain fits its limit; no limit changes; each tightened allowance is verified by measurement or
 analysis or stays an open gap. One simulator sample (ITC-BUD-002, pass 35 logs) is quoted as a sample, not a bound.
+
+Round 48 (pass 48, by Claude under the owner's delegation): CON-SUP-206. A retained-data update whose CRC computation,
+write or read-back is refused counts as a code 7 fault (entity `CODE`, safe state, report within 10 ms, watchdog
+servicing stopped), is not retried, and the faults it was to record are not recorded; the 1 ms and 2 ms limits do not
+apply to them and their absence from the fault history after the next reset is accepted. **It relaxes** CON-SUP-170 and
+CON-SUP-186 for that case (the eleventh relaxing decision). The failure instant is stated (CON-SUP-105), so the
+reaction stays measurable.
