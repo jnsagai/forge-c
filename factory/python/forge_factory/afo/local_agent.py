@@ -110,6 +110,24 @@ def enabled(role: str, eff) -> bool:
     return role in ROLES and eff.mode in ("PILOT", "ACTIVE", "OWNER_SUPERVISED_DEVELOPMENT") and bool(eff.get(flag))
 
 
+def role_model(profile: str, role: str, source_model: str) -> str:
+    """The Omniverse factory maintainer has its own model assignment."""
+    from .owner_supervised_development import MAINTAINER_MODEL, PROFILE
+
+    if profile == PROFILE and role == "afo-factory-maintainer":
+        return MAINTAINER_MODEL
+    return source_model
+
+
+def control_model_trial(control: dict, model: str) -> dict | None:
+    trials = control.get("product_role_trials") or {}
+    if trials:
+        if not trials.get(model):
+            raise QueueError("LOCAL_RECOVERY_MODEL_TRIAL_REQUIRED", model)
+        return trials[model]
+    return control["product_role_trial"]
+
+
 def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None,
             line_origin=None, line_role_authority_ref=None) -> dict:
     """Reserve the role call and its worst-case capacity BEFORE dispatch (including crashed launches)."""
@@ -157,8 +175,11 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer") and line_context is None:
         raise QueueError("DEFERRED_BY_DEVELOPMENT_POLICY", role)
     profile = (man.get("local_profile") or {}).get("id")
-    model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")
-    if not profile or not model or model not in (eff.get("engineering.allowed_model_profiles") or []):
+    source_model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")
+    if not profile or not source_model:
+        raise QueueError("LOCAL_RECOVERY_PROFILE_REQUIRED", str(source_model))
+    model = role_model(profile, role, source_model)
+    if model not in (eff.get("engineering.allowed_model_profiles") or []):
         raise QueueError("LOCAL_RECOVERY_PROFILE_REQUIRED", str(model))
     if not authorized(order, eff, model):
         raise QueueError("LOCAL_RECOVERY_MODEL_NOT_AUTHORIZED", model)
@@ -167,6 +188,8 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     from ..lrtx.profile import load as load_profile
 
     selected = load_profile(profile)
+    if model not in selected["models"]["allowed"]:
+        raise QueueError("LOCAL_RECOVERY_PROFILE_REQUIRED", model)
     role_inputs = None
     if line_role_authority_ref is not None:
         from .line_recovery_control import configuration
@@ -177,7 +200,8 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if (control["profile"] != profile or control["profile_sha256"] != selected["_sha256"]
                 or control["source_revision"] != line_context["source_revision"]):
             raise QueueError("LINE_RECOVERY_ROLE_AUTHORITY_BINDING_CHANGED", role)
-        role_inputs = {key: control[key] for key in ("role_capabilities", "product_role_trial")}
+        role_inputs = {"role_capabilities": control["role_capabilities"],
+                       "product_role_trial": control_model_trial(control, model)}
     tokens = role_job_tokens(selected, role, agent.max_stage_tokens)
     profile_reservation = None
     if role in (selected.get("afo", {}).get("role_job_tokens") or {}):

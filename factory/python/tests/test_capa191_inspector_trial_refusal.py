@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 import pytest
-from forge_factory.afo import bundle, recovery
+from forge_factory.afo import bundle, local_agent, recovery
 from forge_factory.afo import owner_supervised_development as D
 from forge_factory.afo import product_role_trial as T
 from forge_factory.afo.durable import digest
@@ -52,15 +52,18 @@ def test_capa191_every_e_inspector_request_matches_exactly_one_declared_configur
 def test_capa191_the_corrected_envelope_is_pinned_and_the_first_one_is_history_only():
     trial = json.loads((FIX / "qwen-trial-e.json").read_text())
     norm = {r: [{k: v for k, v in i.items() if k != "adapter_revision"} for i in ids] for r, ids in trial["roles"].items()}
-    assert digest(norm) == D.ROLE_ENVELOPES_E[QWEN]
+    assert digest(norm) in D.ROLE_ENVELOPES_E_HISTORY[QWEN]
+    assert digest(norm) != "64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b"
     assert D.ROLE_ENVELOPES_E[QWEN] not in D.ROLE_ENVELOPES_E_HISTORY[QWEN]
 
 
-def _control(monkeypatch, qwen_trial):
+def _control(monkeypatch, qwen_trial, *, reassign_maintainer=False):
     trials = {"hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": json.loads((FIX / "ornith-trial-e.json").read_text()),
               QWEN: qwen_trial}
     rev, deadline = "f" * 40, 1_900_000_000
     for t in trials.values():
+        if reassign_maintainer:
+            t["roles"] = D.maintenance_trial_roles(t["model"], t["roles"])
         t.update(source_revision=rev, deadline_epoch=deadline, profile=D.PROFILE)
         for ids in t["roles"].values():
             for i in ids:
@@ -81,8 +84,24 @@ def test_capa191_historical_e_controls_still_validate_but_new_issuance_needs_the
     D._trial_envelopes(control)  # reconciliation of an issuance made before the fix
     with pytest.raises(Exception, match="ORIGINAL_ROLE_ENVELOPES_REQUIRED"):
         D._trial_envelopes(control, envelopes=D.ROLE_ENVELOPES_E)  # create(): only the corrected envelope
-    D._trial_envelopes(_control(monkeypatch, json.loads((FIX / "qwen-trial-e.json").read_text())),
-                       envelopes=D.ROLE_ENVELOPES_E)
+    D._trial_envelopes(_control(monkeypatch, json.loads((FIX / "qwen-trial-e.json").read_text()),
+                               reassign_maintainer=True), envelopes=D.ROLE_ENVELOPES_E)
+
+
+def test_qwen_maintainer_request_matches_the_new_mission_trial(monkeypatch):
+    control = _control(monkeypatch, json.loads((FIX / "qwen-trial-e.json").read_text()),
+                       reassign_maintainer=True)
+    D._trial_envelopes(control, envelopes=D.ROLE_ENVELOPES_E)
+    role = "afo-factory-maintainer"
+    model = local_agent.role_model(D.PROFILE, role, D.RUN_MODEL)
+    ref = local_agent.control_model_trial(control, model)
+    monkeypatch.setattr(T, "authorized", lambda ref, job, eff: T.resolve(ref))
+    effort = load(D.PROFILE)["gateway"]["reasoning"][model]["effort"]
+    body = {"reasoning_effort": effort, "tools": [{"type": "function"}]}
+    identity = T.identity({"product_role_trial": ref}, role, body, None)
+    assert identity["task_class"] == "MAINTENANCE"
+    assert identity["model_digest"] == load(D.PROFILE)["models"]["allowed"][QWEN]["digest"]
+    assert role not in T.resolve(control["product_role_trial"])["roles"]
 
 
 def _rows(ws_, rows):

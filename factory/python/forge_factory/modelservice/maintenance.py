@@ -32,11 +32,12 @@ import sys
 import time
 from pathlib import Path
 
+from ..afo.owner_supervised_development import MAINTAINER_MODEL as DEFAULT_MODEL
+from ..afo.owner_supervised_development import PROFILE as DEFAULT_PROFILE
+
 ROLE = "afo-factory-maintainer"
 MCP_ROLE = "forge-maintainer-mcp"
 STATE = Path("/mnt/data/forge-c/model-service")
-DEFAULT_PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
-DEFAULT_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 ROUTABLE = ("OPEN", "TRIAGED", "REPRODUCER_PENDING", "CAUSE_VERIFIED", "REOPENED")
 EVIDENCE_MAX = 24000  # maintainer.prepare keeps run_evidence only up to 24 KiB
 _EXC_LINE = re.compile(r"^(?:[A-Za-z_][A-Za-z0-9_]*\.)*[A-Za-z_][A-Za-z0-9_]*(?:Error|Exception|Refused|Exit)[A-Za-z]*: ")

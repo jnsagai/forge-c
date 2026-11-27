@@ -43,3 +43,26 @@ def test_no_legacy_protocol_fallback_and_no_changed_case_binding(terminal, monke
     path.write_text(json.dumps(changed))
     with pytest.raises(QueueError, match="CASE_BINDING_MISMATCH"):
         prepare_job(terminal, case)
+
+
+def test_omniverse_maintainer_uses_qwen_and_its_own_approved_trial():
+    from forge_factory.afo.owner_supervised_development import MAINTAINER_MODEL, PROFILE, RUN_MODEL
+    from forge_factory.lrtx.profile import load
+    from forge_factory.modelservice import maintenance
+
+    assert MAINTAINER_MODEL == "qwen3.8:27b-q8_0"
+    assert MAINTAINER_MODEL in load(PROFILE)["models"]["allowed"]
+    assert L.role_model(PROFILE, "afo-factory-maintainer", RUN_MODEL) == MAINTAINER_MODEL
+    assert L.role_model(PROFILE, "afo-recovery-planner", RUN_MODEL) == RUN_MODEL
+    assert L.role_model("a-different-profile", "afo-factory-maintainer", "fixture") == "fixture"
+    assert maintenance.DEFAULT_MODEL == MAINTAINER_MODEL
+
+    ornith_reference = {"path": "/ornith.json", "sha256": "1" * 64}
+    qwen_reference = {"path": "/qwen.json", "sha256": "2" * 64}
+    control = {"product_role_trial": ornith_reference,
+               "product_role_trials": {RUN_MODEL: ornith_reference, MAINTAINER_MODEL: qwen_reference}}
+    assert L.control_model_trial(control, MAINTAINER_MODEL) == qwen_reference
+    assert L.control_model_trial(control, RUN_MODEL) == ornith_reference
+    with pytest.raises(QueueError, match="LOCAL_RECOVERY_MODEL_TRIAL_REQUIRED"):
+        L.control_model_trial(control, "unbound-model")
+    assert L.control_model_trial({"product_role_trial": ornith_reference}, RUN_MODEL) == ornith_reference

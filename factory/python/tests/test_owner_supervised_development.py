@@ -1077,9 +1077,10 @@ def test_trial_order_ids_name_every_campaign_order():
 @pytest.mark.parametrize("name", ["ornith-trial-e.json", "qwen-trial-e.json"])
 def test_mission_e_trial_assets_hash_to_the_pinned_envelopes(name):
     trial = json.loads((Path(__file__).parent / "fixtures/owner-supervised-development" / name).read_text())
+    roles = D.maintenance_trial_roles(trial["model"], trial["roles"])
     normalized = {role: [{k: v for k, v in i.items() if k != "adapter_revision"} for i in ids]
-                  for role, ids in trial["roles"].items()}
+                  for role, ids in roles.items()}
     assert digest(normalized) == D.ROLE_ENVELOPES_E[trial["model"]]
-    roles = set(trial["roles"])
-    assert roles == ({f"swe{n}-author" for n in range(1, 7)} | {"release-manager", "afo-recovery-planner",
-                     "afo-factory-maintainer"} if "ornith" in trial["model"] else {f"swe{n}-inspector" for n in range(1, 7)})
+    assert set(roles) == ({f"swe{n}-author" for n in range(1, 7)} | {"release-manager", "afo-recovery-planner"}
+                          if trial["model"] == D.RUN_MODEL
+                          else {f"swe{n}-inspector" for n in range(1, 7)} | {"afo-factory-maintainer"})

@@ -79,6 +79,7 @@ RUNTIME_POLICY_SHA = "2b04da13cf739fcc869217b4acf245c4c1eae242cf59116fdf9c344e3d
 RETRYING_RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"  # allowance C
 LINE_POLICY_SHA = "c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740"
 RUN_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+MAINTAINER_MODEL = "qwen3.8:27b-q8_0"
 # Issuer history of that mission is read against how it ended, never against this allowance. Every scope
 # field except host identity (Intent, store) is the issued one.
 PRIOR_SCOPE = dict(
@@ -247,15 +248,21 @@ LEGACY_ROLE_ENVELOPES = {
     "qwen3.8:27b-q8_0": "0106c39092d46d07a2f15688dcde404e3212134ba629a858af48474b8353ae5f",
 }
 # Mission E envelopes: digests of the normalized roles of its two trial assets (adapter_revision excluded).
-ROLE_ENVELOPES_E = {  # authors swe1..6 (tool + json_schema), release, planner, maintainer; inspectors swe1..6
-    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "b1e6c9c97394e64afa2b7b63ad57789684240b55659b68050ac2bbca83ce605d",
-    "qwen3.8:27b-q8_0": "28d2407f5124900ca483b9d6fa757da22ba4f65bf4da7cb6ca54d8849c5e69e8",
+_PREVIOUS_ROLE_ENVELOPES_E = {
+    RUN_MODEL: "b1e6c9c97394e64afa2b7b63ad57789684240b55659b68050ac2bbca83ce605d",
+    MAINTAINER_MODEL: "28d2407f5124900ca483b9d6fa757da22ba4f65bf4da7cb6ca54d8849c5e69e8",
+}
+ROLE_ENVELOPES_E = {
+    RUN_MODEL: "4c72eb0f4e477cb24b56e156abe640b826696079a0d9e6fffe678cb2d4dbae09",
+    MAINTAINER_MODEL: "171d353646d314c7ddb7e53011d201d8a13379671ace8cfc6c24b2a36c3294b6",
 }
 # CAPA-191: E's first qwen envelope declared the inspectors' json_schema sampling as the profile default (0.2, seed 1)
 # but the stepwise inspector sends temperature 0; every SWE.1 inspection call was refused. Controls issued before the
 # fix (V21.1..V21.4) still validate as history; a new issuance requires the corrected envelope.
 ROLE_ENVELOPES_E_HISTORY = {
-    "qwen3.8:27b-q8_0": frozenset({"64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b"}),
+    RUN_MODEL: frozenset({_PREVIOUS_ROLE_ENVELOPES_E[RUN_MODEL]}),
+    MAINTAINER_MODEL: frozenset({_PREVIOUS_ROLE_ENVELOPES_E[MAINTAINER_MODEL],
+                                 "64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b"}),
 }
 QUALITY_SHA = "4fcd28818fd411e3aaddf347e372487c694a6bf3ea88b07f1cc00d9ee1594b6b"
 
@@ -677,6 +684,31 @@ def _read_file(ref):
     return bound_json(ref)
 
 
+def _role_envelope_digest(roles):
+    return digest({role: [{k: v for k, v in identity.items() if k != "adapter_revision"}
+                          for identity in identities] for role, identities in roles.items()})
+
+
+def maintenance_trial_roles(model, roles):
+    """Apply the maintainer assignment to a pinned Mission E template at issuance."""
+    expected = ROLE_ENVELOPES_E[model]
+    original = _role_envelope_digest(roles)
+    if original == expected:
+        return roles
+    if original != _PREVIOUS_ROLE_ENVELOPES_E[model]:
+        _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
+    maintainer = "afo-factory-maintainer"
+    result = dict(roles)
+    if model == MAINTAINER_MODEL:
+        tool_identity = next(i for i in roles["swe1-inspector"] if i["schema_mode"] == "tool")
+        result[maintainer] = [dict(tool_identity, role=maintainer, task_class="MAINTENANCE")]
+    else:
+        del result[maintainer]
+    if _role_envelope_digest(result) != expected:
+        _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
+    return result
+
+
 def _trial_envelopes(control, envelopes=None):
     """Historical controls validate only against the legacy envelopes, a mission E control only against E's."""
     from .product_role_trial import resolve
@@ -696,12 +728,9 @@ def _trial_envelopes(control, envelopes=None):
         _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
     for model, ref in refs.items():
         trial = resolve(ref)
-        normalized = {
-            role: [{k: v for k, v in identity.items() if k != "adapter_revision"} for identity in identities]
-            for role, identities in trial["roles"].items()
-        }
+        envelope_digest = _role_envelope_digest(trial["roles"])
         if (
-            (digest(normalized) != envelopes[model] and digest(normalized) not in history.get(model, ()))
+            (envelope_digest != envelopes[model] and envelope_digest not in history.get(model, ()))
             or trial.get("model") != model
             or trial.get("profile") != PROFILE
             or trial.get("source_revision") != control["source_revision"]
