@@ -65,6 +65,7 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 50 | the system requirements accepted CON-SUP-207, then the system architecture returned OP-SYE-014 and the system requirements ended BLOCKED with OP-SYS-025 | CON-SUP-206 required the data of the last completed update after the reset, which a failed start-up write can make impossible; CON-SUP-208 (round 50) defers to the existing reset rule CON-SUP-164 |
 | 51 | the system requirements accepted CON-SUP-208; the system architecture ended BLOCKED with OP-SYE-013 | CON-SUP-206 named a refused write or read of the retained memory, which no device fact lets the software detect or a test cause; CON-SUP-209 (round 51) keeps only detectable failures, states the test means and adds a fourth hardware assumption |
 | 52 | system requirements to detailed design all ACCEPTED with CON-SUP-209 (OP-SWU-042 and OP-QTC-023 settled); stopped in unit verification by the author account's usage limit, not a verdict | the CON-SUP-206 to 209 chain is settled on the left side |
+| 53 | unit verification updated its tests and returned one point (OP-UTC-402) to the design; both stopped by the author account's usage limit, not a verdict | - |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
