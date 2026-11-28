@@ -269,3 +269,7 @@ read, for which no device indication is cited. That the retained memory never en
 **fourth unconfirmed hardware assumption** on the integrator (with CON-SUP-195, 202, 203). Tests may produce the
 failures with a test build that replaces the driver result, or with the simulator's verification equipment; that
 evidence shows the supervisor's reaction only, not the device's. Fourth pass caused by Claude's CON-SUP-206 wording.
+
+`hi answer` OP-UTC-601 (pass 55, by Claude): nobody performs the source inspection UTC-DSP-732 (locking of the
+dispatcher queue); it stays a manual case with the result NOT_RUN, a gap of the review package, and the property it
+judges is not claimed as verified. Same pattern as OP-ITC-008. No input changes.

@@ -67,6 +67,7 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 52 | system requirements to detailed design all ACCEPTED with CON-SUP-209 (OP-SWU-042 and OP-QTC-023 settled); stopped in unit verification by the author account's usage limit, not a verdict | the CON-SUP-206 to 209 chain is settled on the left side |
 | 53 | unit verification updated its tests and returned one point (OP-UTC-402) to the design; both stopped by the author account's usage limit, not a verdict | - |
 | 54 | the design settled OP-UTC-402 and then OP-UTC-502 (test failures); unit tests and coverage PASS; unit verification stopped in its update (trace gate open) by the author account's usage limit, not a verdict | - |
+| 55 | unit verification ACCEPTED; software integration returned test failures twice (OP-ITC-016, OP-ITC-018), each settled by the design; unit verification then ended BLOCKED with OP-UTC-601 | a manual source inspection (UTC-DSP-732) that only a person can make; answered with `hi answer`: it stays NOT_RUN, a gap of the package |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
