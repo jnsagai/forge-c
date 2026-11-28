@@ -68,6 +68,7 @@ returned integration result as well. Every pass up to 42 ended BLOCKED, except p
 | 53 | unit verification updated its tests and returned one point (OP-UTC-402) to the design; both stopped by the author account's usage limit, not a verdict | - |
 | 54 | the design settled OP-UTC-402 and then OP-UTC-502 (test failures); unit tests and coverage PASS; unit verification stopped in its update (trace gate open) by the author account's usage limit, not a verdict | - |
 | 55 | unit verification ACCEPTED; software integration returned test failures twice (OP-ITC-016, OP-ITC-018), each settled by the design; unit verification then ended BLOCKED with OP-UTC-601 | a manual source inspection (UTC-DSP-732) that only a person can make; answered with `hi answer`: it stays NOT_RUN, a gap of the package |
+| 56 | unit verification ACCEPTED_WITH_GAPS; integration returned OP-ITC-020 to the architecture, settled down to unit verification; integration then stopped in its rework by the author account's usage limit, not a verdict | open integration findings: the CON-SUP-209 failure paths (differing read-back, repeated failed updates) are not yet tested with a stated test means (F-sw-integ-set-r21-005) |
 
 Before pass 39 the Lexar drive with the disk image was remounted (2026-11-26 08:19) and the image gave input/output
 errors; it was attached again with the owner's approval, and `git fsck` of the run repository was clean.
